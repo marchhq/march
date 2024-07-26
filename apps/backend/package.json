@@ -1,0 +1,51 @@
+{
+  "name": "@satellite/backend",
+  "version": "0.0.1",
+  "description": "satellite Backend",
+  "author": "march-dev",
+  "private": true,
+  "main": "index.js",
+  "type": "module",
+  "repository": "git@github.com:marchhq/satellite-backend.git",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "jest",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@clerk/backend": "^1.3.2",
+    "@clerk/clerk-sdk-node": "^5.0.15",
+    "@google-cloud/pubsub": "^4.5.0",
+    "@ngrok/ngrok": "^1.3.0",
+    "@octokit/rest": "^21.0.1",
+    "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "crypto-random-string": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "generate-password": "^1.7.1",
+    "google-auth-library": "^9.11.0",
+    "googleapis": "^140.0.1",
+    "handlebars": "^4.7.8",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.5.45",
+    "mongoose": "^8.4.3",
+    "nodemailer": "^6.9.14",
+    "nodemailer-sendgrid": "^1.0.3",
+    "path": "^0.12.7",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.22.5",
+    "eslint": "^8.43.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^16.0.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "nodemon": "^2.0.22"
+  }
+}

@@ -1,0 +1,22 @@
+{
+    "env": {
+        "commonjs": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": "standard",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-tabs": "off",
+        "indent": [
+            "error",
+            4
+        ],
+        "quotes": "off",
+        "quote-props": "off",
+        "semi": "off",
+        "multiline-ternary": "off"
+    }
+}
