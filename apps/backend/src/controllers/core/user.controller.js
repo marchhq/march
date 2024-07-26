@@ -1,6 +1,4 @@
 import Joi from "joi";
-// import { updateUser } from "../../services/core/user.service.js";
-// import { UpdateUserPayload } from "../../payloads/core/user.payload.js";
 import { getUserItems, getUserTodayItems, getUserOverdueItems, getUserItemsByDate } from "../../services/lib/item.service.js";
 
 const { ValidationError } = Joi;
@@ -8,9 +6,6 @@ const { ValidationError } = Joi;
 const userProfileController = async (req, res, next) => {
     try {
         const user = req.auth.user;
-        // const user = await clerk.users.getUser(req.auth.userId);
-        // const response = await clerk.users.getUserOauthAccessToken(req.auth.userId, 'github');
-        // console.log("user: ", user);
         const { firstName, lastName, username, avatar } = user
 
         res.json({
