@@ -9,7 +9,6 @@ const accessToken = ""
 const refreshToken = ""
 
 async function processGmailNotification (req, res) {
-    console.log("hey");
     const data = req.body
     const decodedData = JSON.parse(Buffer.from(data.message.data, 'base64').toString());
     console.log("Decoded data:", decodedData);
