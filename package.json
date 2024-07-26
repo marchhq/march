@@ -1,10 +1,20 @@
 {
   "name": "satellite",
+  "version": "0.0.1",
+  "description": "building a second brain for next generation makers",
+  "main": "index.js",
+  "repository": "https://github.com/marchhq/satellite.git",
+  "author": "march-dev",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
