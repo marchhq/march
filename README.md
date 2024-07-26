@@ -30,9 +30,7 @@ cd march
 
 ```
 git checkout -b <feature-branch-name>
-
 ```
-
 4. Install packages with pnpm
 
 ```
@@ -41,7 +39,7 @@ pnpm install
 
 5. Set up your .env file
 
-Duplicate .env.example to .env
+Go to the `app/backend` and `app/frontend` directories and duplicate the `.env.example` to `.env`.
 
 6. Run (in development mode)
 
