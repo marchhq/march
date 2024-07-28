@@ -2,27 +2,37 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 import { db } from "../../loaders/db.loader.js";
 
-const PageSchema = new Schema({
+const statusChoices = ["inbox", "todo", "in progress", "done"];
+
+const RecordSchema = new Schema({
     uuid: {
         type: String,
         default: () => uuid()
     },
-    name: {
+    title: {
+        type: String
+    },
+    content: {
         type: String,
         default: ''
     },
-    icon: {
+    status: {
         type: String,
-        default: 'home'
+        enum: statusChoices,
+        default: "inbox"
     },
-    users: [{
-        type: Schema.Types.String,
-        // ref: 'User',
-        required: true
+    dueDate: {
+        type: Date,
+        default: null
+    },
+    pages: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Page'
     }],
-    blocks: [{
+    user: {
         type: Schema.Types.String
-    }],
+        // ref: 'User'
+    },
     isArchived: {
         type: Boolean,
         default: false
@@ -35,9 +45,8 @@ const PageSchema = new Schema({
     timestamps: true
 });
 
-PageSchema.index({ date: 1, user: 1 }, { unique: true });
-const Page = db.model('Page', PageSchema, 'pages');
+const Record = db.model('Record', RecordSchema, 'records')
 
 export {
-    Page
+    Record
 }
