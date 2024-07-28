@@ -4,7 +4,7 @@ import { createPageController, getPagesController, getPageController, updatePage
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController } from "../../controllers/lib/journal.controller.js";
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
 import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
-import { createRecordController, getRecordsController, getRecordController } from "../../controllers/lib/record.controller.js";
+import { createRecordController, getRecordsController, getRecordController, updateRecordController } from "../../controllers/lib/record.controller.js";
 
 const router = Router();
 
@@ -24,7 +24,7 @@ router.route("/pages/update/").post(updatePageController)
 router.route("/records/create/").post(createRecordController)
 router.route("/records/overview/").get(getRecordsController)
 router.route("/records/:record/").get(getRecordController)
-// router.route("/records/update/").post(updateItemController)
+router.route("/records/update/").post(updateRecordController)
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController)

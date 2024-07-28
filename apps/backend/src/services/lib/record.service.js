@@ -38,8 +38,20 @@ const getRecord = async (user, id) => {
     return record;
 };
 
+const updateRecord = async (updateData) => {
+    const updatedRecord = await Record.findByIdAndUpdate({
+        _id: updateData.id
+    },
+    { $set: updateData },
+    { new: true }
+    )
+
+    return updatedRecord;
+};
+
 export {
     createRecord,
     getRecords,
-    getRecord
+    getRecord,
+    updateRecord
 }
