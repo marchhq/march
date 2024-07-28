@@ -3,12 +3,13 @@ import { getUserItemsController, getUserTodayItemsController, getUserOverdueItem
 import { createPageController, getPagesController, getPageController, updatePageController } from "../../controllers/lib/page.controller.js";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController } from "../../controllers/lib/journal.controller.js";
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
-import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js"
+import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
+import { createRocordController } from "../../controllers/lib/record.controller.js";
 
 const router = Router();
 
 // inbox
-router.route("/my/").get(getUserItemsController) // --> done
+router.route("/my/").get(getUserItemsController)
 router.route("/my/today/").get(getUserTodayItemsController)
 router.route("/my/overdue/").get(getUserOverdueItemsController)
 router.route("/my/:date/").get(getUserItemsByDateControlle)
@@ -18,6 +19,12 @@ router.route("/pages/create/").post(createPageController)
 router.route("/pages/overview/").get(getPagesController)
 router.route("/pages/:page/").get(getPageController)
 router.route("/pages/update/").post(updatePageController)
+
+// rocord controllers
+router.route("/records/create/").post(createRocordController)
+// router.route("/records/overview/").get(getItemsController)
+// router.route("/records/:item/").get(getItemController)
+// router.route("/records/update/").post(updateItemController)
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController)
