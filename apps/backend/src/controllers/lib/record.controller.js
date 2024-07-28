@@ -1,4 +1,4 @@
-import { createRecord, getRecords, getRecord } from "../../services/lib/record.service.js";
+import { createRecord, getRecords, getRecord, updateRecord } from "../../services/lib/record.service.js";
 
 const createRecordController = async (req, res, next) => {
     try {
@@ -47,8 +47,23 @@ const getRecordController = async (req, res, next) => {
     }
 };
 
+const updateRecordController = async (req, res, next) => {
+    try {
+        const updateData = req.body;
+        const record = await updateRecord(updateData);
+
+        res.status(200).json({
+            status: 200,
+            response: record
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createRecordController,
     getRecordsController,
-    getRecordController
+    getRecordController,
+    updateRecordController
 }
