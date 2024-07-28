@@ -20,6 +20,9 @@ const PageSchema = new Schema({
         // ref: 'User',
         required: true
     }],
+    blocks: [{
+        type: Schema.Types.String
+    }],
     isArchived: {
         type: Boolean,
         default: false
