@@ -1,11 +1,11 @@
-import { createRocord, getRocords, getRocord } from "../../services/lib/record.service.js";
+import { createRecord, getRecords, getRecord } from "../../services/lib/record.service.js";
 
-const createRocordController = async (req, res, next) => {
+const createRecordController = async (req, res, next) => {
     try {
         const user = req.auth.userId;
 
         const requestedData = req.body;
-        const record = await createRocord(user, requestedData);
+        const record = await createRecord(user, requestedData);
 
         res.status(200).json({
             status: 200,
@@ -16,11 +16,11 @@ const createRocordController = async (req, res, next) => {
     }
 };
 
-const getRocordsController = async (req, res, next) => {
+const getRecordsController = async (req, res, next) => {
     try {
         const user = req.auth.userId;
 
-        const records = await getRocords(user);
+        const records = await getRecords(user);
 
         res.status(200).json({
             status: 200,
@@ -31,12 +31,12 @@ const getRocordsController = async (req, res, next) => {
     }
 };
 
-const getRocordController = async (req, res, next) => {
+const getRecordController = async (req, res, next) => {
     try {
         const user = req.auth.userId;
         const { record: id } = req.params;
 
-        const record = await getRocord(user, id);
+        const record = await getRecord(user, id);
 
         res.status(200).json({
             status: 200,
@@ -48,7 +48,7 @@ const getRocordController = async (req, res, next) => {
 };
 
 export {
-    createRocordController,
-    getRocordsController,
-    getRocordController
+    createRecordController,
+    getRecordsController,
+    getRecordController
 }

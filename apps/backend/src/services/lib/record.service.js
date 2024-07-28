@@ -1,22 +1,22 @@
 import { Record } from "../../models/lib/record.model.js";
 
-const createRocord = async (user, recordData) => {
-    const newRocord = new Record({
+const createRecord = async (user, recordData) => {
+    const newRecord = new Record({
         ...recordData,
         user
     });
-    if (!newRocord) {
+    if (!newRecord) {
         const error = new Error("Failed to create the record")
         error.statusCode = 500
         throw error
     }
 
-    const record = await newRocord.save()
+    const record = await newRecord.save()
 
     return record;
 };
 
-const getRocords = async (user) => {
+const getRecords = async (user) => {
     const records = await Record.find({
         user,
         isArchived: false,
@@ -27,7 +27,7 @@ const getRocords = async (user) => {
     return records;
 };
 
-const getRocord = async (user, id) => {
+const getRecord = async (user, id) => {
     const record = await Record.find({
         uuid: id,
         user,
@@ -39,7 +39,7 @@ const getRocord = async (user, id) => {
 };
 
 export {
-    createRocord,
-    getRocords,
-    getRocord
+    createRecord,
+    getRecords,
+    getRecord
 }
