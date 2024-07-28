@@ -16,6 +16,30 @@ const createRocord = async (user, recordData) => {
     return record;
 };
 
+const getRocords = async (user) => {
+    const records = await Record.find({
+        user,
+        isArchived: false,
+        isDeleted: false
+    })
+        .sort({ created_at: -1 });
+
+    return records;
+};
+
+const getRocord = async (user, id) => {
+    const record = await Record.find({
+        uuid: id,
+        user,
+        isArchived: false,
+        isDeleted: false
+    })
+
+    return record;
+};
+
 export {
-    createRocord
+    createRocord,
+    getRocords,
+    getRocord
 }
