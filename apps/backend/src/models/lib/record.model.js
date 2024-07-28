@@ -25,7 +25,7 @@ const RecordSchema = new Schema({
         type: Date,
         default: null
     },
-    page: [{
+    pages: [{
         type: Schema.Types.ObjectId,
         ref: 'Page'
     }],
