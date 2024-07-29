@@ -5,6 +5,7 @@ import { createUpdateJournalController, getUserTodayJournalController, getUserAl
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
 import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
 import { createRecordController, getRecordsController, getRecordController, updateRecordController } from "../../controllers/lib/record.controller.js";
+import { createBlockController } from "../../controllers/lib/block.controller.js";
 
 const router = Router();
 
