@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      opacity: {
+        min: "0.005",
+      },
       keyframes: {
         fadeIn: {
           from: { opacity: "0" },

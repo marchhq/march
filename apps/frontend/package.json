@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.2.4",
+    "@clerk/themes": "^2.1.14",
     "@phosphor-icons/react": "^2.1.7",
     "@tanstack/react-query": "^5.51.9",
     "@tiptap/extension-link": "^2.5.4",
