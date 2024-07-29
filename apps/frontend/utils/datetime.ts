@@ -1,4 +1,4 @@
-import { format } from "date-fns"
+import { format, formatDistanceToNow } from "date-fns"
 
 export const getOrdinalSuffix = (day) => {
   if (day > 3 && day < 21) return "th"
@@ -39,4 +39,10 @@ export const formatDate = (date: Date | string): string => {
 
 export const formatDateYear = (date: Date | string): string => {
   return format(date, "dd MMMM yy")
+}
+
+export const fromNow = (date: Date | string): string => {
+  return formatDistanceToNow(date, {
+    addSuffix: true,
+  })
 }
