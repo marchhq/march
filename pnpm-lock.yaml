@@ -120,6 +120,9 @@ importers:
       '@clerk/nextjs':
         specifier: ^5.2.4
         version: 5.2.6(next@14.2.5(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/themes':
+        specifier: ^2.1.14
+        version: 2.1.14
       '@phosphor-icons/react':
         specifier: ^2.1.7
         version: 2.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -289,6 +292,9 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
     devDependencies:
+      '@clerk/themes':
+        specifier: ^2.1.14
+        version: 2.1.14
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -545,8 +551,16 @@ packages:
       react-dom:
         optional: true
 
+  '@clerk/themes@2.1.14':
+    resolution: {integrity: sha512-j0nZ7cDmn5XBWg/bx8msvlPnoNZCTb6ovfhldvCxy0/VVn6v1zDwSgJM3hVVPKwdM20tNNMvhWrseS4248jgTg==}
+    engines: {node: '>=18.17.0'}
+
   '@clerk/types@4.9.0':
     resolution: {integrity: sha512-t+PDtVItnwit8u+YefMBVfJVdENdRAndMiIwGGJgnZ7+DyPjOwqomVy3VmcyycUdkdHcnx16UKm3a0rh2JQG/w==}
+    engines: {node: '>=18.17.0'}
+
+  '@clerk/types@4.9.1':
+    resolution: {integrity: sha512-fCmqzPBFh0rH9TlUVPpvPW225DtGJDuCv5GecwuuzD8hcgwGetTfRSDRNl5Dub5aJuqYWGQQCCnKfnfCrhZvrA==}
     engines: {node: '>=18.17.0'}
 
   '@cspotcode/source-map-support@0.8.1':
@@ -5701,7 +5715,16 @@ snapshots:
       react: 19.0.0-rc-f994737d14-20240522
       react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
 
+  '@clerk/themes@2.1.14':
+    dependencies:
+      '@clerk/types': 4.9.1
+      tslib: 2.4.1
+
   '@clerk/types@4.9.0':
+    dependencies:
+      csstype: 3.1.1
+
+  '@clerk/types@4.9.1':
     dependencies:
       csstype: 3.1.1
 
@@ -8094,7 +8117,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.17.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.17.0(eslint@8.57.0)(typescript@5.3.3))(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
