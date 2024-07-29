@@ -14,11 +14,11 @@ router.route("/my/today/").get(getUserTodayItemsController)
 router.route("/my/overdue/").get(getUserOverdueItemsController)
 router.route("/my/:date/").get(getUserItemsByDateControlle)
 
-// page controllers
-router.route("/pages/create/").post(createPageController)
-router.route("/pages/overview/").get(getPagesController)
-router.route("/pages/:page/").get(getPageController)
-router.route("/pages/update/").post(updatePageController)
+// space controllers
+router.route("/spaces/create/").post(createPageController)
+router.route("/spaces/overview/").get(getPagesController)
+router.route("/spaces/:space/").get(getPageController)
+router.route("/spaces/update/").post(updatePageController)
 
 // rocord controllers
 router.route("/records/create/").post(createRecordController)
@@ -43,5 +43,7 @@ router.route("/notes/overview/").get(getNotesController)
 router.route("/notes/:note/").get(getNoteController)
 router.route("/notes/update/").post(updateNoteController)
 router.route("/notes/delete/").post(deleteNoteController)
+
+// Block controllers
 
 export default router;
