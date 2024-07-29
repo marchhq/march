@@ -55,7 +55,7 @@ const InboxSection: React.FC = () => {
     switch (integration.type) {
       case "githubIssue":
         return (
-          <div className="flex items-center rounded-md bg-zinc-800 p-1.5">
+          <div className="flex items-center rounded-md border border-white/5 bg-white/min p-1.5 shadow-lg backdrop-blur-lg">
             <div className="p-1.5">
               <div className="flex items-center gap-2">
                 <GithubLogo weight="duotone" className="text-purple-500" />
@@ -76,7 +76,7 @@ const InboxSection: React.FC = () => {
         )
       case "pullRequest":
         return (
-          <div className="flex items-center rounded-md bg-zinc-800 p-1.5">
+          <div className="flex items-center rounded-md border border-white/5 bg-white/min p-1.5 shadow-lg backdrop-blur-lg">
             <div className="p-1.5">
               <div className="flex items-center gap-2">
                 <GitPullRequest weight="duotone" className="text-purple-500" />
