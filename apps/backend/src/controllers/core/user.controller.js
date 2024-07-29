@@ -1,5 +1,7 @@
 import Joi from "joi";
 import { getUserItems, getUserTodayItems, getUserOverdueItems, getUserItemsByDate } from "../../services/lib/item.service.js";
+import { getUserGithubIssuesAndPRs, getGitHubAccessToken } from "../../services/integration/github.service.js";
+import { getMyLinearIssues } from "../../services/integration/linear.service.js";
 
 const { ValidationError } = Joi;
 
@@ -49,11 +51,14 @@ const getUserItemsController = async (req, res, next) => {
         // const me = req.user.id;
         const me = req.auth.userId;
         const inbox = await getUserItems(me);
+        const { token, username } = await getGitHubAccessToken(me);
+        const { issues, pullRequests } = await getUserGithubIssuesAndPRs(token, username);
+        const LinearIssues = await getMyLinearIssues(me);
         res.json({
-            status: 200,
-            response: {
-                inbox
-            }
+            inbox,
+            pullRequests: pullRequests.map(pullRequest => ({ type: "pullRequest", ...pullRequest })),
+            githubIssues: issues.map(issue => ({ type: "githubIssue", ...issue })),
+            linearIssues: LinearIssues.map(linearIssue => ({ type: "linearIssue", ...linearIssue }))
         });
     } catch (err) {
         next(err);
