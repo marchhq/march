@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { environment } from '../../loaders/environment.loader.js';
 import { clerk } from "../../middlewares/clerk.middleware.js";
+import { Integration } from '../../models/integration/integration.model.js';
 
 const getAccessToken = async (code, user) => {
     try {
@@ -19,6 +20,7 @@ const getAccessToken = async (code, user) => {
         });
 
         const accessToken = tokenResponse.data.access_token;
+        console.log("saj: ", accessToken);
         await clerk.users.updateUserMetadata(user, {
             privateMetadata: {
                 integration: {
@@ -130,32 +132,72 @@ const getMyLinearIssues = async (id) => {
 
     const response = await axios.post('https://api.linear.app/graphql', {
         query: `
-            query {
-                issues(filter: { assignee: { id: { eq: "${userId}" } } }) {
+        query {
+            issues(filter: { assignee: { id: { eq: "${userId}" } } }) {
                 nodes {
                     id
                     title
                     description
                     state {
-                    name
-                    }
-                    labels {
-                    nodes {
+                        id
                         name
                     }
+                    labels {
+                        nodes {
+                            id
+                            name
+                        }
                     }
                     dueDate
-                }
+                    createdAt
+                    updatedAt
+                    priority
+                    project {
+                        id
+                        name
+                    }
+                    assignee {
+                        id
+                        name
+                    }
+                    url
                 }
             }
-        `
+        }
+    `
     }, {
         headers: {
             Authorization: `Bearer ${linearToken}`,
             'Content-Type': 'application/json'
         }
     });
-    return response.data.data.issues.nodes;
+
+    const issues = response.data.data.issues.nodes;
+
+    // Save issues to MongoDB
+    for (const issue of issues) {
+        const integration = new Integration({
+            title: issue.title,
+            type: 'linearIssue',
+            id: issue.id,
+            user: id,
+            url: issue.url,
+            metadata: {
+                description: issue.description,
+                labels: issue.labels,
+                state: issue.state,
+                priority: issue.priority,
+                project: issue.project,
+                dueDate: issue.dueDate
+            },
+            createdAt: issue.createdAt,
+            updatedAt: issue.updatedAt
+        });
+
+        await integration.save();
+    }
+
+    return issues;
 };
 
 const formatDate = (date) => {

@@ -19,6 +19,9 @@ const integrationSchema = new Schema({
     metadata: {
         type: Schema.Types.Mixed
     },
+    id: {
+        type: String
+    },
     createdAt: {
         type: Date
     },
@@ -44,8 +47,8 @@ const integrationSchema = new Schema({
     timestamps: true
 });
 
-const Intrigration = db.model('Intrigration', integrationSchema, 'intrigrations')
+const Integration = db.model('Integration', integrationSchema, 'integrations')
 
 export {
-    Intrigration
+    Integration
 }

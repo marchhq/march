@@ -1,8 +1,7 @@
 import Joi from "joi";
 import { getUserItems, getUserTodayItems, getUserOverdueItems, getUserItemsByDate } from "../../services/lib/item.service.js";
 import { getUserGithubIssuesAndPRs, getGitHubAccessToken } from "../../services/integration/github.service.js";
-import { getMyLinearIssues } from "../../services/integration/linear.service.js";
-import { clerk } from "../../middlewares/clerk.middleware.js";
+import { getIntegration } from "../../services/lib/integration.service.js";
 
 const { ValidationError } = Joi;
 
@@ -50,12 +49,9 @@ const updateUserController = async (req, res, next) => {
 const getUserItemsController = async (req, res, next) => {
     try {
         // const me = req.user.id;
-        let LinearIssues = [];
         let issues = [];
         let pullRequests = [];
         const me = req.auth.userId;
-        const user = await clerk.users.getUser(me);
-        const linearToken = user.privateMetadata.integration.linear;
         const inbox = await getUserItems(me);
         const { token, username } = await getGitHubAccessToken(me);
         if (token) {
@@ -63,15 +59,13 @@ const getUserItemsController = async (req, res, next) => {
             issues = githubData.issues;
             pullRequests = githubData.pullRequests;
         }
-
-        if (linearToken) {
-            LinearIssues = await getMyLinearIssues(me);
-        }
+        const linearIssues = await getIntegration(me);
         res.json({
             inbox,
-            pullRequests: pullRequests.map(pullRequest => ({ type: "pullRequest", ...pullRequest })),
-            githubIssues: issues.map(issue => ({ type: "githubIssue", ...issue })),
-            linearIssues: LinearIssues.map(linearIssue => ({ type: "linearIssue", ...linearIssue }))
+            // pullRequests: pullRequests.map(pullRequest => ({ type: "pullRequest", ...pullRequest })),
+            // githubIssues: issues.map(issue => ({ type: "githubIssue", ...issue })),
+            // linearIssues: linearIssues.map(linearIssue => ({ type: "linearIssue", ...linearIssue }))
+            linearIssues
         });
     } catch (err) {
         next(err);
