@@ -45,5 +45,6 @@ router.route("/notes/update/").post(updateNoteController)
 router.route("/notes/delete/").post(deleteNoteController)
 
 // Block controllers
+router.route("/blocks/create/").post(createBlockController)
 
 export default router;
