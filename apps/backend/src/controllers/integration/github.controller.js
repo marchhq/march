@@ -6,11 +6,8 @@ const getUserGithubIssuesAndPRsController = async (req, res, next) => {
         const { token, username } = await getGitHubAccessToken(userId);
         const { issues, pullRequests } = await getUserGithubIssuesAndPRs(token, username);
         res.json({
-            status: 200,
-            response: {
-                issues,
-                pullRequests
-            }
+            issues,
+            pullRequests
         });
     } catch (err) {
         next(err);
