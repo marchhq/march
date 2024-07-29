@@ -12,7 +12,8 @@ const BlockSchema = new Schema({
         default: ''
     },
     data: {
-        type: Object
+        type: Schema.Types.Mixed,
+        required: true
     },
     user: {
         type: Schema.Types.String,
@@ -23,6 +24,7 @@ const BlockSchema = new Schema({
         ref: 'Page'
     }
 }, {
+    discriminatorKey: 'type',
     timestamps: true
 });
 
