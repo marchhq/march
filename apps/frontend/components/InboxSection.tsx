@@ -55,44 +55,26 @@ const InboxSection: React.FC = () => {
     switch (integration.type) {
       case "githubIssue":
         return (
-          <div className="flex items-center rounded-md border border-white/min bg-white/min px-1.5 py-1 shadow-md backdrop-blur-lg">
-            <div className="p-1">
-              <div className="flex items-center gap-2">
-                <GithubLogo weight="duotone" className="text-purple-500" />
-                <p>{integration.title}</p>
-              </div>
-              <div className="ml-5 text-xs text-zinc-500">
-                #{integration.number}, opened {fromNow(integration.created_at)}
-              </div>
+          <div className="p-1">
+            <div className="flex items-center gap-2">
+              <GithubLogo weight="duotone" className="text-purple-500" />
+              <p>{integration.title}</p>
             </div>
-            <a
-              target="_blank"
-              href={integration.url}
-              className="ml-auto rounded-md p-1.5 transition-all hover:bg-zinc-900"
-            >
-              <ArrowSquareOut />
-            </a>
+            <div className="ml-5 text-xs text-zinc-500">
+              #{integration.number}, opened {fromNow(integration.created_at)}
+            </div>
           </div>
         )
       case "pullRequest":
         return (
-          <div className="flex items-center rounded-md border border-white/min bg-white/min px-1.5 py-1 shadow-md backdrop-blur-lg">
-            <div className="p-1">
-              <div className="flex items-center gap-2">
-                <GitPullRequest weight="duotone" className="text-purple-500" />
-                <p>{integration.title}</p>
-              </div>
-              <div className="ml-5 text-xs text-zinc-500">
-                #{integration.number}, opened {fromNow(integration.created_at)}
-              </div>
+          <div className="p-1">
+            <div className="flex items-center gap-2">
+              <GitPullRequest weight="duotone" className="text-purple-500" />
+              <p>{integration.title}</p>
             </div>
-            <a
-              target="_blank"
-              href={integration.url}
-              className="ml-auto rounded-md p-1.5 transition-all hover:bg-zinc-900"
-            >
-              <ArrowSquareOut />
-            </a>
+            <div className="ml-5 text-xs text-zinc-500">
+              #{integration.number}, opened {fromNow(integration.created_at)}
+            </div>
           </div>
         )
     }
@@ -102,7 +84,21 @@ const InboxSection: React.FC = () => {
     <section>
       <Editor content={content} setContent={setContent} />
       <div className="my-10 space-y-1 text-sm text-zinc-300">
-        {integrations.map(renderIntegration)}
+        {integrations.map((integration, index) => (
+          <div
+            key={index}
+            className="flex items-center rounded-md border border-white/min bg-white/min px-1.5 py-1 shadow-md backdrop-blur-lg"
+          >
+            {renderIntegration(integration)}
+            <a
+              target="_blank"
+              href={integration.url}
+              className="ml-auto rounded-md p-1.5 transition-all hover:bg-zinc-900"
+            >
+              <ArrowSquareOut />
+            </a>
+          </div>
+        ))}
       </div>
     </section>
   )
