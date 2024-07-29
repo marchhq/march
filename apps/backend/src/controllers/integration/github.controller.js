@@ -4,7 +4,7 @@ const getUserGithubIssuesAndPRsController = async (req, res, next) => {
     try {
         const userId = req.auth.userId;
         const { token, username } = await getGitHubAccessToken(userId);
-        const { issues, pullRequests } = await getUserGithubIssuesAndPRs(token, username);
+        const { issues, pullRequests } = await getUserGithubIssuesAndPRs(token, username, userId);
         res.json({
             issues,
             pullRequests
