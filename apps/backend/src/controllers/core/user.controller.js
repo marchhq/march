@@ -48,24 +48,13 @@ const updateUserController = async (req, res, next) => {
 
 const getUserItemsController = async (req, res, next) => {
     try {
-        // const me = req.user.id;
-        // let issues = [];
-        // let pullRequests = [];
         const me = req.auth.userId;
         // const inbox = await getUserItems(me);
-        // const { token, username } = await getGitHubAccessToken(me);
-        // if (token) {
-        //     const githubData = await getUserGithubIssuesAndPRs(token, username);
-        //     issues = githubData.issues;
-        //     pullRequests = githubData.pullRequests;
-        // }
+
         const linearIssues = await getIntegration(me);
         res.json({
             // inbox,
-            // pullRequests: pullRequests.map(pullRequest => ({ type: "pullRequest", ...pullRequest })),
-            // githubIssues: issues.map(issue => ({ type: "githubIssue", ...issue })),
-            // linearIssues: linearIssues.map(linearIssue => ({ type: "linearIssue", ...linearIssue }))
-            linearIssues
+            response: linearIssues
         });
     } catch (err) {
         next(err);
