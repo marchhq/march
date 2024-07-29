@@ -6,7 +6,15 @@ const ProfilePage: React.FC = () => {
   return (
     <section className="h-full overflow-y-auto rounded-xl border border-white/10 bg-white/10 px-6 pt-16 shadow-lg backdrop-blur-lg">
       <SignedIn>
-        <UserProfile />
+        <UserProfile
+          appearance={{
+            variables: {
+              colorBackground: "transparent",
+              colorInputBackground: "transparent",
+              fontFamilyButtons: "var(--sans-font)",
+            },
+          }}
+        />
       </SignedIn>
     </section>
   )
