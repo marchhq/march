@@ -26,7 +26,7 @@ const ItemSchema = new Schema({
         type: String,
         enum: effortChoices
     },
-    dueDate: {
+    date: {
         type: Date,
         default: null
     },
