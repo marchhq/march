@@ -1,3 +1,4 @@
+import { createBlock } from "../../services/lib/block.service.js";
 
 const createBlockController = async (req, res, next) => {
     try {
