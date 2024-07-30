@@ -5,7 +5,7 @@ import { createUpdateJournalController, getUserTodayJournalController, getUserAl
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
 import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
 import { createRecordController, getRecordsController, getRecordController, updateRecordController } from "../../controllers/lib/record.controller.js";
-import { createBlockController, getBlocksController, deleteBlockController } from "../../controllers/lib/block.controller.js";
+import { createBlockController, getBlocksController, deleteBlockController, getBlockController } from "../../controllers/lib/block.controller.js";
 
 const router = Router();
 
@@ -48,6 +48,7 @@ router.route("/notes/delete/").post(deleteNoteController)
 // Block controllers
 router.route("/blocks/create/").post(createBlockController)
 router.route("/blocks/overview/").get(getBlocksController)
+router.route("/blocks/:block/").get(getBlockController)
 router.route("/blocks/delete/").post(deleteBlockController)
 
 export default router;
