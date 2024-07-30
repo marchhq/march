@@ -1,12 +1,7 @@
 import { Schema } from "mongoose";
-import { v4 as uuid } from "uuid";
 import { Block } from "../lib/block.model.js";
 
 const noteBlockSchema = new Schema({
-    uuid: {
-        type: String,
-        default: () => uuid()
-    },
     name: {
         type: String,
         default: ''
