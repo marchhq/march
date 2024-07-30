@@ -62,9 +62,22 @@ const getBlock = async (user, id) => {
     return block;
 };
 
+const updateBlock = async (updateData) => {
+    console.log("sajd: ", updateData);
+    const updatedBlock = await Block.findByIdAndUpdate({
+        _id: updateData.id
+    },
+    { $set: updateData },
+    { new: true }
+    )
+
+    return updatedBlock;
+};
+
 export {
     createBlock,
     getBlocks,
     deleteBlock,
-    getBlock
+    getBlock,
+    updateBlock
 };
