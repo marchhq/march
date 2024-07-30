@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserItemsController, getUserTodayItemsController, getUserOverdueItemsController, getUserItemsByDateControlle } from "../../controllers/core/user.controller.js";
+import { getUserItemsController, getUserTodayItemsController, getUserOverdueItemsController, getUserItemsByDateControlle, moveItemtoDateController } from "../../controllers/core/user.controller.js";
 import { createPageController, getPagesController, getPageController, updatePageController } from "../../controllers/lib/page.controller.js";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController } from "../../controllers/lib/journal.controller.js";
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
@@ -14,6 +14,7 @@ router.route("/my/").get(getUserItemsController)
 router.route("/my/today/").get(getUserTodayItemsController)
 router.route("/my/overdue/").get(getUserOverdueItemsController)
 router.route("/my/:date/").get(getUserItemsByDateControlle)
+router.route("/setDate/").post(moveItemtoDateController)
 
 // space controllers
 router.route("/spaces/create/").post(createPageController)
