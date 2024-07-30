@@ -16,6 +16,14 @@ const createBlock = async (user, blockData) => {
         });
         break;
     }
+    case 'list': {
+        block = new Block({
+            name: "List",
+            user,
+            data: { ...blockData.data }
+        });
+        break;
+    }
     default:
         throw new Error('Invalid block type');
     }
