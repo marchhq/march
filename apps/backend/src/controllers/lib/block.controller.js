@@ -1,4 +1,4 @@
-import { createBlock, getBlocks } from "../../services/lib/block.service.js";
+import { createBlock, getBlocks, deleteBlock } from "../../services/lib/block.service.js";
 
 const createBlockController = async (req, res, next) => {
     try {
@@ -31,7 +31,23 @@ const getBlocksController = async (req, res, next) => {
     }
 };
 
+const deleteBlockController = async (req, res, next) => {
+    try {
+        const { id } = req.body;
+        const block = await deleteBlock(id);
+
+        res.status(200).json({
+            status: 200,
+            message: 'block deleted successfully',
+            block
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createBlockController,
-    getBlocksController
+    getBlocksController,
+    deleteBlockController
 }
