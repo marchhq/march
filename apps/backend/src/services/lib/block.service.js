@@ -53,8 +53,18 @@ const deleteBlock = async (id) => {
     return block;
 };
 
+const getBlock = async (user, id) => {
+    const block = await Block.find({
+        uuid: id,
+        user
+    })
+
+    return block;
+};
+
 export {
     createBlock,
     getBlocks,
-    deleteBlock
+    deleteBlock,
+    getBlock
 };
