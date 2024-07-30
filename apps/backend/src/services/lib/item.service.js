@@ -1,3 +1,4 @@
+import { Integration } from "../../models/integration/integration.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import moment from 'moment-timezone';
 
@@ -16,13 +17,10 @@ const getUserItems = async (me) => {
 const getUserTodayItems = async (me) => {
     // const today = new Date();
     const startOfDay = moment().startOf('day');
-    const items = await Item.find({
+    const items = await Integration.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lt: moment().endOf('day') },
-        isArchived: false,
-        isDeleted: false
+        date: { $gte: startOfDay, $lt: moment().endOf('day') }
     })
-        .sort({ created_at: -1 });
 
     return items;
 }
