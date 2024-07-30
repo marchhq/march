@@ -25,13 +25,26 @@ const createBlock = async (user, blockData) => {
         break;
     }
     default:
-        throw new Error('Invalid block type');
+        block = new Block({
+            name: type.capitalize(),
+            user,
+            data: { ...blockData.data }
+        });
     }
 
     await block.save();
     return block;
 };
 
+const getBlocks = async (user) => {
+    const blocks = await Block.find({
+        user
+    })
+
+    return blocks;
+};
+
 export {
-    createBlock
+    createBlock,
+    getBlocks
 };
