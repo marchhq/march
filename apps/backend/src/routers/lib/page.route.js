@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { getUserItemsController, getUserTodayItemsController, getUserOverdueItemsController, getUserItemsByDateControlle } from "../../controllers/core/user.controller.js";
+import { getUserItemsController, getUserTodayItemsController, getUserOverdueItemsController, getUserItemsByDateControlle, moveItemtoDateController } from "../../controllers/core/user.controller.js";
 import { createPageController, getPagesController, getPageController, updatePageController } from "../../controllers/lib/page.controller.js";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController } from "../../controllers/lib/journal.controller.js";
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
 import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
 import { createRecordController, getRecordsController, getRecordController, updateRecordController } from "../../controllers/lib/record.controller.js";
-import { createBlockController } from "../../controllers/lib/block.controller.js";
+import { createBlockController, getBlocksController, deleteBlockController, getBlockController } from "../../controllers/lib/block.controller.js";
 
 const router = Router();
 
@@ -14,6 +14,7 @@ router.route("/my/").get(getUserItemsController)
 router.route("/my/today/").get(getUserTodayItemsController)
 router.route("/my/overdue/").get(getUserOverdueItemsController)
 router.route("/my/:date/").get(getUserItemsByDateControlle)
+router.route("/setDate/").post(moveItemtoDateController)
 
 // space controllers
 router.route("/spaces/create/").post(createPageController)
@@ -47,5 +48,8 @@ router.route("/notes/delete/").post(deleteNoteController)
 
 // Block controllers
 router.route("/blocks/create/").post(createBlockController)
+router.route("/blocks/overview/").get(getBlocksController)
+router.route("/blocks/:block/").get(getBlockController)
+router.route("/blocks/delete/").post(deleteBlockController)
 
 export default router;

@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { getUserTodayItems, getUserOverdueItems, getUserItemsByDate } from "../../services/lib/item.service.js";
 
-import { getIntegration } from "../../services/lib/integration.service.js";
+import { getIntegration, moveItemtoDate } from "../../services/lib/integration.service.js";
 
 const { ValidationError } = Joi;
 
@@ -109,6 +109,21 @@ const getUserItemsByDateControlle = async (req, res, next) => {
         next(err);
     }
 };
+const moveItemtoDateController = async (req, res, next) => {
+    try {
+        // const me = req.user.id;
+        const { id, date } = req.body;
+        const items = await moveItemtoDate(date, id);
+        res.json({
+            status: 200,
+            response: {
+                items
+            }
+        });
+    } catch (err) {
+        next(err);
+    }
+};
 
 export {
     userProfileController,
@@ -116,5 +131,6 @@ export {
     getUserItemsController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
-    getUserItemsByDateControlle
+    getUserItemsByDateControlle,
+    moveItemtoDateController
 }

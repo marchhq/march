@@ -13,6 +13,9 @@ const integrationSchema = new Schema({
     type: {
         type: String
     },
+    date: {
+        type: Date
+    },
     url: {
         type: String
     },
