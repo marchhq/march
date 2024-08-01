@@ -15,6 +15,11 @@
   "dependencies": {
     "@clerk/nextjs": "^5.2.4",
     "@clerk/themes": "^2.1.14",
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
     "@phosphor-icons/react": "^2.1.7",
     "@tanstack/react-query": "^5.51.9",
     "@tiptap/extension-link": "^2.5.4",
