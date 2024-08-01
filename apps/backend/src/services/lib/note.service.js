@@ -46,7 +46,7 @@ const updateNote = async (updateData) => {
 };
 
 const deleteNote = async (noteId) => {
-    const note = await Note.findByIdAndDelete(noteId);
+    const note = await Note.findOneAndDelete({ uuid: noteId });
 
     if (!note) {
         throw new Error('Note not found');

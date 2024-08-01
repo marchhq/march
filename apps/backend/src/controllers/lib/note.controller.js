@@ -66,7 +66,7 @@ const updateNoteController = async (req, res, next) => {
 
 const deleteNoteController = async (req, res, next) => {
     try {
-        const { id } = req.body;
+        const { note: id } = req.params;
         await deleteNote(id);
 
         res.status(200).json({

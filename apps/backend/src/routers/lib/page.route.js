@@ -44,7 +44,7 @@ router.route("/notes/create/").post(createNoteController)
 router.route("/notes/overview/").get(getNotesController)
 router.route("/notes/:note/").get(getNoteController)
 router.route("/notes/update/").post(updateNoteController)
-router.route("/notes/delete/").post(deleteNoteController)
+router.route("/notes/:note/").delete(deleteNoteController)
 
 // Block controllers
 router.route("/blocks/create/").post(createBlockController)
