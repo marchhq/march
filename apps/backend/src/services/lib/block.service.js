@@ -45,7 +45,7 @@ const getBlocks = async (user) => {
 };
 
 const deleteBlock = async (id) => {
-    const block = await Block.findByIdAndDelete(id);
+    const block = await Block.findOneAndDelete({ uuid: id });
 
     if (!block) {
         throw new Error('Note not found');
