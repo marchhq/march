@@ -2,25 +2,26 @@
 import * as React from "react"
 
 import { ArrowLeft, ArrowRight, MoonStars } from "@phosphor-icons/react"
-import { addDays, getDate, subDays } from "date-fns"
+import { getDate } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
 
 import Editor from "./atoms/Editor"
 import Button from "@/components/atoms/Button"
-import {
-  getOrdinalSuffix,
-  getMonthName,
-  formatDate,
-  getDayPhase,
-} from "@/utils/datetime"
+import { getOrdinalSuffix, getMonthName, getDayPhase } from "@/utils/datetime"
 
 interface Props {
+  dateChangeCounter: number
   currentDate: Date
   prevDay: () => void
   nextDay: () => void
 }
 
-const DayTasks: React.FC<Props> = ({ currentDate, prevDay, nextDay }) => {
+const DayTasks: React.FC<Props> = ({
+  dateChangeCounter,
+  currentDate,
+  prevDay,
+  nextDay,
+}) => {
   const [content, setContent] = React.useState(`<ul data-type="taskList">
           <li data-type="taskItem" data-checked="false">Today Page</li>
           <li data-type="taskItem" data-checked="false">Inbox Page</li>
@@ -45,7 +46,7 @@ const DayTasks: React.FC<Props> = ({ currentDate, prevDay, nextDay }) => {
             initial={{ opacity: 0, translateX: 10 }}
             animate={{ opacity: 1, translateX: 0 }}
             exit={{ opacity: 0, translateX: -10 }}
-            key={formatDate(currentDate)}
+            key={dateChangeCounter}
           >
             <div className="flex items-end gap-2">
               <p className="text-4xl text-zinc-300">
