@@ -62,10 +62,9 @@ const getBlock = async (user, id) => {
     return block;
 };
 
-const updateBlock = async (updateData) => {
-    console.log("sajd: ", updateData);
-    const updatedBlock = await Block.findByIdAndUpdate({
-        _id: updateData.id
+const updateBlock = async (id, updateData) => {
+    const updatedBlock = await Block.findOneAndUpdate({
+        uuid: id
     },
     { $set: updateData },
     { new: true }

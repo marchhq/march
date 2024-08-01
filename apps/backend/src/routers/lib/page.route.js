@@ -50,7 +50,7 @@ router.route("/notes/delete/").post(deleteNoteController)
 router.route("/blocks/create/").post(createBlockController)
 router.route("/blocks/overview/").get(getBlocksController)
 router.route("/blocks/:block/").get(getBlockController)
-router.route("/blocks/update/").post(updateBlockController)
-router.route("/blocks/:block/").delete(deleteBlockController) //
+router.route("/blocks/:block/").put(updateBlockController)
+router.route("/blocks/:block/").delete(deleteBlockController)
 
 export default router;
