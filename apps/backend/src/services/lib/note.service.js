@@ -34,9 +34,9 @@ const getNote = async (user, id) => {
     return note;
 };
 
-const updateNote = async (updateData) => {
-    const updatedNote = await Note.findByIdAndUpdate({
-        _id: updateData.id
+const updateNote = async (id, updateData) => {
+    const updatedNote = await Note.findOneAndUpdate({
+        uuid: id
     },
     { $set: updateData },
     { new: true }
