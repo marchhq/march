@@ -37,7 +37,7 @@ router.route("/journals/overview/").get(getUserAllJournalsController)
 router.route("/items/create/").post(createItemController)
 router.route("/items/overview/").get(getItemsController)
 router.route("/items/:item/").get(getItemController)
-router.route("/items/update/").post(updateItemController)
+router.route("/items/:item/").put(updateItemController)
 
 // note controllers
 router.route("/notes/create/").post(createNoteController)
