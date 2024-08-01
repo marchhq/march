@@ -33,7 +33,7 @@ const getBlocksController = async (req, res, next) => {
 
 const deleteBlockController = async (req, res, next) => {
     try {
-        const { id } = req.body;
+        const { block: id } = req.params;
         const block = await deleteBlock(id);
 
         res.status(200).json({
