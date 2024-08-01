@@ -52,8 +52,9 @@ const getNoteController = async (req, res, next) => {
 
 const updateNoteController = async (req, res, next) => {
     try {
+        const { note: id } = req.params;
         const updateData = req.body;
-        const note = await updateNote(updateData);
+        const note = await updateNote(id, updateData);
 
         res.status(200).json({
             status: 200,
