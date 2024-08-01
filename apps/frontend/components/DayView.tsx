@@ -11,13 +11,30 @@ import {
 } from "@/components/atoms/Resizable"
 import Calendar from "@/components/Calendar"
 
+const todayStr = new Date().toISOString().replace(/T.*$/, "") // YYYY-MM-DD of today
+const INITIAL_EVENTS = [
+  {
+    id: "1",
+    title: "All-day event",
+    start: todayStr,
+  },
+  {
+    id: "2",
+    title: "Timed event",
+    start: todayStr + "T12:00:00",
+  },
+]
+
 const DayView: React.FC = () => {
+  const [dateChangeCounter, setDateChangeCounter] = React.useState(0) // used to remount the element when date is changed for Animation
   const [currentDate, setCurrentDate] = React.useState(new Date())
   const prevDay = (): void => {
     setCurrentDate(subDays(currentDate, 1))
+    setDateChangeCounter(dateChangeCounter + 1)
   }
   const nextDay = (): void => {
     setCurrentDate(addDays(currentDate, 1))
+    setDateChangeCounter(dateChangeCounter + 1)
   }
 
   return (
@@ -27,11 +44,12 @@ const DayView: React.FC = () => {
           currentDate={currentDate}
           prevDay={prevDay}
           nextDay={nextDay}
+          dateChangeCounter={dateChangeCounter}
         />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <Calendar currentDate={currentDate} />
+        <Calendar currentDate={currentDate} initialEvents={INITIAL_EVENTS} />
       </ResizablePanel>
     </ResizablePanelGroup>
   )

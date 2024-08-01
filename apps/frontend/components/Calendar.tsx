@@ -11,25 +11,12 @@ const createEventId = (): string => {
   return String(eventGuid++)
 }
 
-const todayStr = new Date().toISOString().replace(/T.*$/, "") // YYYY-MM-DD of today
-const INITIAL_EVENTS = [
-  {
-    id: createEventId(),
-    title: "All-day event",
-    start: todayStr,
-  },
-  {
-    id: createEventId(),
-    title: "Timed event",
-    start: todayStr + "T12:00:00",
-  },
-]
-
 interface Props {
   currentDate: Date
+  initialEvents: any[]
 }
 
-const DayCalendar: React.FC<Props> = ({ currentDate }) => {
+const DayCalendar: React.FC<Props> = ({ currentDate, initialEvents }) => {
   const [currentEvents, setCurrentEvents] = React.useState<EventApi[]>([])
 
   const handleDateSelect = (selectInfo): void => {
@@ -64,20 +51,22 @@ const DayCalendar: React.FC<Props> = ({ currentDate }) => {
   }
 
   return (
-    <section className="h-full rounded-lg border border-white/10 bg-white/10 px-6 py-5 shadow-lg backdrop-blur-lg">
+    <section className="h-full overflow-hidden rounded-lg border border-white/10 bg-white/10 shadow-lg backdrop-blur-lg">
       <FullCalendar
         plugins={[timeGridPlugin, interactionPlugin]}
-        headerToolbar={{
-          left: "prev,next",
-          right: "today",
-        }}
+        headerToolbar={false}
+        // headerToolbar={{
+        //   left: "prev,next",
+        //   right: "today",
+        // }}
         initialView="timeGridDay"
+        initialDate={currentDate}
         editable={true}
         selectable={true}
         selectMirror={true}
         dayMaxEvents={true}
         weekends={true}
-        initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+        initialEvents={initialEvents} // alternatively, use the `events` setting to fetch from a feed
         select={handleDateSelect}
         eventContent={renderEventContent}
         eventClick={handleEventClick}
@@ -94,10 +83,10 @@ const DayCalendar: React.FC<Props> = ({ currentDate }) => {
 
 const renderEventContent = (eventInfo): React.ReactNode => {
   return (
-    <>
+    <span className="flex gap-1 p-1">
       <b>{eventInfo.timeText}</b>
       <span>{eventInfo.event.title}</span>
-    </>
+    </span>
   )
 }
 
