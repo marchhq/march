@@ -66,8 +66,9 @@ const getBlockController = async (req, res, next) => {
 const updateBlockController = async (req, res, next) => {
     try {
         const updateData = req.body;
+        const { block: id } = req.params;
 
-        const block = await updateBlock(updateData);
+        const block = await updateBlock(id, updateData);
 
         res.status(200).json({
             status: 200,
