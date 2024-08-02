@@ -31,9 +31,9 @@ const NotesPage: React.FC = () => {
           <div className="mt-12 flex flex-col gap-y-6">
             {notes.map((note) => (
               <div key={note}>
-                <div className="flex items-center justify-start gap-x-4 text-zinc-300">
+                <div className="flex items-center justify-start gap-x-4 text-sm text-zinc-300">
                   <Notepad size={24} weight="duotone" />
-                  <p>Lorem ipsum dolor sit amet consectetur adipisicing el</p>
+                  <p>Lorem ipsum dolor sit amet constur adipisicing el</p>
                 </div>
                 <p className="ml-8 mt-1 text-xs text-zinc-500">
                   Edited 2 minutes ago.
