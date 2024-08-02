@@ -48,7 +48,7 @@ const DayView: React.FC = () => {
         />
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel minSize={30}>
+      <ResizablePanel defaultSize={40} minSize={30}>
         <Calendar currentDate={currentDate} initialEvents={INITIAL_EVENTS} />
       </ResizablePanel>
     </ResizablePanelGroup>
