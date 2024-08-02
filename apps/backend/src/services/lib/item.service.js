@@ -89,9 +89,9 @@ const getItem = async (user, id) => {
     return item;
 };
 
-const updateItem = async (updateData) => {
-    const updatedItem = await Item.findByIdAndUpdate({
-        _id: updateData.id
+const updateItem = async (id, updateData) => {
+    const updatedItem = await Item.findOneAndUpdate({
+        uuid: id
     },
     { $set: updateData },
     { new: true }
