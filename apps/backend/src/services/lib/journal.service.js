@@ -1,4 +1,3 @@
-import moment from "moment-timezone";
 import { Journal } from "../../models/lib/journal.model.js";
 
 const createUpdateJournal = async (journalDate, content, user) => {
@@ -28,8 +27,14 @@ const getUserAllJournals = async (user) => {
 }
 
 const getUserTodayJournal = async (user) => {
-    const today = moment().startOf('day');
-    const journal = await Journal.findOne({ date: today, user });
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const journal = await Journal.findOne({
+        date: { $gte: startOfDay, $lte: endOfDay },
+        user
+    });
     if (!journal) {
         return null;
     }

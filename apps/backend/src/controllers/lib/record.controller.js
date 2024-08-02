@@ -49,8 +49,9 @@ const getRecordController = async (req, res, next) => {
 
 const updateRecordController = async (req, res, next) => {
     try {
+        const { record: id } = req.params
         const updateData = req.body;
-        const record = await updateRecord(updateData);
+        const record = await updateRecord(id, updateData);
 
         res.status(200).json({
             status: 200,
