@@ -38,9 +38,9 @@ const getRecord = async (user, id) => {
     return record;
 };
 
-const updateRecord = async (updateData) => {
-    const updatedRecord = await Record.findByIdAndUpdate({
-        _id: updateData.id
+const updateRecord = async (id, updateData) => {
+    const updatedRecord = await Record.findOneAndUpdate({
+        uuid: id
     },
     { $set: updateData },
     { new: true }
