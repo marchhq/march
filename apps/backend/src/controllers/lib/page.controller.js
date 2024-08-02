@@ -35,7 +35,7 @@ const getPagesController = async (req, res, next) => {
 const getPageController = async (req, res, next) => {
     try {
         const user = req.auth.userId;
-        const { page: id } = req.params;
+        const { space: id } = req.params;
 
         const page = await getPage(user, id);
 
@@ -50,8 +50,9 @@ const getPageController = async (req, res, next) => {
 
 const updatePageController = async (req, res, next) => {
     try {
+        const { space: id } = req.params;
         const updateData = req.body;
-        const page = await updatePage(updateData);
+        const page = await updatePage(id, updateData);
 
         res.status(200).json({
             status: 200,
