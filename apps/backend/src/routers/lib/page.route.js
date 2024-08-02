@@ -20,7 +20,7 @@ router.route("/setDate/").post(moveItemtoDateController)
 router.route("/spaces/create/").post(createPageController)
 router.route("/spaces/overview/").get(getPagesController)
 router.route("/spaces/:space/").get(getPageController)
-router.route("/spaces/update/").post(updatePageController)
+router.route("/spaces/:space/").put(updatePageController)
 
 // rocord controllers
 router.route("/records/create/").post(createRecordController)
