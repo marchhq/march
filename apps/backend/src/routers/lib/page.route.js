@@ -26,11 +26,12 @@ router.route("/spaces/update/").post(updatePageController)
 router.route("/records/create/").post(createRecordController)
 router.route("/records/overview/").get(getRecordsController)
 router.route("/records/:record/").get(getRecordController)
-router.route("/records/update/").post(updateRecordController)
+router.route("/records/:record/").put(updateRecordController)
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController)
 router.route("/journals/today/").get(getUserTodayJournalController)
+// todo: added a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController)
 
 // item controllers
