@@ -35,7 +35,7 @@ const NotesPage: React.FC = () => {
                   <Notepad size={24} weight="duotone" />
                   <p>Lorem ipsum dolor sit amet consectetur adipisicing el</p>
                 </div>
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="ml-8 mt-1 text-xs text-zinc-500">
                   Edited 2 minutes ago.
                 </p>
               </div>
