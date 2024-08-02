@@ -1,6 +1,8 @@
-"use client";
+"use client"
 
 import React from "react"
+
+import { Notepad } from "@phosphor-icons/react"
 
 import {
   ResizableHandle,
@@ -8,7 +10,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/atoms/Resizable"
 import PageSection from "@/components/PageSection"
-import { Notepad } from "@phosphor-icons/react"
 
 const NotesPage: React.FC = () => {
   const notes = [1, 2, 3, 4]
@@ -24,7 +25,7 @@ const NotesPage: React.FC = () => {
         </div>
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel minSize={25}>
+      <ResizablePanel defaultSize={25} minSize={25}>
         <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 p-5 shadow-lg backdrop-blur-lg">
           <div className="px-3 font-semibold text-zinc-300">Notes</div>
           <div className="mt-12 flex flex-col gap-y-6">
@@ -34,7 +35,9 @@ const NotesPage: React.FC = () => {
                   <Notepad size={24} weight="duotone" />
                   <p>Lorem ipsum dolor sit amet consectetur adipisicing el</p>
                 </div>
-                <p className="mt-1 text-zinc-500 text-xs">Edited 2 minutes ago.</p>
+                <p className="mt-1 text-xs text-zinc-500">
+                  Edited 2 minutes ago.
+                </p>
               </div>
             ))}
           </div>
