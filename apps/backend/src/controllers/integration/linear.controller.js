@@ -1,5 +1,6 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues, getOverdueLinearIssues, getLinearIssuesByDate } from "../../services/integration/linear.service.js";
+import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues, getOverdueLinearIssues, getLinearIssuesByDate, verifyLinearWebhook, handleWebhookEvent } from "../../services/integration/linear.service.js";
+import * as crypto from "crypto";
 
 // const redirectLinearOAuthLoginController = (req, res, next) => {
 //     try {
@@ -103,11 +104,29 @@ const getLinearIssuesByDateController = async (req, res, next) => {
     }
 };
 
+const handleWebhook = async (req, res, next) => {
+    const rawBody = req.body.toString();
+    const payload = JSON.parse(rawBody);
+    const signature = crypto.createHmac("sha256", environment.LINER_WEBHOOK_SECRET).update(rawBody).digest("hex");
+    if (signature !== req.headers['linear-signature']) {
+        res.sendStatus(400);
+        return
+    }
+
+    try {
+        await handleWebhookEvent(payload);
+        res.status(200).send('Webhook event processed');
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
+}
+
 export {
     redirectLinearOAuthLoginController,
     getAccessTokenController,
     getMyLinearIssuesController,
     getTodayLinearIssuesController,
     getOverdueLinearIssuesController,
-    getLinearIssuesByDateController
+    getLinearIssuesByDateController,
+    handleWebhook
 }

@@ -18,6 +18,7 @@ export const environment = {
     CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     TOPIC_NAME: process.env.TOPIC_NAME,
+    LINER_WEBHOOK_SECRET: process.env.LINER_WEBHOOK_SECRET,
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_ID: process.env.GITHUB_APP_ID,
     NGROK_AUTH_TOKEN: process.env.NGROK_AUTH_TOKEN
