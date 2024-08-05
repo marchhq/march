@@ -5,10 +5,15 @@ import { environment } from "./loaders/environment.loader.js";
 import { initRoutes } from "./routers/index.js";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 // import { processGmailNotification } from "./controllers/integration/email.controller.js";
+import { handleWebhook } from "./controllers/integration/linear.controller.js";
+import bodyParser from "body-parser"
 
 const { ValidationError } = Joi;
 const app = express();
 app.use(cors());
+
+app.use('/linear/webhook', bodyParser.raw({ type: 'application/json' }));
+
 
 app.use(express.json());
 app.use(
@@ -18,6 +23,7 @@ app.use(
 );
 
 // app.post("/gmail/webhook", processGmailNotification);
+app.post("/linear/webhook", handleWebhook);
 
 app.use(ClerkExpressRequireAuth());
 // app.use(ClerkExpressWithAuth());

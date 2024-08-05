@@ -329,11 +329,23 @@ const getLinearIssuesByDate = async (id, date) => {
     return response.data.data.issues.nodes;
 };
 
+const verifyLinearWebhook = (secret, signature, payload) => {
+    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    return hash === signature;
+};
+
+const handleWebhookEvent = (secret, signature, payload) => {
+    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    return hash === signature;
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
     getMyLinearIssues,
     getTodayLinearIssues,
     getOverdueLinearIssues,
-    getLinearIssuesByDate
+    getLinearIssuesByDate,
+    verifyLinearWebhook,
+    handleWebhookEvent
 }
