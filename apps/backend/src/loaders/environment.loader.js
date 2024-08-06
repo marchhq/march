@@ -21,5 +21,10 @@ export const environment = {
     LINER_WEBHOOK_SECRET: process.env.LINER_WEBHOOK_SECRET,
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_ID: process.env.GITHUB_APP_ID,
-    NGROK_AUTH_TOKEN: process.env.NGROK_AUTH_TOKEN
+    NGROK_AUTH_TOKEN: process.env.NGROK_AUTH_TOKEN,
+    REDIS_DB_NAME: process.env.REDIS_HOST,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
+    REDIS_DB_USER: process.env.REDIS_DB_USER,
+    REDIS_DB_PASS: process.env.REDIS_DB_PASS
 }
