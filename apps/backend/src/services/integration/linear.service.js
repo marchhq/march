@@ -334,9 +334,72 @@ const verifyLinearWebhook = (secret, signature, payload) => {
     return hash === signature;
 };
 
-const handleWebhookEvent = (secret, signature, payload) => {
-    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
-    return hash === signature;
+// need to improve it
+const handleWebhookEvent = async (payload) => {
+    const issue = payload.data;
+
+    if (!issue.assignee || !issue.assignee.id) {
+        return;
+    }
+
+    const response = await clerk.users.getUserList({ limit: 100 });
+    const users = response.data;
+
+    const user = users.find(user => user.privateMetadata.integration?.linear?.userId === issue.assignee.id);
+    if (!user) {
+        console.log('No user found with the matching Linear userId.');
+        return;
+    }
+    const userId = user.id;
+    console.log('User ID:', userId);
+
+    // Check if the issue already exists
+    const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue' });
+    if (existingIssue) {
+        // existingIssue.title = issue.title;
+        // existingIssue.metadata.description = issue.description;
+        // existingIssue.metadata.labels = issue.labels;
+        // existingIssue.metadata.state = issue.state;
+        // existingIssue.metadata.priority = issue.priority;
+        // existingIssue.metadata.project = issue.project;
+        // existingIssue.metadata.dueDate = issue.dueDate;
+        // existingIssue.updatedAt = issue.updatedAt;
+
+        // await existingIssue.save();
+        // console.log("saju: ", existingIssue);
+        const updatedIssue = await Integration.findByIdAndUpdate(existingIssue._id, {
+            title: issue.title,
+            'metadata.description': issue.description,
+            'metadata.labels': issue.labels,
+            'metadata.state': issue.state,
+            'metadata.priority': issue.priority,
+            'metadata.project': issue.project,
+            'metadata.dueDate': issue.dueDate,
+            updatedAt: issue.updatedAt
+        }, { new: true });
+
+        console.log("Updated issue: ", updatedIssue);
+    } else {
+        const newIssue = new Integration({
+            title: issue.title,
+            type: 'linearIssue',
+            id: issue.id,
+            user: userId,
+            url: issue.url,
+            metadata: {
+                description: issue.description,
+                labels: issue.labels,
+                state: issue.state,
+                priority: issue.priority,
+                project: issue.project,
+                dueDate: issue.dueDate
+            },
+            createdAt: issue.createdAt,
+            updatedAt: issue.updatedAt
+        });
+
+        await newIssue.save();
+    }
 };
 
 export {
