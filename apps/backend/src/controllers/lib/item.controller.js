@@ -19,8 +19,9 @@ const createItemController = async (req, res, next) => {
 
 const updateItemController = async (req, res, next) => {
     try {
+        const { item: id } = req.params;
         const updateData = req.body;
-        const item = await updateItem(updateData);
+        const item = await updateItem(id, updateData);
 
         res.status(200).json({
             status: 200,

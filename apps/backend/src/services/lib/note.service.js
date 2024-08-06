@@ -34,9 +34,9 @@ const getNote = async (user, id) => {
     return note;
 };
 
-const updateNote = async (updateData) => {
-    const updatedNote = await Note.findByIdAndUpdate({
-        _id: updateData.id
+const updateNote = async (id, updateData) => {
+    const updatedNote = await Note.findOneAndUpdate({
+        uuid: id
     },
     { $set: updateData },
     { new: true }
@@ -46,7 +46,7 @@ const updateNote = async (updateData) => {
 };
 
 const deleteNote = async (noteId) => {
-    const note = await Note.findByIdAndDelete(noteId);
+    const note = await Note.findOneAndDelete({ uuid: noteId });
 
     if (!note) {
         throw new Error('Note not found');
