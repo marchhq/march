@@ -1,5 +1,5 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues, getOverdueLinearIssues, getLinearIssuesByDate, verifyLinearWebhook, handleWebhookEvent } from "../../services/integration/linear.service.js";
+import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues, getOverdueLinearIssues, getLinearIssuesByDate, fetchAssignedIssues, verifyLinearWebhook, handleWebhookEvent, saveIssuesToDatabase } from "../../services/integration/linear.service.js";
 import * as crypto from "crypto";
 
 // const redirectLinearOAuthLoginController = (req, res, next) => {
@@ -30,7 +30,9 @@ const getAccessTokenController = async (req, res, next) => {
     const user = req.auth.userId
     try {
         const accessToken = await getAccessToken(code, user);
-        await fetchUserInfo(accessToken, user);
+        const userInfo = await fetchUserInfo(accessToken, user);
+        const issues = await fetchAssignedIssues(accessToken, userInfo.id);
+        await saveIssuesToDatabase(issues, user);
 
         res.status(200).json({
             statusCode: 200,
@@ -110,7 +112,7 @@ const handleWebhook = async (req, res, next) => {
     const signature = crypto.createHmac("sha256", environment.LINER_WEBHOOK_SECRET).update(rawBody).digest("hex");
     if (signature !== req.headers['linear-signature']) {
         res.sendStatus(400);
-        return
+        return;
     }
 
     try {
