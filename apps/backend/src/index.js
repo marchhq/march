@@ -6,14 +6,13 @@ import { initRoutes } from "./routers/index.js";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 // import { processGmailNotification } from "./controllers/integration/email.controller.js";
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
-import bodyParser from "body-parser"
+import bodyParser from "body-parser";
 
 const { ValidationError } = Joi;
 const app = express();
 app.use(cors());
 
 app.use('/linear/webhook', bodyParser.raw({ type: 'application/json' }));
-
 
 app.use(express.json());
 app.use(

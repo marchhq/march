@@ -7,7 +7,6 @@
 //     })
 // })()
 
-
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
 import ngrok from '@ngrok/ngrok'
@@ -24,5 +23,4 @@ const PORT = 8080;
             console.error('Error starting ngrok:', error);
         }
     });
-
 })()
