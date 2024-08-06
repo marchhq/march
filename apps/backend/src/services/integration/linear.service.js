@@ -20,7 +20,6 @@ const getAccessToken = async (code, user) => {
         });
 
         const accessToken = tokenResponse.data.access_token;
-        console.log("saj: ", accessToken);
         await clerk.users.updateUserMetadata(user, {
             privateMetadata: {
                 integration: {
@@ -59,7 +58,6 @@ const fetchUserInfo = async (linearToken, user) => {
             }
         });
         const userInfo = response.data.data.viewer
-        // console.log("sajda: ", userInfo);
         await clerk.users.updateUserMetadata(user, {
             privateMetadata: {
                 integration: {
@@ -70,8 +68,6 @@ const fetchUserInfo = async (linearToken, user) => {
             }
         });
 
-        // user.integration.linear.userId = userInfo.id;
-        // await user.save();
         return userInfo;
     } catch (error) {
         console.error('Error fetching user info:', error);
@@ -79,46 +75,97 @@ const fetchUserInfo = async (linearToken, user) => {
     }
 };
 
-// const fetchUserInfo = async (linearToken, user) => {
-//     try {
-//         const response = await axios.post('https://api.linear.app/graphql', {
-//             query: `
-//                 query {
-//                     users {
-//                         nodes {
-//                             id
-//                             name
-//                             email
-//                         }
-//                     }
-//                 }
-//             `
-//         }, {
-//             headers: {
-//                 Authorization: `Bearer ${linearToken}`,
-//                 'Content-Type': 'application/json'
-//             }
-//         });
+const saveIssuesToDatabase = async (issues, userId) => {
+    try {
+        const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
+        for (const issue of filteredIssues) {
+            const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue', user: userId });
 
-//         const members = response.data.data.users.nodes;
+            if (existingIssue) {
+                existingIssue.title = issue.title;
+                existingIssue.metadata.description = issue.description;
+                existingIssue.metadata.labels = issue.labels;
+                existingIssue.metadata.state = issue.state.name;
+                existingIssue.metadata.priority = issue.priority;
+                existingIssue.metadata.project = issue.project;
+                existingIssue.metadata.dueDate = issue.dueDate;
+                existingIssue.updatedAt = issue.updatedAt;
 
-//         const userEmail = user.accounts.google.email || user.accounts.local.email;
+                await existingIssue.save();
+            } else {
+                const newIssue = new Integration({
+                    title: issue.title,
+                    type: 'linearIssue',
+                    id: issue.id,
+                    user: userId,
+                    url: issue.url,
+                    metadata: {
+                        description: issue.description,
+                        labels: issue.labels,
+                        state: issue.state,
+                        priority: issue.priority,
+                        project: issue.project,
+                        dueDate: issue.dueDate
+                    },
+                    createdAt: issue.createdAt,
+                    updatedAt: issue.updatedAt
+                });
 
-//         const matchedMember = members.find(member => member.email === userEmail);
+                await newIssue.save();
+            }
+        }
+    } catch (error) {
+        console.error('Error saving issues to database:', error);
+        throw error;
+    }
+};
 
-//         if (matchedMember) {
-//             user.integration.linear.userId = matchedMember.id;
-//             await user.save();
-//         } else {
-//             throw new Error("No matching Linear member found for the user.");
-//         }
+const fetchAssignedIssues = async (linearToken, linearUserId) => {
+    const response = await axios.post('https://api.linear.app/graphql', {
+        query: `
+    query {
+            issues(filter: { assignee: { id: { eq: "${linearUserId}" } } }) {
+                nodes {
+                    id
+                    title
+                    description
+                    state {
+                        id
+                        name
+                    }
+                    labels {
+                        nodes {
+                            id
+                            name
+                        }
+                    }
+                    dueDate
+                    createdAt
+                    updatedAt
+                    priority
+                    project {
+                        id
+                        name
+                    }
+                    assignee {
+                        id
+                        name
+                    }
+                    url
+                }
+            }
+        }
+    `
+    }, {
+        headers: {
+            Authorization: `Bearer ${linearToken}`,
+            'Content-Type': 'application/json'
+        }
+    });
 
-//         return matchedMember;
-//     } catch (error) {
-//         console.error('Error fetching user info:', error);
-//         throw error;
-//     }
-// };
+    const issues = response.data.data.issues.nodes;
+    return issues;
+};
 
 const getMyLinearIssues = async (id) => {
     const user = await clerk.users.getUser(id);
@@ -175,27 +222,27 @@ const getMyLinearIssues = async (id) => {
     const issues = response.data.data.issues.nodes;
 
     // Save issues to MongoDB
-    for (const issue of issues) {
-        const integration = new Integration({
-            title: issue.title,
-            type: 'linearIssue',
-            id: issue.id,
-            user: id,
-            url: issue.url,
-            metadata: {
-                description: issue.description,
-                labels: issue.labels,
-                state: issue.state,
-                priority: issue.priority,
-                project: issue.project,
-                dueDate: issue.dueDate
-            },
-            createdAt: issue.createdAt,
-            updatedAt: issue.updatedAt
-        });
+    // for (const issue of issues) {
+    //     const integration = new Integration({
+    //         title: issue.title,
+    //         type: 'linearIssue',
+    //         id: issue.id,
+    //         user: id,
+    //         url: issue.url,
+    //         metadata: {
+    //             description: issue.description,
+    //             labels: issue.labels,
+    //             state: issue.state,
+    //             priority: issue.priority,
+    //             project: issue.project,
+    //             dueDate: issue.dueDate
+    //         },
+    //         createdAt: issue.createdAt,
+    //         updatedAt: issue.updatedAt
+    //     });
 
-        await integration.save();
-    }
+    //     await integration.save();
+    // }
 
     return issues;
 };
@@ -329,11 +376,69 @@ const getLinearIssuesByDate = async (id, date) => {
     return response.data.data.issues.nodes;
 };
 
+// need to improve it base so webhook type
+const handleWebhookEvent = async (payload) => {
+    const issue = payload.data;
+
+    if (!issue.assignee || !issue.assignee.id) {
+        return;
+    }
+
+    const response = await clerk.users.getUserList({ limit: 100 });
+    const users = response.data;
+
+    const user = users.find(user => user.privateMetadata.integration?.linear?.userId === issue.assignee.id);
+    if (!user) {
+        console.log('No user found with the matching Linear userId.');
+        return;
+    }
+    const userId = user.id;
+    console.log('User ID:', userId);
+
+    // Check if the issue already exists
+    const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue' });
+    if (existingIssue) {
+        await Integration.findByIdAndUpdate(existingIssue._id, {
+            title: issue.title,
+            'metadata.description': issue.description,
+            'metadata.labels': issue.labels,
+            'metadata.state': issue.state,
+            'metadata.priority': issue.priority,
+            'metadata.project': issue.project,
+            'metadata.dueDate': issue.dueDate,
+            updatedAt: issue.updatedAt
+        }, { new: true });
+    } else {
+        const newIssue = new Integration({
+            title: issue.title,
+            type: 'linearIssue',
+            id: issue.id,
+            user: userId,
+            url: issue.url,
+            metadata: {
+                description: issue.description,
+                labels: issue.labels,
+                state: issue.state,
+                priority: issue.priority,
+                project: issue.project,
+                dueDate: issue.dueDate
+            },
+            createdAt: issue.createdAt,
+            updatedAt: issue.updatedAt
+        });
+
+        await newIssue.save();
+    }
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
+    fetchAssignedIssues,
+    saveIssuesToDatabase,
     getMyLinearIssues,
     getTodayLinearIssues,
     getOverdueLinearIssues,
-    getLinearIssuesByDate
+    getLinearIssuesByDate,
+    handleWebhookEvent
 }
