@@ -379,6 +379,15 @@ const getLinearIssuesByDate = async (id, date) => {
 // need to improve it base so webhook type
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
+    if (payload.action === 'remove') {
+        const deletedIssue = await Integration.findOneAndDelete({ id: issue.id, type: 'linearIssue' });
+        if (deletedIssue) {
+            console.log(`Deleted issue with ID: ${issue.id}`);
+        } else {
+            console.log(`Issue with ID: ${issue.id} not found in the database.`);
+        }
+        return;
+    }
 
     if (!issue.assignee || !issue.assignee.id) {
         return;
@@ -393,7 +402,6 @@ const handleWebhookEvent = async (payload) => {
         return;
     }
     const userId = user.id;
-    console.log('User ID:', userId);
 
     // Check if the issue already exists
     const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue' });
