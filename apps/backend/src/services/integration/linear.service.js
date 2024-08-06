@@ -376,11 +376,6 @@ const getLinearIssuesByDate = async (id, date) => {
     return response.data.data.issues.nodes;
 };
 
-const verifyLinearWebhook = (secret, signature, payload) => {
-    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
-    return hash === signature;
-};
-
 // need to improve it base so webhook type
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
@@ -445,6 +440,5 @@ export {
     getTodayLinearIssues,
     getOverdueLinearIssues,
     getLinearIssuesByDate,
-    verifyLinearWebhook,
     handleWebhookEvent
 }
