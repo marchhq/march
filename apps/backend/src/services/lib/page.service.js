@@ -38,9 +38,9 @@ const getPage = async (user, id) => {
     return page;
 };
 
-const updatePage = async (updateData) => {
-    const updatedPage = await Page.findByIdAndUpdate({
-        _id: updateData.id
+const updatePage = async (id, updateData) => {
+    const updatedPage = await Page.findOneAndUpdate({
+        uuid: id
     },
     { $set: updateData },
     { new: true }

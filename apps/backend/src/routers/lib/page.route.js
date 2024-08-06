@@ -20,37 +20,38 @@ router.route("/setDate/").post(moveItemtoDateController)
 router.route("/spaces/create/").post(createPageController)
 router.route("/spaces/overview/").get(getPagesController)
 router.route("/spaces/:space/").get(getPageController)
-router.route("/spaces/update/").post(updatePageController)
+router.route("/spaces/:space/").put(updatePageController)
 
 // rocord controllers
 router.route("/records/create/").post(createRecordController)
 router.route("/records/overview/").get(getRecordsController)
 router.route("/records/:record/").get(getRecordController)
-router.route("/records/update/").post(updateRecordController)
+router.route("/records/:record/").put(updateRecordController)
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController)
 router.route("/journals/today/").get(getUserTodayJournalController)
+// todo: added a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController)
 
 // item controllers
 router.route("/items/create/").post(createItemController)
 router.route("/items/overview/").get(getItemsController)
 router.route("/items/:item/").get(getItemController)
-router.route("/items/update/").post(updateItemController)
+router.route("/items/:item/").put(updateItemController)
 
 // note controllers
 router.route("/notes/create/").post(createNoteController)
 router.route("/notes/overview/").get(getNotesController)
 router.route("/notes/:note/").get(getNoteController)
-router.route("/notes/update/").post(updateNoteController)
-router.route("/notes/delete/").post(deleteNoteController)
+router.route("/notes/:note/").put(updateNoteController)
+router.route("/notes/:note/").delete(deleteNoteController)
 
 // Block controllers
 router.route("/blocks/create/").post(createBlockController)
 router.route("/blocks/overview/").get(getBlocksController)
 router.route("/blocks/:block/").get(getBlockController)
-router.route("/blocks/update/").post(updateBlockController)
-router.route("/blocks/delete/").post(deleteBlockController)
+router.route("/blocks/:block/").put(updateBlockController)
+router.route("/blocks/:block/").delete(deleteBlockController)
 
 export default router;
