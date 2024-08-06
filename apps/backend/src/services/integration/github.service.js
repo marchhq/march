@@ -1,7 +1,9 @@
 import { Octokit } from "@octokit/rest";
+import { createAppAuth } from "@octokit/auth-app";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 import { clerkClient } from "@clerk/clerk-sdk-node"
 import { Integration } from "../../models/integration/integration.model.js";
+import { environment } from "../../loaders/environment.loader.js";
 
 const getGitHubAccessToken = async (userId) => {
     const accessTokenResponse = await clerk.users.getUserOauthAccessToken(userId, 'github');
@@ -15,6 +17,92 @@ const getGitHubAccessToken = async (userId) => {
     return { token, username };
 };
 
+const fetchInstallationDetails = async (installationId) => {
+    try {
+        const accessToken = await generateInstallationAccessToken(installationId);
+        console.log("accessToken: ", accessToken);
+
+        const octokit = new Octokit({ auth: accessToken });
+
+        const { data } = await octokit.apps.getInstallation({
+            installation_id: installationId
+        });
+
+        console.log('data: ', data);
+        console.log('Installation Account: ', data.account.login);
+        return data.account.login;
+    } catch (error) {
+        console.error('Error fetching installation details:', error);
+        throw error;
+    }
+};
+
+// const generateInstallationAccessToken = async (installationId) => {
+//     console.log("installationId: ", installationId);
+//     // const privateKey = environment.GITHUB_APP_PRIVATE_KEY;
+//     const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+//     console.log("privateKey: ", privateKey);
+//     const auth = createAppAuth({
+//         appId: environment.GITHUB_APP_ID,
+//         privateKey,
+//         installationId
+//     });
+//     console.log("hey");
+//     const installationAuthentication = await auth({ type: 'installation' });
+//     console.log("Generated Token: ", installationAuthentication);
+//     return installationAuthentication.token;
+// };
+
+// const generateInstallationAccessToken = async (installationId) => {
+//     try {
+//         const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+//         const appId = environment.GITHUB_APP_ID;
+
+//         console.log("App ID:", appId);
+//         console.log("Installation ID:", installationId);
+//         console.log("Private Key (first line):", privateKey.split('\n')[0]);
+
+//         const auth = createAppAuth({
+//             appId: appId,
+//             privateKey: privateKey,
+//             installationId: installationId
+//         });
+
+//         const installationAuthentication = await auth({ type: 'installation' });
+//         return installationAuthentication.token;
+//     } catch (error) {
+//         console.error('Error generating installation access token:', error);
+//         if (error.response) {
+//             console.error('Response status:', error.response.status);
+//             console.error('Response data:', error.response.data);
+//         }
+//         throw error;
+//     }
+// };
+
+const generateInstallationAccessToken = async (installationId) => {
+    try {
+        const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const appId = environment.GITHUB_APP_ID;
+
+        console.log("App ID:", appId);
+        console.log("Installation ID:", installationId);
+        console.log("Private Key (first line):", privateKey.split('\n')[0]);
+
+        const auth = createAppAuth({
+            appId: appId,
+            privateKey: privateKey,
+            installationId: installationId
+        });
+
+        const installationAuthentication = await auth({ type: 'installation' });
+        return installationAuthentication.token;
+    } catch (error) {
+        console.error('Error generating installation access token:', error);
+        throw error;
+    }
+};
+
 const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
     const octokit = new Octokit({ auth: accessToken });
 
@@ -22,9 +110,6 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
         q: `assignee:${username} type:issue is:open`
     });
 
-    // const pullRequestsData = await octokit.search.issuesAndPullRequests({
-    //     q: `assignee:${username} type:pr is:open`
-    // });
     const pullRequestsData = await octokit.search.issuesAndPullRequests({
         q: `author:${username} type:pr is:open`
     });
@@ -93,5 +178,6 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
 
 export {
     getGitHubAccessToken,
-    getUserGithubIssuesAndPRs
+    getUserGithubIssuesAndPRs,
+    fetchInstallationDetails
 };
