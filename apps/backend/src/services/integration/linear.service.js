@@ -77,16 +77,17 @@ const fetchUserInfo = async (linearToken, user) => {
 
 const saveIssuesToDatabase = async (issues, userId) => {
     try {
-        for (const issue of issues) {
+        const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
+        for (const issue of filteredIssues) {
             const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue', user: userId });
 
             if (existingIssue) {
                 existingIssue.title = issue.title;
                 existingIssue.metadata.description = issue.description;
-                existingIssue.metadata.labels = issue.labels.map(label => label.name);
+                existingIssue.metadata.labels = issue.labels;
                 existingIssue.metadata.state = issue.state.name;
                 existingIssue.metadata.priority = issue.priority;
-                existingIssue.metadata.project = issue.project.name;
+                existingIssue.metadata.project = issue.project;
                 existingIssue.metadata.dueDate = issue.dueDate;
                 existingIssue.updatedAt = issue.updatedAt;
 
@@ -100,10 +101,10 @@ const saveIssuesToDatabase = async (issues, userId) => {
                     url: issue.url,
                     metadata: {
                         description: issue.description,
-                        labels: issue.labels.map(label => label.name),
-                        state: issue.state.name,
+                        labels: issue.labels,
+                        state: issue.state,
                         priority: issue.priority,
-                        project: issue.project.name,
+                        project: issue.project,
                         dueDate: issue.dueDate
                     },
                     createdAt: issue.createdAt,
@@ -123,8 +124,7 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     const response = await axios.post('https://api.linear.app/graphql', {
         query: `
     query {
-            issues(filter: { assignee: { id: { eq: "${linearUserId}" } } },
-            state: { name: { neq: "Done" } }) {
+            issues(filter: { assignee: { id: { eq: "${linearUserId}" } } }) {
                 nodes {
                     id
                     title
@@ -406,7 +406,7 @@ const handleWebhookEvent = async (payload) => {
         await Integration.findByIdAndUpdate(existingIssue._id, {
             title: issue.title,
             'metadata.description': issue.description,
-            'metadata.labels': issue.labels.map(label => label.name),
+            'metadata.labels': issue.labels,
             'metadata.state': issue.state,
             'metadata.priority': issue.priority,
             'metadata.project': issue.project,
@@ -422,7 +422,7 @@ const handleWebhookEvent = async (payload) => {
             url: issue.url,
             metadata: {
                 description: issue.description,
-                labels: issue.labels.map(label => label.name),
+                labels: issue.labels,
                 state: issue.state,
                 priority: issue.priority,
                 project: issue.project,
