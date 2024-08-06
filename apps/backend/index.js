@@ -7,6 +7,7 @@ import { environment } from "./src/loaders/environment.loader.js";
     })
 })()
 
+// for webhook testing in local
 // import { app } from "./src/index.js";
 // import { environment } from "./src/loaders/environment.loader.js";
 // import ngrok from '@ngrok/ngrok'
