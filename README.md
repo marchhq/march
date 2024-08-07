@@ -4,7 +4,7 @@
 To get a local copy up and running, please follow these simple steps.
 
 ## Prerequisites
-Here is what you need to be able to run march.
+Here is what you need to run march.
 
 * Node.js (Version: >=18.x)
 * pnpm (recommended)
