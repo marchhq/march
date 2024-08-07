@@ -33,10 +33,11 @@ const InboxSection: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       }
+      console.log("HEY")
       const res = await fetch("http://localhost:8080/api/my", config)
       const data = await res.json()
       console.log(data)
-      setIntegrations(data.response as IntegrationType[])
+      setIntegrations(data.IntegratedAppIssues as IntegrationType[])
     } catch (err) {
       console.log(err)
     }
