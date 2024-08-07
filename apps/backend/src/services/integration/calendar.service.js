@@ -117,7 +117,41 @@ const getGoogleCalendarMeetings = async (id) => {
     const calendar = google.calendar({ version: 'v3', auth: OauthClient });
     const res = await calendar.events.list({
         calendarId: 'primary',
-        // timeMin: (new Date()).toISOString(),
+        singleEvents: true,
+        orderBy: 'startTime'
+    });
+
+    const events = res.data.items;
+
+    if (events.length) {
+        const meetings = events.filter(event => event.attendees && event.attendees.length > 0);
+
+        return meetings;
+    } else {
+        console.log('No upcoming meetings found.');
+    }
+};
+
+const getGoogleCalendarupComingMeetings = async (id) => {
+    const user = await clerk.users.getUser(id);
+    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
+    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+
+    const isValid = await checkAccessTokenValidity(accessToken);
+
+    if (!isValid) {
+        accessToken = await refreshGoogleCalendarAccessToken(user);
+    }
+
+    OauthClient.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const res = await calendar.events.list({
+        calendarId: 'primary',
+        timeMin: (new Date()).toISOString(),
         singleEvents: true,
         orderBy: 'startTime'
     });
@@ -217,5 +251,6 @@ export {
     addGoogleCalendarEvent,
     updateGoogleCalendarEvent,
     deleteGoogleCalendarEvent,
-    getGoogleCalendarMeetings
+    getGoogleCalendarMeetings,
+    getGoogleCalendarupComingMeetings
 }
