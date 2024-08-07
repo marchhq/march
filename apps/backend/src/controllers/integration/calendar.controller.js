@@ -1,4 +1,4 @@
-import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings } from "../..//services/integration/calendar.service.js"
+import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings } from "../..//services/integration/calendar.service.js"
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
     try {
@@ -42,6 +42,19 @@ const getGoogleCalendarMeetingsController = async (req, res, next) => {
     const user = req.auth.userId;
     try {
         const events = await getGoogleCalendarMeetings(user);
+        res.status(200).json({
+            statusCode: 200,
+            response: events
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
+    const user = req.auth.userId;
+    try {
+        const events = await getGoogleCalendarupComingMeetings(user);
         res.status(200).json({
             statusCode: 200,
             response: events
@@ -101,5 +114,6 @@ export {
     addGoogleCalendarEventController,
     updateGoogleCalendarEventController,
     deleteGoogleCalendarEventController,
-    getGoogleCalendarMeetingsController
+    getGoogleCalendarMeetingsController,
+    getGoogleCalendarupComingMeetingsController
 }

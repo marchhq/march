@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { redirectGoogleCalendarOAuthLoginController, getGoogleCalendarAccessTokenController, getGoogleCalendarEventsController, addGoogleCalendarEventController, updateGoogleCalendarEventController, deleteGoogleCalendarEventController, getGoogleCalendarMeetingsController } from "../../controllers/integration/calendar.controller.js";
+import { redirectGoogleCalendarOAuthLoginController, getGoogleCalendarAccessTokenController, getGoogleCalendarEventsController, addGoogleCalendarEventController, updateGoogleCalendarEventController, deleteGoogleCalendarEventController, getGoogleCalendarMeetingsController, getGoogleCalendarupComingMeetingsController } from "../../controllers/integration/calendar.controller.js";
 
 const router = Router();
 
@@ -12,5 +12,6 @@ router.route("/events/:eventId/").delete(deleteGoogleCalendarEventController)
 
 // get meeting
 router.route("/meetings/").get(getGoogleCalendarMeetingsController)
+router.route("/meetings/upcoming/").get(getGoogleCalendarupComingMeetingsController)
 
 export default router;
