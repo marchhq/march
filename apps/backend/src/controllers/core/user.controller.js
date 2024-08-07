@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getUserTodayItems, getUserOverdueItems, getUserItemsByDate } from "../../services/lib/item.service.js";
+import { getUserTodayItems, getUserOverdueItems, getUserItemsByDate, getUserItems } from "../../services/lib/item.service.js";
 
 import { getIntegration, moveItemtoDate } from "../../services/lib/integration.service.js";
 
@@ -49,12 +49,12 @@ const updateUserController = async (req, res, next) => {
 const getUserItemsController = async (req, res, next) => {
     try {
         const me = req.auth.userId;
-        // const inbox = await getUserItems(me);
+        const marchIssues = await getUserItems(me);
 
-        const linearIssues = await getIntegration(me);
+        const IntegratedAppIssues = await getIntegration(me);
         res.json({
-            // inbox,
-            response: linearIssues
+            marchIssues,
+            IntegratedAppIssues
         });
     } catch (err) {
         next(err);
