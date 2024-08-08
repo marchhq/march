@@ -54,4 +54,8 @@ router.route("/blocks/:block/").get(getBlockController)
 router.route("/blocks/:block/").put(updateBlockController)
 router.route("/blocks/:block/").delete(deleteBlockController)
 
+// Meeting controllers
+
+
+
 export default router;
