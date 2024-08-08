@@ -17,7 +17,19 @@ const getUpcomingMeetings = async (user, currentDateTime) => {
     return upcomingMeetings;
 };
 
+const updateMeeting = async (id, updateData) => {
+    const updatedBlock = await Meeting.findOneAndUpdate({
+        uuid: id
+    },
+    { $set: updateData },
+    { new: true }
+    )
+
+    return updatedBlock;
+};
+
 export {
     getMeeting,
-    getUpcomingMeetings
+    getUpcomingMeetings,
+    updateMeeting
 }
