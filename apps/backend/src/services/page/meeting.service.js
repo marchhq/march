@@ -9,6 +9,15 @@ const getMeeting = async (user) => {
     return meetings;
 };
 
+const getUpcomingMeetings = async (user, currentDateTime) => {
+    const upcomingMeetings = await Meeting.find({
+        user,
+        'metadata.start.dateTime': { $gt: currentDateTime.toISOString() }
+    });
+    return upcomingMeetings;
+};
+
 export {
-    getMeeting
+    getMeeting,
+    getUpcomingMeetings
 }
