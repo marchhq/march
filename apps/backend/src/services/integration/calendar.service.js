@@ -132,17 +132,7 @@ const getGoogleCalendarMeetings = async (id) => {
     }
 };
 
-const getGoogleCalendarupComingMeetings = async (id) => {
-    const user = await clerk.users.getUser(id);
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
-
-    const isValid = await checkAccessTokenValidity(accessToken);
-
-    if (!isValid) {
-        accessToken = await refreshGoogleCalendarAccessToken(user);
-    }
-
+const getGoogleCalendarupComingMeetings = async (accessToken, refreshToken) => {
     OauthClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
