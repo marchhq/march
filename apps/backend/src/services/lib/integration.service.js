@@ -10,12 +10,12 @@ const getIntegration = async (user) => {
 };
 
 const moveItemtoDate = async (date, id) => {
-    const formattedDate = new Date(date); // Ensure date is a Date object
+    const formattedDate = new Date(date);
 
     const item = await Integration.findByIdAndUpdate(
         id,
-        { $set: { date: formattedDate } }, // Correctly specify the field to update
-        { new: true } // Ensure timestamps are updated automatically by Mongoose
+        { $set: { date: formattedDate } },
+        { new: true }
     );
 
     return item;

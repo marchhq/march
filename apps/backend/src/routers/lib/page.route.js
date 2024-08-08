@@ -6,6 +6,7 @@ import { createItemController, getItemsController, updateItemController, getItem
 import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
 import { createRecordController, getRecordsController, getRecordController, updateRecordController } from "../../controllers/lib/record.controller.js";
 import { createBlockController, getBlocksController, deleteBlockController, getBlockController, updateBlockController } from "../../controllers/lib/block.controller.js";
+import { getMeetingsController, getUpcomingMeetingsController, updateMeetingController, deleteMeetingController } from "../../controllers/page/meeting.controller.js";
 
 const router = Router();
 
@@ -53,5 +54,11 @@ router.route("/blocks/overview/").get(getBlocksController)
 router.route("/blocks/:block/").get(getBlockController)
 router.route("/blocks/:block/").put(updateBlockController)
 router.route("/blocks/:block/").delete(deleteBlockController)
+
+// Meeting controllers
+router.route("/meetings/overview/").get(getMeetingsController)
+router.route("/meetings/upcomings/").get(getUpcomingMeetingsController)
+router.route("/meetings/:meeting/").put(updateMeetingController)
+router.route("/meetings/:meeting/").delete(deleteMeetingController)
 
 export default router;
