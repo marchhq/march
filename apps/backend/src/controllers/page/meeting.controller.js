@@ -1,4 +1,4 @@
-import { getMeeting, getUpcomingMeetings, updateMeeting } from "../../services/page/meeting.service.js";
+import { getMeeting, getUpcomingMeetings, updateMeeting, deleteMeeting } from "../../services/page/meeting.service.js";
 
 const getMeetingsController = async (req, res, next) => {
     try {
@@ -47,8 +47,24 @@ const updateMeetingController = async (req, res, next) => {
     }
 };
 
+const deleteMeetingController = async (req, res, next) => {
+    try {
+        const { meeting: id } = req.params;
+        const block = await deleteMeeting(id);
+
+        res.status(200).json({
+            status: 200,
+            message: 'meeting deleted successfully',
+            block
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     getMeetingsController,
     getUpcomingMeetingsController,
-    updateMeetingController
+    updateMeetingController,
+    deleteMeetingController
 }
