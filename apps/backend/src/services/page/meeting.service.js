@@ -28,8 +28,18 @@ const updateMeeting = async (id, updateData) => {
     return updatedBlock;
 };
 
+const deleteMeeting = async (id) => {
+    const meeting = await Meeting.findOneAndDelete({ uuid: id });
+
+    if (!meeting) {
+        throw new Error('meeting not found');
+    }
+    return meeting;
+};
+
 export {
     getMeeting,
     getUpcomingMeetings,
-    updateMeeting
+    updateMeeting,
+    deleteMeeting
 }
