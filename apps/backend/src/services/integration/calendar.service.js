@@ -2,6 +2,7 @@ import { google } from "googleapis";
 import axios from 'axios';
 import { OauthClient } from "../../loaders/google.loader.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
+import { Meeting } from "../../models/page/meetings.model.js";
 
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
     const authUrl = OauthClient.generateAuthUrl({
@@ -232,6 +233,37 @@ const deleteGoogleCalendarEvent = async (id, eventId) => {
     return { success: true };
 };
 
+const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
+    try {
+        for (const meeting of meetings) {
+            const existingMeeting = await Meeting.findOne({ id: meeting.id, user: userId });
+
+            if (!existingMeeting) {
+                const newMeeting = new Meeting({
+                    title: meeting.summary,
+                    id: meeting.id,
+                    user: userId,
+                    metadata: {
+                        status: meeting.status,
+                        attendees: meeting.attendees,
+                        hangoutLink: meeting.hangoutLink,
+                        start: meeting.start,
+                        end: meeting.end,
+                        creator: meeting.creator,
+                        conferenceData: meeting.conferenceData
+                    },
+                    createdAt: meeting.createdAt,
+                    updatedAt: meeting.updatedAt
+                });
+                await newMeeting.save();
+            }
+        }
+    } catch (error) {
+        console.error('Error saving meeting to database:', error);
+        throw error;
+    }
+};
+
 export {
     getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
@@ -242,5 +274,6 @@ export {
     updateGoogleCalendarEvent,
     deleteGoogleCalendarEvent,
     getGoogleCalendarMeetings,
-    getGoogleCalendarupComingMeetings
+    getGoogleCalendarupComingMeetings,
+    saveUpcomingMeetingsToDatabase
 }

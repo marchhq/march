@@ -1,4 +1,4 @@
-import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken } from "../..//services/integration/calendar.service.js";
+import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken, saveUpcomingMeetingsToDatabase } from "../..//services/integration/calendar.service.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
@@ -18,7 +18,8 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
         // write a bg to get all the upcoming meeting and save them
-        const meetings = 
+        const meetings = await getGoogleCalendarupComingMeetings(tokenInfo.access_token, tokenInfo.refresh_token);
+        await saveUpcomingMeetingsToDatabase(meetings, user);
         res.status(200).json({
             statusCode: 200,
             response: tokenInfo
