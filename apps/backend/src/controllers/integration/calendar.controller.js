@@ -1,6 +1,7 @@
-import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken } from "../..//services/integration/calendar.service.js";
+import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken, setUpCalendarWatch } from "../..//services/integration/calendar.service.js";
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
+import { environment } from "../../loaders/environment.loader.js";
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
     try {
@@ -18,6 +19,8 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.auth.userId;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
+        const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', environment.CALENDAR_WEBHOOK_URL)
+        console.log("watchResponse: ", watchResponse);
         await calendarQueue.add('calendarQueue', {
             accessToken: tokenInfo.access_token,
             refreshToken: tokenInfo.refresh_token,

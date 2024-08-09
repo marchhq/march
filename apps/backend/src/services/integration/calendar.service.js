@@ -1,8 +1,10 @@
+import { v4 as uuid } from "uuid";
 import { google } from "googleapis";
 import axios from 'axios';
 import { OauthClient } from "../../loaders/google.loader.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 import { Meeting } from "../../models/page/meetings.model.js";
+import { environment } from "../../loaders/environment.loader.js";
 
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
     const authUrl = OauthClient.generateAuthUrl({
@@ -264,6 +266,27 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
     }
 };
 
+const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
+    const auth = new google.auth.OAuth2();
+    auth.setCredentials({ access_token: accessToken });
+
+    const requestBody = {
+        id: uuid(),
+        type: 'web_hook',
+        address: webhookUrl,
+        token: environment.CALENDAR_WEBHOOK_SECRET
+    };
+    const calendar = google.calendar({ version: 'v3' });
+
+    const response = await calendar.events.watch({
+        auth,
+        calendarId,
+        requestBody
+    });
+
+    return response.data;
+};
+
 export {
     getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
@@ -275,5 +298,6 @@ export {
     deleteGoogleCalendarEvent,
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
-    saveUpcomingMeetingsToDatabase
+    saveUpcomingMeetingsToDatabase,
+    setUpCalendarWatch
 }
