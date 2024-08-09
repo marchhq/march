@@ -7,6 +7,8 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 // import { processGmailNotification } from "./controllers/integration/email.controller.js";
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
 import bodyParser from "body-parser";
+import { linearWorker } from "./jobs/linear.job.js";
+import { calendaWorker } from "./jobs/calendar.job.js";
 
 const { ValidationError } = Joi;
 const app = express();

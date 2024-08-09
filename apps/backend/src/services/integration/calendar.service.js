@@ -2,6 +2,7 @@ import { google } from "googleapis";
 import axios from 'axios';
 import { OauthClient } from "../../loaders/google.loader.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
+import { Meeting } from "../../models/page/meetings.model.js";
 
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
     const authUrl = OauthClient.generateAuthUrl({
@@ -98,6 +99,65 @@ const getGoogleCalendarEvents = async (id) => {
     return events.data.items;
 };
 
+const getGoogleCalendarMeetings = async (id) => {
+    const user = await clerk.users.getUser(id);
+    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
+    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+
+    const isValid = await checkAccessTokenValidity(accessToken);
+
+    if (!isValid) {
+        accessToken = await refreshGoogleCalendarAccessToken(user);
+    }
+
+    OauthClient.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const res = await calendar.events.list({
+        calendarId: 'primary',
+        singleEvents: true,
+        orderBy: 'startTime'
+    });
+
+    const events = res.data.items;
+
+    if (events.length) {
+        const meetings = events.filter(event => event.attendees && event.attendees.length > 0);
+
+        return meetings;
+    } else {
+        console.log('No upcoming meetings found.');
+    }
+};
+
+const getGoogleCalendarupComingMeetings = async (accessToken, refreshToken) => {
+    OauthClient.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const res = await calendar.events.list({
+        calendarId: 'primary',
+        timeMin: (new Date()).toISOString(),
+        singleEvents: true,
+        orderBy: 'startTime'
+    });
+
+    const events = res.data.items;
+
+    if (events.length) {
+        const meetings = events.filter(event => event.attendees && event.attendees.length > 0);
+
+        return meetings;
+    } else {
+        console.log('No upcoming meetings found.');
+    }
+};
+
 const addGoogleCalendarEvent = async (id, event) => {
     const user = await clerk.users.getUser(id);
     let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
@@ -173,6 +233,37 @@ const deleteGoogleCalendarEvent = async (id, eventId) => {
     return { success: true };
 };
 
+const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
+    try {
+        for (const meeting of meetings) {
+            const existingMeeting = await Meeting.findOne({ id: meeting.id, user: userId });
+
+            if (!existingMeeting) {
+                const newMeeting = new Meeting({
+                    title: meeting.summary,
+                    id: meeting.id,
+                    user: userId,
+                    metadata: {
+                        status: meeting.status,
+                        attendees: meeting.attendees,
+                        hangoutLink: meeting.hangoutLink,
+                        start: meeting.start,
+                        end: meeting.end,
+                        creator: meeting.creator,
+                        conferenceData: meeting.conferenceData
+                    },
+                    createdAt: meeting.createdAt,
+                    updatedAt: meeting.updatedAt
+                });
+                await newMeeting.save();
+            }
+        }
+    } catch (error) {
+        console.error('Error saving meeting to database:', error);
+        throw error;
+    }
+};
+
 export {
     getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
@@ -181,5 +272,8 @@ export {
     getGoogleCalendarEvents,
     addGoogleCalendarEvent,
     updateGoogleCalendarEvent,
-    deleteGoogleCalendarEvent
+    deleteGoogleCalendarEvent,
+    getGoogleCalendarMeetings,
+    getGoogleCalendarupComingMeetings,
+    saveUpcomingMeetingsToDatabase
 }
