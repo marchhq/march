@@ -1,4 +1,6 @@
-import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent } from "../..//services/integration/calendar.service.js"
+import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken } from "../..//services/integration/calendar.service.js";
+import { calendarQueue } from "../../loaders/bullmq.loader.js";
+import { clerk } from "../../middlewares/clerk.middleware.js";
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
     try {
@@ -16,6 +18,11 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.auth.userId;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
+        await calendarQueue.add('linearQueue', {
+            accessToken: tokenInfo.access_token,
+            refreshToken: tokenInfo.refresh_token,
+            userId: user
+        });
         res.status(200).json({
             statusCode: 200,
             response: tokenInfo
@@ -32,6 +39,41 @@ const getGoogleCalendarEventsController = async (req, res, next) => {
         res.status(200).json({
             statusCode: 200,
             response: events
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getGoogleCalendarMeetingsController = async (req, res, next) => {
+    const user = req.auth.userId;
+    try {
+        const events = await getGoogleCalendarMeetings(user);
+        res.status(200).json({
+            statusCode: 200,
+            response: events
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
+    try {
+        const user = await clerk.users.getUser(req.auth.userId);
+        let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
+        const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+
+        const isValid = await checkAccessTokenValidity(accessToken);
+
+        if (!isValid) {
+            accessToken = await refreshGoogleCalendarAccessToken(user);
+        }
+        const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
+
+        res.status(200).json({
+            statusCode: 200,
+            response: meetings
         });
     } catch (err) {
         next(err);
@@ -87,5 +129,7 @@ export {
     getGoogleCalendarEventsController,
     addGoogleCalendarEventController,
     updateGoogleCalendarEventController,
-    deleteGoogleCalendarEventController
+    deleteGoogleCalendarEventController,
+    getGoogleCalendarMeetingsController,
+    getGoogleCalendarupComingMeetingsController
 }
