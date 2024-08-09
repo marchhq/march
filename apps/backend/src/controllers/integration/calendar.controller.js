@@ -18,7 +18,7 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.auth.userId;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
-        await calendarQueue.add('linearQueue', {
+        await calendarQueue.add('calendarQueue', {
             accessToken: tokenInfo.access_token,
             refreshToken: tokenInfo.refresh_token,
             userId: user
