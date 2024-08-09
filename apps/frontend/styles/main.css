@@ -175,3 +175,26 @@ input {
 .fc-toolbar-chunk button {
   @apply capitalize;
 }
+
+
+/* Scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+  @apply w-2 rounded-sm;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply rounded-sm;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-600 rounded-sm;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-500;
+}
