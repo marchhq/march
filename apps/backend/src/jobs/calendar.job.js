@@ -6,7 +6,9 @@ const processCalendarJob = async (job) => {
     const { accessToken, refreshToken, userId } = job.data;
     try {
         const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
-        await saveUpcomingMeetingsToDatabase(meetings, userId);
+        if (meetings) {
+            await saveUpcomingMeetingsToDatabase(meetings, userId);
+        }
     } catch (error) {
         console.error('Error processing issues:', error);
         throw error;
