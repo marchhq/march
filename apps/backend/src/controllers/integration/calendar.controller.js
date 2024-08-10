@@ -2,6 +2,7 @@ import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, g
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 import { environment } from "../../loaders/environment.loader.js";
+import { listener } from "../../../index.js";
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
     try {
@@ -19,7 +20,9 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.auth.userId;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
-        const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', environment.CALENDAR_WEBHOOK_URL)
+        const url = `${listener.url()}/calendar/webhook`
+        const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', url)
+        // const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', environment.CALENDAR_WEBHOOK_URL)
         console.log("watchResponse: ", watchResponse);
         await calendarQueue.add('calendarQueue', {
             accessToken: tokenInfo.access_token,
