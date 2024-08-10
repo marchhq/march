@@ -269,6 +269,7 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
 const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
+    console.log("webhookUrl: ", webhookUrl);
 
     const requestBody = {
         id: uuid(),
@@ -287,6 +288,37 @@ const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
     return response.data;
 };
 
+const handleCalendarWebhook = async (req, res) => {
+    console.log("hey the i am ");
+    const resourceId = req.headers['x-goog-resource-id'];
+    const channelToken = req.headers['x-goog-channel-token'];
+    const channelId = req.headers['x-goog-channel-id'];
+    const resourceState = req.headers['x-goog-resource-state'];
+
+    if (channelToken !== environment.CALENDAR_WEBHOOK_SECRET) {
+        return res.status(403).send('Invalid webhook token');
+    }
+
+    if (resourceState === 'sync') {
+        return res.status(200).send();
+    }
+    const calendar = google.calendar({ version: 'v3' });
+    console.log("till now okay");
+
+    const event = await calendar.events.list({
+        calendarId: 'primary',
+        timeMin: new Date().toISOString(),
+        maxResults: 10,
+        singleEvents: true,
+        orderBy: 'startTime'
+    });
+    console.log("till now okay1");
+
+    console.log("event.data.items: ", event.data.items);
+
+    return res.status(200).send('Webhook received');
+};
+
 export {
     getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
@@ -299,5 +331,6 @@ export {
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
     saveUpcomingMeetingsToDatabase,
-    setUpCalendarWatch
+    setUpCalendarWatch,
+    handleCalendarWebhook
 }
