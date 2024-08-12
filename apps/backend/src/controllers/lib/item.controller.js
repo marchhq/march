@@ -34,8 +34,13 @@ const getItemsController = async (req, res, next) => {
     try {
         // const user = req.user._id;
         const user = req.auth.userId;
+        const filters = {
+            dueDate: req.query.dueDate,
+            effort: req.query.effort
+        };
+        const sortOptions = req.query.sort;
 
-        const items = await getItems(user);
+        const items = await getItems(user, filters, sortOptions);
 
         res.status(200).json({
             items
