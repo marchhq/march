@@ -2,8 +2,9 @@ import { Octokit } from "@octokit/rest";
 import { createAppAuth } from "@octokit/auth-app";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 import { clerkClient } from "@clerk/clerk-sdk-node"
-import { Integration } from "../../models/integration/integration.model.js";
+// import { Integration } from "../../models/integration/integration.model.js";
 import { environment } from "../../loaders/environment.loader.js";
+import { Item } from "../../models/lib/item.model.js";
 
 const getGitHubAccessToken = async (userId) => {
     const accessTokenResponse = await clerk.users.getUserOauthAccessToken(userId, 'github');
@@ -125,7 +126,7 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
     for (const issue of issues) {
         const repoDetails = extractRepoDetails(issue.repository_url);
         if (repoDetails) {
-            const integration = new Integration({
+            const integration = new Item({
                 title: issue.title,
                 type: 'githubIssue',
                 url: issue.html_url,
@@ -149,7 +150,7 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
     for (const pr of pullRequests) {
         const repoDetails = extractRepoDetails(pr.repository_url);
         if (repoDetails) {
-            const integration = new Integration({
+            const integration = new Item({
                 title: pr.title,
                 type: 'githubPullRequest',
                 url: pr.html_url,

@@ -6,6 +6,7 @@ import { initRoutes } from "./routers/index.js";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 // import { processGmailNotification } from "./controllers/integration/email.controller.js";
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
+import { handleCalendarWebhook } from "./controllers/integration/calendar.controller.js";
 import bodyParser from "body-parser";
 import { linearWorker } from "./jobs/linear.job.js";
 import { calendaWorker } from "./jobs/calendar.job.js";
@@ -25,6 +26,7 @@ app.use(
 
 // app.post("/gmail/webhook", processGmailNotification);
 app.post("/linear/webhook", handleWebhook);
+app.post("/calendar/webhook", handleCalendarWebhook);
 
 app.use(ClerkExpressRequireAuth());
 // app.use(ClerkExpressWithAuth());

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { environment } from '../../loaders/environment.loader.js';
 import { clerk } from "../../middlewares/clerk.middleware.js";
-import { Integration } from '../../models/integration/integration.model.js';
+// import { Integration } from '../../models/integration/integration.model.js';
+import { Item } from '../../models/lib/item.model.js';
 
 const getAccessToken = async (code, user) => {
     try {
@@ -24,7 +25,7 @@ const getAccessToken = async (code, user) => {
             privateMetadata: {
                 integration: {
                     linear: {
-                        accessToken: accessToken
+                        accessToken
                     }
                 }
             }
@@ -79,33 +80,33 @@ const saveIssuesToDatabase = async (issues, userId) => {
     try {
         const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
         for (const issue of filteredIssues) {
-            const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue', user: userId });
+            const existingIssue = await Item.findOne({ id: issue.id, type: 'linearIssue', user: userId });
 
             if (existingIssue) {
                 existingIssue.title = issue.title;
-                existingIssue.metadata.description = issue.description;
+                existingIssue.description = issue.description;
                 existingIssue.metadata.labels = issue.labels;
                 existingIssue.metadata.state = issue.state.name;
                 existingIssue.metadata.priority = issue.priority;
                 existingIssue.metadata.project = issue.project;
-                existingIssue.metadata.dueDate = issue.dueDate;
+                existingIssue.dueDate = issue.dueDate;
                 existingIssue.updatedAt = issue.updatedAt;
 
                 await existingIssue.save();
             } else {
-                const newIssue = new Integration({
+                const newIssue = new Item({
                     title: issue.title,
                     type: 'linearIssue',
+                    description: issue.description,
                     id: issue.id,
                     user: userId,
                     url: issue.url,
+                    dueDate: issue.dueDate,
                     metadata: {
-                        description: issue.description,
                         labels: issue.labels,
                         state: issue.state,
                         priority: issue.priority,
-                        project: issue.project,
-                        dueDate: issue.dueDate
+                        project: issue.project
                     },
                     createdAt: issue.createdAt,
                     updatedAt: issue.updatedAt
@@ -380,7 +381,7 @@ const getLinearIssuesByDate = async (id, date) => {
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
     if (payload.action === 'remove') {
-        const deletedIssue = await Integration.findOneAndDelete({ id: issue.id, type: 'linearIssue' });
+        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, type: 'linearIssue' });
         if (deletedIssue) {
             console.log(`Deleted issue with ID: ${issue.id}`);
         } else {
@@ -404,32 +405,32 @@ const handleWebhookEvent = async (payload) => {
     const userId = user.id;
 
     // Check if the issue already exists
-    const existingIssue = await Integration.findOne({ id: issue.id, type: 'linearIssue' });
+    const existingIssue = await Item.findOne({ id: issue.id, type: 'linearIssue' });
     if (existingIssue) {
-        await Integration.findByIdAndUpdate(existingIssue._id, {
+        await Item.findByIdAndUpdate(existingIssue._id, {
             title: issue.title,
-            'metadata.description': issue.description,
+            description: issue.description,
             'metadata.labels': issue.labels,
             'metadata.state': issue.state,
             'metadata.priority': issue.priority,
             'metadata.project': issue.project,
-            'metadata.dueDate': issue.dueDate,
+            dueDate: issue.dueDate,
             updatedAt: issue.updatedAt
         }, { new: true });
     } else {
-        const newIssue = new Integration({
+        const newIssue = new Item({
             title: issue.title,
             type: 'linearIssue',
             id: issue.id,
             user: userId,
             url: issue.url,
+            description: issue.description,
+            dueDate: issue.dueDate,
             metadata: {
-                description: issue.description,
                 labels: issue.labels,
                 state: issue.state,
                 priority: issue.priority,
-                project: issue.project,
-                dueDate: issue.dueDate
+                project: issue.project
             },
             createdAt: issue.createdAt,
             updatedAt: issue.updatedAt
