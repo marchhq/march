@@ -31,8 +31,7 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
             userId: user
         });
         res.status(200).json({
-            statusCode: 200,
-            response: tokenInfo
+            tokenInfo
         });
     } catch (err) {
         next(err);
@@ -44,8 +43,7 @@ const getGoogleCalendarEventsController = async (req, res, next) => {
     try {
         const events = await getGoogleCalendarEvents(user);
         res.status(200).json({
-            statusCode: 200,
-            response: events
+            events
         });
     } catch (err) {
         next(err);
@@ -57,8 +55,7 @@ const getGoogleCalendarMeetingsController = async (req, res, next) => {
     try {
         const events = await getGoogleCalendarMeetings(user);
         res.status(200).json({
-            statusCode: 200,
-            response: events
+            events
         });
     } catch (err) {
         next(err);
@@ -79,8 +76,7 @@ const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
         const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
 
         res.status(200).json({
-            statusCode: 200,
-            response: meetings
+            meetings
         });
     } catch (err) {
         next(err);
@@ -93,8 +89,7 @@ const addGoogleCalendarEventController = async (req, res, next) => {
     try {
         const newEvent = await addGoogleCalendarEvent(user, event);
         res.status(200).json({
-            statusCode: 200,
-            response: newEvent
+            newEvent
         });
     } catch (err) {
         next(err);
@@ -108,8 +103,7 @@ const updateGoogleCalendarEventController = async (req, res, next) => {
     try {
         const updatedEvent = await updateGoogleCalendarEvent(user, eventId, event);
         res.status(200).json({
-            statusCode: 200,
-            response: updatedEvent
+            updatedEvent
         });
     } catch (err) {
         next(err);
@@ -122,8 +116,7 @@ const deleteGoogleCalendarEventController = async (req, res, next) => {
     try {
         await deleteGoogleCalendarEvent(user, eventId);
         res.status(200).json({
-            status: 200,
-            message: 'event deleted successfully'
+            ok: 'ok'
         });
     } catch (err) {
         next(err);
