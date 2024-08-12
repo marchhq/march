@@ -38,10 +38,7 @@ const getAccessTokenController = async (req, res, next) => {
             userId: user
         });
         res.status(200).json({
-            statusCode: 200,
-            response: {
-                accessToken
-            }
+            accessToken
         });
     } catch (err) {
         next(err);
@@ -55,8 +52,7 @@ const getMyLinearIssuesController = async (req, res, next) => {
         const issues = await getMyLinearIssues(user);
 
         res.status(200).json({
-            status: 200,
-            response: issues
+            issues
         });
     } catch (err) {
         next(err);
@@ -70,8 +66,7 @@ const getTodayLinearIssuesController = async (req, res, next) => {
         const issues = await getTodayLinearIssues(user);
 
         res.status(200).json({
-            status: 200,
-            response: issues
+            issues
         });
     } catch (err) {
         next(err)
@@ -85,8 +80,7 @@ const getOverdueLinearIssuesController = async (req, res, next) => {
         const issues = await getOverdueLinearIssues(user);
 
         res.status(200).json({
-            status: 200,
-            response: issues
+            issues
         });
     } catch (err) {
         next(err);
@@ -101,8 +95,7 @@ const getLinearIssuesByDateController = async (req, res, next) => {
         const issues = await getLinearIssuesByDate(user, date);
 
         res.status(200).json({
-            status: 200,
-            response: issues
+            issues
         });
     } catch (err) {
         next(err);

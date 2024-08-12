@@ -1,8 +1,10 @@
+import { v4 as uuid } from "uuid";
 import { google } from "googleapis";
 import axios from 'axios';
 import { OauthClient } from "../../loaders/google.loader.js";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 import { Meeting } from "../../models/page/meetings.model.js";
+import { environment } from "../../loaders/environment.loader.js";
 
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
     const authUrl = OauthClient.generateAuthUrl({
@@ -245,6 +247,8 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
                     user: userId,
                     metadata: {
                         status: meeting.status,
+                        description: meeting.description,
+                        location: meeting.location,
                         attendees: meeting.attendees,
                         hangoutLink: meeting.hangoutLink,
                         start: meeting.start,
@@ -264,6 +268,92 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
     }
 };
 
+const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
+    const auth = new google.auth.OAuth2();
+    auth.setCredentials({ access_token: accessToken });
+
+    const requestBody = {
+        id: uuid(),
+        type: 'web_hook',
+        address: webhookUrl,
+        token: environment.CALENDAR_WEBHOOK_SECRET
+    };
+    const calendar = google.calendar({ version: 'v3' });
+
+    const response = await calendar.events.watch({
+        auth,
+        calendarId,
+        requestBody
+    });
+
+    return response.data;
+};
+
+const handleCalendarWebhookService = async (accessToken, refreshToken, userId) => {
+    OauthClient.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+
+    const eventsResponse = await calendar.events.list({
+        calendarId: 'primary',
+        timeMin: new Date().toISOString(),
+        maxResults: 10,
+        singleEvents: true,
+        orderBy: 'startTime'
+    });
+
+    const events = eventsResponse.data.items;
+    if (events && events.length > 0) {
+        for (const event of events) {
+            const existingMeeting = await Meeting.findOne({ id: event.id, user: userId });
+
+            if (existingMeeting) {
+                // Update existing meeting
+                existingMeeting.title = event.summary;
+                existingMeeting.metadata = {
+                    status: event.status,
+                    description: event.description,
+                    location: event.location,
+                    attendees: event.attendees,
+                    hangoutLink: event.hangoutLink,
+                    start: event.start,
+                    end: event.end,
+                    creator: event.creator,
+                    conferenceData: event.conferenceData
+                };
+                existingMeeting.updatedAt = event.updatedAt;
+
+                await existingMeeting.save();
+            } else {
+                // Create new meeting
+                const newMeeting = new Meeting({
+                    title: event.summary,
+                    id: event.id,
+                    user: userId,
+                    metadata: {
+                        status: event.status,
+                        description: event.description,
+                        location: event.location,
+                        attendees: event.attendees,
+                        hangoutLink: event.hangoutLink,
+                        start: event.start,
+                        end: event.end,
+                        creator: event.creator,
+                        conferenceData: event.conferenceData
+                    },
+                    createdAt: event.createdAt,
+                    updatedAt: event.updatedAt
+                });
+
+                await newMeeting.save();
+            }
+        }
+    }
+};
+
 export {
     getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
@@ -275,5 +365,7 @@ export {
     deleteGoogleCalendarEvent,
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
-    saveUpcomingMeetingsToDatabase
+    saveUpcomingMeetingsToDatabase,
+    setUpCalendarWatch,
+    handleCalendarWebhookService
 }
