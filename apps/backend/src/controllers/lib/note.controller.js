@@ -6,11 +6,10 @@ const createNoteController = async (req, res, next) => {
         const user = req.auth.userId;
 
         const requestedData = req.body;
-        const item = await createNote(user, requestedData);
+        const note = await createNote(user, requestedData);
 
         res.status(200).json({
-            status: 200,
-            response: item
+            note
         });
     } catch (err) {
         next(err);
@@ -25,8 +24,7 @@ const getNotesController = async (req, res, next) => {
         const notes = await getNotes(user);
 
         res.status(200).json({
-            status: 200,
-            response: notes
+            notes
         });
     } catch (err) {
         next(err);
@@ -42,8 +40,7 @@ const getNoteController = async (req, res, next) => {
         const note = await getNote(user, id);
 
         res.status(200).json({
-            status: 200,
-            response: note
+            note
         });
     } catch (err) {
         next(err);
@@ -57,8 +54,7 @@ const updateNoteController = async (req, res, next) => {
         const note = await updateNote(id, updateData);
 
         res.status(200).json({
-            status: 200,
-            response: note
+            note
         });
     } catch (err) {
         next(err);
@@ -71,8 +67,7 @@ const deleteNoteController = async (req, res, next) => {
         await deleteNote(id);
 
         res.status(200).json({
-            status: 200,
-            message: 'note deleted successfully'
+            ok: "ok"
         });
     } catch (err) {
         next(err);

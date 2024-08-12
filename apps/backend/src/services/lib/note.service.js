@@ -31,6 +31,10 @@ const getNote = async (user, id) => {
         user
     })
 
+    if (!note) {
+        throw new Error('Note not found');
+    }
+
     return note;
 };
 
