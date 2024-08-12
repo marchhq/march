@@ -24,7 +24,7 @@ const getAccessToken = async (code, user) => {
             privateMetadata: {
                 integration: {
                     linear: {
-                        accessToken: accessToken
+                        accessToken
                     }
                 }
             }
