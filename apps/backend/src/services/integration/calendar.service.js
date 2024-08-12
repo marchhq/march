@@ -247,6 +247,8 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
                     user: userId,
                     metadata: {
                         status: meeting.status,
+                        description: meeting.description,
+                        location: meeting.location,
                         attendees: meeting.attendees,
                         hangoutLink: meeting.hangoutLink,
                         start: meeting.start,
@@ -289,11 +291,9 @@ const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
 };
 
 const handleCalendarWebhook = async (req, res) => {
-    console.log("hey the i am ");
-    const resourceId = req.headers['x-goog-resource-id'];
     const channelToken = req.headers['x-goog-channel-token'];
-    const channelId = req.headers['x-goog-channel-id'];
     const resourceState = req.headers['x-goog-resource-state'];
+    const userId = req.query.user;
 
     if (channelToken !== environment.CALENDAR_WEBHOOK_SECRET) {
         return res.status(403).send('Invalid webhook token');
@@ -302,21 +302,85 @@ const handleCalendarWebhook = async (req, res) => {
     if (resourceState === 'sync') {
         return res.status(200).send();
     }
-    const calendar = google.calendar({ version: 'v3' });
-    console.log("till now okay");
 
-    const event = await calendar.events.list({
+    const user = await clerk.users.getUser(userId);
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
+    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken;
+
+    const isValid = await checkAccessTokenValidity(accessToken);
+
+    if (!isValid) {
+        accessToken = await refreshGoogleCalendarAccessToken(user);
+    }
+
+    OauthClient.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+
+    const eventsResponse = await calendar.events.list({
         calendarId: 'primary',
         timeMin: new Date().toISOString(),
         maxResults: 10,
         singleEvents: true,
         orderBy: 'startTime'
     });
-    console.log("till now okay1");
 
-    console.log("event.data.items: ", event.data.items);
+    const events = eventsResponse.data.items;
+    if (events && events.length > 0) {
+        for (const event of events) {
+            const existingMeeting = await Meeting.findOne({ id: event.id, user: userId });
 
-    return res.status(200).send('Webhook received');
+            if (existingMeeting) {
+                // Update existing meeting
+                existingMeeting.title = event.summary;
+                existingMeeting.metadata = {
+                    status: event.status,
+                    description: event.description,
+                    location: event.location,
+                    attendees: event.attendees,
+                    hangoutLink: event.hangoutLink,
+                    start: event.start,
+                    end: event.end,
+                    creator: event.creator,
+                    conferenceData: event.conferenceData
+                };
+                existingMeeting.updatedAt = event.updatedAt;
+
+                await existingMeeting.save();
+            } else {
+                // Create new meeting
+                const newMeeting = new Meeting({
+                    title: event.summary,
+                    id: event.id,
+                    user: userId,
+                    metadata: {
+                        status: event.status,
+                        description: event.description,
+                        location: event.location,
+                        attendees: event.attendees,
+                        hangoutLink: event.hangoutLink,
+                        start: event.start,
+                        end: event.end,
+                        creator: event.creator,
+                        conferenceData: event.conferenceData
+                    },
+                    createdAt: event.createdAt,
+                    updatedAt: event.updatedAt
+                });
+
+                await newMeeting.save();
+            }
+        }
+    }
+
+    return res.status(200).send('Webhook received and processed');
 };
 
 export {

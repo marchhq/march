@@ -20,8 +20,8 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.auth.userId;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
-        const url = `${listener.url()}/calendar/webhook`
-        const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', url)
+        const url = `${listener.url()}/calendar/webhook/?user=${user}`
+        const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', url, user)
         // const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', environment.CALENDAR_WEBHOOK_URL)
         console.log("watchResponse: ", watchResponse);
         await calendarQueue.add('calendarQueue', {
