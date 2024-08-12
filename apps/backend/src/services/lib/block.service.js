@@ -40,7 +40,9 @@ const getBlocks = async (user) => {
     const blocks = await Block.find({
         user
     })
-
+    if (!blocks) {
+        throw new Error('Block not found');
+    }
     return blocks;
 };
 
@@ -58,7 +60,9 @@ const getBlock = async (user, id) => {
         uuid: id,
         user
     })
-
+    if (!block) {
+        throw new Error('Block not found');
+    }
     return block;
 };
 
