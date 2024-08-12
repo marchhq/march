@@ -83,12 +83,12 @@ const saveIssuesToDatabase = async (issues, userId) => {
 
             if (existingIssue) {
                 existingIssue.title = issue.title;
-                existingIssue.metadata.description = issue.description;
+                existingIssue.description = issue.description;
                 existingIssue.metadata.labels = issue.labels;
                 existingIssue.metadata.state = issue.state.name;
                 existingIssue.metadata.priority = issue.priority;
                 existingIssue.metadata.project = issue.project;
-                existingIssue.metadata.dueDate = issue.dueDate;
+                existingIssue.dueDate = issue.dueDate;
                 existingIssue.updatedAt = issue.updatedAt;
 
                 await existingIssue.save();
@@ -96,16 +96,16 @@ const saveIssuesToDatabase = async (issues, userId) => {
                 const newIssue = new Integration({
                     title: issue.title,
                     type: 'linearIssue',
+                    description: issue.description,
                     id: issue.id,
                     user: userId,
                     url: issue.url,
+                    dueDate: issue.dueDate,
                     metadata: {
-                        description: issue.description,
                         labels: issue.labels,
                         state: issue.state,
                         priority: issue.priority,
-                        project: issue.project,
-                        dueDate: issue.dueDate
+                        project: issue.project
                     },
                     createdAt: issue.createdAt,
                     updatedAt: issue.updatedAt
@@ -408,12 +408,12 @@ const handleWebhookEvent = async (payload) => {
     if (existingIssue) {
         await Integration.findByIdAndUpdate(existingIssue._id, {
             title: issue.title,
-            'metadata.description': issue.description,
+            description: issue.description,
             'metadata.labels': issue.labels,
             'metadata.state': issue.state,
             'metadata.priority': issue.priority,
             'metadata.project': issue.project,
-            'metadata.dueDate': issue.dueDate,
+            dueDate: issue.dueDate,
             updatedAt: issue.updatedAt
         }, { new: true });
     } else {
@@ -423,13 +423,13 @@ const handleWebhookEvent = async (payload) => {
             id: issue.id,
             user: userId,
             url: issue.url,
+            description: issue.description,
+            dueDate: issue.dueDate,
             metadata: {
-                description: issue.description,
                 labels: issue.labels,
                 state: issue.state,
                 priority: issue.priority,
-                project: issue.project,
-                dueDate: issue.dueDate
+                project: issue.project
             },
             createdAt: issue.createdAt,
             updatedAt: issue.updatedAt
