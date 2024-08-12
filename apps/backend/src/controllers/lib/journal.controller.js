@@ -15,8 +15,7 @@ const createUpdateJournalController = async (req, res, next) => {
 
         const journal = await createUpdateJournal(date, content, user)
         res.json({
-            status: 200,
-            response: journal
+            journal
         });
     } catch (err) {
         const error = new Error(err)
