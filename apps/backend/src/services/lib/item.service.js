@@ -67,15 +67,88 @@ const createItem = async (user, itemData) => {
     return item;
 };
 
-const getItems = async (user) => {
-    const items = await Item.find({
-        user,
+const getItems = async (user, filters, sortOptions) => {
+    const query = {
+        user: user,
         isArchived: false,
         isDeleted: false
-    })
-        .sort({ created_at: -1 });
+    };
+    const sort = {};
+    const startOfWeek = new Date();
+    const endOfWeek = new Date(startOfWeek);
+    const startOfMonth = new Date();
+    const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
 
-    return items;
+    if (filters.dueDate) {
+        const dueDateFilters = filters.dueDate.split(',');
+        const dueDateConditions = [];
+
+        dueDateFilters.forEach((dueDateFilter) => {
+            switch (dueDateFilter) {
+            case 'no-date':
+                dueDateConditions.push({ dueDate: null });
+                break;
+            case 'before-today':
+                dueDateConditions.push({ dueDate: { $lt: new Date().setHours(0, 0, 0, 0) } });
+                break;
+            case 'today':
+                dueDateConditions.push({
+                    dueDate: {
+                        $gte: new Date().setHours(0, 0, 0, 0),
+                        $lt: new Date().setHours(23, 59, 59, 999)
+                    }
+                });
+                break;
+            case 'after-today':
+                dueDateConditions.push({ dueDate: { $gt: new Date().setHours(23, 59, 59, 999) } });
+                break;
+            case 'this-week':
+                startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+                endOfWeek.setDate(endOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+                dueDateConditions.push({
+                    dueDate: { $gte: startOfWeek, $lt: endOfWeek }
+                });
+                break;
+            case 'this-month':
+                startOfMonth.setDate(1);
+                startOfMonth.setHours(0, 0, 0, 0);
+                endOfMonth.setHours(23, 59, 59, 999);
+                dueDateConditions.push({
+                    dueDate: { $gte: startOfMonth, $lt: endOfMonth }
+                });
+                break;
+            default:
+                break;
+            }
+        });
+
+        if (dueDateConditions.length > 0) {
+            query.$or = dueDateConditions;
+        }
+    }
+
+    // effort filter
+    if (filters.effort) {
+        const effortFilters = filters.effort.split(',');
+        query.effort = { $in: effortFilters };
+    }
+
+    // sorting
+    if (sortOptions) {
+        const sortParams = sortOptions.split(',');
+
+        sortParams.forEach(sortParam => {
+            const [by, direction] = sortParam.split(':');
+            sort[by] = direction === 'asc' ? 1 : -1;
+        });
+    } else {
+        // Default sorting by creation date (newest on top)
+        sort.createdAt = -1;
+    }
+
+    return await Item.find(query).sort(sort);
 };
 
 const getItem = async (user, id) => {
