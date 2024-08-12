@@ -40,7 +40,7 @@ const ItemSchema = new Schema({
     updatedAt: {
         type: Date
     },
-    page: [{
+    pages: [{
         type: Schema.Types.ObjectId,
         ref: 'Page'
     }],
