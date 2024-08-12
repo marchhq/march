@@ -271,7 +271,6 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
 const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
-    console.log("webhookUrl: ", webhookUrl);
 
     const requestBody = {
         id: uuid(),
@@ -290,33 +289,7 @@ const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
     return response.data;
 };
 
-const handleCalendarWebhook = async (req, res) => {
-    const channelToken = req.headers['x-goog-channel-token'];
-    const resourceState = req.headers['x-goog-resource-state'];
-    const userId = req.query.user;
-
-    if (channelToken !== environment.CALENDAR_WEBHOOK_SECRET) {
-        return res.status(403).send('Invalid webhook token');
-    }
-
-    if (resourceState === 'sync') {
-        return res.status(200).send();
-    }
-
-    const user = await clerk.users.getUser(userId);
-    if (!user) {
-        return res.status(404).send('User not found');
-    }
-
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken;
-
-    const isValid = await checkAccessTokenValidity(accessToken);
-
-    if (!isValid) {
-        accessToken = await refreshGoogleCalendarAccessToken(user);
-    }
-
+const handleCalendarWebhookService = async (accessToken, refreshToken, userId) => {
     OauthClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
@@ -379,8 +352,6 @@ const handleCalendarWebhook = async (req, res) => {
             }
         }
     }
-
-    return res.status(200).send('Webhook received and processed');
 };
 
 export {
@@ -396,5 +367,5 @@ export {
     getGoogleCalendarupComingMeetings,
     saveUpcomingMeetingsToDatabase,
     setUpCalendarWatch,
-    handleCalendarWebhook
+    handleCalendarWebhookService
 }
