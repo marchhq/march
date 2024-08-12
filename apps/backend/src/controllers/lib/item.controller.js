@@ -9,8 +9,7 @@ const createItemController = async (req, res, next) => {
         const item = await createItem(user, requestedData);
 
         res.status(200).json({
-            status: 200,
-            response: item
+            item
         });
     } catch (err) {
         next(err);
@@ -24,8 +23,7 @@ const updateItemController = async (req, res, next) => {
         const item = await updateItem(id, updateData);
 
         res.status(200).json({
-            status: 200,
-            response: item
+            item
         });
     } catch (err) {
         next(err);
@@ -40,8 +38,7 @@ const getItemsController = async (req, res, next) => {
         const items = await getItems(user);
 
         res.status(200).json({
-            status: 200,
-            response: items
+            items
         });
     } catch (err) {
         next(err);
@@ -57,8 +54,7 @@ const getItemController = async (req, res, next) => {
         const item = await getItem(user, id);
 
         res.status(200).json({
-            status: 200,
-            response: item
+            item
         });
     } catch (err) {
         next(err);
