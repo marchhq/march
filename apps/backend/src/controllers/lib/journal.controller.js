@@ -29,8 +29,7 @@ const getUserTodayJournalController = async (req, res, next) => {
         const user = req.auth.userId;
         const journal = await getUserTodayJournal(user)
         res.json({
-            status: 200,
-            response: journal
+            journal
         });
     } catch (err) {
         next(err);
@@ -45,8 +44,7 @@ const getUserJournalByDateController = async (req, res, next) => {
         const journalDate = moment(date).startOf('day').toDate();
         const journal = await getUserJournal(journalDate, user)
         res.json({
-            status: 200,
-            response: journal
+            journal
         });
     } catch (err) {
         next(err);
@@ -57,10 +55,9 @@ const getUserAllJournalsController = async (req, res, next) => {
     try {
         // const user = req.user._id;
         const user = req.auth.userId;
-        const journal = await getUserAllJournals(user)
+        const journals = await getUserAllJournals(user)
         res.json({
-            status: 200,
-            response: journal
+            journals
         });
     } catch (err) {
         next(err);
