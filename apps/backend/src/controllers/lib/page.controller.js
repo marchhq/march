@@ -9,8 +9,7 @@ const createPageController = async (req, res, next) => {
         const page = await createPage(user, requestedData);
 
         res.status(200).json({
-            status: 200,
-            response: page
+            page
         });
     } catch (err) {
         next(err);
@@ -24,8 +23,7 @@ const getPagesController = async (req, res, next) => {
         const pages = await getPages(user);
 
         res.status(200).json({
-            status: 200,
-            response: pages
+            pages
         });
     } catch (err) {
         next(err);
@@ -40,8 +38,7 @@ const getPageController = async (req, res, next) => {
         const page = await getPage(user, id);
 
         res.status(200).json({
-            status: 200,
-            response: page
+            page
         });
     } catch (err) {
         next(err);
@@ -55,8 +52,7 @@ const updatePageController = async (req, res, next) => {
         const page = await updatePage(id, updateData);
 
         res.status(200).json({
-            status: 200,
-            response: page
+            page
         });
     } catch (err) {
         next(err);
