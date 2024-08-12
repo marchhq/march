@@ -47,6 +47,10 @@ const ItemSchema = new Schema({
     user: {
         type: Schema.Types.String
     },
+    isCompleted: {
+        type: Boolean,
+        default: false
+    },
     isArchived: {
         type: Boolean,
         default: false
