@@ -8,8 +8,7 @@ const createRecordController = async (req, res, next) => {
         const record = await createRecord(user, requestedData);
 
         res.status(200).json({
-            status: 200,
-            response: record
+            record
         });
     } catch (err) {
         next(err);
@@ -23,8 +22,7 @@ const getRecordsController = async (req, res, next) => {
         const records = await getRecords(user);
 
         res.status(200).json({
-            status: 200,
-            response: records
+            records
         });
     } catch (err) {
         next(err);
@@ -39,8 +37,7 @@ const getRecordController = async (req, res, next) => {
         const record = await getRecord(user, id);
 
         res.status(200).json({
-            status: 200,
-            response: record
+            record
         });
     } catch (err) {
         next(err);
@@ -54,8 +51,7 @@ const updateRecordController = async (req, res, next) => {
         const record = await updateRecord(id, updateData);
 
         res.status(200).json({
-            status: 200,
-            response: record
+            record
         });
     } catch (err) {
         next(err);

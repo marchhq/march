@@ -8,8 +8,7 @@ const getIntegrationController = async (req, res, next) => {
         const issues = await getIntegration(user);
 
         res.status(200).json({
-            status: 200,
-            response: issues
+            issues
         });
     } catch (err) {
         next(err);
