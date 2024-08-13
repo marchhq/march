@@ -7,17 +7,14 @@ const { ValidationError } = Joi;
 
 const userProfileController = async (req, res, next) => {
     try {
-        const user = req.auth.user;
-        const { firstName, lastName, username, avatar } = user
+        const user = req.user;
+        const { fullName, username, avatar, timezone } = user
 
         res.json({
-            "status": 200,
-            "response": {
-                firstName,
-                lastName,
-                username,
-                avatar
-            }
+            fullName,
+            username,
+            avatar,
+            timezone
         })
     } catch (err) {
         next(err)
