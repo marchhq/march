@@ -84,7 +84,8 @@ body:
       - Local
   validations:
     required: true
-  - type: markdown
-    attributes:
-      value: |
-        By submitting this issue, I agree to follow this project's [Code of Conduct](https://github.com/marchhq/march/blob/main/CODE_OF_CONDUCT.md)
+
+- type: markdown
+  attributes:
+    value: |
+      By submitting this issue, I agree to follow this project's [Code of Conduct](https://github.com/marchhq/march/blob/main/CODE_OF_CONDUCT.md)
