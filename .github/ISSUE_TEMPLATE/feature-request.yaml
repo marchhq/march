@@ -1,0 +1,37 @@
+name: Feature request
+description: Submit a proposal for a new feature
+title: "[feature]: "
+labels: [feature]
+assignees: [sajdakabir]
+body:
+- type: markdown
+  attributes:
+    value: |
+       We appreciate the community's efforts to improve march.
+
+        Note, that after you create an issue, if you have a change ready to submit!
+
+        You can open [Pull Request](https://github.com/marchhq/march/pulls) immediately after.
+        <br clear='left'/>"
+- type: checkboxes
+  attributes:
+    label: Is there an existing issue for this?
+    description: Please search to see if an issue related to this feature request already exists
+    options:
+    - label: I have searched the existing issues
+      required: true
+- type: textarea
+  attributes:
+    label: Feature description
+    description: Describe your feature proposal
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Use case
+    description: Describe what you are trying to achieve
+  validations:
+    required: true
+ - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/marchhq/march/blob/main/CODE_OF_CONDUCT.md)
