@@ -2,7 +2,6 @@ import { v4 as uuid } from "uuid";
 import { google } from "googleapis";
 import axios from 'axios';
 import { OauthClient } from "../../loaders/google.loader.js";
-import { clerk } from "../../middlewares/clerk.middleware.js";
 import { Meeting } from "../../models/page/meetings.model.js";
 import { environment } from "../../loaders/environment.loader.js";
 
@@ -18,20 +17,9 @@ const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthClient.getToken(code);
     OauthClient.setCredentials(tokens);
 
-    await clerk.users.updateUserMetadata(user, {
-        privateMetadata: {
-            integration: {
-                googleCalendar: {
-                    accessToken: tokens.access_token,
-                    refreshToken: tokens.refresh_token
-                }
-            }
-        }
-    });
-
-    // user.integration.googleCalendar.accessToken = tokens.access_token;
-    // user.integration.googleCalendar.refreshToken = tokens.refresh_token;
-    // await user.save();
+    user.integration.googleCalendar.accessToken = tokens.access_token;
+    user.integration.googleCalendar.refreshToken = tokens.refresh_token;
+    await user.save();
     return tokens;
 };
 
@@ -42,19 +30,9 @@ const refreshGoogleCalendarAccessToken = async (user) => {
 
     const { credentials } = await OauthClient.refreshAccessToken();
     console.log("access_token: ", credentials.access_token);
-    // user.integration.googleCalendar.accessToken = credentials.access_token;
-    // user.integration.googleCalendar.refreshToken = credentials.refresh_token;
-    // await user.save();
-    await clerk.users.updateUserMetadata(user, {
-        privateMetadata: {
-            integration: {
-                googleCalendar: {
-                    accessToken: credentials.access_token,
-                    refreshToken: credentials.refresh_tokenn
-                }
-            }
-        }
-    });
+    user.integration.googleCalendar.accessToken = credentials.access_token;
+    user.integration.googleCalendar.refreshToken = credentials.refresh_token;
+    await user.save();
 
     return credentials.access_token;
 };
@@ -77,10 +55,9 @@ const checkAccessTokenValidity = async (accessToken) => {
     return false;
 };
 
-const getGoogleCalendarEvents = async (id) => {
-    const user = await clerk.users.getUser(id);
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+const getGoogleCalendarEvents = async (user) => {
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const refreshToken = user.integration.googleCalendar.refreshToken
 
     const isValid = await checkAccessTokenValidity(accessToken);
 
@@ -101,10 +78,9 @@ const getGoogleCalendarEvents = async (id) => {
     return events.data.items;
 };
 
-const getGoogleCalendarMeetings = async (id) => {
-    const user = await clerk.users.getUser(id);
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+const getGoogleCalendarMeetings = async (user) => {
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const refreshToken = user.integration.googleCalendar.refreshToken
 
     const isValid = await checkAccessTokenValidity(accessToken);
 
@@ -160,10 +136,9 @@ const getGoogleCalendarupComingMeetings = async (accessToken, refreshToken) => {
     }
 };
 
-const addGoogleCalendarEvent = async (id, event) => {
-    const user = await clerk.users.getUser(id);
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+const addGoogleCalendarEvent = async (user, event) => {
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const refreshToken = user.integration.googleCalendar.refreshToken
     const isValid = await checkAccessTokenValidity(accessToken);
 
     if (!isValid) {
