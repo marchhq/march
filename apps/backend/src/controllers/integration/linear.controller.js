@@ -46,7 +46,7 @@ const getAccessTokenController = async (req, res, next) => {
 };
 
 const getMyLinearIssuesController = async (req, res, next) => {
-    const user = req.auth.userId
+    const user = req.user;
 
     try {
         const issues = await getMyLinearIssues(user);
@@ -60,7 +60,7 @@ const getMyLinearIssuesController = async (req, res, next) => {
 };
 
 const getTodayLinearIssuesController = async (req, res, next) => {
-    const user = req.auth.userId
+    const user = req.user;
 
     try {
         const issues = await getTodayLinearIssues(user);
@@ -74,7 +74,7 @@ const getTodayLinearIssuesController = async (req, res, next) => {
 };
 
 const getOverdueLinearIssuesController = async (req, res, next) => {
-    const user = req.auth.userId
+    const user = req.user;
 
     try {
         const issues = await getOverdueLinearIssues(user);
@@ -89,7 +89,7 @@ const getOverdueLinearIssuesController = async (req, res, next) => {
 
 const getLinearIssuesByDateController = async (req, res, next) => {
     const { date } = req.params;
-    const user = req.auth.userId
+    const user = req.user;
 
     try {
         const issues = await getLinearIssuesByDate(user, date);
