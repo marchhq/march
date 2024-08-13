@@ -13,13 +13,4 @@ router.route('/google/login/').post(authenticateWithGoogleController);
 
 router.route('/logout/').post(logOutController);
 
-// router.get(
-//     "/user-info",
-//     ClerkExpressRequireAuth(),
-//     (req, res) => {
-//       const { auth } = req;
-//       res.json({ userId: auth.userId, sessionId: auth.sessionId });
-//     }
-//   );
-
 export default router;
