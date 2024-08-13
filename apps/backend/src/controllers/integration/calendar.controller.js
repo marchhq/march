@@ -64,9 +64,9 @@ const getGoogleCalendarMeetingsController = async (req, res, next) => {
 
 const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
     try {
-        const user = await clerk.users.getUser(req.auth.userId);
-        let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-        const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+        const user = req.user;
+        let accessToken = user.integration.googleCalendar.accessToken;
+        const refreshToken = user.integration.googleCalendar.refreshToken;
 
         const isValid = await checkAccessTokenValidity(accessToken);
 
@@ -97,7 +97,7 @@ const addGoogleCalendarEventController = async (req, res, next) => {
 };
 
 const updateGoogleCalendarEventController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     const { eventId } = req.params;
     const event = req.body;
     try {
@@ -111,7 +111,7 @@ const updateGoogleCalendarEventController = async (req, res, next) => {
 };
 
 const deleteGoogleCalendarEventController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     const { eventId } = req.params;
     try {
         await deleteGoogleCalendarEvent(user, eventId);

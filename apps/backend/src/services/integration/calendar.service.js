@@ -138,7 +138,7 @@ const getGoogleCalendarupComingMeetings = async (accessToken, refreshToken) => {
 
 const addGoogleCalendarEvent = async (user, event) => {
     let accessToken = user.integration.googleCalendar.accessToken;
-    const refreshToken = user.integration.googleCalendar.refreshToken
+    const refreshToken = user.integration.googleCalendar.refreshToken;
     const isValid = await checkAccessTokenValidity(accessToken);
 
     if (!isValid) {
@@ -159,11 +159,9 @@ const addGoogleCalendarEvent = async (user, event) => {
     return newEvent.data;
 };
 
-const updateGoogleCalendarEvent = async (id, eventId, event) => {
-    const user = await clerk.users.getUser(id);
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
-
+const updateGoogleCalendarEvent = async (user, eventId, event) => {
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const refreshToken = user.integration.googleCalendar.refreshToken;
     const isValid = await checkAccessTokenValidity(accessToken);
 
     if (!isValid) {
@@ -185,10 +183,9 @@ const updateGoogleCalendarEvent = async (id, eventId, event) => {
     return updatedEvent.data;
 };
 
-const deleteGoogleCalendarEvent = async (id, eventId) => {
-    const user = await clerk.users.getUser(id);
-    let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-    const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+const deleteGoogleCalendarEvent = async (user, eventId) => {
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const refreshToken = user.integration.googleCalendar.refreshToken;
 
     const isValid = await checkAccessTokenValidity(accessToken);
 
