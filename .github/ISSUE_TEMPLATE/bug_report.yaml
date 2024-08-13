@@ -1,6 +1,6 @@
 name: Bug Report
 description: Problems and issues with the code of march
-title: "🐛 Bug Report: "
+title: "[🐛 Bug Report]:"
 labels: ["type: bug"]
 
 body:
@@ -25,7 +25,7 @@ body:
 - type: textarea
   attributes:
     label: What happened?
-    description: Please provide as much info as possible. If this matter is security related, please disclose it privately via [march Security]
+    description: Please provide as much info as possible. If this matter is security related, please disclose it privately via [march security]
     placeholder: |
       Please provide the context in which the problem occurred and explain what happened
   validations:
