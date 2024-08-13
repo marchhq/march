@@ -92,6 +92,10 @@ const config: Config = {
         rise: "rise 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         shake: "shake 150ms cubic-bezier(0.4, 0, 0.2, 1)",
       },
+      colors: {
+        "gray-color": "#676767",
+        "button-stroke": "#D0D0D0",
+      },
     },
     fontFamily: {
       sans: ["var(--sans-font)"],
