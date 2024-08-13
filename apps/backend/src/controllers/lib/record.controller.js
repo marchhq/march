@@ -2,7 +2,7 @@ import { createRecord, getRecords, getRecord, updateRecord } from "../../service
 
 const createRecordController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const requestedData = req.body;
         const record = await createRecord(user, requestedData);
@@ -17,7 +17,7 @@ const createRecordController = async (req, res, next) => {
 
 const getRecordsController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const records = await getRecords(user);
 
@@ -31,7 +31,7 @@ const getRecordsController = async (req, res, next) => {
 
 const getRecordController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
         const { record: id } = req.params;
 
         const record = await getRecord(user, id);
