@@ -1,7 +1,7 @@
 import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken, setUpCalendarWatch, handleCalendarWebhookService } from "../..//services/integration/calendar.service.js";
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
-import { clerk } from "../../middlewares/clerk.middleware.js";
 import { environment } from "../../loaders/environment.loader.js";
+import { User } from "../../models/core/user.model.js";
 // import { listener } from "../../../index.js";
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
@@ -20,7 +20,7 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.user;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
-        // const url = `${listener.url()}/calendar/webhook/?user=${user}`
+        // const url = `${listener.url()}/calendar/webhook/?user=${user._id}`
         const url = `${environment.CALENDAR_WEBHOOK_URL}/calendar/webhook/?user=${user._id}`;
         console.log("usr: ", url);
         await setUpCalendarWatch(tokenInfo.access_token, 'primary', url)
@@ -135,14 +135,14 @@ const handleCalendarWebhook = async (req, res, next) => {
         return res.status(200).send();
     }
 
-    const user = await clerk.users.getUser(userId);
+    const user = await User.findById(userId);
     if (!user) {
         return res.status(404).send('User not found');
     }
 
     try {
-        let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-        const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken;
+        let accessToken = user.integration.googleCalendar.accessToken;
+        const refreshToken = user.integration.googleCalendar.refreshToken;
 
         const isValid = await checkAccessTokenValidity(accessToken);
 
