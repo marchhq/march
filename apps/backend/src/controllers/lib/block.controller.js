@@ -2,7 +2,7 @@ import { createBlock, getBlocks, deleteBlock, getBlock, updateBlock } from "../.
 
 const createBlockController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const requestedData = req.body;
         const block = await createBlock(user, requestedData);
@@ -17,7 +17,7 @@ const createBlockController = async (req, res, next) => {
 
 const getBlocksController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const blocks = await getBlocks(user);
 
@@ -44,8 +44,7 @@ const deleteBlockController = async (req, res, next) => {
 
 const getBlockController = async (req, res, next) => {
     try {
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
         const { block: id } = req.params;
 
         const block = await getBlock(user, id);

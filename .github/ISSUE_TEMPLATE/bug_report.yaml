@@ -1,0 +1,91 @@
+name: Bug Report
+description: Problems and issues with the code of march
+title: "[🐛 Bug Report]:"
+labels: bug
+
+body:
+- type: markdown
+  attributes:
+    value: |
+       Thank you for finding the time to report the problem!
+
+       We appreciate the community's efforts to improve march.
+
+       Note that after you create an issue, if you have a change ready to submit, you can open a [Pull Request](https://github.com/marchhq/march/pulls) immediately after.
+       <br clear='left'/>
+
+- type: checkboxes
+  attributes:
+    label: Is there an existing issue for this?
+    description: Please search to see if an issue already exists for the bug you encountered
+    options:
+    - label: I have searched the existing issues
+      required: true
+
+- type: textarea
+  attributes:
+    label: What happened?
+    description: Please provide as much info as possible. If this matter is security related, please disclose it privately via [march security]
+    placeholder: |
+      Please provide the context in which the problem occurred and explain what happened
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: What you expected to happen
+    description: What do you think went wrong?
+    placeholder: |
+      Please explain why you think the behavior is erroneous. It is extremely helpful if you copy & paste the fragment of logs showing the exact error messages or wrong behavior, and provide screenshots for UI problems or a video demonstrating the problem. You can include files by dragging and dropping them here.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: Add steps to reproduce this behavior, including console or network logs and screenshots
+    placeholder: |
+      1. Go to '...'
+      2. Click on '....'
+      3. Scroll down to '....'
+      4. See error
+  validations:
+    required: true
+
+- type: dropdown
+  id: env
+  attributes:
+    label: Environment
+    options:
+      - Production
+      - Node version
+      - Pnpm version
+      - OS Details (Linux, Windows)
+  validations:
+    required: true
+
+- type: dropdown
+  id: browser
+  attributes:
+    label: Browser
+    options:
+      - Google Chrome
+      - Mozilla Firefox
+      - Safari
+      - Other
+
+- type: dropdown
+  id: version
+  attributes:
+    label: Version
+    options:
+      - Cloud
+      - Self-hosted
+      - Local
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: |
+      By submitting this issue, I agree to follow this project's [Code of Conduct] (https://github.com/marchhq/march/blob/main/CODE_OF_CONDUCT.md)

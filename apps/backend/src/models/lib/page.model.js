@@ -16,8 +16,8 @@ const PageSchema = new Schema({
         default: 'home'
     },
     users: [{
-        type: Schema.Types.String,
-        // ref: 'User',
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     }],
     blocks: [{

@@ -117,11 +117,9 @@ const authenticateWithGoogleController = async (req, res, next) => {
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
-            statusCode: 200,
-            response: {
-                ...tokenPair,
-                isNewUser
-            }
+            ...tokenPair,
+            isNewUser
+
         })
     } catch (err) {
         next(err)
