@@ -17,18 +17,18 @@ const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
 
 const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
-    const user = req.auth.userId;
+    const user = req.user;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
         // const url = `${listener.url()}/calendar/webhook/?user=${user}`
-        const url = `${environment.CALENDAR_WEBHOOK_URL}/calendar/webhook/?user=${user}`;
+        const url = `${environment.CALENDAR_WEBHOOK_URL}/calendar/webhook/?user=${user._id}`;
         console.log("usr: ", url);
-        await setUpCalendarWatch(tokenInfo.access_token, 'primary', url, user)
+        await setUpCalendarWatch(tokenInfo.access_token, 'primary', url)
         // const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', environment.CALENDAR_WEBHOOK_URL)
         await calendarQueue.add('calendarQueue', {
             accessToken: tokenInfo.access_token,
             refreshToken: tokenInfo.refresh_token,
-            userId: user
+            userId: user._id
         });
         res.status(200).json({
             tokenInfo
@@ -39,7 +39,7 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
 };
 
 const getGoogleCalendarEventsController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     try {
         const events = await getGoogleCalendarEvents(user);
         res.status(200).json({
@@ -51,7 +51,7 @@ const getGoogleCalendarEventsController = async (req, res, next) => {
 };
 
 const getGoogleCalendarMeetingsController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     try {
         const events = await getGoogleCalendarMeetings(user);
         res.status(200).json({
@@ -84,7 +84,7 @@ const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
 };
 
 const addGoogleCalendarEventController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     const event = req.body;
     try {
         const newEvent = await addGoogleCalendarEvent(user, event);
