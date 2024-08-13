@@ -10,8 +10,7 @@ const createUpdateJournalController = async (req, res, next) => {
         const payload = await CreateUpdateJournalPayload.validateAsync(req.body)
 
         const { date, content } = payload;
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const journal = await createUpdateJournal(date, content, user)
         res.json({
@@ -26,7 +25,7 @@ const createUpdateJournalController = async (req, res, next) => {
 
 const getUserTodayJournalController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
         const journal = await getUserTodayJournal(user)
         res.json({
             journal
@@ -39,8 +38,7 @@ const getUserTodayJournalController = async (req, res, next) => {
 const getUserJournalByDateController = async (req, res, next) => {
     try {
         const { date } = req.params;
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
         const journalDate = moment(date).startOf('day').toDate();
         const journal = await getUserJournal(journalDate, user)
         res.json({
@@ -53,8 +51,7 @@ const getUserJournalByDateController = async (req, res, next) => {
 
 const getUserAllJournalsController = async (req, res, next) => {
     try {
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
         const journals = await getUserAllJournals(user)
         res.json({
             journals

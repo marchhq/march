@@ -30,8 +30,8 @@ const RecordSchema = new Schema({
         ref: 'Page'
     }],
     user: {
-        type: Schema.Types.String
-        // ref: 'User'
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     isArchived: {
         type: Boolean,

@@ -2,7 +2,7 @@ import { getMeeting, getUpcomingMeetings, updateMeeting, deleteMeeting } from ".
 
 const getMeetingsController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const meetings = await getMeeting(user);
 
@@ -16,7 +16,7 @@ const getMeetingsController = async (req, res, next) => {
 
 const getUpcomingMeetingsController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
         const currentDateTime = new Date();
 
         const upcomingMeetings = await getUpcomingMeetings(user, currentDateTime)

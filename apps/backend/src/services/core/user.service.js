@@ -175,21 +175,15 @@ const createGoogleUser = async ({
     return user;
 }
 
-const updateUser = async (user, { firstName, lastName, username, avatar }) => {
-    // const _user = await getUserById(user)
-    // const updated = await user.updateOne({
-    //     $set: {
-    //         fullName: fullName || user.fullName,
-    //         userName: userName || user.userName,
-    //         avatar: avatar || user.avatar,
-    //         timezone
-    //     }
-    // }, {
-    //     new: true
-    // })
-    const updated = await user.update({ firstName })
+const updateUser = async (user, data) => {
+    const updatedItem = await User.findOneAndUpdate({
+        uuid: user.uuid
+    },
+    { $set: data },
+    { new: true }
+    )
 
-    return updated;
+    return updatedItem;
 }
 
 export {

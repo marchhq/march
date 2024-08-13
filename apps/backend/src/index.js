@@ -3,7 +3,6 @@ import cors from "cors";
 import Joi from "joi";
 import { environment } from "./loaders/environment.loader.js";
 import { initRoutes } from "./routers/index.js";
-import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 // import { processGmailNotification } from "./controllers/integration/email.controller.js";
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
 import { handleCalendarWebhook } from "./controllers/integration/calendar.controller.js";
@@ -27,9 +26,6 @@ app.use(
 // app.post("/gmail/webhook", processGmailNotification);
 app.post("/linear/webhook", handleWebhook);
 app.post("/calendar/webhook", handleCalendarWebhook);
-
-app.use(ClerkExpressRequireAuth());
-// app.use(ClerkExpressWithAuth());
 
 initRoutes(app);
 // Express error handler

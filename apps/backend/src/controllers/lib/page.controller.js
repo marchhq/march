@@ -2,8 +2,7 @@ import { createPage, getPages, getPage, updatePage } from "../../services/lib/pa
 
 const createPageController = async (req, res, next) => {
     try {
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const requestedData = req.body;
         const page = await createPage(user, requestedData);
@@ -18,7 +17,7 @@ const createPageController = async (req, res, next) => {
 
 const getPagesController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const pages = await getPages(user);
 
@@ -32,7 +31,7 @@ const getPagesController = async (req, res, next) => {
 
 const getPageController = async (req, res, next) => {
     try {
-        const user = req.auth.userId;
+        const user = req.user._id;
         const { space: id } = req.params;
 
         const page = await getPage(user, id);
