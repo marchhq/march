@@ -1,7 +1,7 @@
 import { getGoogleCalendarOAuthAuthorizationUrl, getGoogleCalendarAccessToken, getGoogleCalendarEvents, addGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent, getGoogleCalendarMeetings, getGoogleCalendarupComingMeetings, checkAccessTokenValidity, refreshGoogleCalendarAccessToken, setUpCalendarWatch, handleCalendarWebhookService } from "../..//services/integration/calendar.service.js";
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
-import { clerk } from "../../middlewares/clerk.middleware.js";
 import { environment } from "../../loaders/environment.loader.js";
+import { User } from "../../models/core/user.model.js";
 // import { listener } from "../../../index.js";
 
 const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
@@ -17,18 +17,18 @@ const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
 
 const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
-    const user = req.auth.userId;
+    const user = req.user;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
-        // const url = `${listener.url()}/calendar/webhook/?user=${user}`
-        const url = `${environment.CALENDAR_WEBHOOK_URL}/calendar/webhook/?user=${user}`;
+        // const url = `${listener.url()}/calendar/webhook/?user=${user._id}`
+        const url = `${environment.CALENDAR_WEBHOOK_URL}/calendar/webhook/?user=${user._id}`;
         console.log("usr: ", url);
-        await setUpCalendarWatch(tokenInfo.access_token, 'primary', url, user)
+        await setUpCalendarWatch(tokenInfo.access_token, 'primary', url)
         // const watchResponse = await setUpCalendarWatch(tokenInfo.access_token, 'primary', environment.CALENDAR_WEBHOOK_URL)
         await calendarQueue.add('calendarQueue', {
             accessToken: tokenInfo.access_token,
             refreshToken: tokenInfo.refresh_token,
-            userId: user
+            userId: user._id
         });
         res.status(200).json({
             tokenInfo
@@ -39,7 +39,7 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
 };
 
 const getGoogleCalendarEventsController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     try {
         const events = await getGoogleCalendarEvents(user);
         res.status(200).json({
@@ -51,7 +51,7 @@ const getGoogleCalendarEventsController = async (req, res, next) => {
 };
 
 const getGoogleCalendarMeetingsController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     try {
         const events = await getGoogleCalendarMeetings(user);
         res.status(200).json({
@@ -64,9 +64,9 @@ const getGoogleCalendarMeetingsController = async (req, res, next) => {
 
 const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
     try {
-        const user = await clerk.users.getUser(req.auth.userId);
-        let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-        const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken
+        const user = req.user;
+        let accessToken = user.integration.googleCalendar.accessToken;
+        const refreshToken = user.integration.googleCalendar.refreshToken;
 
         const isValid = await checkAccessTokenValidity(accessToken);
 
@@ -84,7 +84,7 @@ const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
 };
 
 const addGoogleCalendarEventController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     const event = req.body;
     try {
         const newEvent = await addGoogleCalendarEvent(user, event);
@@ -97,7 +97,7 @@ const addGoogleCalendarEventController = async (req, res, next) => {
 };
 
 const updateGoogleCalendarEventController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     const { eventId } = req.params;
     const event = req.body;
     try {
@@ -111,7 +111,7 @@ const updateGoogleCalendarEventController = async (req, res, next) => {
 };
 
 const deleteGoogleCalendarEventController = async (req, res, next) => {
-    const user = req.auth.userId;
+    const user = req.user;
     const { eventId } = req.params;
     try {
         await deleteGoogleCalendarEvent(user, eventId);
@@ -135,14 +135,14 @@ const handleCalendarWebhook = async (req, res, next) => {
         return res.status(200).send();
     }
 
-    const user = await clerk.users.getUser(userId);
+    const user = await User.findById(userId);
     if (!user) {
         return res.status(404).send('User not found');
     }
 
     try {
-        let accessToken = user.privateMetadata.integration.googleCalendar.accessToken;
-        const refreshToken = user.privateMetadata.integration.googleCalendar.refreshToken;
+        let accessToken = user.integration.googleCalendar.accessToken;
+        const refreshToken = user.integration.googleCalendar.refreshToken;
 
         const isValid = await checkAccessTokenValidity(accessToken);
 
