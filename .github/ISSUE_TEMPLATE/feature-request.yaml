@@ -1,10 +1,8 @@
 name: Feature request
 description: Submit a proposal for a new feature
 title: "[🔥feature]: "
-labels: 
-  - feature
-assignees: 
-  - sajdakabir
+labels: feature
+
 body:
   - type: markdown
     attributes:
@@ -36,4 +34,4 @@ body:
   - type: markdown
     attributes:
       value: |
-        By submitting this issue, I agree to follow this project's [Code of Conduct](https://github.com/marchhq/march/blob/main/CODE_OF_CONDUCT.md)
+        By submitting this issue, I agree to follow this project's [Code of Conduct] (https://github.com/marchhq/march/blob/main/CODE_OF_CONDUCT.md)
