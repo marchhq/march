@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { environment } from '../../loaders/environment.loader.js';
-import { clerk } from "../../middlewares/clerk.middleware.js";
-// import { Integration } from '../../models/integration/integration.model.js';
 import { Item } from '../../models/lib/item.model.js';
+import { User } from '../../models/core/user.model.js';
 
 const getAccessToken = async (code, user) => {
     try {
@@ -375,18 +374,17 @@ const handleWebhookEvent = async (payload) => {
         return;
     }
 
-    const response = await clerk.users.getUserList({ limit: 100 });
-    const users = response.data;
-
-    const user = users.find(user => user.privateMetadata.integration?.linear?.userId === issue.assignee.id);
+    const user = await User.findOne({
+        'integration.linear.userId': issue.assignee.id
+    })
     if (!user) {
         console.log('No user found with the matching Linear userId.');
         return;
     }
-    const userId = user.id;
+    const userId = user._id;
 
     // Check if the issue already exists
-    const existingIssue = await Item.findOne({ id: issue.id, type: 'linearIssue' });
+    const existingIssue = await Item.findOne({ id: issue.id, type: 'linearIssue', user: userId });
     if (existingIssue) {
         await Item.findByIdAndUpdate(existingIssue._id, {
             title: issue.title,
