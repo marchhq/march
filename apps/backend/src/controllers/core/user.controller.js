@@ -31,7 +31,6 @@ const updateUserController = async (req, res, next) => {
         await updateUser(user, data);
 
         res.json({
-            "status": 200,
             "message": "Updated successfully"
         })
     } catch (err) {
