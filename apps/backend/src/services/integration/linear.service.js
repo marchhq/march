@@ -21,17 +21,9 @@ const getAccessToken = async (code, user) => {
         });
 
         const accessToken = tokenResponse.data.access_token;
-        await clerk.users.updateUserMetadata(user, {
-            privateMetadata: {
-                integration: {
-                    linear: {
-                        accessToken
-                    }
-                }
-            }
-        });
-        // user.integration.linear.accessToken = accessToken;
-        // await user.save();
+
+        user.integration.linear.accessToken = accessToken;
+        await user.save();
 
         return accessToken;
     } catch (error) {
@@ -59,15 +51,8 @@ const fetchUserInfo = async (linearToken, user) => {
             }
         });
         const userInfo = response.data.data.viewer
-        await clerk.users.updateUserMetadata(user, {
-            privateMetadata: {
-                integration: {
-                    linear: {
-                        userId: userInfo.id
-                    }
-                }
-            }
-        });
+        user.integration.linear.userId = userInfo.id;
+        await user.save();
 
         return userInfo;
     } catch (error) {
