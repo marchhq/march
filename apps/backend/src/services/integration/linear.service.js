@@ -153,10 +153,9 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     return issues;
 };
 
-const getMyLinearIssues = async (id) => {
-    const user = await clerk.users.getUser(id);
-    const linearToken = user.privateMetadata.integration.linear.accessToken;
-    const userId = user.privateMetadata.integration.linear.userId
+const getMyLinearIssues = async (user) => {
+    const linearToken = user.integration.linear.accessToken;
+    const userId = user.integration.linear.userId
     if (!linearToken || !userId) {
         const error = new Error("linearToken or userId is missing")
         error.statusCode = 500
@@ -240,10 +239,9 @@ const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
-const getTodayLinearIssues = async (id) => {
-    const user = await clerk.users.getUser(id);
-    const linearToken = user.privateMetadata.integration.linear.accessToken;
-    const userId = user.privateMetadata.integration.linear.userId
+const getTodayLinearIssues = async (user) => {
+    const linearToken = user.integration.linear.accessToken;
+    const userId = user.integration.linear.userId;
     if (!linearToken || !userId) {
         const error = new Error("linearToken or userId is missing")
         error.statusCode = 500
@@ -282,10 +280,9 @@ const getTodayLinearIssues = async (id) => {
     return response.data.data.issues.nodes;
 };
 
-const getOverdueLinearIssues = async (id) => {
-    const user = await clerk.users.getUser(id);
-    const linearToken = user.privateMetadata.integration.linear.accessToken;
-    const userId = user.privateMetadata.integration.linear.userId
+const getOverdueLinearIssues = async (user) => {
+    const linearToken = user.integration.linear.accessToken;
+    const userId = user.integration.linear.userId;
     if (!linearToken || !userId) {
         const error = new Error("linearToken or userId is missing")
         error.statusCode = 500
@@ -323,10 +320,9 @@ const getOverdueLinearIssues = async (id) => {
     return response.data.data.issues.nodes;
 };
 
-const getLinearIssuesByDate = async (id, date) => {
-    const user = await clerk.users.getUser(id);
-    const linearToken = user.privateMetadata.integration.linear.accessToken;
-    const userId = user.privateMetadata.integration.linear.userId
+const getLinearIssuesByDate = async (user, date) => {
+    const linearToken = user.integration.linear.accessToken;
+    const userId = user.integration.linear.userId;
     if (!linearToken || !userId) {
         const error = new Error("linearToken or userId is missing")
         error.statusCode = 500
