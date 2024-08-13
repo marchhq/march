@@ -2,8 +2,7 @@ import { createItem, getItems, updateItem, getItem } from "../../services/lib/it
 
 const createItemController = async (req, res, next) => {
     try {
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
 
         const requestedData = req.body;
         const item = await createItem(user, requestedData);
@@ -32,10 +31,14 @@ const updateItemController = async (req, res, next) => {
 
 const getItemsController = async (req, res, next) => {
     try {
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
+        const filters = {
+            dueDate: req.query.dueDate,
+            effort: req.query.effort
+        };
+        const sortOptions = req.query.sort;
 
-        const items = await getItems(user);
+        const items = await getItems(user, filters, sortOptions);
 
         res.status(200).json({
             items
@@ -47,8 +50,7 @@ const getItemsController = async (req, res, next) => {
 
 const getItemController = async (req, res, next) => {
     try {
-        // const user = req.user._id;
-        const user = req.auth.userId;
+        const user = req.user._id;
         const { item: id } = req.params;
 
         const item = await getItem(user, id);

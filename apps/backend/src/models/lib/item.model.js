@@ -45,7 +45,12 @@ const ItemSchema = new Schema({
         ref: 'Page'
     }],
     user: {
-        type: Schema.Types.String
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    isCompleted: {
+        type: Boolean,
+        default: false
     },
     isArchived: {
         type: Boolean,

@@ -1,23 +1,20 @@
 import Joi from "joi";
 import { getUserTodayItems, getUserOverdueItems, getUserItemsByDate, getUserItems } from "../../services/lib/item.service.js";
-
 import { moveItemtoDate } from "../../services/lib/integration.service.js";
+import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
 
 const userProfileController = async (req, res, next) => {
     try {
-        const user = req.auth.user;
-        const { firstName, lastName, username, avatar } = user
+        const user = req.user;
+        const { fullName, username, avatar, timezone } = user
 
         res.json({
-            "status": 200,
-            "response": {
-                firstName,
-                lastName,
-                username,
-                avatar
-            }
+            fullName,
+            username,
+            avatar,
+            timezone
         })
     } catch (err) {
         next(err)
@@ -26,17 +23,14 @@ const userProfileController = async (req, res, next) => {
 
 const updateUserController = async (req, res, next) => {
     try {
-        // const user = req.user;
-        // const user = req.auth.user;
-        // console.log("user: ", user);
-        // // const payload = await UpdateUserPayload.validateAsync(req.body)
+        const user = req.user;
+        // const payload = await UpdateUserPayload.validateAsync(req.body)
 
-        // const { firstName, lastName, username, avatar } = req.body;
+        const data = req.body;
 
-        // await updateUser(user, { firstName, lastName, username, avatar });
+        await updateUser(user, data);
 
         res.json({
-            "status": 200,
             "message": "Updated successfully"
         })
     } catch (err) {

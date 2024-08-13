@@ -15,7 +15,8 @@ const BlockSchema = new Schema({
         type: Schema.Types.Mixed
     },
     user: {
-        type: Schema.Types.String,
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     page: {
