@@ -28,14 +28,14 @@ const redirectLinearOAuthLoginController = (req, res, next) => {
 
 const getAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
-    const user = req.auth.userId
+    const user = req.user;
     try {
         const accessToken = await getAccessToken(code, user);
         const userInfo = await fetchUserInfo(accessToken, user);
         await linearQueue.add('linearQueue', {
             accessToken,
             linearUserId: userInfo.id,
-            userId: user
+            userId: user._id
         });
         res.status(200).json({
             accessToken
