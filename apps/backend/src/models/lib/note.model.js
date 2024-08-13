@@ -16,8 +16,8 @@ const NoteSchema = new Schema({
         default: ''
     },
     user: {
-        type: Schema.Types.String,
-        // ref: 'User',
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     page: {
