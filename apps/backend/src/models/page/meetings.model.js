@@ -31,7 +31,8 @@ const meetingSchema = new Schema({
         ref: 'Page'
     }],
     user: {
-        type: Schema.Types.String
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     isArchived: {
         type: Boolean,
