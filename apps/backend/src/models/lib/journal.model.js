@@ -16,8 +16,8 @@ const JournalSchema = new Schema({
         required: true
     },
     user: {
-        type: Schema.Types.String,
-        // ref: 'User',
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     page: {

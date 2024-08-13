@@ -1,6 +1,6 @@
-// import AuthRouter from "./core/auth.route.js";
+import AuthRouter from "./core/auth.route.js";
 import UserRouter from "./core/user.route.js";
-import { ClerkUserData } from "../middlewares/clerk.middleware.js";
+import { JWTMiddleware } from "../middlewares/jwt.middleware.js";
 import PageRouter from "../routers/lib/page.route.js";
 import LinearRoute from "../routers/integration/linear.route.js";
 import CalenderRoute from "../routers/integration/calendar.route.js";
@@ -12,13 +12,13 @@ import GithubRoute from "../routers/integration/github.route.js"
 **/
 
 const initRoutes = (app) => {
-    // app.use("/auth", AuthRouter);
-    app.use("/users", ClerkUserData, UserRouter);
-    app.use("/api", PageRouter);
-    app.use('/', LinearRoute);
-    app.use('/calendar', CalenderRoute);
-    app.use('/gmail', EmailRoute);
-    app.use('/github', GithubRoute);
+    app.use("/auth", AuthRouter);
+    app.use("/users", JWTMiddleware, UserRouter);
+    app.use("/api", JWTMiddleware, PageRouter);
+    app.use('/', JWTMiddleware, LinearRoute);
+    app.use('/calendar', JWTMiddleware, CalenderRoute);
+    app.use('/gmail', JWTMiddleware, EmailRoute);
+    app.use('/github', JWTMiddleware, GithubRoute);
 
     app.get("/", async (req, res) => {
         res.json({
