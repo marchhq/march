@@ -2,9 +2,11 @@ import * as React from "react"
 
 import type { Viewport } from "next"
 
+import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
-// import localFont from "next/font/local"
 
+// import localFont from "next/font/local"
+import { AuthProvider } from "../contexts/AuthContext"
 import classNames from "@/src/utils/classNames"
 
 import "../styles/main.css"
@@ -57,7 +59,13 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           "overflow-x-hidden font-sans"
         )}
       >
-        {children}
+        <AuthProvider>
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
+          >
+            {children}
+          </GoogleOAuthProvider>
+        </AuthProvider>
       </body>
     </html>
   )

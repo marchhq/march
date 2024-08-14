@@ -2,9 +2,9 @@ import * as React from "react"
 
 import { type Metadata } from "next"
 
-import Google from "@/src/components/icons/Google"
-import Line from "@/src/components/icons/Line"
-import Logo from "@/src/components/icons/Logo"
+import GoogleLogin from "../components/atoms/GoogleLogin"
+import Line from "@/src/lib/icons/Line"
+import Logo from "@/src/lib/icons/Logo"
 import generateMetadata from "@/src/utils/seo"
 
 export const metadata: Metadata = generateMetadata({
@@ -30,10 +30,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="mt-5 text-sm">
-            <button className="flex w-80 items-center justify-center gap-x-6 rounded-2xl border border-button-stroke bg-transparent p-2 text-black">
-              <Google />
-              Continue with google
-            </button>
+            <GoogleLogin />
           </div>
         </div>
 
