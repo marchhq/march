@@ -81,7 +81,8 @@ const UserSchema = new Schema({
         },
         gmail: {
             accessToken: String,
-            refreshToken: String
+            refreshToken: String,
+            labelId: String
         }
     }
 }, {
