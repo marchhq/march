@@ -129,22 +129,10 @@ const getGmailAccessTokenController = async (req, res, next) => {
     }
 };
 
-
-const createGmailLabelsController = async (req, res) => {
-    const user = req.auth.userId;
-    const { accessToken, refreshToken } = user.integration.gmail;
-    OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-    await createLabel(OauthClient, 'cat_inbox');
-    // await createLabel(OauthClient, 'cat_today');
-
-    res.send('Labels created or already existed');
-};
-
 export {
     redirectGmailOAuthLoginController,
     getGmailAccessTokenController,
     createLabel,
-    createGmailLabelsController,
     setupPushNotificationsController,
     processGmailNotification
 }
