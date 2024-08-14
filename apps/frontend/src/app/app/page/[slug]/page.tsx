@@ -1,7 +1,7 @@
 import * as React from "react"
 
-import Container from "@/components/atoms/Container"
-import PageSection from "@/components/PageSection"
+import Container from "@/src/components/atoms/Container"
+import PageSection from "@/src/components/PageSection"
 
 const AppPage: React.FC = () => {
   return (

@@ -3,7 +3,7 @@ import * as React from "react"
 import { ClerkProvider } from "@clerk/nextjs"
 import { dark } from "@clerk/themes"
 
-import Sidebar from "@/components/Sidebar"
+import Sidebar from "@/src/components/Sidebar"
 
 interface Props {
   children: React.ReactNode

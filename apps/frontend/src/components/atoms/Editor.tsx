@@ -26,7 +26,7 @@ import {
 } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
-import classNames from "@/utils/classNames"
+import classNames from "@/src/utils/classNames"
 
 interface Props {
   placeholder?: string

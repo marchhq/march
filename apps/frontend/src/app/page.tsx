@@ -2,10 +2,10 @@ import * as React from "react"
 
 import { type Metadata } from "next"
 
-import Google from "@/components/icons/Google"
-import Line from "@/components/icons/Line"
-import Logo from "@/components/icons/Logo"
-import generateMetadata from "utils/seo"
+import Google from "@/src/components/icons/Google"
+import Line from "@/src/components/icons/Line"
+import Logo from "@/src/components/icons/Logo"
+import generateMetadata from "@/src/utils/seo"
 
 export const metadata: Metadata = generateMetadata({
   path: "/",

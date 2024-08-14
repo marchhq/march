@@ -9,7 +9,7 @@ const Line = (): JSX.Element => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M1 0.5H20" stroke="#676767" stroke-linecap="round" />
+      <path d="M1 0.5H20" stroke="#676767" strokeLinecap="round" />
     </svg>
   )
 }

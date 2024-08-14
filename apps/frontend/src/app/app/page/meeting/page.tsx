@@ -6,9 +6,9 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/atoms/Resizable"
-import EachMeet from "@/components/EachMeet"
-import PageSection from "@/components/PageSection"
+} from "@/src/components/atoms/Resizable"
+import EachMeet from "@/src/components/EachMeet"
+import PageSection from "@/src/components/PageSection"
 
 const MeetingPage: React.FC = () => {
   const meets = [
@@ -49,7 +49,7 @@ const MeetingPage: React.FC = () => {
     },
   ]
 
-  const [activeMeet, setActiveMeet] = React.useState<number>(0);
+  const [activeMeet, setActiveMeet] = React.useState<number>(0)
 
   const handleMeetClick = (index: number): void => {
     setActiveMeet(index)

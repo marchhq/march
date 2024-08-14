@@ -8,8 +8,8 @@ import {
   GitPullRequest,
 } from "@phosphor-icons/react"
 
-import Editor from "@/components/atoms/Editor"
-import { fromNow } from "@/utils/datetime"
+import Editor from "@/src/components/atoms/Editor"
+import { fromNow } from "@/src/utils/datetime"
 
 interface IntegrationType {
   type: "inbox" | "githubIssue" | "pullRequest" | "linearIssue"

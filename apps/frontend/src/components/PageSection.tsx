@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 
-import Editor from "@/components/atoms/Editor"
+import Editor from "@/src/components/atoms/Editor"
 
 const initialContent = `
   <h1>Lorem ipsum dolor</h1>
