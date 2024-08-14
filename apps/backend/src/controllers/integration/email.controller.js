@@ -1,7 +1,6 @@
 import { OauthClient } from "../../loaders/google.loader.js";
 import { getGmailAccessToken, createLabel } from "../../services/integration/email.service.js"
 import { google } from "googleapis";
-import { clerk } from "../../middlewares/clerk.middleware.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { createItem } from "../../services/lib/item.service.js";
 
@@ -12,7 +11,7 @@ async function processGmailNotification (req, res) {
 
     const { historyId } = decodedData;
     try {
-        OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+        // OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
 
         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
 
@@ -72,9 +71,10 @@ async function createIssueFromEmail (messageId, auth) {
 }
 
 const setupPushNotificationsController = async (req, res) => {
-    const user = await clerk.users.getUser(req.auth.userId);
-    const accessToken = user.privateMetadata.integration.gmail.accessToken;
-    const refreshToken = user.privateMetadata.integration.gmail.refreshToken
+    const user = req.user;
+    const accessToken = user.integration.gmail.accessToken;
+    const refreshToken = user.integration.gmail.refreshToken;
+    const labelId = user.integration.gmail.labelId;
 
     try {
         OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
@@ -85,7 +85,8 @@ const setupPushNotificationsController = async (req, res) => {
             userId: 'me',
             requestBody: {
                 topicName: environment.TOPIC_NAME,
-                labelIds: ['Label_10']
+                labelIds: [labelId],
+                labelFilterBehavior: "INCLUDE"
             }
         });
 
