@@ -8,8 +8,8 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/atoms/Resizable"
-import PageSection from "@/components/PageSection"
+} from "@/src/components/atoms/Resizable"
+import PageSection from "@/src/components/PageSection"
 
 const NotesPage: React.FC = () => {
   const notes = [1, 2, 3, 4]

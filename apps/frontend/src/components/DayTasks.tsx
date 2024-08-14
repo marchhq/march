@@ -6,8 +6,8 @@ import { getDate } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
 
 import Editor from "./atoms/Editor"
-import Button from "@/components/atoms/Button"
-import { getOrdinalSuffix, getMonthName, getDayPhase } from "@/utils/datetime"
+import Button from "@/src/components/atoms/Button"
+import { getOrdinalSuffix, getMonthName, getDayPhase } from "@/src/utils/datetime"
 
 interface Props {
   dateChangeCounter: number

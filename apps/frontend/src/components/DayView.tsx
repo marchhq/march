@@ -8,8 +8,8 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/atoms/Resizable"
-import Calendar from "@/components/Calendar"
+} from "@/src/components/atoms/Resizable"
+import Calendar from "@/src/components/Calendar"
 
 const todayStr = new Date().toISOString().replace(/T.*$/, "") // YYYY-MM-DD of today
 const INITIAL_EVENTS = [
