@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation"
 import Button from "./atoms/Button"
 
 const navLinkClassName =
-  "flex items-center gap-2 rounded-lg px-3 py-2.5 hover-bg text-sm text-zinc-400 cursor-pointer"
+  "flex items-center gap-2 border border-button-stroke rounded-lg px-3 py-2.5 hover-bg text-sm text-gray-color dark:text-zinc-400 cursor-pointer"
 
 const pages = [
   { title: "Notes", slug: "notes" },
@@ -26,8 +26,10 @@ const Sidebar: React.FC = () => {
     return null
   } else {
     return (
-      <div className="flex w-[240px] flex-col gap-0.5 rounded-xl border border-white/10 bg-white/10 px-3 pb-3 pt-5 shadow-lg backdrop-blur-lg">
-        <div className="px-3 font-semibold text-zinc-300">March Satellite</div>
+      <div className="flex w-[240px] flex-col gap-0.5 rounded-xl border border-button-stroke px-3 pb-3 pt-5 shadow-xl shadow-black/50 backdrop-blur-lg dark:border-white/10 dark:bg-white/10">
+        <div className="px-3 font-semibold dark:text-zinc-300">
+          March Satellite
+        </div>
         <hr className="mb-3 mt-6 border-zinc-700/40" />
         <Link className={navLinkClassName} href={"/app/inbox/"}>
           <Tray size={14} weight="duotone" />
