@@ -146,7 +146,6 @@ const handlePushNotification = async (req, res) => {
         // Update the user's stored historyId
         user.integration.gmail.historyId = historyResponse.data.historyId;
         await user.save();
-        console.log("done fuck you");
         res.status(200).send('Notification processed successfully');
     } catch (error) {
         console.error('Error processing Gmail notification:', error);
@@ -154,14 +153,23 @@ const handlePushNotification = async (req, res) => {
     }
 };
 
-async function createIssueFromEmail(email, user) {
-
-    // console.log("email: ", email.payload);
-    console.log("email.payload.body: ", email.payload.body);
-
+const createIssueFromEmail = async (email, user) => {
     const subject = email.payload.headers.find(header => header.name === 'Subject').value;
     const sender = email.payload.headers.find(header => header.name === 'From').value;
-    const emailBody = email.payload.body.data;
+
+    let emailBody = '';
+
+    if (email.payload.parts) {
+        const part = email.payload.parts.find(part => part.mimeType === 'text/plain' || part.mimeType === 'text/html');
+        if (part && part.body && part.body.data) {
+            emailBody = Buffer.from(part.body.data, 'base64').toString('utf-8');
+        }
+    } else if (email.payload.body && email.payload.body.data) {
+        emailBody = Buffer.from(email.payload.body.data, 'base64').toString('utf-8');
+    } else {
+        emailBody = 'Issue created from Gmail label';
+    }
+
     const emailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`;
 
     const issue = new Item({
@@ -169,7 +177,7 @@ async function createIssueFromEmail(email, user) {
         type: 'gmailIssue',
         id: email.id,
         user: user._id,
-        description: emailBody || 'Issue created from Gmail label',
+        description: emailBody,
         metadata: {
             senderEmail: sender,
             url: emailUrl
