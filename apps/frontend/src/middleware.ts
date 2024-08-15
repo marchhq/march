@@ -1,17 +1,28 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-const isProtectedRoute = createRouteMatcher([
-  "/app/today(.*)",
-  "/app/inbox(.*)",
-  "/app/page(.*)",
-  "/app/profile(.*)",
-  "/app/settings(.*)",
-])
+import { getSession } from "./lib/server/actions/sessions"
 
-export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) auth().protect()
-})
+export async function middleware(request: NextRequest): Promise<NextResponse> {
+  const session = await getSession()
+
+  // Get the pathname of the request (e.g. /, /protected, /api/user)
+  const path = request.nextUrl.pathname
+
+  // If the user is not authenticated and trying to access any route other than '/'
+  if (session.length === 0 && path !== "/") {
+    return NextResponse.redirect(new URL("/", request.url))
+  }
+
+  // If the user is authenticated and trying to access the '/' route
+  if (session.length !== 0 && path === "/") {
+    return NextResponse.redirect(new URL("/app/today", request.url))
+  }
+
+  // For all other cases, continue with the request
+  return NextResponse.next()
+}
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 }
