@@ -16,7 +16,7 @@ const AppLayout: React.FC<Props> = ({ children }) => {
         baseTheme: dark,
       }}
     >
-      <main className="flex h-screen gap-1 bg-black p-1">
+      <main className="flex h-screen gap-1 bg-white p-1 dark:bg-black">
         <Sidebar />
         <section className="flex-1">{children}</section>
       </main>
