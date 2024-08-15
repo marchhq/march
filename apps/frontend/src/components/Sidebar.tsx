@@ -6,9 +6,10 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import Button from "./atoms/Button"
+import { useAuth } from "../contexts/AuthContext"
 
 const navLinkClassName =
-  "flex items-center gap-2 border border-button-stroke rounded-lg px-3 py-2.5 hover-bg text-sm text-gray-color dark:text-zinc-400 cursor-pointer"
+  "flex items-center gap-2 rounded-lg px-3 py-2.5 hover-bg text-sm text-gray-color dark:text-zinc-400 cursor-pointer"
 
 const pages = [
   { title: "Notes", slug: "notes" },
@@ -20,12 +21,13 @@ const pages = [
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname()
+  const { logout } = useAuth()
 
   if (pathname.includes("auth")) {
     return null
   } else {
     return (
-      <div className="flex w-[240px] flex-col gap-0.5 rounded-xl border border-button-stroke px-3 pb-3 pt-5 shadow-xl shadow-black/50 backdrop-blur-lg dark:border-white/10 dark:bg-white/10">
+      <div className="flex w-[240px] flex-col gap-0.5 rounded-xl border border-button-stroke px-3 pb-3 pt-5 backdrop-blur-lg dark:border-white/10 bg-[#dddddd] dark:bg-white/10">
         <div className="px-3 font-semibold dark:text-zinc-300">
           March Satellite
         </div>
@@ -56,12 +58,10 @@ const Sidebar: React.FC = () => {
           </Link>
         ))}
         <div className="mt-auto text-zinc-400">
-          {/* <SignOutButton redirectUrl="/app/auth/">
-            <div className={navLinkClassName}>
-              <SignOut size={14} weight="duotone" />
-              Logout
-            </div>
-          </SignOutButton> */}
+          <button onClick={logout} className={navLinkClassName + " w-full"}>
+            <SignOut size={14} weight="duotone" />
+            Logout
+          </button>
           <Link className={navLinkClassName} href={"/app/profile/"}>
             <User size={14} weight="duotone" />
             Profile
