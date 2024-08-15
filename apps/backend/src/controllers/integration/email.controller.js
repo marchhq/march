@@ -1,12 +1,9 @@
 import { OauthClient } from "../../loaders/google.loader.js";
-import { getGmailAccessToken } from "../../services/integration/email.service.js"
+import { getGmailAccessToken, createLabel } from "../../services/integration/email.service.js"
 import { google } from "googleapis";
 import { clerk } from "../../middlewares/clerk.middleware.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { createItem } from "../../services/lib/item.service.js";
-
-const accessToken = ""
-const refreshToken = ""
 
 async function processGmailNotification (req, res) {
     const data = req.body
@@ -111,91 +108,31 @@ const redirectGmailOAuthLoginController = (req, res) => {
 
 const getGmailAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
-    const user = req.auth.userId
+    const user = req.user;
     try {
         const tokenInfo = await getGmailAccessToken(code, user);
 
         OauthClient.setCredentials({ access_token: tokenInfo.access_token, refresh_token: tokenInfo.refresh_token });
 
         // creating label
-        labelId = await createLabel(OauthClient, 'march_inbox');
-        // await createLabel(OauthClient, 'march_today');
+        const labelId = await createLabel(OauthClient, 'march_inbox');
+
+        user.integration.gmail.accessToken = tokenInfo.access_token;
+        user.integration.gmail.refreshToken = tokenInfo.refresh_token;
+        user.integration.gmail.labelId = labelId;
+        await user.save();
         res.status(200).json({
-            statusCode: 200,
-            response: tokenInfo
+            tokenInfo
         });
     } catch (err) {
         next(err);
     }
 };
 
-const createLabel = async (OauthClient, labelName) => {
-    try {
-        // Check if label exists
-        const gmail = google.gmail({ version: 'v1', auth: OauthClient });
-
-        const existingLabels = await gmail.users.labels.list({ userId: 'me' });
-        // console.log("existingLabels: ", existingLabels.data.labels);
-        const labelExists = existingLabels.data.labels.some(label => label.name === labelName);
-        console.log("labelExists: ", existingLabels.data.labels);
-        let label;
-        if (!labelExists) {
-            label = await gmail.users.labels.create({
-                userId: 'me',
-                requestBody: {
-                    labelListVisibility: 'labelShow',
-                    messageListVisibility: 'show',
-                    name: labelName
-                }
-            });
-        } else {
-            console.log(`Label '${labelName}' already exists.`);
-        }
-        console.log("label: ", label);
-        return label.data.id;
-    } catch (error) {
-        console.error(`Error creating/checking label ${labelName}:`, error);
-    }
-};
-
-// const createLabel = async (labelName) => {
-//     try {
-//         const response = await gmail.users.labels.create({
-//             userId: 'me',
-//             requestBody: {
-//                 name: labelName,
-//                 labelListVisibility: 'labelShow',
-//                 messageListVisibility: 'show'
-//             }
-//         });
-//         // console.log('Label created:', response.data);
-//         return response.data.id;
-//     } catch (error) {
-//         if (error.code === 409) {
-//             console.log('Label already exists');
-//         } else {
-//             console.error('Error creating label:', error);
-//         }
-//     }
-// }
-
-// console.log("labelId: ", labelId);
-
-const createGmailLabelsController = async (req, res) => {
-    const user = req.auth.userId;
-    const { accessToken, refreshToken } = user.integration.gmail;
-    OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-    await createLabel(OauthClient, 'cat_inbox');
-    // await createLabel(OauthClient, 'cat_today');
-
-    res.send('Labels created or already existed');
-};
-
 export {
     redirectGmailOAuthLoginController,
     getGmailAccessTokenController,
     createLabel,
-    createGmailLabelsController,
     setupPushNotificationsController,
     processGmailNotification
 }
