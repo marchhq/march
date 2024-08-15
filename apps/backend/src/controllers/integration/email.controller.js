@@ -2,8 +2,8 @@ import { OauthClient } from "../../loaders/google.loader.js";
 import { getGmailAccessToken, createLabel } from "../../services/integration/email.service.js"
 import { google } from "googleapis";
 import { environment } from "../../loaders/environment.loader.js";
-import { createItem } from "../../services/lib/item.service.js";
 import { User } from "../../models/core/user.model.js";
+import { Item } from "../../models/lib/item.model.js";
 
 // async function processGmailNotification (req, res) {
 //     const data = req.body
@@ -102,8 +102,60 @@ import { User } from "../../models/core/user.model.js";
 //     }
 // };
 
+// Webhook to handle incoming push notifications from Gmail
+const handlePushNotification = async (req, res) => {
+    const message = Buffer.from(req.body.message.data, 'base64').toString('utf-8');
+    const parsedMessage = JSON.parse(message);
+    const userEmail = parsedMessage.emailAddress;
+    console.log("userEmail: ", userEmail);
 
-async function createIssueFromEmail(email, user) {
+    const user = await User.findOne({ 'integration.gmail.email': userEmail });
+    if (!user) {
+        console.error('User not found for the incoming Gmail push notification.');
+        return res.status(404).send();
+    }
+    const accessToken = user.integration.gmail.accessToken;
+    const refreshToken = user.integration.gmail.refreshToken;
+    const historyId = user.integration.gmail.historyId;
+
+    try {
+        OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+        const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+
+        // Retrieve the email history since the last history ID
+        const historyResponse = await gmail.users.history.list({
+            userId: 'me',
+            startHistoryId: historyId,
+            labelId: user.integration.gmail.labelId
+        });
+
+        if (historyResponse.data.history) {
+            for (const historyRecord of historyResponse.data.history) {
+                if (historyRecord.labelsAdded) {
+                    for (const addedMessage of historyRecord.labelsAdded) {
+                        const emailData = await gmail.users.messages.get({
+                            userId: 'me',
+                            id: addedMessage.message.id
+                        });
+                        await createIssueFromEmail(emailData.data, user);
+                    }
+                }
+            }
+        }
+
+        // Update the user's stored historyId
+        user.integration.gmail.historyId = historyResponse.data.historyId;
+        await user.save();
+        console.log("done fuck you");
+        res.status(200).send('Notification processed successfully');
+    } catch (error) {
+        console.error('Error processing Gmail notification:', error);
+        res.status(500).send('Error processing notification');
+    }
+};
+
+
+async function createIssueFromEmail (email, user) {
     const subject = email.payload.headers.find(header => header.name === 'Subject').value;
 
     const issue = new Item({
@@ -120,6 +172,36 @@ async function createIssueFromEmail(email, user) {
 }
 
 
+// const setupPushNotificationsController = async (req, res) => {
+//     const user = req.user;
+//     const accessToken = user.integration.gmail.accessToken;
+//     const refreshToken = user.integration.gmail.refreshToken;
+//     const labelId = user.integration.gmail.labelId;
+
+//     try {
+//         OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+
+//         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+
+//         const watchResponse = await gmail.users.watch({
+//             userId: 'me',
+//             requestBody: {
+//                 topicName: environment.TOPIC_NAME,
+//                 labelIds: [labelId],
+//                 labelFilterBehavior: "INCLUDE"
+//             }
+//         });
+//         user.integration.gmail.historyId = watchResponse.data.historyId;
+//         await user.save();
+//         console.log('Watch response:', watchResponse.data);
+//         res.status(200).json({ message: 'Push notifications set up successfully', data: watchResponse.data });
+//     } catch (error) {
+//         console.error('Error setting up push notifications:', error);
+//         res.status(500).json({ error: 'Failed to set up push notifications', details: error.message });
+//     }
+// };
+
+// Controller to set up Gmail push notifications
 const setupPushNotificationsController = async (req, res) => {
     const user = req.user;
     const accessToken = user.integration.gmail.accessToken;
@@ -128,20 +210,23 @@ const setupPushNotificationsController = async (req, res) => {
 
     try {
         OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-
         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
 
+        // Setting up push notifications for Gmail
         const watchResponse = await gmail.users.watch({
             userId: 'me',
             requestBody: {
                 topicName: environment.TOPIC_NAME,
                 labelIds: [labelId],
-                labelFilterBehavior: "INCLUDE"
-            }
+                labelFilterBehavior: "INCLUDE",
+            },
         });
+
+        // Save the historyId and expiration time for the user
         user.integration.gmail.historyId = watchResponse.data.historyId;
+        user.integration.gmail.watchExpiration = watchResponse.data.expiration;
         await user.save();
-        console.log('Watch response:', watchResponse.data);
+
         res.status(200).json({ message: 'Push notifications set up successfully', data: watchResponse.data });
     } catch (error) {
         console.error('Error setting up push notifications:', error);
@@ -191,9 +276,8 @@ const getGmailAccessTokenController = async (req, res, next) => {
 
         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
         const profileResponse = await gmail.users.getProfile({ userId: 'me' });
-
         const email = profileResponse.data.emailAddress;
-
+        console.log("email: ", email);
         const labelId = await createLabel(OauthClient, 'march_inbox');
 
 
@@ -215,5 +299,5 @@ export {
     getGmailAccessTokenController,
     createLabel,
     setupPushNotificationsController,
-    handleGmailWebhook
+    handlePushNotification
 }

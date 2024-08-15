@@ -3,7 +3,7 @@ import cors from "cors";
 import Joi from "joi";
 import { environment } from "./loaders/environment.loader.js";
 import { initRoutes } from "./routers/index.js";
-import { handleGmailWebhook } from "./controllers/integration/email.controller.js";
+import { handlePushNotification } from "./controllers/integration/email.controller.js";
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
 import { handleCalendarWebhook } from "./controllers/integration/calendar.controller.js";
 import bodyParser from "body-parser";
@@ -25,7 +25,7 @@ app.use(
 
 app.post("/linear/webhook", handleWebhook);
 app.post("/calendar/webhook", handleCalendarWebhook);
-app.post("/gmail/webhook", handleGmailWebhook);
+app.post("/gmail/webhook", handlePushNotification);
 
 initRoutes(app);
 // Express error handler
