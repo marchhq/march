@@ -14,7 +14,7 @@ const GoogleLogin = (): JSX.Element => {
     },
     flow: "auth-code",
     ux_mode: "redirect",
-    redirect_uri: `${FRONTEND_URL}/api/auth/google`,
+    redirect_uri: `${FRONTEND_URL}/auth/google`,
   })
 
   return (
