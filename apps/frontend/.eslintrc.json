@@ -15,15 +15,16 @@
   "extends": [
     "standard-with-typescript",
     "eslint:recommended",
-    "plugin:prettier/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:tailwindcss/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@tanstack/eslint-plugin-query/recommended",
     "next/core-web-vitals",
-    "next"
+    "next",
+    "prettier"
   ],
   "plugins": [
+    "prettier",
     "@typescript-eslint",
     "jsx-a11y",
     "tailwindcss",
