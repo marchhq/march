@@ -129,11 +129,11 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
             const integration = new Item({
                 title: issue.title,
                 type: 'githubIssue',
-                url: issue.html_url,
                 id: issue.id,
                 user: userId,
                 metadata: {
                     org: repoDetails.owner,
+                    url: issue.html_url,
                     repo: repoDetails.repo,
                     repository_url: issue.repository_url,
                     number: issue.number,
@@ -153,11 +153,11 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
             const integration = new Item({
                 title: pr.title,
                 type: 'githubPullRequest',
-                url: pr.html_url,
                 id: pr.id,
                 user: userId,
                 metadata: {
                     org: repoDetails.owner,
+                    url: pr.html_url,
                     repo: repoDetails.repo,
                     repository_url: pr.repository_url,
                     number: pr.number,
