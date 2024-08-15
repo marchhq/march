@@ -153,41 +153,91 @@ const handlePushNotification = async (req, res) => {
     }
 };
 
+// const createIssueFromEmail = async (email, user) => {
+//     const subject = email.payload.headers.find(header => header.name === 'Subject').value;
+//     const sender = email.payload.headers.find(header => header.name === 'From').value;
+
+//     let emailBody = '';
+
+//     if (email.payload.parts) {
+//         const part = email.payload.parts.find(part => part.mimeType === 'text/plain' || part.mimeType === 'text/html');
+//         if (part && part.body && part.body.data) {
+//             emailBody = Buffer.from(part.body.data, 'base64').toString('utf-8');
+//         }
+//     } else if (email.payload.body && email.payload.body.data) {
+//         emailBody = Buffer.from(email.payload.body.data, 'base64').toString('utf-8');
+//     } else {
+//         emailBody = 'Issue created from Gmail label';
+//     }
+
+//     const emailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`;
+
+//     const issue = new Item({
+//         title: subject,
+//         type: 'gmailIssue',
+//         id: email.id,
+//         user: user._id,
+//         description: emailBody,
+//         metadata: {
+//             senderEmail: sender,
+//             url: emailUrl
+//         }
+//     });
+
+//     await issue.save();
+//     console.log('Issue created from email:', issue);
+// }
+
 const createIssueFromEmail = async (email, user) => {
+    const getEmailBody = (payload) => {
+        if (payload.parts) {
+            for (const part of payload.parts) {
+                if (part.mimeType === 'text/html' || part.mimeType === 'text/plain') {
+                    if (part.body && part.body.data) {
+                        return Buffer.from(part.body.data, 'base64').toString('utf-8');
+                    }
+                } else if (part.parts) {
+                    return getEmailBody(part);
+                }
+            }
+        } else if (payload.body && payload.body.data) {
+            return Buffer.from(payload.body.data, 'base64').toString('utf-8');
+        }
+        return '';
+    };
+
     const subject = email.payload.headers.find(header => header.name === 'Subject').value;
     const sender = email.payload.headers.find(header => header.name === 'From').value;
 
-    let emailBody = '';
-
-    if (email.payload.parts) {
-        const part = email.payload.parts.find(part => part.mimeType === 'text/plain' || part.mimeType === 'text/html');
-        if (part && part.body && part.body.data) {
-            emailBody = Buffer.from(part.body.data, 'base64').toString('utf-8');
-        }
-    } else if (email.payload.body && email.payload.body.data) {
-        emailBody = Buffer.from(email.payload.body.data, 'base64').toString('utf-8');
-    } else {
-        emailBody = 'Issue created from Gmail label';
-    }
+    const emailBody = getEmailBody(email.payload) || 'Issue created from Gmail label';
 
     const emailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`;
 
-    const issue = new Item({
-        title: subject,
-        type: 'gmailIssue',
-        id: email.id,
-        user: user._id,
-        description: emailBody,
-        metadata: {
-            senderEmail: sender,
-            url: emailUrl
-        }
-    });
+    const existingIssue = await Item.findOne({ id: email.id, type: 'gmailIssue', user: user._id });
 
-    await issue.save();
-    console.log('Issue created from email:', issue);
-}
+    if (existingIssue) {
+        existingIssue.title = subject;
+        existingIssue.description = emailBody;
+        existingIssue.metadata.senderEmail = sender;
+        existingIssue.metadata.url = emailUrl;
+        await existingIssue.save();
+    } else {
+        const newIssue = new Item({
+            title: subject,
+            type: 'gmailIssue',
+            id: email.id,
+            user: user._id,
+            description: emailBody,
+            metadata: {
+                senderEmail: sender,
+                url: emailUrl
+            }
+        });
 
+        await newIssue.save();
+        console.log('Issue created from email:', newIssue);
+    }
+};
 
 // const setupPushNotificationsController = async (req, res) => {
 //     const user = req.user;
@@ -229,7 +279,6 @@ const setupPushNotificationsController = async (req, res) => {
         OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
 
-        // Setting up push notifications for Gmail
         const watchResponse = await gmail.users.watch({
             userId: 'me',
             requestBody: {
@@ -239,9 +288,7 @@ const setupPushNotificationsController = async (req, res) => {
             }
         });
 
-        // Save the historyId and expiration time for the user
         user.integration.gmail.historyId = watchResponse.data.historyId;
-        user.integration.gmail.watchExpiration = watchResponse.data.expiration;
         await user.save();
 
         res.status(200).json({ message: 'Push notifications set up successfully', data: watchResponse.data });
@@ -296,7 +343,6 @@ const getGmailAccessTokenController = async (req, res, next) => {
         const email = profileResponse.data.emailAddress;
         console.log("email: ", email);
         const labelId = await createLabel(OauthClient, 'march_inbox');
-
 
         user.integration.gmail.email = email;
         user.integration.gmail.accessToken = tokenInfo.access_token;
