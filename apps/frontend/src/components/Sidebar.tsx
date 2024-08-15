@@ -1,7 +1,6 @@
 "use client"
 import * as React from "react"
 
-import { SignOutButton } from "@clerk/nextjs"
 import { Tray, Sun, Notepad, User, SignOut, Plus } from "@phosphor-icons/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -57,12 +56,12 @@ const Sidebar: React.FC = () => {
           </Link>
         ))}
         <div className="mt-auto text-zinc-400">
-          <SignOutButton redirectUrl="/app/auth/">
+          {/* <SignOutButton redirectUrl="/app/auth/">
             <div className={navLinkClassName}>
               <SignOut size={14} weight="duotone" />
               Logout
             </div>
-          </SignOutButton>
+          </SignOutButton> */}
           <Link className={navLinkClassName} href={"/app/profile/"}>
             <User size={14} weight="duotone" />
             Profile

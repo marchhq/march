@@ -1,8 +1,5 @@
 import * as React from "react"
 
-import { ClerkProvider } from "@clerk/nextjs"
-import { dark } from "@clerk/themes"
-
 import Sidebar from "@/src/components/Sidebar"
 
 interface Props {
@@ -11,16 +8,10 @@ interface Props {
 
 const AppLayout: React.FC<Props> = ({ children }) => {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: dark,
-      }}
-    >
-      <main className="flex h-screen gap-1 bg-white p-1 dark:bg-black">
-        <Sidebar />
-        <section className="flex-1">{children}</section>
-      </main>
-    </ClerkProvider>
+    <main className="flex h-screen gap-1 bg-white p-1 dark:bg-black">
+      <Sidebar />
+      <section className="flex-1">{children}</section>
+    </main>
   )
 }
 
