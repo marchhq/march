@@ -2,9 +2,9 @@ import type { Config } from "tailwindcss"
 
 const config: Config = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -91,6 +91,10 @@ const config: Config = {
         scale: "scale 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         rise: "rise 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         shake: "shake 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+      },
+      colors: {
+        "gray-color": "#676767",
+        "button-stroke": "#D0D0D0",
       },
     },
     fontFamily: {
