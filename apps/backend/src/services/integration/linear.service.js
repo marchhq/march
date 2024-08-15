@@ -84,12 +84,12 @@ const saveIssuesToDatabase = async (issues, userId) => {
                     description: issue.description,
                     id: issue.id,
                     user: userId,
-                    url: issue.url,
                     dueDate: issue.dueDate,
                     metadata: {
                         labels: issue.labels,
                         state: issue.state,
                         priority: issue.priority,
+                        url: issue.url,
                         project: issue.project
                     },
                     createdAt: issue.createdAt,
