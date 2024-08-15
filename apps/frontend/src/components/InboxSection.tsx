@@ -1,13 +1,13 @@
 "use client"
 import * as React from "react"
 
-import { useAuth } from "@clerk/nextjs"
 import {
   ArrowSquareOut,
   GithubLogo,
   GitPullRequest,
 } from "@phosphor-icons/react"
 
+import { useAuth } from "../contexts/AuthContext"
 import Editor from "@/src/components/atoms/Editor"
 import { fromNow } from "@/src/utils/datetime"
 
@@ -21,16 +21,15 @@ interface IntegrationType {
 }
 
 const InboxSection: React.FC = () => {
-  const { getToken } = useAuth()
+  const { session } = useAuth()
   const [content, setContent] = React.useState("Start by editing this text...")
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
 
   const fetchData = async (): Promise<void> => {
     try {
-      const token = await getToken()
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${session}`,
         },
       }
       console.log("HEY")
