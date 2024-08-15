@@ -13,8 +13,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@clerk/nextjs": "^5.2.11",
-    "@clerk/themes": "^2.1.15",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
