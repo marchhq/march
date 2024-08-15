@@ -154,17 +154,26 @@ const handlePushNotification = async (req, res) => {
     }
 };
 
+async function createIssueFromEmail(email, user) {
 
-async function createIssueFromEmail (email, user) {
+    // console.log("email: ", email.payload);
+    console.log("email.payload.body: ", email.payload.body);
+
     const subject = email.payload.headers.find(header => header.name === 'Subject').value;
+    const sender = email.payload.headers.find(header => header.name === 'From').value;
+    const emailBody = email.payload.body.data;
+    const emailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`;
 
     const issue = new Item({
         title: subject,
         type: 'gmailIssue',
+        id: email.id,
         user: user._id,
-        description: 'Issue created from Gmail label',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        description: emailBody || 'Issue created from Gmail label',
+        metadata: {
+            senderEmail: sender,
+            url: emailUrl
+        }
     });
 
     await issue.save();
@@ -218,8 +227,8 @@ const setupPushNotificationsController = async (req, res) => {
             requestBody: {
                 topicName: environment.TOPIC_NAME,
                 labelIds: [labelId],
-                labelFilterBehavior: "INCLUDE",
-            },
+                labelFilterBehavior: "INCLUDE"
+            }
         });
 
         // Save the historyId and expiration time for the user

@@ -79,9 +79,6 @@ const UserSchema = new Schema({
             accessToken: String,
             refreshToken: String
         },
-        // gmail: {
-        //     type: Schema.Types.Mixed
-        // }
         gmail: {
             email: String,
             accessToken: String,
