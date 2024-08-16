@@ -1,21 +1,19 @@
 import { Octokit } from "@octokit/rest";
 import { createAppAuth } from "@octokit/auth-app";
-import { clerk } from "../../middlewares/clerk.middleware.js";
-import { clerkClient } from "@clerk/clerk-sdk-node"
 // import { Integration } from "../../models/integration/integration.model.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { Item } from "../../models/lib/item.model.js";
 
 const getGitHubAccessToken = async (userId) => {
-    const accessTokenResponse = await clerk.users.getUserOauthAccessToken(userId, 'github');
-    const token = accessTokenResponse.data[0].token;
-    const externalAccountId = accessTokenResponse.data[0].externalAccountId;
-    const user = await clerkClient.users.getUser(userId);
-    const externalAccount = user.externalAccounts.find(account => account.id === externalAccountId);
+    // const accessTokenResponse = await clerk.users.getUserOauthAccessToken(userId, 'github');
+    // const token = accessTokenResponse.data[0].token;
+    // const externalAccountId = accessTokenResponse.data[0].externalAccountId;
+    // const user = await clerkClient.users.getUser(userId);
+    // const externalAccount = user.externalAccounts.find(account => account.id === externalAccountId);
 
-    const username = externalAccount.username
+    // const username = externalAccount.username
 
-    return { token, username };
+    // return { token, username };
 };
 
 const fetchInstallationDetails = async (installationId) => {
@@ -129,11 +127,11 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
             const integration = new Item({
                 title: issue.title,
                 type: 'githubIssue',
-                url: issue.html_url,
                 id: issue.id,
                 user: userId,
                 metadata: {
                     org: repoDetails.owner,
+                    url: issue.html_url,
                     repo: repoDetails.repo,
                     repository_url: issue.repository_url,
                     number: issue.number,
@@ -153,11 +151,11 @@ const getUserGithubIssuesAndPRs = async (accessToken, username, userId) => {
             const integration = new Item({
                 title: pr.title,
                 type: 'githubPullRequest',
-                url: pr.html_url,
                 id: pr.id,
                 user: userId,
                 metadata: {
                     org: repoDetails.owner,
+                    url: pr.html_url,
                     repo: repoDetails.repo,
                     repository_url: pr.repository_url,
                     number: pr.number,

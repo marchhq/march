@@ -42,7 +42,7 @@ const updateUserController = async (req, res, next) => {
 
 const getUserItemsController = async (req, res, next) => {
     try {
-        const me = req.auth.userId;
+        const me = req.user._id;
         const items = await getUserItems(me);
 
         // const IntegratedAppIssues = await getIntegration(me);
@@ -60,8 +60,7 @@ const getUserItemsController = async (req, res, next) => {
 
 const getUserTodayItemsController = async (req, res, next) => {
     try {
-        // const me = req.user.id;
-        const me = req.auth.userId;
+        const me = req.user.id;
         const items = await getUserTodayItems(me);
         res.json({
             status: 200,
@@ -76,8 +75,7 @@ const getUserTodayItemsController = async (req, res, next) => {
 
 const getUserOverdueItemsController = async (req, res, next) => {
     try {
-        // const me = req.user.id;
-        const me = req.auth.userId;
+        const me = req.user.id;
         const items = await getUserOverdueItems(me);
         res.json({
             status: 200,
@@ -92,8 +90,7 @@ const getUserOverdueItemsController = async (req, res, next) => {
 
 const getUserItemsByDateControlle = async (req, res, next) => {
     try {
-        // const me = req.user.id;
-        const me = req.auth.userId;
+        const me = req.user.id;
         const { date } = req.params;
         const items = await getUserItemsByDate(me, date);
         res.json({
@@ -108,7 +105,6 @@ const getUserItemsByDateControlle = async (req, res, next) => {
 };
 const moveItemtoDateController = async (req, res, next) => {
     try {
-        // const me = req.user.id;
         const { id, date } = req.body;
         const items = await moveItemtoDate(date, id);
         res.json({

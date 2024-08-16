@@ -84,12 +84,12 @@ const saveIssuesToDatabase = async (issues, userId) => {
                     description: issue.description,
                     id: issue.id,
                     user: userId,
-                    url: issue.url,
                     dueDate: issue.dueDate,
                     metadata: {
                         labels: issue.labels,
                         state: issue.state,
                         priority: issue.priority,
+                        url: issue.url,
                         project: issue.project
                     },
                     createdAt: issue.createdAt,
@@ -402,14 +402,14 @@ const handleWebhookEvent = async (payload) => {
             type: 'linearIssue',
             id: issue.id,
             user: userId,
-            url: issue.url,
             description: issue.description,
             dueDate: issue.dueDate,
             metadata: {
                 labels: issue.labels,
                 state: issue.state,
                 priority: issue.priority,
-                project: issue.project
+                project: issue.project,
+                url: issue.url
             },
             createdAt: issue.createdAt,
             updatedAt: issue.updatedAt
