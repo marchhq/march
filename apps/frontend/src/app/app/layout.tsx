@@ -1,8 +1,8 @@
 import * as React from "react"
 
-import QueryProvider from "@/src/components/QueryProvider"
 import Sidebar from "@/src/components/Sidebar"
 import { AuthProvider } from "@/src/contexts/AuthContext"
+import QueryProvider from "@/src/contexts/QueryProvider"
 interface Props {
   children: React.ReactNode
 }
