@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { magicLoginController, validateLoginMagicLinkController, authenticateWithGoogleController, logOutController, registerEmailUserController, emailLoginController } from "../../controllers/core/auth.controller.js";
-// import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 
 const router = Router();
 
