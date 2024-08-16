@@ -80,9 +80,11 @@ const UserSchema = new Schema({
             refreshToken: String
         },
         gmail: {
+            email: String,
             accessToken: String,
             refreshToken: String,
-            labelId: String
+            labelId: String,
+            historyId: String
         }
     }
 }, {
