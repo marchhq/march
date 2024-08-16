@@ -8,3 +8,11 @@ export interface Note {
   updatedAt: string
   __v: number
 }
+
+export interface NotesResponse {
+  notes: Note[]
+}
+
+export interface NoteCreateResponse {
+  note: Note
+}
