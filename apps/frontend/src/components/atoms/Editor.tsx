@@ -15,45 +15,22 @@ import {
   TextHFour,
   TextHThree,
 } from "@phosphor-icons/react"
-import Link from "@tiptap/extension-link"
-import TaskItem from "@tiptap/extension-task-item"
-import TaskList from "@tiptap/extension-task-list"
 import {
-  useEditor,
   EditorContent,
   BubbleMenu,
   FloatingMenu,
+  type Editor,
 } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
 
 import classNames from "@/src/utils/classNames"
 
 interface Props {
+  editor: Editor | null
   placeholder?: string
   content?: string
-  setContent?: (string) => void
 }
 
-const Editor: React.FC<Props> = ({ content, setContent }) => {
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({}),
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-      }),
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-        defaultProtocol: "https",
-        HTMLAttributes: {
-          rel: "noopener noreferrer nofollow",
-        },
-      }),
-    ],
-    content,
-  })
-
+const TextEditor: React.FC<Props> = ({ editor }) => {
   return (
     <>
       {editor !== null && (
@@ -276,9 +253,12 @@ const Editor: React.FC<Props> = ({ content, setContent }) => {
           </div>
         </BubbleMenu>
       )}
-      <EditorContent editor={editor} />
+      <EditorContent
+        className="[&>.ProseMirror.tiptap]:min-h-[70vh]"
+        editor={editor}
+      />
     </>
   )
 }
 
-export default Editor
+export default TextEditor
