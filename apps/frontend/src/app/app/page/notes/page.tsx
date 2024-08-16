@@ -1,44 +1,137 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 
-import { Notepad } from "@phosphor-icons/react"
+import { Plus } from "@phosphor-icons/react"
 
+import EachNote from "@/src/components/atoms/EachNote"
+import TextEditor from "@/src/components/atoms/Editor"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/src/components/atoms/Resizable"
-import PageSection from "@/src/components/PageSection"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
+import { type Note } from "@/src/lib/@types/Items/Note"
+import useNotesStore from "@/src/lib/store/notes.store"
 
 const NotesPage: React.FC = () => {
-  const notes = [1, 2, 3, 4]
+  const { session } = useAuth()
+
+  const { fetchNotes, notes, updateNote, saveNote, addNote } = useNotesStore()
+
+  useEffect(() => {
+    void fetchNotes(session)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const [note, setNote] = useState<Note | null>(null)
+
+  // Initialize with empty strings
+  const [content, setContent] = React.useState(note?.content ?? "<p>create a new note to get started...</p>")
+  const [title, setTitle] = React.useState(note?.title ?? "You don't have any notes")
+
+  const editor = useEditorHook({ content, setContent })
+
+  useEffect(() => {
+    if (note !== null || notes.length === 0) {
+      return
+    }
+    setNote(notes[0])
+    if (editor !== null) {
+      editor.commands.setContent(notes[0].content)
+    }
+    setContent(notes[0].content)
+    setTitle(notes[0].title)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note, notes])
+
+  const handleSetNote = (uuid: string): void => {
+    const note = notes.find((note) => note.uuid === uuid)
+    if (note !== undefined) {
+      setNote(note)
+      setContent(note.content)
+      setTitle(note.title)
+      if (editor !== null) {
+        editor.commands.setContent(note.content)
+      }
+    }
+  }
+
+  const addNewNote = async (): Promise<void> => {
+    const newNote = await addNote(session, "Untitled", "<p></p>")
+    if (newNote !== null) {
+      setNote(newNote)
+      setContent(newNote.content)
+      setTitle(newNote.title)
+      if (editor !== null) {
+        editor.commands.setContent(newNote.content)
+      }
+    }
+  }
+
+  const updateTitle = (title: string): void => {
+    setTitle(title)
+    if (note !== null) {
+      updateNote({ ...note, title })
+    }
+  }
+
+  const saveNoteToServer = async (note: Note): Promise<void> => {
+    await saveNote(session, note)
+  }
 
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-6 py-5 shadow-lg backdrop-blur-lg">
-          <div className="px-3 font-semibold text-zinc-300">Notes</div>
-          <div className="mt-12 px-3">
-            <PageSection />
+        <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-12 py-10 shadow-lg backdrop-blur-lg">
+          {/* <div className="px-3 font-semibold text-zinc-300">Notes</div> */}
+          <div
+            onBlur={() => {
+              if (note === null) {
+                return
+              }
+              void saveNoteToServer({
+                ...note,
+                title,
+                content,
+              })
+            }}
+            className="px-3"
+          >
+            <input
+              type="text"
+              name="title"
+              value={title}
+              disabled={notes.length === 0}
+              onChange={(e) => {
+                updateTitle(e.target.value)
+              }}
+              className="mb-10 w-full bg-transparent text-2xl font-semibold outline-none focus:outline-none dark:text-zinc-200"
+            />
+            <TextEditor editor={editor} />
           </div>
         </div>
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={25} minSize={25}>
         <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 p-5 shadow-lg backdrop-blur-lg">
-          <div className="px-3 font-semibold text-zinc-300">Notes</div>
-          <div className="mt-12 flex flex-col gap-y-6">
-            {notes.map((note) => (
-              <div key={note}>
-                <div className="flex items-center justify-start gap-x-4 text-sm text-zinc-300">
-                  <Notepad size={24} weight="duotone" />
-                  <p>Lorem ipsum dolor sit amet constur adipisicing el</p>
-                </div>
-                <p className="ml-8 mt-1 text-xs text-zinc-500">
-                  Edited 2 minutes ago.
-                </p>
-              </div>
+          <div className="flex items-center justify-between font-semibold text-zinc-300">
+            <span>Notes</span>
+            {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+            <button onClick={addNewNote}>
+              <Plus size={16} weight="duotone" />
+            </button>
+          </div>
+          <div className="mt-12 flex flex-col gap-y-2">
+            {notes?.map((n) => (
+              <EachNote
+                key={n.uuid}
+                note={n}
+                handleSetNote={handleSetNote}
+                isActive={n.uuid === note?.uuid}
+              />
             ))}
           </div>
         </div>
