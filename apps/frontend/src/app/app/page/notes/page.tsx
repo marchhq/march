@@ -65,6 +65,7 @@ const NotesPage: React.FC = () => {
     setNote(notes[0])
     setContent(notes[0].content)
     setTitle(notes[0].title)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, notes, isFetched])
 
@@ -142,7 +143,7 @@ const NotesPage: React.FC = () => {
             <span>Notes</span>
             {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
             <button onClick={addNewNote}>
-              <Plus size={16} weight="duotone" />
+              <Plus size={16} />
             </button>
           </div>
           <div className="mt-12 flex flex-col gap-y-2">
