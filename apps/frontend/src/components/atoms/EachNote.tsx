@@ -22,7 +22,7 @@ const EachNote: FC<EachNoteProps> = ({ note, handleSetNote, isActive }) => {
         className={`flex items-center rounded-lg border p-2 ${isActive ? "border-white/10 bg-white/10" : "border-transparent hover:bg-white/5"} justify-start gap-x-4 text-sm text-zinc-400`}
       >
         <Notepad size={24} weight="duotone" />
-        <p>{note.title}</p>
+        <p>{note.title.length > 0 ? note.title : "Untitled"}</p>
       </div>
     </button>
   )
