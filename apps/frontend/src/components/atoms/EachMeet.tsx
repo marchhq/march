@@ -27,7 +27,7 @@ const EachMeet: React.FC<EachMeetProps> = ({
         <p>{meet.title}</p>
       </div>
       <p className="ml-8 mt-1 text-xs text-zinc-500">
-        {meet.date} · 
+        {/* {meet.date} ·  */}
         {/* {meet.time} */}
       </p>
     </button>
