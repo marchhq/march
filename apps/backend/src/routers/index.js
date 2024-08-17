@@ -9,13 +9,13 @@ import GithubRoute from "../routers/integration/github.route.js"
 
 /**
  * @param {import('express').Application} app
-**/
+ */
 
 const initRoutes = (app) => {
     app.use("/auth", AuthRouter);
     app.use("/users", JWTMiddleware, UserRouter);
     app.use("/api", JWTMiddleware, PageRouter);
-    app.use('/', JWTMiddleware, LinearRoute);
+    app.use('/linear', JWTMiddleware, LinearRoute);
     app.use('/calendar', JWTMiddleware, CalenderRoute);
     app.use('/gmail', JWTMiddleware, EmailRoute);
     app.use('/github', JWTMiddleware, GithubRoute);
