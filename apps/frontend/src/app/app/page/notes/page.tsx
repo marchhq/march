@@ -19,33 +19,54 @@ import useNotesStore from "@/src/lib/store/notes.store"
 const NotesPage: React.FC = () => {
   const { session } = useAuth()
 
-  const { fetchNotes, notes, updateNote, saveNote, addNote } = useNotesStore()
+  const {
+    fetchNotes,
+    notes,
+    isFetched,
+    setIsFetched,
+    updateNote,
+    saveNote,
+    addNote,
+  } = useNotesStore()
+
+  const fetchTheNotes = async (): Promise<void> => {
+    await fetchNotes(session)
+    setIsFetched(true)
+  }
 
   useEffect(() => {
-    void fetchNotes(session)
+    void fetchTheNotes()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [note, setNote] = useState<Note | null>(null)
 
   // Initialize with empty strings
-  const [content, setContent] = React.useState(note?.content ?? "<p>create a new note to get started...</p>")
-  const [title, setTitle] = React.useState(note?.title ?? "You don't have any notes")
+  const [content, setContent] = React.useState(
+    note?.content ?? "<p>create a new note to get started...</p>"
+  )
+  const [title, setTitle] = React.useState(
+    note?.title ?? "You don't have any notes"
+  )
 
   const editor = useEditorHook({ content, setContent })
 
   useEffect(() => {
-    if (note !== null || notes.length === 0) {
+    if (note !== null) {
+      editor?.setEditable(true)
       return
     }
-    setNote(notes[0])
-    if (editor !== null) {
-      editor.commands.setContent(notes[0].content)
+    if (!isFetched || notes.length === 0) {
+      editor?.setEditable(false)
+      return
     }
+    editor?.setEditable(true)
+    editor?.commands.setContent(notes[0].content)
+    setNote(notes[0])
     setContent(notes[0].content)
     setTitle(notes[0].title)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note, notes])
+  }, [note, notes, isFetched])
 
   const handleSetNote = (uuid: string): void => {
     const note = notes.find((note) => note.uuid === uuid)
