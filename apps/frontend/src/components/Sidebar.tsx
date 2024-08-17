@@ -27,7 +27,7 @@ const Sidebar: React.FC = () => {
     return null
   } else {
     return (
-      <div className="flex w-[240px] flex-col gap-0.5 rounded-xl border border-button-stroke px-3 pb-3 pt-5 backdrop-blur-lg dark:border-white/10 bg-[#dddddd] dark:bg-white/10">
+      <div className="flex w-[240px] flex-col gap-0.5 rounded-xl border border-button-stroke bg-[#dddddd] px-3 pb-3 pt-5 backdrop-blur-lg dark:border-white/10 dark:bg-white/10">
         <div className="px-3 font-semibold dark:text-zinc-300">
           March Satellite
         </div>
