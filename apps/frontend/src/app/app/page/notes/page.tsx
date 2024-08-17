@@ -82,7 +82,7 @@ const NotesPage: React.FC = () => {
   }
 
   const addNewNote = async (): Promise<void> => {
-    const newNote = await addNote(session, "Untitled", "<p></p>")
+    const newNote = await addNote(session, "", "<p></p>")
     if (newNote !== null) {
       setNote(newNote)
       setContent(newNote.content)
@@ -104,11 +104,34 @@ const NotesPage: React.FC = () => {
     await saveNote(session, note)
   }
 
+  const isCreateEnabled = (): boolean => {
+    if (!isFetched) {
+      // disable if not fetched
+      return false
+    }
+    if (notes.length === 0) {
+      // enable if there are no notes
+      return true
+    }
+    // enable if the first note title and content are not empty
+    return notes[0].content !== "<p></p>" && notes[0].title.length > 0
+  }
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-12 py-10 shadow-lg backdrop-blur-lg">
-          {/* <div className="px-3 font-semibold text-zinc-300">Notes</div> */}
+        <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-8 py-6 shadow-lg backdrop-blur-lg">
+          <div className="flex w-full items-center justify-between px-3 text-zinc-400">
+            <span>Notes</span>
+            <button
+              disabled={!isCreateEnabled()}
+              //  eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={addNewNote}
+              className="text-zinc-200 disabled:opacity-50"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
           <div
             onBlur={() => {
               if (note === null) {
@@ -120,7 +143,7 @@ const NotesPage: React.FC = () => {
                 content,
               })
             }}
-            className="px-3"
+            className="mt-4 px-3"
           >
             <input
               type="text"
@@ -130,7 +153,8 @@ const NotesPage: React.FC = () => {
               onChange={(e) => {
                 updateTitle(e.target.value)
               }}
-              className="mb-10 w-full bg-transparent text-2xl font-semibold outline-none focus:outline-none dark:text-zinc-200"
+              placeholder="Untitled"
+              className="mb-10 w-full bg-transparent text-2xl font-semibold outline-none placeholder:text-zinc-500 focus:outline-none dark:text-zinc-200"
             />
             <TextEditor editor={editor} />
           </div>
@@ -139,14 +163,10 @@ const NotesPage: React.FC = () => {
       <ResizableHandle />
       <ResizablePanel defaultSize={25} minSize={25}>
         <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 p-5 shadow-lg backdrop-blur-lg">
-          <div className="flex items-center justify-between font-semibold text-zinc-300">
+          <div className="px-2 font-semibold text-zinc-400">
             <span>Notes</span>
-            {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-            <button onClick={addNewNote}>
-              <Plus size={16} />
-            </button>
           </div>
-          <div className="mt-12 flex flex-col gap-y-2">
+          <div className="mt-8 flex flex-col gap-y-2">
             {notes?.map((n) => (
               <EachNote
                 key={n.uuid}
