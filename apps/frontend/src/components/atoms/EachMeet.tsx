@@ -2,30 +2,24 @@ import React from "react"
 
 import { Calendar } from "@phosphor-icons/react"
 
-interface Meet {
-  title: string
-  date: string
-  time: string
-}
+import { type Meet } from "@/src/lib/@types/Items/Meet"
 
 interface EachMeetProps {
   meet: Meet
-  setActiveMeet: (index: number) => void
-  activeMeet: number
-  index: number
+  setMeet: (meet: Meet) => void
+  isActive: boolean
 }
 
 const EachMeet: React.FC<EachMeetProps> = ({
   meet,
-  setActiveMeet,
-  activeMeet,
-  index,
+  setMeet,
+  isActive,
 }) => {
   return (
     <button
-      className={`rounded-lg border ${activeMeet === index ? "border-white/10 bg-white/10" : " border-transparent hover:bg-white/5"} p-2`}
+      className={`rounded-lg border ${isActive ? "border-white/10 bg-white/10" : " border-transparent hover:bg-white/5"} p-2`}
       onClick={() => {
-        setActiveMeet(index)
+        setMeet(meet)
       }}
     >
       <div className="flex items-center justify-start gap-x-3 text-sm text-zinc-300">
@@ -33,7 +27,8 @@ const EachMeet: React.FC<EachMeetProps> = ({
         <p>{meet.title}</p>
       </div>
       <p className="ml-8 mt-1 text-xs text-zinc-500">
-        {meet.date} · {meet.time}
+        {meet.date} · 
+        {/* {meet.time} */}
       </p>
     </button>
   )
