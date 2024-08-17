@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 
-import Editor from "@/src/components/atoms/Editor"
+// import Editor from "@/src/components/atoms/Editor"
 
 const initialContent = `
   <h1>Lorem ipsum dolor</h1>
@@ -75,9 +75,13 @@ const initialContent = `
 `
 
 const PageSection: React.FC = () => {
-  const [content, setContent] = React.useState(initialContent)
+  // const [content, setContent] = React.useState(initialContent)
 
-  return <Editor content={content} setContent={setContent} />
+  // return <Editor content={content} setContent={setContent} />
+
+  console.log(initialContent)
+
+  return <div>PageSection</div>
 }
 
 export default PageSection
