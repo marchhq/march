@@ -14,6 +14,14 @@ export interface NotesStoreType {
    */
   notes: Note[]
   /**
+   * Whether the notes have been fetched.
+   */
+  isFetched: boolean
+  /**
+   * Sets whether the notes have been fetched.
+   */
+  setIsFetched: (isFetched: boolean) => void
+  /**
    * Fetches the notes from the backend server.
    * @param session The session of the user.
    */
@@ -53,6 +61,12 @@ export interface NotesStoreType {
 
 const useNotesStore = create<NotesStoreType>((set) => ({
   notes: [],
+  isFetched: false,
+  setIsFetched: (isFetched: boolean) => {
+    set((state: NotesStoreType) => ({
+      isFetched,
+    }))
+  },
   fetchNotes: async (session: string) => {
     let notes_: Note[] = []
     try {
