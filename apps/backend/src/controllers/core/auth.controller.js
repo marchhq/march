@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { createEmailUser, createMagicLoginLink, validateMagicLoginLink, validateEmailUser, getUserById, validateGoogleUser, getUserByEmail, createGoogleUser } from "../../services/core/user.service.js";
+import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail, createGoogleUser } from "../../services/core/user.service.js";
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
@@ -44,50 +44,6 @@ const emailLoginController = async (req, res, next) => {
         res.status(200).json({
             statusCode: 200,
             response: tokenPair
-        })
-    } catch (err) {
-        const error = new Error(err);
-        error.statusCode = err.statusCode || 500;
-        next(err)
-    }
-}
-
-const magicLoginController = async (req, res, next) => {
-    try {
-        if (!req.body.email) {
-            const error = new Error("Bad request")
-            error.statusCode = 400
-            throw error
-        }
-
-        const { ok, isNewUser } = await createMagicLoginLink(req.body.email, req.body.redirectUrl)
-        res.status(200).json({
-            statusCode: 200,
-            response: {
-                ok,
-                isNewUser
-            }
-        })
-    } catch (err) {
-        const error = new Error(err);
-        error.statusCode = err.statusCode || 500;
-        next(err)
-    }
-}
-
-const validateLoginMagicLinkController = async (req, res, next) => {
-    try {
-        const token = await validateMagicLoginLink(req.body.token)
-        const user = await getUserById(token.user?.uuid);
-        const tokenPair = await generateJWTTokenPair(user)
-        res.status(200).json({
-            statusCode: 200,
-            response: tokenPair
-        })
-        await token.updateOne({
-            $set: {
-                isRevoked: true
-            }
         })
     } catch (err) {
         const error = new Error(err);
@@ -153,8 +109,6 @@ const logOutController = async (req, res, next) => {
 export {
     registerEmailUserController,
     emailLoginController,
-    magicLoginController,
-    validateLoginMagicLinkController,
     authenticateWithGoogleController,
     logOutController
 }
