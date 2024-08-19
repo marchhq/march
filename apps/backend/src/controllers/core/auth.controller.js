@@ -90,10 +90,10 @@ const logOutController = async (req, res, next) => {
             throw new Error("Unauthorized")
         }
         const token = header.split(' ')[1]
-        const checkIfBlacklisted = await BlackList.findOne({ token: token });
+        const checkIfBlacklisted = await BlackList.findOne({ token });
         if (checkIfBlacklisted) return res.sendStatus(204);
         const newBlacklist = new BlackList({
-            token: token
+            token
         });
         await newBlacklist.save();
         res.setHeader('Clear-Site-Data', '"cookies"');
