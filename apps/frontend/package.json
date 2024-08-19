@@ -39,7 +39,8 @@
     "react-resizable-panels": "^2.0.20",
     "sharp": "^0.33.4",
     "sonner": "^1.5.0",
-    "use-sound": "^4.0.3"
+    "use-sound": "^4.0.3",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.51.15",
