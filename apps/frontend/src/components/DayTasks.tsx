@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, MoonStars } from "@phosphor-icons/react"
 import { getDate } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
 
-import Editor from "./atoms/Editor"
+// import Editor from "./atoms/Editor"
 import Button from "@/src/components/atoms/Button"
 import { getOrdinalSuffix, getMonthName, getDayPhase } from "@/src/utils/datetime"
 
@@ -22,15 +22,15 @@ const DayTasks: React.FC<Props> = ({
   prevDay,
   nextDay,
 }) => {
-  const [content, setContent] = React.useState(`<ul data-type="taskList">
-          <li data-type="taskItem" data-checked="false">Today Page</li>
-          <li data-type="taskItem" data-checked="false">Inbox Page</li>
-          <li data-type="taskItem" data-checked="false">Notes Page</li>
-          <li data-type="taskItem" data-checked="false">Sidebar</li>
-          <li data-type="taskItem" data-checked="true">Clerk Auth</li>
-          <li data-type="taskItem" data-checked="true">SEO Changes</li>
-          <li data-type="taskItem" data-checked="true">Repo Setup</li>
-        </ul>`)
+  // const [content, setContent] = React.useState(`<ul data-type="taskList">
+  //         <li data-type="taskItem" data-checked="false">Today Page</li>
+  //         <li data-type="taskItem" data-checked="false">Inbox Page</li>
+  //         <li data-type="taskItem" data-checked="false">Notes Page</li>
+  //         <li data-type="taskItem" data-checked="false">Sidebar</li>
+  //         <li data-type="taskItem" data-checked="true">Clerk Auth</li>
+  //         <li data-type="taskItem" data-checked="true">SEO Changes</li>
+  //         <li data-type="taskItem" data-checked="true">Repo Setup</li>
+  //       </ul>`)
 
   const now = React.useMemo(() => getDayPhase(), [])
 
@@ -88,7 +88,7 @@ const DayTasks: React.FC<Props> = ({
           </Button>
         </div>
       </div>
-      <Editor content={content} setContent={setContent} />
+      {/* <Editor content={content} setContent={setContent} /> */}
     </section>
   )
 }

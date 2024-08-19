@@ -5,6 +5,7 @@ import React, { createContext, useState, useEffect, useContext } from "react"
 import axios, { type AxiosError } from "axios"
 
 import { BACKEND_URL } from "../lib/constants/urls"
+import Loader from "../lib/icons/Loader"
 import { getSession, clearSession } from "../lib/server/actions/sessions"
 
 interface AuthContextType {
@@ -80,6 +81,14 @@ export function AuthProvider({
   }
 
   const value = { session, loading, googleLogin, logout }
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white dark:bg-[#313131]">
+        <Loader />
+      </div>
+    )
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

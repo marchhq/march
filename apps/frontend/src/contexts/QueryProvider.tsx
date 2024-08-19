@@ -9,8 +9,10 @@ interface Props {
 
 const queryClient = new QueryClient()
 
-const QueryProvider: React.FC<Props> = () => {
-  return <QueryClientProvider client={queryClient}></QueryClientProvider>
+const QueryProvider: React.FC<Props> = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
 }
 
 export default QueryProvider
