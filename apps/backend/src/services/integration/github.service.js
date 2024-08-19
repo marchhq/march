@@ -3,6 +3,7 @@ import { createAppAuth } from "@octokit/auth-app";
 // import { Integration } from "../../models/integration/integration.model.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { Item } from "../../models/lib/item.model.js";
+import fs from "fs";
 
 const getGitHubAccessToken = async (userId) => {
     // const accessTokenResponse = await clerk.users.getUserOauthAccessToken(userId, 'github');
@@ -21,15 +22,16 @@ const fetchInstallationDetails = async (installationId) => {
         const accessToken = await generateInstallationAccessToken(installationId);
         console.log("accessToken: ", accessToken);
 
-        const octokit = new Octokit({ auth: accessToken });
+        // const octokit = new Octokit({ auth: accessToken });
 
-        const { data } = await octokit.apps.getInstallation({
-            installation_id: installationId
-        });
+        // const { data } = await octokit.apps.getInstallation({
+        //     installation_id: installationId
+        // });
 
-        console.log('data: ', data);
-        console.log('Installation Account: ', data.account.login);
-        return data.account.login;
+        // console.log('data: ', data);
+        // console.log('Installation Account: ', data.account.login);
+        // return data.account.login;
+        return "";
     } catch (error) {
         console.error('Error fetching installation details:', error);
         throw error;
@@ -81,12 +83,13 @@ const fetchInstallationDetails = async (installationId) => {
 
 const generateInstallationAccessToken = async (installationId) => {
     try {
-        const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const privateKeyPath = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
         const appId = environment.GITHUB_APP_ID;
 
         console.log("App ID:", appId);
         console.log("Installation ID:", installationId);
-        console.log("Private Key (first line):", privateKey.split('\n')[0]);
+        const privateKey = fs.readFileSync(privateKeyPath, "utf8");
+        console.log("Private Key ):", privateKey);
 
         const auth = createAppAuth({
             appId: appId,
@@ -95,6 +98,7 @@ const generateInstallationAccessToken = async (installationId) => {
         });
 
         const installationAuthentication = await auth({ type: 'installation' });
+        console.log("installationAuthentication: ", installationAuthentication);
         return installationAuthentication.token;
     } catch (error) {
         console.error('Error generating installation access token:', error);
