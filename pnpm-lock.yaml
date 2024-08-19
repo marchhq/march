@@ -57,7 +57,7 @@ importers:
         specifier: ^4.19.2
         version: 4.19.2
       fs:
-        specifier: ^0.0.1-security
+        specifier: 0.0.1-security
         version: 0.0.1-security
       generate-password:
         specifier: ^1.7.1
