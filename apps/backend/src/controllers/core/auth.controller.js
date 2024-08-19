@@ -2,6 +2,7 @@ import Joi from "joi";
 import { createEmailUser, createMagicLoginLink, validateMagicLoginLink, validateEmailUser, getUserById, validateGoogleUser, getUserByEmail, createGoogleUser } from "../../services/core/user.service.js";
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
+import { BlackList } from "../../models/core/black-list.model.js";
 
 const { ValidationError } = Joi;
 
@@ -127,7 +128,26 @@ const authenticateWithGoogleController = async (req, res, next) => {
 }
 
 const logOutController = async (req, res, next) => {
-
+    try {
+        const { authorization: header } = req.headers;
+        if (!header) {
+            throw new Error("Unauthorized")
+        }
+        const token = header.split(' ')[1]
+        const checkIfBlacklisted = await BlackList.findOne({ token: token });
+        if (checkIfBlacklisted) return res.sendStatus(204);
+        const newBlacklist = new BlackList({
+            token: token
+        });
+        await newBlacklist.save();
+        res.setHeader('Clear-Site-Data', '"cookies"');
+        res.status(200).json({
+            statusCode: 200,
+            message: 'You are logged out!'
+        })
+    } catch (err) {
+        next(err)
+    }
 }
 
 export {
