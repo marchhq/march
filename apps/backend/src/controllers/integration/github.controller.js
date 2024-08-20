@@ -15,9 +15,9 @@ const handleGithubCallbackController = async (req, res, next) => {
 
 const handleGithubWebhook = async (req, res, next) => {
     try {
-        // const event = req.headers['x-github-event'];
+        const event = req.headers['x-github-event'];
         const payload = req.body;
-        await processWebhookEvent(payload);
+        await processWebhookEvent(event, payload);
 
         res.status(200).send({ message: 'Webhook received and processed' });
     } catch (err) {
