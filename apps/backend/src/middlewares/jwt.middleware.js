@@ -10,7 +10,7 @@ const JWTMiddleware = async (req, res, next) => {
             throw new Error("Unauthorized")
         }
         const token = header.split(' ')[1]
-        const checkIfBlacklisted = await BlackList.findOne({ token: token });
+        const checkIfBlacklisted = await BlackList.findOne({ token });
         if (checkIfBlacklisted) {
             return res
                 .status(401)
