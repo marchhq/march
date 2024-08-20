@@ -1,7 +1,5 @@
 import { User } from "../../models/core/user.model.js";
-import generator from "crypto-random-string";
-import { generateHash, generateRandomPassword, verifyPasswordHash } from "../../utils/helper.service.js";
-import { LoginLink } from "../../models/core/login-link.model.js";
+import { generateHash, verifyPasswordHash } from "../../utils/helper.service.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { OauthClient } from "../../loaders/google.loader.js";
 
@@ -65,46 +63,6 @@ const validateEmailUser = async (email, password) => {
         throw error
     }
     return user
-}
-
-const createMagicLoginLink = async (email, redirectUrl) => {
-    const token = generator({
-        length: 36,
-        type: "url-safe"
-    })
-    let user = await getUserByEmail(email);
-    let isNewUser = false;
-    if (!user) {
-        isNewUser = true;
-        const userName = email.split('@')[0];
-        user = await createEmailUser({ fullName: email, userName, email, password: generateRandomPassword() })
-    }
-    await LoginLink.create({
-        token,
-        type: "login",
-        user: user._id
-    })
-    console.log("token: ", token);
-    // need to add send email
-
-    return { ok: "ok", isNewUser };
-}
-
-const validateMagicLoginLink = async (token) => {
-    // TODO: Add expiry time
-    const magicLink = await LoginLink.findOne({
-        token,
-        isRevoked: false
-    }).populate({
-        path: "user",
-        select: "fullName uuid"
-    })
-    if (!magicLink) {
-        const error = new Error("Invalid Magic Link")
-        error.statusCode = 404;
-        throw error;
-    }
-    return magicLink;
 }
 
 const getUserById = async (id) => {
@@ -190,8 +148,6 @@ export {
     getUserByEmail,
     createEmailUser,
     validateEmailUser,
-    createMagicLoginLink,
-    validateMagicLoginLink,
     getUserById,
     validateGoogleUser,
     createGoogleUser,
