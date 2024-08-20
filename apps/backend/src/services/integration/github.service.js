@@ -187,24 +187,16 @@
 //     getUserGithubIssuesAndPRs,
 //     fetchInstallationDetails
 // };
-
-
-// testing....
-
-// services/githubService.js
-
-// const { Octokit } = require('@octokit/rest');
-// const { createAppAuth } = require('@octokit/auth-app');
-
 import { Octokit } from "@octokit/rest";
 import { createAppAuth } from "@octokit/auth-app";
 import { environment } from "../../loaders/environment.loader.js";
 
 const fetchInstallationDetails = async (installationId, user) => {
     try {
-        // const accessToken = user.integration.github.token;
         const appId = environment.GITHUB_APP_ID;
         const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+        // const privateKeyPath = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+        // const privateKey = fs.readFileSync(privateKeyPath, "utf8");
         const auth = createAppAuth({
             appId: appId,
             privateKey: privateKey,
@@ -214,21 +206,14 @@ const fetchInstallationDetails = async (installationId, user) => {
             installationId: installationId
         });
         const installationAuthentication = await auth({ type: 'installation' });
-        // user.integration.github.token = installationAuthentication.token;
-        // user.save();
 
         const octokit = new Octokit({ auth: installationAuthentication.token });
 
-        const { data } = await octokit.apps.listReposAccessibleToInstallation({
+        await octokit.apps.listReposAccessibleToInstallation({
             installation_id: installationId
         });
-
-        console.log("data: ", data);
-        const repo = data.repositories[0];
-        const owner = repo.owner.login;
-        const repoName = repo.name;
-
-        return { owner, repoName };
+        user.integration.github.installationId = installationId
+        user.save();
     } catch (error) {
         console.error('Error fetching installation details:', error);
         throw error;

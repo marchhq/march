@@ -87,7 +87,7 @@ const UserSchema = new Schema({
             historyId: String
         },
         github: {
-            token: String
+            installationId: String
         }
     }
 }, {

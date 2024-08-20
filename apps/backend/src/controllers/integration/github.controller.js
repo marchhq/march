@@ -45,18 +45,9 @@ const handleGithubCallbackController = async (req, res, next) => {
     try {
         const installationId = req.query.installation_id;
         const user = req.user;
-        console.log("installationId: ", installationId);
-        const { owner, repoName } = await fetchInstallationDetails(installationId, user);
-
-        // Fetch issues and pull requests using fetched owner and repo name
-        // const { issues, pullRequests } = await fetchIssuesAndPullRequests(user.integration.github.token, owner, repoName);
-        console.log("owner: ", owner);
-        console.log("repoName: ", repoName);
-
+        await fetchInstallationDetails(installationId, user);
         res.status(200).send({
             message: 'GitHub App installed successfully'
-            // issues,
-            // pullRequests
         });
     } catch (err) {
         next(err);
