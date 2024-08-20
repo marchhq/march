@@ -85,6 +85,9 @@ const UserSchema = new Schema({
             refreshToken: String,
             labelId: String,
             historyId: String
+        },
+        github: {
+            token: String
         }
     }
 }, {
