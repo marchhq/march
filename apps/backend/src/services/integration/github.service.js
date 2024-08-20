@@ -33,9 +33,8 @@ const fetchInstallationDetails = async (installationId, user) => {
     }
 };
 
-const processWebhookEvent = async (payload) => {
+const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
-    const event = payload.action;
     const issueOrPR = payload.issue || payload.pull_request;
     const repository = payload.repository;
 
