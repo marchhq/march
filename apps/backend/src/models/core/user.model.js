@@ -88,6 +88,11 @@ const UserSchema = new Schema({
         },
         github: {
             installationId: String
+        },
+        notion: {
+            accessToken: String,
+            userId: String,
+            workspaceId: String
         }
     }
 }, {
