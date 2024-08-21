@@ -32,7 +32,7 @@ export const environment = {
     REDIS_PORT: process.env.REDIS_PORT,
     REDIS_DB_USER: process.env.REDIS_DB_USER,
     REDIS_DB_PASS: process.env.REDIS_DB_PASS,
-    NOTION_CLIENT: process.env.NOTION_CLIENT,
+    NOTION_CLIENT_ID: process.env.NOTION_CLIENT_ID,
     NOTION_CLIENT_SECRET: process.env.NOTION_CLIENT_SECRET,
     NOTION_REDIRECT_URL: process.env.NOTION_REDIRECT_URL
 }
