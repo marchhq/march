@@ -20,6 +20,8 @@ const getNotionAccessToken = async (code, user) => {
         user.integration.notion.workspaceId = tokenResponse.data.workspace_id;
         user.integration.notion.botId = tokenResponse.data.bot_id;
         user.integration.notion.userId = tokenResponse.data.owner.user.id;
+        user.save();
+        return tokenResponse.data.access_token;
     } catch (err) {
         console.error("Error Message:", err.message);
         console.error("Error Response:", err.response?.data);
@@ -27,7 +29,6 @@ const getNotionAccessToken = async (code, user) => {
         throw err;
     }
 }
-
 
 export {
     getNotionAccessToken
