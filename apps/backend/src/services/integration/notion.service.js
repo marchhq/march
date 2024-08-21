@@ -16,9 +16,10 @@ const getNotionAccessToken = async (code, user) => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("Access Token:", tokenResponse.data.access_token);
-            console.log("sajda: ", tokenResponse.data);
-            // return tokenResponse.data.access_token;
+        user.integration.notion.accessToken = tokenResponse.data.access_token;
+        user.integration.notion.workspaceId = tokenResponse.data.workspace_id;
+        user.integration.notion.botId = tokenResponse.data.bot_id;
+        user.integration.notion.userId = tokenResponse.data.owner.user.id;
     } catch (err) {
         console.error("Error Message:", err.message);
         console.error("Error Response:", err.response?.data);
