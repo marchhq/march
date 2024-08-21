@@ -11,8 +11,10 @@ const getNotionAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
     const user = req.user;
     try {
-        const tokenInfo = await getNotionAccessToken(code, user);
-        console.log("token: ", tokenInfo);
+        const accessToken = await getNotionAccessToken(code, user);
+        res.status(200).json({
+            accessToken
+        });
     } catch (err) {
         console.log("err: ", err);
         next(err)
