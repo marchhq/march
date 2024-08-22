@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
   } else {
     return (
       <div className="flex flex-col gap-0.5 rounded-xl border border-button-stroke bg-[#dddddd] px-3 pb-3 pt-5 backdrop-blur-lg dark:border-white/10 dark:bg-white/10">
-        <div className="px-3 font-semibold dark:text-zinc-300">
+        <div className="px-3 pt-2 font-semibold dark:text-zinc-300">
           {/* TODO: Logo Here */}
         </div>
         <hr className="mb-3 mt-6 border-zinc-700/40" />
@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
         <Link className={navLinkClassName} href={"/app/today/"}>
           <Sun size={21} weight="duotone" />
         </Link>
-        <Link className={navLinkClassName} href={"/app/collections/"}>
+        <Link className={navLinkClassName} href={"/app/collection/"}>
           <Stack size={21} weight="duotone" />
         </Link>
         <div className="mt-auto text-zinc-400">
