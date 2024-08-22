@@ -92,8 +92,7 @@ const UserSchema = new Schema({
         notion: {
             accessToken: String,
             userId: String,
-            workspaceId: String,
-            botId: String
+            workspaceId: String
         }
     }
 }, {
