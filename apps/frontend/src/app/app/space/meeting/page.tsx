@@ -38,7 +38,7 @@ const MeetingPage: React.FC = () => {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-6 py-5 shadow-lg backdrop-blur-lg">
+        <div className="h-full overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-white/10 px-8 py-6 shadow-lg backdrop-blur-lg">
           <div className="mt-4 px-3">
             <div>
               <div className="flex items-center gap-x-2 text-sm text-zinc-300">
