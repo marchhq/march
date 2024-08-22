@@ -30,6 +30,93 @@ const getNotionAccessToken = async (code, user) => {
     }
 }
 
+const syncNotionPages = async (user) => {
+    const accessToken = user.integration.notion.accessToken;
+
+    // Fetch all pages the user has access to
+    const response = await axios.post(
+        'https://api.notion.com/v1/search',
+        {},
+        {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Notion-Version': '2022-06-28'
+            }
+        }
+    );
+
+    const pages = response.data.results;
+
+    for (const page of pages) {
+        // Extract page details
+        const pageId = page.id;
+        const pageTitle = page.properties.title?.title?.[0]?.text?.content || 'Untitled';
+        console.log("pageTitle: ", pageTitle);
+        const pageUrl = `https://www.notion.so/${pageId.replace(/-/g, "")}`;
+        console.log("pageUrl: ", pageUrl);
+
+        // Fetch the content of the page
+        const pageContentResponse = await axios.get(
+            `https://api.notion.com/v1/blocks/${pageId}/children`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Notion-Version': '2022-06-28'
+                }
+            }
+        );
+        const blocks = pageContentResponse.data.results;
+        let fullContent = ''; // Store all content from the page
+
+        // Loop through the blocks and accumulate the content
+        for (const block of blocks) {
+            if (block.type === 'paragraph') {
+                const blockContent = block.paragraph?.text?.[0]?.text?.content || '';
+                fullContent += `${blockContent}\n`; // Append the block content
+            } else if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
+                const blockContent = block[block.type]?.text?.[0]?.text?.content || '';
+                fullContent += `\n${blockContent}\n`; // Add heading content with spacing
+            }
+            // You can handle other block types similarly
+            console.log("blockContent-saju: ", fullContent);
+        }
+        // const blocks = pageContentResponse.data.results;
+
+        // // Process page content
+        // for (const block of blocks) {
+        //     const blockContent = block?.paragraph?.text?.[0]?.text?.content || 'No content';
+        //     console.log("blockContent: ", blockContent);
+
+            // Check if the item already exists in the database
+            // const existingItem = await Item.findOne({ id: block.id, user: user._id });
+
+            // if (existingItem) {
+            //     // Update the existing item
+            //     existingItem.title = pageTitle;
+            //     existingItem.content = blockContent;
+            //     existingItem.url = pageUrl;
+            //     existingItem.updatedAt = new Date();
+            //     await existingItem.save();
+            // } else {
+            //     // Create a new item in the database
+            //     const newItem = new Item({
+            //         title: pageTitle,
+            //         content: blockContent,
+            //         type: 'notionPage',
+            //         id: block.id,
+            //         url: pageUrl, // Page URL
+            //         user: user._id,
+            //         createdAt: new Date(),
+            //         updatedAt: new Date()
+            //     });
+            //     await newItem.save();
+            // }
+        // }
+    }
+};
+
+
 export {
-    getNotionAccessToken
+    getNotionAccessToken,
+    syncNotionPages
 }

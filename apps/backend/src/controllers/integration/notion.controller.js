@@ -1,5 +1,5 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { getNotionAccessToken } from "../../services/integration/notion.service.js";
+import { getNotionAccessToken, syncNotionPages } from "../../services/integration/notion.service.js";
 import axios from 'axios';
 
 const redirectNotionAuthUrlController = (req, res) => {
@@ -21,7 +21,6 @@ const getNotionAccessTokenController = async (req, res, next) => {
         next(err)
     }
 };
-
 
 const getNotionPageController = async (req, res, next) => {
     try {
@@ -51,9 +50,20 @@ const getNotionPageController = async (req, res, next) => {
     }
 };
 
+const triggerNotionSyncController = async (req, res, next) => {
+    const user = req.user;
+    try {
+        await syncNotionPages(user);
+        res.status(200).json({ message: "Sync completed." });
+    } catch (err) {
+        console.error("Error during sync:", err);
+        next(err);
+    }
+};
 
 export {
     redirectNotionAuthUrlController,
     getNotionAccessTokenController,
-    getNotionPageController
+    getNotionPageController,
+    triggerNotionSyncController
 }
