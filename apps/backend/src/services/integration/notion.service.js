@@ -4,7 +4,7 @@ import { environment } from '../../loaders/environment.loader.js';
 const getNotionAccessToken = async (code, user) => {
     try {
         const encoded = Buffer.from(`${environment.NOTION_CLIENT_ID}:${environment.NOTION_CLIENT_SECRET}`).toString("base64");
-        const tokenResponse = await axios.post('https://api.notion.com/v1/oauth/token', 
+        const tokenResponse = await axios.post('https://api.notion.com/v1/oauth/token',
             {
                 grant_type: 'authorization_code',
                 code: code,
@@ -21,6 +21,7 @@ const getNotionAccessToken = async (code, user) => {
         user.integration.notion.botId = tokenResponse.data.bot_id;
         user.integration.notion.userId = tokenResponse.data.owner.user.id;
         user.save();
+
         return tokenResponse.data.access_token;
     } catch (err) {
         console.error("Error Message:", err.message);
