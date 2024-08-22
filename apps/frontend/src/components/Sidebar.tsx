@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
         <Link className={navLinkClassName} href={"/app/today/"}>
           <Sun size={21} weight="duotone" />
         </Link>
-        <Link className={navLinkClassName} href={"/app/new/"}>
+        <Link className={navLinkClassName} href={"/app/collections/"}>
           <Stack size={21} weight="duotone" />
         </Link>
         <div className="mt-auto text-zinc-400">
@@ -36,7 +36,7 @@ const Sidebar: React.FC = () => {
           <Link className={navLinkClassName} href={"/app/profile/"}>
             <User size={21} weight="duotone" />
           </Link>
-          <Link className={navLinkClassName} href={"/app/profile/"}>
+          <Link className={navLinkClassName} href={"/app/settings/"}>
             <Gear size={21} weight="duotone" />
           </Link>
         </div>
