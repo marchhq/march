@@ -18,7 +18,6 @@ const getNotionAccessToken = async (code, user) => {
             });
         user.integration.notion.accessToken = tokenResponse.data.access_token;
         user.integration.notion.workspaceId = tokenResponse.data.workspace_id;
-        user.integration.notion.botId = tokenResponse.data.bot_id;
         user.integration.notion.userId = tokenResponse.data.owner.user.id;
         user.save();
 
