@@ -9,9 +9,14 @@ const calendarQueue = new Queue('calendarQueue', {
     connection: redisConnection
 });
 
+const notionQueue = new Queue('notionQueue', {
+    connection: redisConnection
+});
+
 console.log('Queues setup completed.');
 
 export {
     linearQueue,
-    calendarQueue
+    calendarQueue,
+    notionQueue
 };
