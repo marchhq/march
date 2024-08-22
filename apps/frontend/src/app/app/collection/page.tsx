@@ -1,7 +1,6 @@
 import * as React from "react"
 
 import Container from "@/src/components/atoms/Container"
-import PageSection from "@/src/components/PageSection"
 
 const CollectionsPage: React.FC = () => {
   return (
