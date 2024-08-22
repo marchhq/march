@@ -31,6 +31,7 @@ const useEditorHook = ({ content, setContent }: Props): Editor | null => {
     onBlur: ({ editor }) => {
       setContent(editor.getHTML())
     },
+    immediatelyRender: false,
   })
 
   return editor

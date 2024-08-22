@@ -120,7 +120,7 @@ const NotesPage: React.FC = () => {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-8 py-6 shadow-lg backdrop-blur-lg">
+        <div className="h-full overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-white/10 px-8 py-6 shadow-lg backdrop-blur-lg">
           <div className="flex w-full items-center justify-between px-3 text-zinc-400">
             <span>Notes</span>
             <button
@@ -137,11 +137,7 @@ const NotesPage: React.FC = () => {
               if (note === null) {
                 return
               }
-              void saveNoteToServer({
-                ...note,
-                title,
-                content,
-              })
+              void saveNoteToServer({ ...note, title, content })
             }}
             className="mt-4 px-3"
           >
