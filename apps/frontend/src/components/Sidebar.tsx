@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
         <Link className={navLinkClassName} href={"/app/today/"}>
           <Sun size={21} weight="duotone" />
         </Link>
-        <Link className={navLinkClassName} href={"/app/collection/"}>
+        <Link className={navLinkClassName} href={"/app/space/"}>
           <Stack size={21} weight="duotone" />
         </Link>
         <div className="mt-auto text-zinc-400">
