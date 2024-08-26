@@ -87,30 +87,30 @@ const syncNotionPages = async (user) => {
         //     const blockContent = block?.paragraph?.text?.[0]?.text?.content || 'No content';
         //     console.log("blockContent: ", blockContent);
 
-            // Check if the item already exists in the database
-            // const existingItem = await Item.findOne({ id: block.id, user: user._id });
+        // Check if the item already exists in the database
+        // const existingItem = await Item.findOne({ id: block.id, user: user._id });
 
-            // if (existingItem) {
-            //     // Update the existing item
-            //     existingItem.title = pageTitle;
-            //     existingItem.content = blockContent;
-            //     existingItem.url = pageUrl;
-            //     existingItem.updatedAt = new Date();
-            //     await existingItem.save();
-            // } else {
-            //     // Create a new item in the database
-            //     const newItem = new Item({
-            //         title: pageTitle,
-            //         content: blockContent,
-            //         type: 'notionPage',
-            //         id: block.id,
-            //         url: pageUrl, // Page URL
-            //         user: user._id,
-            //         createdAt: new Date(),
-            //         updatedAt: new Date()
-            //     });
-            //     await newItem.save();
-            // }
+        // if (existingItem) {
+        //     // Update the existing item
+        //     existingItem.title = pageTitle;
+        //     existingItem.content = blockContent;
+        //     existingItem.url = pageUrl;
+        //     existingItem.updatedAt = new Date();
+        //     await existingItem.save();
+        // } else {
+        //     // Create a new item in the database
+        //     const newItem = new Item({
+        //         title: pageTitle,
+        //         content: blockContent,
+        //         type: 'notionPage',
+        //         id: block.id,
+        //         url: pageUrl, // Page URL
+        //         user: user._id,
+        //         createdAt: new Date(),
+        //         updatedAt: new Date()
+        //     });
+        //     await newItem.save();
+        // }
         // }
     }
 };
