@@ -19,17 +19,16 @@
     "plugin:tailwindcss/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@tanstack/eslint-plugin-query/recommended",
-    "next/core-web-vitals",
     "next",
     "prettier"
   ],
   "plugins": [
     "prettier",
     "@typescript-eslint",
+    "import",
     "jsx-a11y",
     "tailwindcss",
-    "react-refresh",
-    "@tanstack/query"
+    "react-refresh"
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
@@ -46,6 +45,7 @@
 
     "@tanstack/query/exhaustive-deps": "error",
     "@tanstack/query/stable-query-client": "error",
+    "prettier/prettier": "error",
 
     "import/order": [
       "error",
