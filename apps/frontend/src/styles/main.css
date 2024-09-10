@@ -201,3 +201,7 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-zinc-500;
 }
+
+[data-theme="slash-command"] {
+  width: 1000vw;
+}

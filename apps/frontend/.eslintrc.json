@@ -19,16 +19,17 @@
     "plugin:tailwindcss/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@tanstack/eslint-plugin-query/recommended",
+    "next/core-web-vitals",
     "next",
     "prettier"
   ],
   "plugins": [
     "prettier",
     "@typescript-eslint",
-    "import",
     "jsx-a11y",
     "tailwindcss",
-    "react-refresh"
+    "react-refresh",
+    "@tanstack/query"
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
