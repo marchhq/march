@@ -4,6 +4,8 @@ import TaskList from "@tiptap/extension-task-list"
 import { type Editor, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
+import { SlashCommand } from "../extensions/SlashCommand"
+
 interface Props {
   content: string
   setContent: (content: string) => void
@@ -25,6 +27,7 @@ const useEditorHook = ({ content, setContent }: Props): Editor | null => {
           rel: "noopener noreferrer nofollow",
         },
       }),
+      SlashCommand,
     ],
     content,
     autofocus: "end",
