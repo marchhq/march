@@ -1,4 +1,5 @@
-import { Editor, Extension } from "@tiptap/core"
+import { Editor } from "@tiptap/react"
+import { Extension } from "@tiptap/core"
 import { PluginKey } from "@tiptap/pm/state"
 import { ReactRenderer } from "@tiptap/react"
 import Suggestion, {
@@ -42,7 +43,7 @@ export const SlashCommand = Extension.create({
   addProseMirrorPlugins() {
     return [
       Suggestion({
-        editor: this.editor,
+        editor: this.editor as Editor,
         char: "/",
         allowSpaces: true,
         startOfLine: true,
@@ -66,7 +67,7 @@ export const SlashCommand = Extension.create({
             isValidAfterContent
           )
         },
-        command: ({ editor, props }: { editor: Editor; props: any }) => {
+        command: ({ editor, props }: { editor: Editor; range: { from: number; to: number }; props: any }) => {
           const { view, state } = editor
           const { $head, $from } = view.state.selection
 
@@ -107,7 +108,7 @@ export const SlashCommand = Extension.create({
               })
               .filter((command) =>
                 command.shouldBeHidden
-                  ? !command.shouldBeHidden(this.editor)
+                  ? !command.shouldBeHidden(this.editor as Editor)
                   : true
               ),
           }))
