@@ -19,6 +19,7 @@ import useEditorHook from "../hooks/useEditor.hook"
 import axios from "axios"
 import { BACKEND_URL } from "../lib/constants/urls"
 import TextEditor from "@/src/components/atoms/Editor"
+import InboxIcon from "../lib/icons/InboxIcon"
 
 interface IntegrationType {
   uuid: string
@@ -163,21 +164,30 @@ const InboxSection: React.FC = () => {
       </div> */}
 
       <h1 className=" text-4xl font-semibold text-black dark:text-zinc-300 flex items-center gap-4 mb-4">
-        <Tray size={50}></Tray> Inbox
+        <InboxIcon/> Inbox
       </h1>
       {isAddItem ? (
         <div className="flex gap-4 items-center flex-wrap my-6">
-
-        <Button
-          onClick={() => setIsAddItem(false)}
-          variant={"invisible"}
-          className="flex gap-2 py-2 items-center hover:py-2 text-gray-500 dark:text-zinc-300 hover:text-white"
+          <Button
+            onClick={() => {
+              setIsAddItem(false)
+              setContent("")
+            }}
+            variant={"invisible"}
+            className="flex gap-2 py-2 items-center text-gray-500 dark:text-zinc-300 hover:text-white"
           >
-          <X size={20} />
-          <p className="text-medium ">Cancel</p>
-        </Button>
-        <Button variant={"primary"} onClick={addItemToInbox} className="flex items-center py-2 gap-2"><Check size={20}/> Save</Button>
-          </div>
+            <X size={20} />
+            <p className="text-medium ">Cancel</p>
+          </Button>
+          <Button
+            variant={"primary"}
+            onClick={addItemToInbox}
+            className="flex items-center py-2 gap-2"
+          >
+            <Check size={20} />
+            <p className="text-medium ">Save</p>
+          </Button>
+        </div>
       ) : (
         <Button
           onClick={() => setIsAddItem(true)}
@@ -185,17 +195,14 @@ const InboxSection: React.FC = () => {
           className="flex gap-4 items-center py-2 my-6 text-gray-500 dark:text-zinc-300 hover:text-white"
         >
           <Plus size={21} />
-          <h1 className="text-lg ">
-            Click to add an item
-          </h1>
+          <h1 className="text-lg ">Click to add an item</h1>
         </Button>
       )}
       {isAddItem && editor && (
         <div>
-          <div className="h-20 overflow-y-auto bg-white dark:bg-zinc-700 rounded-xl my-2 p-4 text-black dark:text-white">
+          <div className="h-full bg-white dark:bg-zinc-700 rounded-xl mb-6 p-4 text-black dark:text-white">
             <TextEditor placeholder="Enter Details Here" editor={editor} />
           </div>
-          
         </div>
       )}
 
@@ -211,8 +218,12 @@ const InboxSection: React.FC = () => {
               key={item.uuid}
               className="text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
             >
-              <p dangerouslySetInnerHTML={{ __html: item.description || "" }} />{" "}
-              {/* Renders HTML content */}
+              {/* Apply the `rendered-content` class to style HTML content */}
+              <div className="rendered-content">
+                <p
+                  dangerouslySetInnerHTML={{ __html: item.description || "" }}
+                />
+              </div>
             </div>
           ))
         )}

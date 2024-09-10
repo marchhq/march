@@ -114,7 +114,7 @@ const TextEditor: React.FC<Props> = ({ editor }) => {
         </BubbleMenu>
       )}{" "}
       <EditorContent
-        className="[&>.ProseMirror.tiptap]:min-h-[70vh]"
+        className="[&>.ProseMirror.tiptap]:h-full"
         editor={editor}
       />
     </div>

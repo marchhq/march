@@ -205,3 +205,49 @@ button {
 [data-theme="slash-command"] {
   width: 1000vw;
 }
+
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Global CSS for rendered HTML content */
+.rendered-content {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.rendered-content h1 {
+  @apply text-3xl font-bold;
+}
+
+.rendered-content h2 {
+  @apply text-2xl font-semibold;
+}
+
+.rendered-content h3 {
+  @apply text-xl font-medium;
+}
+
+.rendered-content ul {
+  @apply list-disc ml-5;
+}
+
+.rendered-content ol {
+  @apply list-decimal ml-5;
+}
+
+.rendered-content li {
+  @apply mb-2;
+}
+
+.rendered-content blockquote {
+  @apply border-l-4 pl-4 italic text-gray-500 dark:text-gray-400;
+}
+
+
+
