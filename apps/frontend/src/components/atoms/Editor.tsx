@@ -1,26 +1,20 @@
 "use client"
 import * as React from "react"
 
+import { BubbleMenu, EditorContent, type Editor } from "@tiptap/react"
 import {
+  Bold,
   Code,
-  ListBullets,
-  ListChecks,
-  ListNumbers,
-  Quotes,
-  TextBolder,
-  TextItalic,
-  TextStrikethrough,
-  TextHOne,
-  TextHTwo,
-  TextHFour,
-  TextHThree,
-} from "@phosphor-icons/react"
-import {
-  EditorContent,
-  BubbleMenu,
-  FloatingMenu,
-  type Editor,
-} from "@tiptap/react"
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Italic,
+  List,
+  ListOrdered,
+  Quote,
+  Strikethrough,
+} from "lucide-react"
 
 import classNames from "@/src/utils/classNames"
 
@@ -32,232 +26,98 @@ interface Props {
 
 const TextEditor: React.FC<Props> = ({ editor }) => {
   return (
-    <>
-      {editor !== null && (
-        <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
-          <div className="ml-10 flex items-center gap-1 text-xs text-zinc-300">
-            <button
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextBolder size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextItalic size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleStrike().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextStrikethrough size={18} weight="duotone" />
-            </button>
-            <div className="h-6 w-px bg-zinc-900/50" />
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextHOne size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextHTwo size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextHThree size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 4 }).run()
-              }
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <TextHFour size={18} weight="duotone" />
-            </button>
-            <div className="h-6 w-px bg-zinc-900/50" />
-            <button
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <ListBullets size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <ListNumbers size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleTaskList().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <ListChecks size={18} weight="duotone" />
-            </button>
-            <div className="h-6 w-px bg-zinc-900/50" />
-            <button
-              onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <Quotes size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              className={"hover-bg rounded-lg p-2 transition-all"}
-            >
-              <Code size={18} weight="duotone" />
-            </button>
-          </div>
-        </FloatingMenu>
-      )}
+    <div>
       {editor !== null && (
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
           className="w-max"
         >
-          <div className="flex items-center gap-1 rounded-xl bg-zinc-700 p-1 text-xs text-zinc-300 shadow-lg">
+          <div className="flex items-center gap-2 rounded-xl bg-neutral-900 p-1 text-xs text-neutral-200 shadow-lg">
             <button
               onClick={() => editor.chain().focus().toggleBold().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("bold") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("bold") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <TextBolder size={18} weight="duotone" />
+              <Bold size={18} />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleItalic().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("italic") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("italic") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <TextItalic size={18} weight="duotone" />
+              <Italic size={18} />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleStrike().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("strike") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("strike") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <TextStrikethrough size={18} weight="duotone" />
-            </button>
-            <div className="h-6 w-px bg-zinc-900/50" />
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("heading") ? "bg-zinc-900/50" : "bg-zinc-700"
-              )}
-            >
-              <TextHOne size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("heading") ? "bg-zinc-900/50" : "bg-zinc-700"
-              )}
-            >
-              <TextHTwo size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("heading") ? "bg-zinc-900/50" : "bg-zinc-700"
-              )}
-            >
-              <TextHThree size={18} weight="duotone" />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 4 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("heading") ? "bg-zinc-900/50" : "bg-zinc-700"
-              )}
-            >
-              <TextHFour size={18} weight="duotone" />
+              <Strikethrough size={18} />
             </button>
             <div className="h-6 w-px bg-zinc-900/50" />
             <button
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("bulletList") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("bulletList") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <ListBullets size={18} weight="duotone" />
+              <List size={18} />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
                 editor.isActive("orderedList")
-                  ? "bg-zinc-900/50"
-                  : "bg-zinc-700"
+                  ? "bg-neutral-800"
+                  : "bg-zinc-900"
               )}
             >
-              <ListNumbers size={18} weight="duotone" />
+              <ListOrdered size={18} />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleTaskList().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("taskList") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("taskList") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <ListChecks size={18} weight="duotone" />
+              <ListOrdered size={18} />
             </button>
             <div className="h-6 w-px bg-zinc-900/50" />
             <button
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("blockquote") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("blockquote") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <Quotes size={18} weight="duotone" />
+              <Quote size={18} />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
               className={classNames(
-                "p-2 rounded-lg hover-bg transition-all",
-                editor.isActive("codeBlock") ? "bg-zinc-900/50" : "bg-zinc-700"
+                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
+                editor.isActive("codeBlock") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <Code size={18} weight="duotone" />
+              <Code size={18} />
             </button>
           </div>
         </BubbleMenu>
-      )}
+      )}{" "}
       <EditorContent
         className="[&>.ProseMirror.tiptap]:min-h-[70vh]"
         editor={editor}
       />
-    </>
+    </div>
   )
 }
 
