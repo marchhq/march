@@ -206,7 +206,7 @@ button {
   width: 1000vw;
 }
 
-
+/* Display tiptap placeholder only once */
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);

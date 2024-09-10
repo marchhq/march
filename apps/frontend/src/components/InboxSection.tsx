@@ -42,11 +42,7 @@ const InboxSection: React.FC = () => {
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
   const editor = useEditorHook({ content, setContent })
 
-  const {
-    fetchInboxData,
-    inboxItems,
-    setInboxItems,
-  } = useInboxStore()
+  const { fetchInboxData, inboxItems, setInboxItems } = useInboxStore()
 
   React.useEffect(() => {
     void fetchInboxData(session)
@@ -164,7 +160,7 @@ const InboxSection: React.FC = () => {
       </div> */}
 
       <h1 className=" text-4xl font-semibold text-black dark:text-zinc-300 flex items-center gap-4 mb-4">
-        <InboxIcon/> Inbox
+        <InboxIcon /> Inbox
       </h1>
       {isAddItem ? (
         <div className="flex gap-4 items-center flex-wrap my-6">
@@ -174,7 +170,7 @@ const InboxSection: React.FC = () => {
               setContent("")
             }}
             variant={"invisible"}
-            className="flex gap-2 py-2 items-center text-gray-500 dark:text-zinc-300 hover:text-white"
+            className="flex gap-2 py-2 items-center text-zinc-700 dark:text-zinc-300 hover:text-white"
           >
             <X size={20} />
             <p className="text-medium ">Cancel</p>
@@ -192,15 +188,15 @@ const InboxSection: React.FC = () => {
         <Button
           onClick={() => setIsAddItem(true)}
           variant={"invisible"}
-          className="flex gap-4 items-center py-2 my-6 text-gray-500 dark:text-zinc-300 hover:text-white"
+          className="flex gap-4 items-center py-2 my-6 text-zinc-700 hover:text-white dark:text-zinc-300 "
         >
           <Plus size={21} />
-          <h1 className="text-lg ">Click to add an item</h1>
+          <h1 className="text-lg">Click to add an item</h1>
         </Button>
       )}
       {isAddItem && editor && (
         <div>
-          <div className="h-full bg-white dark:bg-zinc-700 rounded-xl mb-6 p-4 text-black dark:text-white">
+          <div className="h-full border dark:border-black focus-within:border-black dark:focus-within:border-gray-400 bg-white dark:bg-zinc-700 rounded-xl mb-6 p-4 dark:text-white">
             <TextEditor placeholder="Enter Details Here" editor={editor} />
           </div>
         </div>
