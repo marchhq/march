@@ -63,51 +63,6 @@ const TextEditor: React.FC<Props> = ({ editor }) => {
             </button>
             <div className="h-6 w-px bg-zinc-900/50" />
             <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
-                editor.isActive("heading") ? "bg-neutral-800" : "bg-zinc-900"
-              )}
-            >
-              <Heading1 size={18} />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
-                editor.isActive("heading") ? "bg-neutral-800" : "bg-zinc-900"
-              )}
-            >
-              <Heading2 size={18} />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
-                editor.isActive("heading") ? "bg-neutral-800" : "bg-zinc-900"
-              )}
-            >
-              <Heading3 size={18} />
-            </button>
-            <button
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 4 }).run()
-              }
-              className={classNames(
-                "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
-                editor.isActive("heading") ? "bg-neutral-800" : "bg-zinc-900"
-              )}
-            >
-              <Heading4 size={18} />
-            </button>
-            <div className="h-6 w-px bg-zinc-900/50" />
-            <button
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               className={classNames(
                 "p-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-all",
