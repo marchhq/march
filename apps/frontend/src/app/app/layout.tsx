@@ -9,7 +9,7 @@ interface Props {
 
 const AppLayout: React.FC<Props> = ({ children }) => {
   return (
-    <AuthProvider> 
+    <AuthProvider>
       <QueryProvider>
         <main className="flex h-screen gap-1 bg-white p-1 dark:bg-black">
           <Sidebar />
