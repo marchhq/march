@@ -3,13 +3,22 @@ import * as React from "react"
 
 import {
   ArrowSquareOut,
+  Check,
   GithubLogo,
   GitPullRequest,
+  Plus,
+  Tray,
+  X,
 } from "@phosphor-icons/react"
 
 import { useAuth } from "../contexts/AuthContext"
-import Editor from "@/src/components/atoms/Editor"
 import { fromNow } from "@/src/utils/datetime"
+import Button from "./atoms/Button"
+import useInboxStore from "../lib/store/inbox.store"
+import useEditorHook from "../hooks/useEditor.hook"
+import axios from "axios"
+import { BACKEND_URL } from "../lib/constants/urls"
+import TextEditor from "@/src/components/atoms/Editor"
 
 interface IntegrationType {
   uuid: string
@@ -22,34 +31,25 @@ interface IntegrationType {
   url: string
   createdAt: string
   updatedAt: string
-  metadata: Array<Record<string, string>>
+  metadata: Record<string, string>
 }
 
 const InboxSection: React.FC = () => {
   const { session } = useAuth()
-  const [content, setContent] = React.useState("Start by editing this text...")
+  const [content, setContent] = React.useState("")
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
+  const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
+  const editor = useEditorHook({ content, setContent })
 
-  const fetchData = async (): Promise<void> => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      }
-      console.log("HEY")
-      const res = await fetch("http://localhost:8080/api/my", config)
-      const data = await res.json()
-      console.log(data)
-      setIntegrations(data.IntegratedAppIssues as IntegrationType[])
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  const {
+    fetchInboxData,
+    inboxItems,
+    setInboxItems,
+  } = useInboxStore()
 
   React.useEffect(() => {
-    fetchData()
-  }, [])
+    void fetchInboxData(session)
+  }, [fetchInboxData, session, setInboxItems])
 
   // const renderIntegration = (integration: IntegrationType): React.ReactNode => {
   //   switch (integration.type) {
@@ -112,10 +112,39 @@ const InboxSection: React.FC = () => {
   //   }
   // }
 
+  const addItemToInbox = async () => {
+    if (!session) {
+      console.error("User is not authenticated")
+      return
+    }
+
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/api/items/create`,
+        {
+          description: content,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+
+      if (res.status === 200) {
+        console.log("Item successfully added to the inbox:")
+        void fetchInboxData(session)
+        setContent("")
+        setIsAddItem(false)
+      }
+    } catch (error) {
+      console.error("Error adding item to inbox:", error)
+    }
+  }
+
   return (
     <section>
-      {/* <Editor content={content} setContent={setContent} />
-      <div className="my-10 space-y-1 text-sm text-zinc-300">
+      {/* <div className="my-10 space-y-1 text-sm text-zinc-300">
         {integrations.map((integration, index) => (
           <div
             key={index}
@@ -132,6 +161,62 @@ const InboxSection: React.FC = () => {
           </div>
         ))}
       </div> */}
+
+      <h1 className=" text-4xl font-semibold text-black dark:text-zinc-300 flex items-center gap-4 mb-4">
+        <Tray size={50}></Tray> Inbox
+      </h1>
+      {isAddItem ? (
+        <div className="flex gap-4 items-center flex-wrap my-6">
+
+        <Button
+          onClick={() => setIsAddItem(false)}
+          variant={"invisible"}
+          className="flex gap-2 py-2 items-center hover:py-2 text-gray-500 dark:text-zinc-300 hover:text-white"
+          >
+          <X size={20} />
+          <p className="text-medium ">Cancel</p>
+        </Button>
+        <Button variant={"primary"} onClick={addItemToInbox} className="flex items-center py-2 gap-2"><Check size={20}/> Save</Button>
+          </div>
+      ) : (
+        <Button
+          onClick={() => setIsAddItem(true)}
+          variant={"invisible"}
+          className="flex gap-4 items-center py-2 my-6 text-gray-500 dark:text-zinc-300 hover:text-white"
+        >
+          <Plus size={21} />
+          <h1 className="text-lg ">
+            Click to add an item
+          </h1>
+        </Button>
+      )}
+      {isAddItem && editor && (
+        <div>
+          <div className="h-20 overflow-y-auto bg-white dark:bg-zinc-700 rounded-xl my-2 p-4 text-black dark:text-white">
+            <TextEditor placeholder="Enter Details Here" editor={editor} />
+          </div>
+          
+        </div>
+      )}
+
+      {/* Inbox items section */}
+      <div>
+        {inboxItems.length === 0 ? (
+          <div className="text-gray-500 dark:text-zinc-300">
+            Inbox seems empty!
+          </div>
+        ) : (
+          inboxItems?.map((item) => (
+            <div
+              key={item.uuid}
+              className="text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
+            >
+              <p dangerouslySetInnerHTML={{ __html: item.description || "" }} />{" "}
+              {/* Renders HTML content */}
+            </div>
+          ))
+        )}
+      </div>
     </section>
   )
 }
