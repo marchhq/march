@@ -19,6 +19,7 @@ export const environment = {
     AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
     AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
     AWS_REGION: process.env.AWS_REGION,
+    AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     LINEAR_CLIENT_ID: process.env.LINEAR_CLIENT_ID,
     LINEAR_CLIENT_SECRET: process.env.LINEAR_CLIENT_SECRET,
     LINEAR_REDIRECT_URL: process.env.LINEAR_REDIRECT_URL,
@@ -38,5 +39,6 @@ export const environment = {
     NOTION_CLIENT_ID: process.env.NOTION_CLIENT_ID,
     NOTION_CLIENT_SECRET: process.env.NOTION_CLIENT_SECRET,
     NOTION_REDIRECT_URL: process.env.NOTION_REDIRECT_URL,
-    NOTION_AUTH_URL: process.env.NOTION_AUTH_URL
+    NOTION_AUTH_URL: process.env.NOTION_AUTH_URL,
+    FILE_SIZE_LIMIT: process.env.FILE_SIZE_LIMIT
 }
