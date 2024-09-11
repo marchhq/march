@@ -38,5 +38,6 @@ export const environment = {
     NOTION_CLIENT_ID: process.env.NOTION_CLIENT_ID,
     NOTION_CLIENT_SECRET: process.env.NOTION_CLIENT_SECRET,
     NOTION_REDIRECT_URL: process.env.NOTION_REDIRECT_URL,
-    NOTION_AUTH_URL: process.env.NOTION_AUTH_URL
+    NOTION_AUTH_URL: process.env.NOTION_AUTH_URL,
+    FILE_SIZE_LIMIT: process.env.FILE_SIZE_LIMIT
 }
