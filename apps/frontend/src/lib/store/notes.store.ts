@@ -56,7 +56,7 @@ export interface NotesStoreType {
    * Deletes a note from the store.
    * @param note The note to delete.
    */
-  deleteNote: (note: Note) => void
+  deleteNote: (session: string, note: Note) => void
 }
 
 const useNotesStore = create<NotesStoreType>((set) => ({
@@ -157,16 +157,27 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       console.error(e.cause)
     }
   },
-  deleteNote: (note: Note) => {
-    set((state: NotesStoreType) => {
-      const index = state.notes.findIndex((n) => n.uuid === note.uuid)
-      if (index !== -1) {
-        state.notes.splice(index, 1)
-      }
-      return {
-        notes: state.notes,
-      }
-    })
+  deleteNote: async (session: string, note: Note) => {
+    try {
+      await axios.delete(`${BACKEND_URL}/api/notes/${note.uuid}`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+
+      set((state: NotesStoreType) => {
+        const index = state.notes.findIndex((n) => n.uuid === note.uuid)
+        if (index !== -1) {
+          state.notes.splice(index, 1)
+        }
+        return {
+          notes: state.notes,
+        }
+      })
+    } catch (error) {
+      const e = error as AxiosError
+      console.error("failed to delete note: ", e.message)
+    }
   },
 }))
 
