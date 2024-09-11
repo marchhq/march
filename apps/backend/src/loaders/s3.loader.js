@@ -13,21 +13,19 @@ const s3 = new S3Client({
     }
 });
 
-
 // Multer configuration to upload files directly to S3
 const upload = multer({
     storage: multerS3({
         s3: s3,
-        bucket: environment.AWS_S3_BUCKET_NAME,
+        bucket: environment.AWS_BUCKET_NAME,
         acl: 'public-read',
         key: function (req, file, cb) {
-            const filename = `${uuid()}-${file.originalname}`;
-            cb(null, filename);   // UUID to create a unique filename
+            const filename = `user-${uuid()}-${file.originalname}`; 
+            cb(null, filename);
         },
     }),
-    limits: { fileSize: environment.FILE_SIZE_LIMIT || 5 * 1024 * 1024 }, // 5MB file size limit
+    limits: { fileSize: environment.FILE_SIZE_LIMIT || 5 * 1024 * 1024 },  // 5MB file size limit
 });
-
 export {
     upload,
     s3

@@ -53,3 +53,4 @@ const FileAsset = db.model('FileAsset', FileAssetSchema, 'fileAssets');
 export {
     FileAsset
 }
+
