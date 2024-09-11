@@ -1,11 +1,7 @@
 "use client"
 import * as React from "react"
 
-import {
-  Check,
-  Plus,
-  X,
-} from "@phosphor-icons/react"
+import { Check, Plus, X } from "@phosphor-icons/react"
 
 import { useAuth } from "../contexts/AuthContext"
 import Button from "./atoms/Button"
@@ -38,7 +34,7 @@ const InboxSection: React.FC = () => {
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
   const [selectedItemId, setSelectedItemId] = React.useState<string>("")
-  const [date, setDate] = React.useState<Date | undefined>()
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
   const editor = useEditorHook({ content, setContent })
   const { toast } = useToast()
 
@@ -51,10 +47,9 @@ const InboxSection: React.FC = () => {
 
   React.useEffect(() => {
     const updateDate = async () => {
-      if (selectedItemId && date) {
+      if (selectedItemId) {
         const result = await moveItemToDate(session, selectedItemId, date)
         if (result) {
-          // Check if the result is not null
           toast({
             title: "Updated successfully!",
           })
@@ -231,16 +226,15 @@ const InboxSection: React.FC = () => {
           inboxItems?.map((item) => (
             <div
               key={item.uuid}
-              className="flex justify-between items-center text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
+              className="group flex justify-between items-center text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
             >
-              {/* Apply the `rendered-content` class to style HTML content */}
               <div className="rendered-content">
                 <p
                   dangerouslySetInnerHTML={{ __html: item.description || "" }}
                 />
               </div>
               <div
-                className=""
+                className="invisible group-hover:visible"
                 onClick={() => {
                   item._id && setSelectedItemId(item._id)
                 }}
