@@ -2,17 +2,12 @@
 import * as React from "react"
 
 import {
-  ArrowSquareOut,
   Check,
-  GithubLogo,
-  GitPullRequest,
   Plus,
-  Tray,
   X,
 } from "@phosphor-icons/react"
 
 import { useAuth } from "../contexts/AuthContext"
-import { fromNow } from "@/src/utils/datetime"
 import Button from "./atoms/Button"
 import useInboxStore from "../lib/store/inbox.store"
 import useEditorHook from "../hooks/useEditor.hook"
@@ -21,6 +16,7 @@ import { BACKEND_URL } from "../lib/constants/urls"
 import TextEditor from "@/src/components/atoms/Editor"
 import InboxIcon from "../lib/icons/InboxIcon"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
+import { useToast } from "../hooks/useToast"
 
 interface IntegrationType {
   uuid: string
@@ -41,19 +37,33 @@ const InboxSection: React.FC = () => {
   const [content, setContent] = React.useState("")
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
-  const [selectedItemId, setSelectedItemId] = React.useState<string>(""); 
+  const [selectedItemId, setSelectedItemId] = React.useState<string>("")
   const [date, setDate] = React.useState<Date | undefined>()
   const editor = useEditorHook({ content, setContent })
+  const { toast } = useToast()
 
-  const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } = useInboxStore()
+  const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } =
+    useInboxStore()
 
   React.useEffect(() => {
     void fetchInboxData(session)
   }, [fetchInboxData, session, setInboxItems])
 
-  React.useEffect(()=>{
-  selectedItemId && moveItemToDate(session, selectedItemId, date)
-  },[date])
+  React.useEffect(() => {
+    const updateDate = async () => {
+      if (selectedItemId && date) {
+        const result = await moveItemToDate(session, selectedItemId, date)
+        if (result) {
+          // Check if the result is not null
+          toast({
+            title: "Updated successfully!",
+          })
+        }
+      }
+    }
+
+    updateDate()
+  }, [date])
 
   // const renderIntegration = (integration: IntegrationType): React.ReactNode => {
   //   switch (integration.type) {
@@ -136,10 +146,12 @@ const InboxSection: React.FC = () => {
       )
 
       if (res.status === 200) {
-        console.log("Item successfully added to the inbox:")
         void fetchInboxData(session)
         setContent("")
         setIsAddItem(false)
+        toast({
+          title: "Item added successfully!",
+        })
       }
     } catch (error) {
       console.error("Error adding item to inbox:", error)
@@ -212,7 +224,7 @@ const InboxSection: React.FC = () => {
       {/* Inbox items section */}
       <div>
         {inboxItems.length === 0 ? (
-          <div className="w-full my-6 self-center text-gray-500 dark:text-zinc-300">
+          <div className="w-full h-full flex justify-center items-center my-6 text-gray-500 dark:text-zinc-300">
             Inbox seems empty!
           </div>
         ) : (
@@ -227,10 +239,17 @@ const InboxSection: React.FC = () => {
                   dangerouslySetInnerHTML={{ __html: item.description || "" }}
                 />
               </div>
-              <div className="" onClick={()=>{ console.log(item)
-                 item._id && setSelectedItemId(item._id)}}>
-                <RescheduleCalendar date={date} setDate={setDate}/>
-                </div>
+              <div
+                className=""
+                onClick={() => {
+                  item._id && setSelectedItemId(item._id)
+                }}
+              >
+                <RescheduleCalendar
+                  date={item.dueDate ? new Date(item.dueDate) : undefined}
+                  setDate={setDate}
+                />
+              </div>
             </div>
           ))
         )}

@@ -7,7 +7,7 @@ export interface InboxStoreType {
     fetchInboxData: (session: string) => Promise<InboxItem[]>;
     fetchTodayInboxData: (session: string) => Promise<TodayInboxItem[]>;
     fetchOverdueInboxData: (session: string) => Promise<OverdueInboxItem[]>;
-    moveItemToDate: (session: string, id: string | undefined, date: Date | undefined) => void;
+    moveItemToDate: (session: string, id: string | undefined, date: Date | undefined) => Promise<InboxItem[]>;
     setInboxItems: (inboxItems: InboxItem[]) => void;
     setTodayInboxItems: (todayInboxItems: TodayInboxItem[]) => void;
     setOverdueInboxItems: (overdueInboxItems: OverdueInboxItem[]) => void;

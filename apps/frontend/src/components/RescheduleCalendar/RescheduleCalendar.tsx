@@ -28,6 +28,9 @@ export function RescheduleCalendar({date, setDate}: RescheduleCalendarProps) {
   const tomorrowFormatted = format(addDays(new Date(), 1), "eee")
   const nextWeekFormatted = format(addDays(new Date(), 7), "eee MMM dd")
 
+   // Format the selected date
+  const dueDateFormatted = date ? format(date, "eee MMM dd") : "No Date Assigned"
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -41,6 +44,7 @@ export function RescheduleCalendar({date, setDate}: RescheduleCalendarProps) {
       <PopoverContent className="w-auto p-0">
         <div className="flex flex-row-reverse rounded-xl overflow-hidden bg-white text-black dark:bg-black dark:text-white">
           <div className=" p-4 text-sm border-l">
+            <div className="mb-2 font-semibold">Due Date: {`${dueDateFormatted}`}</div>
             <div>
             <DateSelectionButton
               label="Today"
