@@ -71,6 +71,29 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       setOverdueInboxItems: (overdueInboxItems: OverdueInboxItem[]) => {
         set({ overdueInboxItems });
       },
+      moveItemToDate: async (session: string, id: string, date: Date) => { // Update the date of an item
+        try {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${session}`,
+            },
+          };
+          const response = await axios.post(`${BACKEND_URL}/api/setDate/`, { id, date : date ? date : null }, config);
+          const updatedItem = response.data.response.items;
+          
+          // Update the inboxItems with the updated item
+          set((state) => ({
+            inboxItems: state.inboxItems.map((item) =>
+              item._id === id ? { ...item, dueDate: date } : item
+            ),
+          }));
+          return updatedItem;
+        } catch (error) {
+          const e = error as AxiosError;
+          console.error("Error while moving item to new date::", e.message);
+          return null;
+        }
+      },
     }));
 
 export default useInboxStore;

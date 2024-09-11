@@ -20,6 +20,7 @@ import axios from "axios"
 import { BACKEND_URL } from "../lib/constants/urls"
 import TextEditor from "@/src/components/atoms/Editor"
 import InboxIcon from "../lib/icons/InboxIcon"
+import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 
 interface IntegrationType {
   uuid: string
@@ -40,13 +41,19 @@ const InboxSection: React.FC = () => {
   const [content, setContent] = React.useState("")
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
+  const [selectedItemId, setSelectedItemId] = React.useState<string>(""); 
+  const [date, setDate] = React.useState<Date | undefined>()
   const editor = useEditorHook({ content, setContent })
 
-  const { fetchInboxData, inboxItems, setInboxItems } = useInboxStore()
+  const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } = useInboxStore()
 
   React.useEffect(() => {
     void fetchInboxData(session)
   }, [fetchInboxData, session, setInboxItems])
+
+  React.useEffect(()=>{
+  selectedItemId && moveItemToDate(session, selectedItemId, date)
+  },[date])
 
   // const renderIntegration = (integration: IntegrationType): React.ReactNode => {
   //   switch (integration.type) {
@@ -205,14 +212,14 @@ const InboxSection: React.FC = () => {
       {/* Inbox items section */}
       <div>
         {inboxItems.length === 0 ? (
-          <div className="text-gray-500 dark:text-zinc-300">
+          <div className="w-full my-6 self-center text-gray-500 dark:text-zinc-300">
             Inbox seems empty!
           </div>
         ) : (
           inboxItems?.map((item) => (
             <div
               key={item.uuid}
-              className="text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
+              className="flex justify-between items-center text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
             >
               {/* Apply the `rendered-content` class to style HTML content */}
               <div className="rendered-content">
@@ -220,6 +227,10 @@ const InboxSection: React.FC = () => {
                   dangerouslySetInnerHTML={{ __html: item.description || "" }}
                 />
               </div>
+              <div className="" onClick={()=>{ console.log(item)
+                 item._id && setSelectedItemId(item._id)}}>
+                <RescheduleCalendar date={date} setDate={setDate}/>
+                </div>
             </div>
           ))
         )}
