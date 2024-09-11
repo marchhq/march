@@ -20,7 +20,8 @@ const upload = multer({
         bucket: environment.AWS_BUCKET_NAME,
         acl: 'public-read',
         key: function (req, file, cb) {
-            const filename = `user-${uuid()}-${file.originalname}`; 
+            const userUuid = req.user.uuid;
+            const filename = `user-${userUuid}/${uuid()}-${file.originalname}`; 
             cb(null, filename);
         },
     }),
