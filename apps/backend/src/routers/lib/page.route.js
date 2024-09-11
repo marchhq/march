@@ -9,9 +9,9 @@ import { createRecordController, getRecordsController, getRecordController, upda
 import { createBlockController, getBlocksController, deleteBlockController, getBlockController, updateBlockController } from "../../controllers/lib/block.controller.js";
 import { getMeetingsController, getUpcomingMeetingsController, updateMeetingController, deleteMeetingController } from "../../controllers/page/meeting.controller.js";
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
+import { upload } from "../../loaders/s3.loader.js"; 
 
 const router = Router();
-const upload = multer({ dest: 'uploads/' });
 
 // inbox
 router.route("/my/").get(getUserItemsController)
