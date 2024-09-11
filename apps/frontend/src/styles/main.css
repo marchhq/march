@@ -168,7 +168,7 @@ button {
     @apply border-zinc-700 my-3;
   }
 }
-/* :root {
+:root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
   --fc-neutral-bg-color: rgba(208, 208, 208, 0.3);
@@ -202,8 +202,6 @@ button {
   --fc-today-bg-color: #3f3f46;
   --fc-now-indicator-color: red;
 }
-
-*/
 
 .fc {
   @apply text-zinc-300 h-full;
