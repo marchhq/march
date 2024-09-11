@@ -6,6 +6,7 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "media",
   theme: {
     extend: {
       opacity: {
@@ -172,6 +173,32 @@ const config: Config = {
         rise: "rise 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         shake: "shake 150ms cubic-bezier(0.4, 0, 0.2, 1)",
       },
+      colors: {
+        background: "rgba(var(--background))",
+        foreground: "rgba(var(--foreground))",
+        primary: {
+          DEFAULT: "rgba(var(--primary))",
+          foreground: "rgba(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "rgba(var(--secondary))",
+          foreground: "rgba(var(--secondary-foreground))",
+        },
+        tertiary: {
+          DEFAULT: "rgba(var(--tertiary))",
+          foreground: "rgba(var(--tertiary-foreground))",
+        },
+        border: {
+          DEFAULT: "rgba(var(--border))",
+        },
+        "gray-color": "#676767",
+        "button-stroke": "#D0D0D0",
+      },
+    },
+    fontFamily: {
+      sans: ["var(--sans-font)"],
+      serif: ["var(--serif-font)"],
+      mono: ["var(--mono-font)"],
     },
   },
   variants: {

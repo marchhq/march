@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 242, 242, 242;
+    --foreground: 0, 0, 0;
+
+    --primary: 255, 255, 255;
+    --primary-foreground: 34, 34, 34; /* 222 */
+
+    --secondary: 253, 253, 253; /* fdfdfd */
+    --secondary-foreground: 161, 161, 170; /* a1a1aa zinc-400 */
+
+    --tertiary: ; /*  */
+    --tertiary-foreground: 103, 103, 103; /* 676767 */
+
+    --border: 219, 215, 216; /* DBD7D8 */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 0, 0, 0;
+      --foreground: 255, 255, 255;
+
+      --primary: 34, 34, 34; /* 222 */
+      --primary-foreground: 255, 255, 255;
+
+      --secondary: 255, 255, 255, 0.1; /* ddd */
+      --secondary-foreground: 103, 103, 103; /* 676767 */
+
+      --tertiary: ; /*  */
+      --tertiary-foreground: 161, 161, 170; /* a1a1aa zinc-400 */
+
+      --border: 255, 255, 255, 0.1; /* ddd */
+    }
+  }
+}
+
 ::-moz-selection {
   @apply bg-zinc-600 text-white;
   -webkit-text-fill-color: white;
@@ -132,8 +168,7 @@ button {
     @apply border-zinc-700 my-3;
   }
 }
-
-:root {
+/* :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
   --fc-neutral-bg-color: rgba(208, 208, 208, 0.3);
@@ -167,6 +202,8 @@ button {
   --fc-today-bg-color: #3f3f46;
   --fc-now-indicator-color: red;
 }
+
+*/
 
 .fc {
   @apply text-zinc-300 h-full;
