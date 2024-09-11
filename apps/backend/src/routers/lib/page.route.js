@@ -65,6 +65,6 @@ router.route("/meetings/:meeting/").put(updateMeetingController)
 router.route("/meetings/:meeting/").delete(deleteMeetingController)
 
 // File Asset controllers
-router.route('/file-assets/upload').post(upload.single('file'), uploadFileController);
+router.route('/file-assets/upload/').post(upload.single('file'), uploadFileController);
 
 export default router;
