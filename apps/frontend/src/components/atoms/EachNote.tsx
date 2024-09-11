@@ -1,30 +1,50 @@
 import { type FC } from "react"
 
-import { Notepad } from "@phosphor-icons/react"
+import { Notepad, Trash } from "@phosphor-icons/react"
 
 import { type Note } from "@/src/lib/@types/Items/Note"
 
 interface EachNoteProps {
   note: Note
   handleSetNote: (uuid: string) => void
+  handleDeleteNote: (note: Note) => void
   isActive: boolean
 }
 
-const EachNote: FC<EachNoteProps> = ({ note, handleSetNote, isActive }) => {
+const EachNote: FC<EachNoteProps> = ({
+  note,
+  handleSetNote,
+  handleDeleteNote,
+  isActive,
+}) => {
   return (
-    <button
-      key={note.uuid}
-      onClick={() => {
-        handleSetNote(note.uuid)
-      }}
-    >
-      <div
-        className={`flex items-center justify-start rounded-lg border p-2 ${isActive ? "border-border bg-secondary" : "border-transparent hover:bg-secondary"} gap-x-4 text-sm text-tertiary-foreground`}
+    <div className="flex gap-2 group">
+      <button
+        key={note.uuid}
+        onClick={() => {
+          handleSetNote(note.uuid)
+        }}
+        className="w-full truncate"
       >
-        <Notepad size={24} weight="duotone" />
-        <p>{note.title.length > 0 ? note.title : "Untitled"}</p>
-      </div>
-    </button>
+        <div
+          className={`flex items-center justify-between gap-x-4 border rounded-lg p-2 ${isActive ? "border-border bg-secondary" : "border-transparent hover:bg-secondary"} text-sm text-tertiary-foreground`}
+        >
+          <div className="flex items-center gap-x-4 truncate">
+            <Notepad size={18} weight="duotone" className="flex-shrink-0" />
+            <p className="min-w-0 truncate">{note.title || "Untitled"}</p>
+          </div>
+        </div>
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          handleDeleteNote(note)
+        }}
+        className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100"
+      >
+        <Trash size={16} className="flex-shrink-0" />
+      </button>
+    </div>
   )
 }
 
