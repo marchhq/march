@@ -5,6 +5,8 @@
 @layer base {
   :root {
     --background: 242, 242, 242;
+    --background-hover: 228, 228, 231; /* e4e4e7 zinc-200 */
+
     --foreground: 0, 0, 0;
 
     --primary: 255, 255, 255;
@@ -22,18 +24,20 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --background: 0, 0, 0;
+      --background-hover: 255, 255, 255, 0.1;
+
       --foreground: 255, 255, 255;
 
       --primary: 34, 34, 34; /* 222 */
       --primary-foreground: 255, 255, 255;
 
-      --secondary: 255, 255, 255, 0.1; /* ddd */
+      --secondary: 255, 255, 255, 0.1;
       --secondary-foreground: 103, 103, 103; /* 676767 */
 
       --tertiary: ; /*  */
       --tertiary-foreground: 161, 161, 170; /* a1a1aa zinc-400 */
 
-      --border: 255, 255, 255, 0.1; /* ddd */
+      --border: 255, 255, 255, 0.1;
     }
   }
 }
@@ -61,6 +65,26 @@ button {
 }
 
 .hover-bg {
+  @apply relative;
+  @apply hover:after:scale-100 hover:after:opacity-100;
+  @apply active:scale-95 active:after:scale-100 active:after:opacity-100;
+
+  z-index: 1;
+}
+
+.hover-bg::after {
+  content: "";
+  z-index: -1;
+
+  @apply absolute bottom-0 left-0;
+  @apply h-full w-full rounded-lg;
+  @apply origin-center scale-90 opacity-0 transition-all;
+
+  @apply bg-background-hover;
+}
+
+/* 
+.hover-bg {
   @apply relative focus:outline-none;
   @apply hover:after:scale-100 hover:after:opacity-100 focus:after:scale-100 focus:after:opacity-100;
   @apply active:scale-95 active:after:scale-100 active:after:opacity-100;
@@ -82,6 +106,8 @@ button {
 .hover-bg.hover-bg-dark {
   @apply after:bg-zinc-900;
 }
+
+*/
 
 .tiptap.ProseMirror {
   @apply focus:outline-none text-zinc-300;
