@@ -1,4 +1,5 @@
 import { Integration } from "../../models/integration/integration.model.js";
+import { Item } from "../../models/lib/item.model.js";
 
 const getIntegration = async (user) => {
     const issues = await Integration.find({
@@ -12,9 +13,9 @@ const getIntegration = async (user) => {
 const moveItemtoDate = async (date, id) => {
     const formattedDate = new Date(date);
 
-    const item = await Integration.findByIdAndUpdate(
+    const item = await Item.findByIdAndUpdate(
         id,
-        { $set: { date: formattedDate } },
+        { $set: { dueDate: formattedDate } },
         { new: true }
     );
 
