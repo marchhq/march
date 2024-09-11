@@ -27,6 +27,7 @@ const NotesPage: React.FC = () => {
     updateNote,
     saveNote,
     addNote,
+    deleteNote,
   } = useNotesStore()
 
   const fetchTheNotes = async (): Promise<void> => {
@@ -89,6 +90,23 @@ const NotesPage: React.FC = () => {
       setTitle(newNote.title)
       if (editor !== null) {
         editor.commands.setContent(newNote.content)
+      }
+    }
+  }
+
+  const handleDeleteNote = (note: Note): void => {
+    if (session && note) {
+      if (
+        confirm(
+          `Are you sure you want to delete the note "${note.title || "Untitled"}"?`
+        )
+      ) {
+        deleteNote(session, note)
+        if (note.uuid === note?.uuid) {
+          setNote(null)
+          setContent("<p>create a new note to get started...</p>")
+          setTitle("You don't have any notes")
+        }
       }
     }
   }
@@ -168,6 +186,7 @@ const NotesPage: React.FC = () => {
                 key={n.uuid}
                 note={n}
                 handleSetNote={handleSetNote}
+                handleDeleteNote={handleDeleteNote}
                 isActive={n.uuid === note?.uuid}
               />
             ))}
