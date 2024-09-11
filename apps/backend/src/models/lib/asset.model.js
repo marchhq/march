@@ -4,10 +4,6 @@ import { db } from "../../loaders/db.loader.js";
 
 // Define the FileAsset schema
 const FileAssetSchema = new Schema({
-    uuid: {
-        type: String,
-        default: () => uuid()
-    },
     attributes: {
         type: Map,
         of: String,
