@@ -12,13 +12,13 @@ const UserSchema = new Schema({
         default: () => uuid()
     },
     fullName: {
-        type: Schema.Types.String
+        type: String
     },
     userName: {
-        type: Schema.Types.String
+        type: String
     },
     avatar: {
-        type: Schema.Types.String,
+        type: String,
         default: ''
     },
     roles: {
@@ -33,7 +33,7 @@ const UserSchema = new Schema({
     accounts: {
         local: {
             email: {
-                type: Schema.Types.String,
+                type: String,
                 validate: {
                     validator: (e) => {
                         return /^[a-z0-9][a-z0-9-_.]+@([a-z]|[a-z0-9]?[a-z0-9-]+[a-z0-9])\.[a-z0-9]{2,10}(?:\.[a-z]{2,10})?$/.test(e)
@@ -41,16 +41,16 @@ const UserSchema = new Schema({
                 }
             },
             password: {
-                type: Schema.Types.String
+                type: String
             },
             isVerified: {
-                type: Schema.Types.Boolean,
+                type: Boolean,
                 default: false
             }
         },
         google: {
             email: {
-                type: Schema.Types.String,
+                type: String,
                 validate: {
                     validator: (e) => {
                         return /^[a-z0-9][a-z0-9-_.]+@([a-z]|[a-z0-9]?[a-z0-9-]+[a-z0-9])\.[a-z0-9]{2,10}(?:\.[a-z]{2,10})?$/.test(e)
@@ -58,14 +58,33 @@ const UserSchema = new Schema({
                 }
             },
             id: {
-                type: Schema.Types.String
+                type: String
             },
             isVerified: {
-                type: Schema.Types.Boolean,
+                type: Boolean,
                 default: false
             },
             hasAuthorizedEmail: {
-                type: Schema.Types.Boolean,
+                type: Boolean,
+                default: false
+            }
+        },
+        github: {
+            email: {
+                type: String,
+                validate: {
+                    validator: (e) => {
+                        return /^[a-z0-9][a-z0-9-_.]+@([a-z]|[a-z0-9]?[a-z0-9-]+[a-z0-9])\.[a-z0-9]{2,10}(?:\.[a-z]{2,10})?$/.test(e)
+                    }
+                }
+            },
+            id: String,
+            isVerified: {
+                type: Boolean,
+                default: false
+            },
+            hasAuthorizedEmail: {
+                type: Boolean,
                 default: false
             }
         }
@@ -80,19 +99,8 @@ const UserSchema = new Schema({
             refreshToken: String
         },
         gmail: {
-            email: String,
             accessToken: String,
-            refreshToken: String,
-            labelId: String,
-            historyId: String
-        },
-        github: {
-            installationId: String
-        },
-        notion: {
-            accessToken: String,
-            userId: String,
-            workspaceId: String
+            refreshToken: String
         }
     }
 }, {
