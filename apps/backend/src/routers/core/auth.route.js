@@ -8,9 +8,9 @@ router.route('/common/login/').post(emailLoginController);
 
 router.route('/google/login/').post(authenticateWithGoogleController);
 
-router.route('/auth/github').get(testing);
+router.route('/github/').get(testing);
 
-router.route('/github/login/').post(authenticateWithGithubController);
+router.route('/github/login/').get(authenticateWithGithubController);
 
 router.route('/logout/').post(logOutController);
 
