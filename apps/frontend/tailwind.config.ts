@@ -173,8 +173,11 @@ const config: Config = {
         shake: "shake 150ms cubic-bezier(0.4, 0, 0.2, 1)",
       },
       colors: {
-        background: "rgba(var(--background))",
         foreground: "rgba(var(--foreground))",
+        background: {
+          DEFAULT: "rgba(var(--background))",
+          hover: "rgba(var(--background-hover))",
+        },
         primary: {
           DEFAULT: "rgba(var(--primary))",
           foreground: "rgba(var(--primary-foreground))",
