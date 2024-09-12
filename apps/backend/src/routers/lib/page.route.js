@@ -1,5 +1,4 @@
 import { Router } from "express";
-import multer from 'multer';
 import { getUserItemsController, getUserTodayItemsController, getUserOverdueItemsController, getUserItemsByDateControlle, moveItemtoDateController } from "../../controllers/core/user.controller.js";
 import { createPageController, getPagesController, getPageController, updatePageController } from "../../controllers/lib/page.controller.js";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController } from "../../controllers/lib/journal.controller.js";
@@ -9,7 +8,7 @@ import { createRecordController, getRecordsController, getRecordController, upda
 import { createBlockController, getBlocksController, deleteBlockController, getBlockController, updateBlockController } from "../../controllers/lib/block.controller.js";
 import { getMeetingsController, getUpcomingMeetingsController, updateMeetingController, deleteMeetingController } from "../../controllers/page/meeting.controller.js";
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
-import { upload } from "../../loaders/s3.loader.js"; 
+import { upload } from "../../loaders/s3.loader.js";
 
 const router = Router();
 
@@ -35,7 +34,7 @@ router.route("/records/:record/").put(updateRecordController)
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController)
 router.route("/journals/today/").get(getUserTodayJournalController)
-// todo: added a api to get journal by date
+// todo: add a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController)
 
 // item controllers
