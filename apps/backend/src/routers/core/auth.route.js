@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateWithGoogleController, logOutController, registerEmailUserController, emailLoginController } from "../../controllers/core/auth.controller.js";
+import { authenticateWithGoogleController, logOutController, registerEmailUserController, emailLoginController, authenticateWithGithubController, testing } from "../../controllers/core/auth.controller.js";
 
 const router = Router();
 
@@ -7,6 +7,10 @@ router.route('/common/signup/').post(registerEmailUserController);
 router.route('/common/login/').post(emailLoginController);
 
 router.route('/google/login/').post(authenticateWithGoogleController);
+
+router.route('/auth/github').get(testing);
+
+router.route('/github/login/').post(authenticateWithGithubController);
 
 router.route('/logout/').post(logOutController);
 
