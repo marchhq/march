@@ -13,6 +13,9 @@ const getUserByEmail = async (email) => {
                 "accounts.google.email": email
             }] : []),
             ...(email ? [{
+                "accounts.github.email": email
+            }] : []),
+            ...(email ? [{
                 "accounts.local.email": email
             }] : [])
         ]
