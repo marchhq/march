@@ -16,16 +16,16 @@ const s3 = new S3Client({
 // Multer configuration to upload files directly to S3
 const upload = multer({
     storage: multerS3({
-        s3: s3,
+        s3,
         bucket: environment.AWS_BUCKET_NAME,
         acl: 'public-read',
         key: function (req, file, cb) {
             const userUuid = req.user.uuid;
-            const filename = `user-${userUuid}/${uuid()}-${file.originalname}`; 
+            const filename = `user-${userUuid}/${uuid()}-${file.originalname}`;
             cb(null, filename);
-        },
+        }
     }),
-    limits: { fileSize: environment.FILE_SIZE_LIMIT || 5 * 1024 * 1024 },  // 5MB file size limit
+    limits: { fileSize: environment.FILE_SIZE_LIMIT || 5 * 1024 * 1024 } // 5MB file size limit
 });
 export {
     upload,
