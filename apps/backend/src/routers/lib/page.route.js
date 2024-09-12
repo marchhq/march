@@ -34,7 +34,7 @@ router.route("/records/:record/").put(updateRecordController)
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController)
 router.route("/journals/today/").get(getUserTodayJournalController)
-// todo: added a api to get journal by date
+// todo: add a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController)
 
 // item controllers
