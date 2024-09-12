@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-import { v4 as uuid } from "uuid";
 import { db } from "../../loaders/db.loader.js";
 
 // Define the FileAsset schema
@@ -7,11 +6,11 @@ const FileAssetSchema = new Schema({
     attributes: {
         type: Map,
         of: String,
-        default: {},
+        default: {}
     },
     asset: {
-        type: String,  // S3 file URL
-        required: true,
+        type: String, // S3 file URL
+        required: true
     },
     user: {
         type: Schema.Types.ObjectId,
