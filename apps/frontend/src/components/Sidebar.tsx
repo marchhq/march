@@ -169,7 +169,7 @@ const Sidebar: React.FC = () => {
               alt="profile"
               width={26}
               height={26}
-              className="rounded-full bg-gray-color"
+              className="rounded-full"
             />
           }
           label="profile"
