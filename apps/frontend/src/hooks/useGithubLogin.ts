@@ -8,8 +8,9 @@ const useGitHubLogin = (): (() => Promise<void>) => {
   const handleLogin = useCallback(async () => {
     try {
       const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
-      //FIX: need redirect uri 
-      const GITHUB_REDIRECT_URI = 
+      const GITHUB_REDIRECT_URI =
+        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URL ?? ""
+
       const GITHUB_SCOPE = "read:user user:email"
 
       if (!GITHUB_CLIENT_ID) {
