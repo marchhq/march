@@ -166,6 +166,11 @@ const createGithubUser = async (
             }
         },
         avatar,
+        integration: {
+            github: {
+                userName
+            }
+        },
         userTimezone: timezone
     })
     return user;

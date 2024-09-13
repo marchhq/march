@@ -133,18 +133,19 @@ const authenticateWithGithubController = async (req, res, next) => {
         if (!primaryEmail) {
             return res.status(400).json({ message: 'No verified primary email found for GitHub account' });
         }
-        console.log("primaryEmail: ", primaryEmail);
+        console.log("profile: ", profile);
         let user = await getUserByEmail(primaryEmail);
-        console.log("saju user: ", user);
+
         let isNewUser = false;
         if (!user) {
             isNewUser = true;
             user = await createGithubUser({
                 fullName: profile.name || profile.login,
                 userName: profile.login,
-                avatar: profile.avatar_url || '',
                 id: profile.id,
-                email: primaryEmail
+                email: primaryEmail,
+                avatar: profile.avatar_url || ''
+
             })
         }
         const tokenPair = await generateJWTTokenPair(user)
