@@ -12,13 +12,13 @@ const UserSchema = new Schema({
         default: () => uuid()
     },
     fullName: {
-        type: String
+        type: Schema.Types.String
     },
     userName: {
-        type: String
+        type: Schema.Types.String
     },
     avatar: {
-        type: String,
+        type: Schema.Types.String,
         default: ''
     },
     roles: {
@@ -33,7 +33,7 @@ const UserSchema = new Schema({
     accounts: {
         local: {
             email: {
-                type: String,
+                type: Schema.Types.String,
                 validate: {
                     validator: (e) => {
                         return /^[a-z0-9][a-z0-9-_.]+@([a-z]|[a-z0-9]?[a-z0-9-]+[a-z0-9])\.[a-z0-9]{2,10}(?:\.[a-z]{2,10})?$/.test(e)
@@ -41,16 +41,16 @@ const UserSchema = new Schema({
                 }
             },
             password: {
-                type: String
+                type: Schema.Types.String
             },
             isVerified: {
-                type: Boolean,
+                type: Schema.Types.Boolean,
                 default: false
             }
         },
         google: {
             email: {
-                type: String,
+                type: Schema.Types.String,
                 validate: {
                     validator: (e) => {
                         return /^[a-z0-9][a-z0-9-_.]+@([a-z]|[a-z0-9]?[a-z0-9-]+[a-z0-9])\.[a-z0-9]{2,10}(?:\.[a-z]{2,10})?$/.test(e)
@@ -58,14 +58,14 @@ const UserSchema = new Schema({
                 }
             },
             id: {
-                type: String
+                type: Schema.Types.String
             },
             isVerified: {
-                type: Boolean,
+                type: Schema.Types.Boolean,
                 default: false
             },
             hasAuthorizedEmail: {
-                type: Boolean,
+                type: Schema.Types.Boolean,
                 default: false
             }
         },
@@ -99,8 +99,20 @@ const UserSchema = new Schema({
             refreshToken: String
         },
         gmail: {
+            email: String,
             accessToken: String,
-            refreshToken: String
+            refreshToken: String,
+            labelId: String,
+            historyId: String
+        },
+        github: {
+            installationId: String,
+            userName: String
+        },
+        notion: {
+            accessToken: String,
+            userId: String,
+            workspaceId: String
         }
     }
 }, {
