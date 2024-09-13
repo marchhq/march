@@ -107,8 +107,8 @@ const validateGoogleUser = async (token) => {
 
 const validateGithubUser = async (code) => {
     const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: environment.GITHUB_CLIENT_ID,
+        client_secret: environment.GITHUB_CLIENT_SECRET,
         code
     }, {
         headers: { accept: 'application/json' }
