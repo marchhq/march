@@ -6,6 +6,7 @@
   :root {
     --background: 242, 242, 242;
     --background-hover: 244, 244, 245; /* f4f4f5 zinc-100 */
+    --background-active: 240, 240, 241; /* f4f4f5 zinc-100 */
 
     --foreground: 0, 0, 0;
 
@@ -67,6 +68,12 @@ button {
 }
 
 .hover-bg {
+  @apply hover:bg-background-hover active:bg-background-active;
+}
+
+/*
+* OLD HOVER BG BY JOAORCESCHINI
+.hover-bg {
   @apply relative;
   @apply hover:after:scale-100 hover:after:opacity-100;
   @apply active:scale-95 active:after:scale-100 active:after:opacity-100;
@@ -84,8 +91,10 @@ button {
 
   @apply bg-background-hover;
 }
+/*
 
 /* 
+* OLD HOVER BG
 .hover-bg {
   @apply relative focus:outline-none;
   @apply hover:after:scale-100 hover:after:opacity-100 focus:after:scale-100 focus:after:opacity-100;
