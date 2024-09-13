@@ -2,17 +2,14 @@ import { useCallback } from "react"
 
 import { useRouter } from "next/navigation"
 
-import { BACKEND_URL } from "../lib/constants/urls"
-
 const useGitHubLogin = (): (() => Promise<void>) => {
   const router = useRouter()
 
   const handleLogin = useCallback(async () => {
     try {
       const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
-      const GITHUB_REDIRECT_URI =
-        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URL ??
-        `${BACKEND_URL}/auth/github`
+      //FIX: need redirect uri 
+      const GITHUB_REDIRECT_URI = 
       const GITHUB_SCOPE = "read:user user:email"
 
       if (!GITHUB_CLIENT_ID) {
