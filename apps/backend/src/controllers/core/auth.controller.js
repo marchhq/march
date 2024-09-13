@@ -1,8 +1,9 @@
 import Joi from "joi";
-import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail, createGoogleUser } from "../../services/core/user.service.js";
+import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser, validateGithubUser } from "../../services/core/user.service.js";
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
+import { environment } from "../../loaders/environment.loader.js";
 
 const { ValidationError } = Joi;
 
@@ -83,6 +84,38 @@ const authenticateWithGoogleController = async (req, res, next) => {
     }
 }
 
+const authenticateWithGithubController = async (req, res, next) => {
+    try {
+        const { code } = req.query;
+        if (!code) {
+            const error = new Error("Bad request")
+            error.statusCode = 400
+            throw error
+        }
+        const payload = await validateGithubUser(code);
+        if (!payload.email) {
+            const error = new Error("Failed to authenticate with google")
+            error.statusCode = 401
+            throw error
+        }
+        let user = await getUserByEmail(payload.email);
+
+        let isNewUser = false;
+        if (!user) {
+            isNewUser = true;
+            user = await createGithubUser(payload);
+        }
+        const tokenPair = await generateJWTTokenPair(user)
+        res.status(200).json({
+            ...tokenPair,
+            isNewUser
+
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
 const logOutController = async (req, res, next) => {
     try {
         const { authorization: header } = req.headers;
@@ -110,5 +143,6 @@ export {
     registerEmailUserController,
     emailLoginController,
     authenticateWithGoogleController,
+    authenticateWithGithubController,
     logOutController
 }
