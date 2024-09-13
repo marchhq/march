@@ -2,6 +2,7 @@ import { User } from "../../models/core/user.model.js";
 import { generateHash, verifyPasswordHash } from "../../utils/helper.service.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { OauthClient } from "../../loaders/google.loader.js";
+import axios from 'axios';
 
 const getUserByEmail = async (email) => {
     const user = await User.findOne({
@@ -104,6 +105,47 @@ const validateGoogleUser = async (token) => {
     }
 }
 
+const validateGithubUser = async (code) => {
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code
+    }, {
+        headers: { accept: 'application/json' }
+    });
+
+    const accessToken = tokenResponse.data.access_token;
+
+    if (!accessToken) {
+        throw new Error('GitHub access token not received');
+    }
+
+    const [profileResponse, emailsResponse] = await Promise.all([
+        axios.get('https://api.github.com/user', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        }),
+        axios.get('https://api.github.com/user/emails', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+    ]);
+    const profile = profileResponse.data;
+    const emails = emailsResponse.data;
+
+    const primaryEmail = emails.find(email => email.primary && email.verified)?.email;
+
+    if (!primaryEmail) {
+        throw new Error('No verified primary email found for GitHub account');
+    }
+    return {
+        fullName: profile.name || profile.login,
+        userName: profile.login,
+        id: profile.id,
+        email: primaryEmail,
+        avatar: profile.avatar_url || ''
+
+    }
+}
+
 const createGoogleUser = async ({
     fullName,
     userName,
@@ -193,6 +235,7 @@ export {
     validateEmailUser,
     getUserById,
     validateGoogleUser,
+    validateGithubUser,
     createGoogleUser,
     createGithubUser,
     updateUser

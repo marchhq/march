@@ -1,10 +1,9 @@
 import Joi from "joi";
-import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser } from "../../services/core/user.service.js";
+import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser, validateGithubUser } from "../../services/core/user.service.js";
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
 import { environment } from "../../loaders/environment.loader.js";
-import axios from 'axios';
 
 const { ValidationError } = Joi;
 
@@ -103,49 +102,18 @@ const authenticateWithGithubController = async (req, res, next) => {
             error.statusCode = 400
             throw error
         }
-        const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
-            client_id: process.env.GITHUB_CLIENT_ID,
-            client_secret: process.env.GITHUB_CLIENT_SECRET,
-            code
-        }, {
-            headers: { accept: 'application/json' }
-        });
-
-        const accessToken = tokenResponse.data.access_token;
-
-        if (!accessToken) {
-            return res.status(400).json({ message: 'GitHub access token not received' });
+        const payload = await validateGithubUser(code);
+        if (!payload.email) {
+            const error = new Error("Failed to authenticate with google")
+            error.statusCode = 401
+            throw error
         }
-        const [profileResponse, emailsResponse] = await Promise.all([
-            axios.get('https://api.github.com/user', {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            }),
-            axios.get('https://api.github.com/user/emails', {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            })
-        ]);
-        const profile = profileResponse.data;
-        const emails = emailsResponse.data;
-
-        const primaryEmail = emails.find(email => email.primary && email.verified)?.email;
-
-        if (!primaryEmail) {
-            return res.status(400).json({ message: 'No verified primary email found for GitHub account' });
-        }
-        console.log("profile: ", profile);
-        let user = await getUserByEmail(primaryEmail);
+        let user = await getUserByEmail(payload.email);
 
         let isNewUser = false;
         if (!user) {
             isNewUser = true;
-            user = await createGithubUser({
-                fullName: profile.name || profile.login,
-                userName: profile.login,
-                id: profile.id,
-                email: primaryEmail,
-                avatar: profile.avatar_url || ''
-
-            })
+            user = await createGithubUser(payload);
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
