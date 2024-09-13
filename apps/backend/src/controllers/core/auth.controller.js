@@ -3,7 +3,6 @@ import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail,
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
-import { environment } from "../../loaders/environment.loader.js";
 
 const { ValidationError } = Joi;
 

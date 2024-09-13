@@ -30,6 +30,7 @@ export const environment = {
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_ID: process.env.GITHUB_APP_ID,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET,
     NGROK_AUTH_TOKEN: process.env.NGROK_AUTH_TOKEN,
     REDIS_DB_NAME: process.env.REDIS_HOST,
