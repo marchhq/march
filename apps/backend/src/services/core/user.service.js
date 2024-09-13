@@ -115,6 +115,7 @@ const createGoogleUser = async ({
     let user = await User.findOne({
         'accounts.google.email': email
     })
+
     if (user) {
         const error = new Error("User already exists")
         error.statusCode = 400;
@@ -125,6 +126,40 @@ const createGoogleUser = async ({
         userName,
         accounts: {
             google: {
+                email,
+                id,
+                isVerified: true
+            }
+        },
+        avatar,
+        userTimezone: timezone
+    })
+    return user;
+}
+
+const createGithubUser = async (
+    {
+        fullName,
+        userName,
+        email,
+        id,
+        avatar,
+        timezone
+    }
+) => {
+    let user = await User.findOne({
+        'accounts.github.email': email
+    })
+    if (user) {
+        const error = new Error("User already exists")
+        error.statusCode = 400;
+        throw error
+    }
+    user = await User.create({
+        fullName,
+        userName,
+        accounts: {
+            github: {
                 email,
                 id,
                 isVerified: true
@@ -154,5 +189,6 @@ export {
     getUserById,
     validateGoogleUser,
     createGoogleUser,
+    createGithubUser,
     updateUser
 }
