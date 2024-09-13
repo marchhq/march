@@ -27,7 +27,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     )
     res = data as GitHubAuthResponse
-    console.log(res)
   } catch (error) {
     const e = error as AxiosError
     if (e.response?.status === 401) {
@@ -45,6 +44,5 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     sameSite: "lax",
     path: "/",
   })
-  console.log("cookie was set")
   return redirect("/app/today")
 }
