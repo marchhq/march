@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 242, 242, 242;
-    --background-hover: 228, 228, 231; /* e4e4e7 zinc-200 */
+    --background-hover: 244, 244, 245; /* f4f4f5 zinc-100 */
 
     --foreground: 0, 0, 0;
 
@@ -21,6 +21,7 @@
     --border: 219, 215, 216; /* DBD7D8 */
   }
 
+  /*
   @media (prefers-color-scheme: dark) {
     :root {
       --background: 0, 0, 0;
@@ -28,18 +29,19 @@
 
       --foreground: 255, 255, 255;
 
-      --primary: 34, 34, 34; /* 222 */
+      --primary: 34, 34, 34;  222 
       --primary-foreground: 255, 255, 255;
 
       --secondary: 255, 255, 255, 0.1;
-      --secondary-foreground: 103, 103, 103; /* 676767 */
+      --secondary-foreground: 103, 103, 103; 676767 
 
-      --tertiary: ; /*  */
-      --tertiary-foreground: 161, 161, 170; /* a1a1aa zinc-400 */
+      --tertiary: ; 
+      --tertiary-foreground: 161, 161, 170;  a1a1aa zinc-400 
 
       --border: 255, 255, 255, 0.1;
     }
   }
+  */
 }
 
 ::-moz-selection {
