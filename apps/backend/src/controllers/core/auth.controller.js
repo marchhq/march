@@ -36,16 +36,6 @@ const registerEmailUserController = async (req, res, next) => {
     }
 }
 
-const testing = async (req, res, next) => {
-    try {
-        const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${environment.GITHUB_CLIENT_ID}&scope=user:email`;
-        console.log("saju: ", redirectUrl);
-        res.redirect(redirectUrl);
-    } catch (err) {
-        next(err);
-    }
-}
-
 const emailLoginController = async (req, res, next) => {
     try {
         const payload = await LoginPayload.validateAsync(req.body)
@@ -154,6 +144,5 @@ export {
     emailLoginController,
     authenticateWithGoogleController,
     authenticateWithGithubController,
-    logOutController,
-    testing
+    logOutController
 }
