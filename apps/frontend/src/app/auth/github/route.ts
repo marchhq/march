@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/src/lib/constants/cookie";
-import { BACKEND_URL } from "@/src/lib/constants/urls";
+import axios from "axios"
+import { NextRequest, NextResponse } from "next/server"
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/src/lib/constants/cookie"
+import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 // Handle the GitHub callback and set cookies
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const code = searchParams.get("code");
+  const code = searchParams.get("code")
+  console.log("code: ", code)
 
   if (!code) {
     console.error("No code received from GitHub");
@@ -16,12 +17,14 @@ export async function GET(request: NextRequest) {
   try {
     const response = await axios.get(`${BACKEND_URL}/auth/github/login`, {
       params: { code },
-    });
+    })
 
-    const { accessToken, refreshToken, isNewUser } = response.data;
+    const { accessToken, refreshToken, isNewUser } = response.data
+
+    console.log("response.data: ", response.data);
 
     const res = NextResponse.redirect(
-      //redirecting to inbox for test
+      // redirecting to inbox for test
       isNewUser ? new URL("/app/inbox", request.url) : new URL("/app/today", request.url)
     );
 
