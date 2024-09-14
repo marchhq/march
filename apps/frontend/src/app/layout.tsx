@@ -9,6 +9,7 @@ import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 import classNames from "@/src/utils/classNames"
 
 import "../styles/main.css"
+import ModalProvider from "../contexts/ModalProvider"
 
 const sansFont = Inter({
   variable: "--sans-font",
@@ -61,7 +62,9 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
         >
+          <ModalProvider>
           {children}
+          </ModalProvider>
         </GoogleOAuthProvider>
       </body>
     </html>

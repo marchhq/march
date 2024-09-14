@@ -15,6 +15,8 @@ import axios from "axios"
 import { BACKEND_URL } from "../lib/constants/urls"
 import { type User } from "../lib/@types/auth/user"
 import Image from "next/image"
+import FeedbackModal from "./FeedbackModal/FeedbackModal"
+import { useModal } from "../contexts/ModalProvider"
 
 const navLinkClassName =
   "flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm text-secondary-foreground cursor-pointer hover:bg-background-hover"
@@ -28,13 +30,23 @@ const SidebarLink = ({
   icon: React.ReactNode
   label: string
 }) => {
+  const { showModal } = useModal()
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link className={navLinkClassName} href={href}>
-            {icon}
-          </Link>
+          {label === "Feedback" ? (
+            <div
+              className={navLinkClassName}
+              onClick={() => showModal(<FeedbackModal />)}
+            >
+              {icon}
+            </div>
+          ) : (
+            <Link className={navLinkClassName} href={href}>
+              {icon}
+            </Link>
+          )}
         </TooltipTrigger>
         <TooltipContent side="right">
           <p>{label}</p>
@@ -228,8 +240,10 @@ const Sidebar: React.FC = () => {
                 strokeLinejoin="round"
               />
             </svg>
+            
           }
-          label="info"
+          
+          label="Feedback"
         />
       </div>
     </div>
