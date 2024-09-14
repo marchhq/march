@@ -10,7 +10,6 @@ const useGitHubLogin = (): (() => Promise<void>) => {
       const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
       const GITHUB_REDIRECT_URI =
         process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URL ?? ""
-
       const GITHUB_SCOPE = "read:user user:email"
 
       if (!GITHUB_CLIENT_ID) {
