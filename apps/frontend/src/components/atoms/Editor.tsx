@@ -5,10 +5,6 @@ import { BubbleMenu, EditorContent, type Editor } from "@tiptap/react"
 import {
   Bold,
   Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  Heading4,
   Italic,
   List,
   ListOrdered,
