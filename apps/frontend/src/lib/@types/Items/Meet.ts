@@ -1,4 +1,3 @@
-
 export interface Attendee {
   email: string
   organizer?: boolean
