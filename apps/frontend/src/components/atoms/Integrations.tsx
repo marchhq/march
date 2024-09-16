@@ -1,8 +1,13 @@
 import React from "react"
 
-import { ChevronDown, ChevronRight } from "lucide-react"
-
-import { MagicCard } from "../magicui/magic-card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./Card"
 import { GithubBordered } from "@/src/lib/icons/Github"
 import { Gmail } from "@/src/lib/icons/Gmail"
 import { Linear } from "@/src/lib/icons/Linear"
@@ -41,44 +46,21 @@ const integrations = [
 
 export const Integrations = () => {
   return (
-    <MagicCard className="max-w-2xl shadow-xl">
-      <div className="border-b border-gray-200 bg-[#EDEEF3] p-3 text-left text-black">
-        Personal integrations
-      </div>
-      <ul className="divide-gray-[#C5C5C5] divide-y p-4 text-left">
-        {integrations.map((integration, index) => (
-          <li key={index} className="flex items-center py-3">
-            <div className="flex grow items-center">
-              <div className="mr-4">{integration.icon}</div>
-              <div className="max-w-md grow">
-                <p className="text-sm font-semibold text-black">
-                  {integration.name}
-                </p>
-                <p className="text-sm text-gray-color">
-                  {integration.description}
-                </p>
-              </div>
-            </div>
-            <div className="ml-4 shrink-0">
-              {integration.connected ? (
-                <button
-                  className="flex items-center text-xs text-black"
-                  disabled
-                >
-                  <span className="mr-1 size-1.5 rounded-full bg-green-500"></span>
-                  Connected
-                  <ChevronDown size={14} className="ml-1" />
-                </button>
-              ) : (
-                <button className="flex items-center text-xs font-medium text-[#555DE4]">
-                  <span className="mr-1">Connect</span>
-                  <ChevronRight size={14} />
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </MagicCard>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {integrations.map((integration, index) => (
+        <Card key={index}>
+          <CardHeader className="flex items-center">
+            <span className="mr-2">{integration.icon}</span>
+            <CardTitle>{integration.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>{integration.description}</CardDescription>
+          </CardContent>
+          <CardFooter>
+            <p>{integration.connected ? "Connected" : "Connect"}</p>
+          </CardFooter>
+        </Card>
+      ))}
+    </div>
   )
 }
