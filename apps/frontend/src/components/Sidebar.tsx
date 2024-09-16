@@ -74,7 +74,7 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-    <div className="flex flex-col justify-between px-3 pb-3 pt-14 border-r border-border bg-secondary">
+    <div className="flex flex-col justify-between px-3 pb-3 pt-14 border-r border-border bg-background">
       <div className="flex flex-col gap-0.5">
         <SidebarLink
           href="/app/inbox/"

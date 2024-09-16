@@ -138,7 +138,7 @@ const NotesPage: React.FC = () => {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-y-auto overflow-x-hidden border border-border rounded-xl bg-secondary px-8 py-5">
+        <div className="h-full overflow-y-auto overflow-x-hidden border border-border rounded-xl bg-background px-8 py-5">
           <div className="w-full flex items-center justify-between px-3 text-secondary-foreground">
             <span>Notes</span>
             <button
@@ -176,7 +176,7 @@ const NotesPage: React.FC = () => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={25} minSize={25}>
-        <div className="h-full overflow-auto border border-border rounded-xl bg-secondary p-5">
+        <div className="h-full overflow-auto border border-border rounded-xl bg-background p-5">
           <div className="px-2 text-secondary-foreground">
             <span>Notes</span>
           </div>
