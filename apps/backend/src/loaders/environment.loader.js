@@ -42,5 +42,7 @@ export const environment = {
     NOTION_CLIENT_SECRET: process.env.NOTION_CLIENT_SECRET,
     NOTION_REDIRECT_URL: process.env.NOTION_REDIRECT_URL,
     NOTION_AUTH_URL: process.env.NOTION_AUTH_URL,
-    FILE_SIZE_LIMIT: process.env.FILE_SIZE_LIMIT
+    FILE_SIZE_LIMIT: process.env.FILE_SIZE_LIMIT,
+    TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN
 }
