@@ -62,12 +62,18 @@ input {
   @apply accent-white/10;
 }
 
+/*
 button {
   @apply outline-none focus:outline-none leading-none transition-all active:scale-95;
 }
+*/
 
 .hover-bg {
   @apply hover:bg-background-hover active:bg-background-active;
+}
+
+.hover-text {
+  @apply hover:text-primary-foreground active:text-foreground;
 }
 
 /*

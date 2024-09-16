@@ -26,7 +26,7 @@ const NotesPage: React.FC = () => {
         value={title}
         onChange={handleInput}
         placeholder="Untitled"
-        className="w-full text-3xl p-2 resize-none overflow-hidden outline-none focus:outline-none whitespace-pre-wrap break-words"
+        className="w-full text-3xl p-2 bg-background text-foreground placeholder-secondary-foreground resize-none overflow-hidden outline-none focus:outline-none whitespace-pre-wrap break-words"
         style={{ height }}
         rows={1}
       />
