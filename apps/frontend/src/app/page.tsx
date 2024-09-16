@@ -36,7 +36,7 @@ const Home: React.FC = () => {
           </div>
         </div>
         <div className="w-full max-w-lg text-xs text-gray-color">
-          <div className="max-w-72 text-xs text-gray-color mt-6 mb-10">
+          <div className="mb-10 mt-6 text-center">
             <p>By continuing, you agree to our </p>
             <p>
               <span className="text-black">terms of services</span> and our{" "}
