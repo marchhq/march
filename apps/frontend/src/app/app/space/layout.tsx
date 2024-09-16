@@ -23,7 +23,6 @@ const Space = ({
   name: string
   isActive: boolean
 }) => {
-  console.log(isActive)
   const activeClass = isActive ? "text-black" : ""
   return (
     <Link href={`/app/space/${href}`} className={navLinkClassName}>
@@ -54,8 +53,8 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
               fill="white"
             />
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M3.25 7.54028C3.25 7.34137 3.32902 7.15061 3.46967 7.00995C3.61032 6.8693 3.80109 6.79028 4 6.79028H20C20.1989 6.79028 20.3897 6.8693 20.5303 7.00995C20.671 7.15061 20.75 7.34137 20.75 7.54028C20.75 7.7392 20.671 7.92996 20.5303 8.07061C20.3897 8.21127 20.1989 8.29028 20 8.29028H4C3.80109 8.29028 3.61032 8.21127 3.46967 8.07061C3.32902 7.92996 3.25 7.7392 3.25 7.54028Z"
               fill="black"
             />

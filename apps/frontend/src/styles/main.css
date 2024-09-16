@@ -6,7 +6,7 @@
   :root {
     --background: 242, 242, 242;
     --background-hover: 244, 244, 245; /* f4f4f5 zinc-100 */
-    --background-active: 240, 240, 241; /* f4f4f5 zinc-100 */
+    --background-active: 240, 240, 241;
 
     --foreground: 0, 0, 0;
 
