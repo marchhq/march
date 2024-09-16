@@ -3,13 +3,14 @@ import { IntegrationCard } from "@/src/components/atoms/IntegrationCard"
 
 const Integrations = (): JSX.Element => {
   return (
-    <div className="ml-20 mt-1">
+    <div className="ml-28 mt-1">
       <Heading label="Integrations" />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="mt-8 flex flex-wrap gap-8">
         <IntegrationCard />
         <IntegrationCard />
         <IntegrationCard />
         <IntegrationCard />
+        {/* more cards here */}
       </div>
     </div>
   )
