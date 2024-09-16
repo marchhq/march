@@ -1,4 +1,4 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { ArrowRight } from "@/src/lib/icons/ArrowRight"
 import { LinearCircle } from "@/src/lib/icons/LinearCircle"
 
