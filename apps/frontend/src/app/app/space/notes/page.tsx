@@ -20,7 +20,7 @@ const NotesPage: React.FC = () => {
   }, [title])
 
   return (
-    <div className="w-full h-full px-8 py-16 bg-secondary">
+    <div className="w-full h-full px-8 py-16 bg-background">
       <textarea
         ref={textareaRef}
         value={title}

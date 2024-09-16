@@ -37,7 +37,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   return (
     <div className="h-full flex">
-      <div className="w-[160px] flex flex-col gap-0.5 px-3 pb-3 pt-14 border-r border-border bg-secondary text-xs ">
+      <div className="w-[160px] flex flex-col gap-0.5 px-3 pb-3 pt-14 border-r border-border bg-background text-xs ">
         <div className="flex items-center gap-2 px-3 py-2.5 text-secondary-foreground cursor-default">
           <svg
             width="24"
