@@ -8,45 +8,46 @@ import {
   CardHeader,
   CardTitle,
 } from "./Card"
-import { GithubBordered } from "@/src/lib/icons/Github"
-import { Gmail } from "@/src/lib/icons/Gmail"
-import { Linear } from "@/src/lib/icons/Linear"
-import { Notion } from "@/src/lib/icons/Notion"
+import { ArrowRight } from "@/src/lib/icons/ArrowRight"
+import { GithubDark } from "@/src/lib/icons/Github"
+import { GmailDark } from "@/src/lib/icons/Gmail"
+import { LinearDark } from "@/src/lib/icons/Linear"
+import { NotionDark } from "@/src/lib/icons/Notion"
 
 const integrations = [
   {
-    icon: <Gmail />,
+    icon: <GmailDark />,
     name: "Gmail",
     description:
       "Label emails as march comes directly to march Inbox as action items",
-    connected: true,
+    footer: "Available",
   },
   {
-    icon: <GithubBordered />,
+    icon: <GithubDark />,
     name: "Github",
     description:
       "Link your GitHub account to get all your assigned issues, Pull requests In march Inbox.",
-    connected: false,
+    footer: "Available",
   },
   {
-    icon: <Linear />,
+    icon: <LinearDark />,
     name: "Linear",
     description:
-      "Link your Linear workspace to get all your assigned issues, Action items In march Inbox. Supports two-way sync.",
-    connected: false,
+      "Pull assigned issues directly to march— supports two way sync.",
+    footer: "Available",
   },
   {
-    icon: <Notion />,
+    icon: <NotionDark />,
     name: "Notion",
     description:
       "Link your Notion Workspace to send database items from Notion to march or import existing database items.",
-    connected: false,
+    footer: "Available",
   },
 ]
 
 export const Integrations = () => {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="flex flex-wrap gap-2">
       {integrations.map((integration, index) => (
         <Card key={index}>
           <CardHeader className="flex items-center">
@@ -56,8 +57,9 @@ export const Integrations = () => {
           <CardContent>
             <CardDescription>{integration.description}</CardDescription>
           </CardContent>
-          <CardFooter>
-            <p>{integration.connected ? "Connected" : "Connect"}</p>
+          <CardFooter className="flex justify-between">
+            <p>{integration.footer}</p>
+            <ArrowRight />
           </CardFooter>
         </Card>
       ))}
