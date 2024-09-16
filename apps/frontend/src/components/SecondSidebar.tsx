@@ -36,9 +36,9 @@ const SecondSidebar: React.FC = () => {
   }
 
   return (
-    <div className="w-[160px] relative text-xs font-medium">
+    <div className="w-[160px] relative text-xs font-medium group">
       <button
-        className="absolute right-2 top-2 text-secondary-foreground hover-text"
+        className="absolute right-2 top-2 text-secondary-foreground hover-text opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={handleClose}
       >
         {closeToggle ? "open" : "close"}
@@ -46,7 +46,7 @@ const SecondSidebar: React.FC = () => {
       <div
         className={classNames(
           closeToggle ? "hidden" : "visible",
-          "w-[160px] h-full flex flex-col justify-center gap-2 pr-4 my-auto bg-background"
+          "w-[160px] h-full flex flex-col justify-center gap-2 pr-4 bg-background"
         )}
       >
         <Item

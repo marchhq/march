@@ -83,7 +83,7 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-    <div className="flex flex-col px-2 py-8 my-auto mx-4 border border-border rounded-[30px] bg-background">
+    <div className="flex flex-col px-2 py-8 my-auto mx-4 border border-border rounded-[30px] bg-background select-none">
       <div className="flex flex-col gap-2">
         <SidebarLink
           href="/app/inbox/"
