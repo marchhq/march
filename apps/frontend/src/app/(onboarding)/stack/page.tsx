@@ -1,11 +1,13 @@
+import React from "react"
+
 import Link from "next/link"
 
 import { Integrations } from "@/src/components/atoms/Integrations"
 
-const StackConnect = (): JSX.Element => {
+const StackConnect: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-4 text-center text-gray-color">
-      <div className="flex flex-col items-center mt-24">
+    <div className="flex min-h-full flex-col items-center justify-center p-4 text-center text-gray-color">
+      <div className="mt-24 flex flex-col items-center">
         <h1 className="text-2xl font-semibold">Connect Your Stack</h1>
       </div>
       <div className="my-16 mt-12">
