@@ -11,13 +11,13 @@ const CalendarConnect = (): JSX.Element => {
         <GoogleCalendar />
         <h1 className="mt-10 text-2xl font-semibold">Connect Your Calendar</h1>
       </div>
-      <div className="my-16">
+      <div className="my-16 flex w-full justify-center">
         <CalendarList />
       </div>
-      <div className="my-14">
+      <div className="mt-16">
         <CalendarAuth />
       </div>
-      <div>
+      <div className="mt-44">
         <Link href={"/stack"}>
           <button className="hover:text-gray-900">
             I&apos;ll do this later
