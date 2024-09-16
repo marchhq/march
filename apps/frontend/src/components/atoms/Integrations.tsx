@@ -1,10 +1,12 @@
 import React from "react"
+
 import { ChevronDown, ChevronRight } from "lucide-react"
+
 import { MagicCard } from "../magicui/magic-card"
-import { Linear } from "@/src/lib/icons/Linear"
-import { Notion } from "@/src/lib/icons/Notion"
 import { GithubBordered } from "@/src/lib/icons/Github"
 import { Gmail } from "@/src/lib/icons/Gmail"
+import { Linear } from "@/src/lib/icons/Linear"
+import { Notion } from "@/src/lib/icons/Notion"
 
 const integrations = [
   {
@@ -40,35 +42,35 @@ const integrations = [
 export const Integrations = () => {
   return (
     <MagicCard className="max-w-2xl shadow-xl">
-      <div className="border-b border-gray-200 text-black text-left bg-[#EDEEF3] p-3">
+      <div className="border-b border-gray-200 bg-[#EDEEF3] p-3 text-left text-black">
         Personal integrations
       </div>
-      <ul className="text-left divide-y divide-gray-[#C5C5C5] p-4">
+      <ul className="divide-gray-[#C5C5C5] divide-y p-4 text-left">
         {integrations.map((integration, index) => (
           <li key={index} className="flex items-center py-3">
-            <div className="flex items-center flex-grow">
+            <div className="flex grow items-center">
               <div className="mr-4">{integration.icon}</div>
-              <div className="flex-grow max-w-md">
+              <div className="max-w-md grow">
                 <p className="text-sm font-semibold text-black">
                   {integration.name}
                 </p>
-                <p className="text-gray-color text-sm">
+                <p className="text-sm text-gray-color">
                   {integration.description}
                 </p>
               </div>
             </div>
-            <div className="ml-4 flex-shrink-0">
+            <div className="ml-4 shrink-0">
               {integration.connected ? (
                 <button
-                  className="text-black text-xs flex items-center"
+                  className="flex items-center text-xs text-black"
                   disabled
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 mr-1"></span>
+                  <span className="mr-1 size-1.5 rounded-full bg-green-500"></span>
                   Connected
                   <ChevronDown size={14} className="ml-1" />
                 </button>
               ) : (
-                <button className="text-[#555DE4] text-xs font-medium flex items-center">
+                <button className="flex items-center text-xs font-medium text-[#555DE4]">
                   <span className="mr-1">Connect</span>
                   <ChevronRight size={14} />
                 </button>
