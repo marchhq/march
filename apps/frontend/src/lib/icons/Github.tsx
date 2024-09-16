@@ -28,7 +28,10 @@ export const Github = (): JSX.Element => {
   )
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1cbb6a173a688ea32842d4f7155a8cfa45f8c94a
 
 export const GithubBordered = (): JSX.Element => {
   return (
@@ -54,4 +57,7 @@ export const GithubBordered = (): JSX.Element => {
     </svg>
   )
 }
+<<<<<<< HEAD
 >>>>>>> 1cbb6a1 (added onboarding ui)
+=======
+>>>>>>> 1cbb6a173a688ea32842d4f7155a8cfa45f8c94a
