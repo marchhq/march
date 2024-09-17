@@ -9,10 +9,10 @@ const handleSmsItemCreation = async (req, res, next) => {
         const messageBody = req.body.Body;
         const fromNumber = req.body.From;
 
-        // Process issue creation logic here
+        // issue creation
         console.log(`Received message: ${messageBody} from ${fromNumber}`);
 
-        // Respond with a confirmation SMS
+        // confirmation SMS
         const twiml = new twilio.twiml.MessagingResponse();
         twiml.message('Your issue has been logged successfully!');
 
