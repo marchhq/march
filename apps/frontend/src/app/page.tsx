@@ -5,7 +5,7 @@ import { type Metadata } from "next"
 import { GithubLogin } from "../components/atoms/GithubLogin"
 import GoogleLogin from "../components/atoms/GoogleLogin"
 import Line from "@/src/lib/icons/Line"
-import Logo from "@/src/lib/icons/Logo"
+import { LogoDark } from "@/src/lib/icons/Logo"
 import generateMetadata from "@/src/utils/seo"
 
 export const metadata: Metadata = generateMetadata({
@@ -16,17 +16,19 @@ export const metadata: Metadata = generateMetadata({
 
 const Home: React.FC = () => {
   return (
-    <main className="grid h-screen w-full place-content-center text-center">
+    <main className="grid h-screen w-full place-content-center bg-background text-center text-muted">
       <div className="flex h-screen w-full max-w-7xl flex-col items-center justify-between py-8">
         <div className="flex size-full flex-col items-center justify-center">
-          <Logo size={64} />
+          <LogoDark />
           <h2 className="mt-10 text-3xl font-bold">Login to March</h2>
 
-          <div className="mt-10 text-gray-color">
-            <p>engineered for makers,</p>
+          <div className="mt-10 text-muted">
+            <p>
+              engineered for <span className="text-gray-100">makers,</span>
+            </p>
             <div className="mt-2 flex w-full items-center justify-center gap-x-2">
               <p>designed</p> <Line />{" "}
-              <p className="font-medium text-black">to get things done.</p>
+              <p className="font-medium text-gray-100">to get things done.</p>
             </div>
           </div>
 
@@ -39,8 +41,8 @@ const Home: React.FC = () => {
           <div className="mb-10 mt-6 text-center">
             <p>By continuing, you agree to our </p>
             <p>
-              <span className="text-black">terms of services</span> and our{" "}
-              <span className="text-black">privacy policy.</span>
+              <span className="text-gray-100">terms of services</span> and our{" "}
+              <span className="text-gray-100">privacy policy.</span>
             </p>
           </div>
         </div>

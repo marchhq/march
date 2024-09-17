@@ -13,9 +13,6 @@ const paths = [
   {
     route: "/stack",
   },
-  {
-    route: "/timezone",
-  },
 ]
 
 export const ProgressBar = (): JSX.Element => {
@@ -27,9 +24,7 @@ export const ProgressBar = (): JSX.Element => {
       {paths.map((path, index) => (
         <div
           key={index}
-          className={`w-2 h-2 rounded-full ${
-            currentPath === index + 1 ? "bg-gray-600" : "bg-gray-300"
-          }`}
+          className={`size-2 rounded-full ${currentPath === index + 1 ? "bg-gray-100" : "bg-gray-color"}`}
         ></div>
       ))}
     </div>
