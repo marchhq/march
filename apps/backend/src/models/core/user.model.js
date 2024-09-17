@@ -68,6 +68,25 @@ const UserSchema = new Schema({
                 type: Schema.Types.Boolean,
                 default: false
             }
+        },
+        github: {
+            email: {
+                type: String,
+                validate: {
+                    validator: (e) => {
+                        return /^[a-z0-9][a-z0-9-_.]+@([a-z]|[a-z0-9]?[a-z0-9-]+[a-z0-9])\.[a-z0-9]{2,10}(?:\.[a-z]{2,10})?$/.test(e)
+                    }
+                }
+            },
+            id: String,
+            isVerified: {
+                type: Boolean,
+                default: false
+            },
+            hasAuthorizedEmail: {
+                type: Boolean,
+                default: false
+            }
         }
     },
     integration: {
@@ -87,7 +106,8 @@ const UserSchema = new Schema({
             historyId: String
         },
         github: {
-            installationId: String
+            installationId: String,
+            userName: String
         },
         notion: {
             accessToken: String,

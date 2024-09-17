@@ -6,3 +6,12 @@ export interface GoogleAuthResponse {
   refreshToken: string
   isNewUser: boolean
 }
+
+/**
+    Github Auth Response
+*/
+export interface GitHubAuthResponse {
+  accessToken: string
+  refreshToken: string
+  isNewUser: boolean
+}

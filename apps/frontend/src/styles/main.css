@@ -210,6 +210,7 @@ button {
     @apply border-zinc-700 my-3;
   }
 }
+
 :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
