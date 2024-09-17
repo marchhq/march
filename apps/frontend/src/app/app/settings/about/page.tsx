@@ -5,7 +5,7 @@ const About = (): JSX.Element => {
     <div className="flex min-h-screen flex-col items-center justify-center text-gray-color">
       <div className="flex flex-col items-center text-center">
         <Logo size={64} />
-        <h1 className="mt-8 font-semibold text-black">march for web</h1>
+        <h1 className="mt-8 font-semibold">march for web</h1>
         <div className="mt-4 text-[17px] font-medium">
           <p>version: 1.0.1</p>
           <p>@ March Labs Inc, All rights reserved.</p>

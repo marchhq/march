@@ -3,7 +3,9 @@
 import React from "react"
 
 import { usePathname } from "next/navigation"
+
 import SecondSidebar from "@/src/components/SecondSidebar"
+import SidebarItem from "@/src/components/SidebarItem"
 
 interface Props {
   children: React.ReactNode
@@ -12,9 +14,25 @@ interface Props {
 const SpaceLayout: React.FC<Props> = ({ children }) => {
   const pathname = usePathname()
 
+  const items = [
+    <SidebarItem
+      href={"/space/notes"}
+      key={"notes"}
+      name="Notes"
+      isActive={pathname.includes("/app/space/notes")}
+    />,
+
+    <SidebarItem
+      href={"/space/meeting"}
+      key={"meeting"}
+      name="Meetings"
+      isActive={pathname.includes("/app/space/meetings")}
+    />,
+  ]
+
   return (
-    <div className="h-full flex">
-      <SecondSidebar />
+    <div className="flex h-full">
+      <SecondSidebar items={items} />
       <div className="flex-1">{children}</div>
     </div>
   )
