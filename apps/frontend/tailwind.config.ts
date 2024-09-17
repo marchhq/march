@@ -177,6 +177,7 @@ const config: Config = {
         background: {
           DEFAULT: "rgba(var(--background))",
           hover: "rgba(var(--background-hover))",
+          active: "rgba(var(--background-active))",
         },
         primary: {
           DEFAULT: "rgba(var(--primary))",
