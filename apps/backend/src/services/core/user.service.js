@@ -2,6 +2,7 @@ import { User } from "../../models/core/user.model.js";
 import { generateHash, verifyPasswordHash } from "../../utils/helper.service.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { OauthClient } from "../../loaders/google.loader.js";
+import axios from 'axios';
 
 const getUserByEmail = async (email) => {
     const user = await User.findOne({
@@ -11,6 +12,9 @@ const getUserByEmail = async (email) => {
             },
             ...(email ? [{
                 "accounts.google.email": email
+            }] : []),
+            ...(email ? [{
+                "accounts.github.email": email
             }] : []),
             ...(email ? [{
                 "accounts.local.email": email
@@ -101,6 +105,47 @@ const validateGoogleUser = async (token) => {
     }
 }
 
+const validateGithubUser = async (code) => {
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+        client_id: environment.GITHUB_CLIENT_ID,
+        client_secret: environment.GITHUB_CLIENT_SECRET,
+        code
+    }, {
+        headers: { accept: 'application/json' }
+    });
+
+    const accessToken = tokenResponse.data.access_token;
+
+    if (!accessToken) {
+        throw new Error('GitHub access token not received');
+    }
+
+    const [profileResponse, emailsResponse] = await Promise.all([
+        axios.get('https://api.github.com/user', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        }),
+        axios.get('https://api.github.com/user/emails', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+    ]);
+    const profile = profileResponse.data;
+    const emails = emailsResponse.data;
+
+    const primaryEmail = emails.find(email => email.primary && email.verified)?.email;
+
+    if (!primaryEmail) {
+        throw new Error('No verified primary email found for GitHub account');
+    }
+    return {
+        fullName: profile.name || profile.login,
+        userName: profile.login,
+        id: profile.id,
+        email: primaryEmail,
+        avatar: profile.avatar_url || ''
+
+    }
+}
+
 const createGoogleUser = async ({
     fullName,
     userName,
@@ -112,6 +157,7 @@ const createGoogleUser = async ({
     let user = await User.findOne({
         'accounts.google.email': email
     })
+
     if (user) {
         const error = new Error("User already exists")
         error.statusCode = 400;
@@ -128,6 +174,45 @@ const createGoogleUser = async ({
             }
         },
         avatar,
+        userTimezone: timezone
+    })
+    return user;
+}
+
+const createGithubUser = async (
+    {
+        fullName,
+        userName,
+        email,
+        id,
+        avatar,
+        timezone
+    }
+) => {
+    let user = await User.findOne({
+        'accounts.github.email': email
+    })
+    if (user) {
+        const error = new Error("User already exists")
+        error.statusCode = 400;
+        throw error
+    }
+    user = await User.create({
+        fullName,
+        userName,
+        accounts: {
+            github: {
+                email,
+                id,
+                isVerified: true
+            }
+        },
+        avatar,
+        integration: {
+            github: {
+                userName
+            }
+        },
         userTimezone: timezone
     })
     return user;
@@ -150,6 +235,8 @@ export {
     validateEmailUser,
     getUserById,
     validateGoogleUser,
+    validateGithubUser,
     createGoogleUser,
+    createGithubUser,
     updateUser
 }

@@ -18,7 +18,7 @@ const EachNote: FC<EachNoteProps> = ({
   isActive,
 }) => {
   return (
-    <div className="flex gap-2 group">
+    <div className="group flex gap-2">
       <button
         key={note.uuid}
         onClick={() => {
@@ -40,7 +40,7 @@ const EachNote: FC<EachNoteProps> = ({
           e.stopPropagation()
           handleDeleteNote(note)
         }}
-        className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100"
+        className="text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
       >
         <Trash size={16} className="flex-shrink-0" />
       </button>
