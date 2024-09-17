@@ -11,7 +11,7 @@ const AppLayout: React.FC<Props> = ({ children }) => {
   return (
     <AuthProvider>
       <QueryProvider>
-        <main className="flex h-screen gap-1 bg-background">
+        <main className="flex h-screen bg-background">
           <Sidebar />
           <section className="flex-1">{children}</section>
         </main>
