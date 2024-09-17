@@ -1,43 +1,59 @@
-import * as React from "react"
+"use client"
 
-import Link from "next/link"
+import React from "react"
 
-import { Settings } from "@/src/lib/icons/Settings"
+import { usePathname } from "next/navigation"
+
+import SecondSidebar from "@/src/components/SecondSidebar"
+import SidebarItem from "@/src/components/SidebarItem"
 
 interface Props {
   children: React.ReactNode
 }
 
-const options = [
-  { id: "1", name: "Account", slug: "account" },
-  { id: "2", name: "Preference", slug: "preference" },
-  { id: "3", name: "Calendars", slug: "calendars" },
-  { id: "4", name: "Integrations", slug: "integrations" },
-  { id: "5", name: "About", slug: "about" },
-]
-
-const navLinkClassName =
-  "flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-secondary-foreground hover-bg cursor-pointer"
-
 const SpaceLayout: React.FC<Props> = ({ children }) => {
+  const pathname = usePathname()
+
+  const items = [
+    <SidebarItem
+      href={"settings/account"}
+      key={"account"}
+      name="Account"
+      isActive={pathname.includes("/app/settings/account")}
+    />,
+
+    <SidebarItem
+      href={"settings/preference"}
+      key={"preference"}
+      name="Preferences"
+      isActive={pathname.includes("/app/settings/preference")}
+    />,
+
+    <SidebarItem
+      href={"settings/calendars"}
+      key={"settings/calendars"}
+      name="Calendars"
+      isActive={pathname.includes("/app/settings/calendars")}
+    />,
+
+    <SidebarItem
+      href={"settings/integrations"}
+      key={"integrations"}
+      name="Integrations"
+      isActive={pathname.includes("/app/settings/integrations")}
+    />,
+
+    <SidebarItem
+      href={"settings/about"}
+      key={"about"}
+      name="About"
+      isActive={pathname.includes("/app/settings/about")}
+    />,
+  ]
+
   return (
-    <div className="flex h-full gap-1">
-      <div className="flex w-[210px] flex-col gap-0.5 rounded-xl border border-border bg-secondary px-3 pb-3 pt-5">
-        <div className="flex items-center pl-3 text-sm font-medium text-secondary-foreground">
-          <Settings />
-          <span className="ml-2">SETTINGS</span>
-        </div>
-        <hr className="my-3 border-border" />
-        {options.map((option) => (
-          <Link
-            key={option.id}
-            className={navLinkClassName}
-            href={`/app/settings/${option.slug}`}
-          >
-            {option.name}
-          </Link>
-        ))}
-      </div>
+    <div className="flex h-full">
+      <SecondSidebar items={items} />
       <div className="flex-1">{children}</div>
     </div>
   )
