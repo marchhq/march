@@ -4,26 +4,25 @@
 
 @layer base {
   :root {
-    --background: 253, 253, 253;
-    /* fdfdfd */
+    --background: 242, 242, 242;
     --background-hover: 244, 244, 245;
     /* f4f4f5 zinc-100 */
-    --background-active: 240, 240, 241;
 
     --foreground: 0, 0, 0;
 
-    --primary: ;
+    --primary: 255, 255, 255;
     --primary-foreground: 34, 34, 34;
     /* 222 */
 
-    --secondary: ;
+    --secondary: 253, 253, 253;
+    /* fdfdfd */
     --secondary-foreground: 161, 161, 170;
     /* a1a1aa zinc-400 */
 
-    --tertiary: 255, 255, 255;
-    /* fff */
-    --tertiary-foreground: 34, 34, 34;
-    /* 222 */
+    --tertiary: ;
+    /*  */
+    --tertiary-foreground: 103, 103, 103;
+    /* 676767 */
 
     --border: 219, 215, 216;
     /* DBD7D8 */

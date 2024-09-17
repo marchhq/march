@@ -13,13 +13,13 @@ const StackConnect: React.FC = () => {
       <div className="my-16 mt-12">
         <Integrations />
       </div>
-      <div className="space-y-16">
-        <Link href={"/timezone"}>
-          <button className="flex w-60 items-center justify-center gap-x-6 rounded-2xl border border-button-stroke bg-transparent p-6 font-semibold text-black">
+      <div className="mt-14 space-y-4">
+        <Link href={"/app/today"}>
+          <button className="flex w-60 items-center justify-center gap-x-6 bg-transparent p-6 text-xl font-semibold hover:text-gray-100">
             Continue
           </button>
         </Link>
-        <button className="hover:text-gray-900">suggest integration?</button>
+        <button className="hover:text-gray-100">i&apos;ll do this later</button>
       </div>
     </div>
   )

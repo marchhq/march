@@ -9,7 +9,7 @@ const CalendarConnect = (): JSX.Element => {
     <div className="flex min-h-full flex-col items-center justify-center p-4 text-center text-gray-color">
       <div className="mt-24 flex flex-col items-center">
         <GoogleCalendar />
-        <h1 className="mt-10 text-2xl font-semibold">Connect Your Calendar</h1>
+        <h1 className="mt-10 text-3xl font-bold">Connect Your Calendar</h1>
       </div>
       <div className="my-16 flex w-full justify-center">
         <CalendarList />
@@ -19,7 +19,7 @@ const CalendarConnect = (): JSX.Element => {
       </div>
       <div className="mt-44">
         <Link href={"/stack"}>
-          <button className="hover:text-gray-900">
+          <button className="hover:text-gray-100">
             I&apos;ll do this later
           </button>
         </Link>
