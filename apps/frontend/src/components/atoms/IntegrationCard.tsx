@@ -1,14 +1,14 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { ArrowRight } from "@/src/lib/icons/ArrowRight"
-import { LinearCircle } from "@/src/lib/icons/LinearCircle"
+import { LinearDark } from "@/src/lib/icons/LinearCircle"
 
 export const IntegrationCard = (): JSX.Element => {
   return (
-    <Card className="flex max-w-sm justify-center rounded-md border border-[#DCDCDD] text-gray-color">
+    <Card className="flex max-w-sm justify-center rounded-md bg-background text-gray-color">
       <div className="max-w-sm">
         <CardHeader>
-          <CardTitle className="flex items-center justify-start gap-2 text-[#3A3A3A]">
-            <LinearCircle />
+          <CardTitle className="flex items-center justify-start gap-2">
+            <LinearDark />
             Linear
           </CardTitle>
         </CardHeader>

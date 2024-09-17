@@ -1,10 +1,10 @@
-import Logo from "@/src/lib/icons/Logo"
+import { LogoDark } from "@/src/lib/icons/Logo"
 
 const About = (): JSX.Element => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center text-gray-color">
       <div className="flex flex-col items-center text-center">
-        <Logo size={64} />
+        <LogoDark size={64} />
         <h1 className="mt-8 font-semibold">march for web</h1>
         <div className="mt-4 text-[17px] font-medium">
           <p>version: 1.0.1</p>
