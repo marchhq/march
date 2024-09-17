@@ -47,14 +47,13 @@
     "react-intersection-observer": "^9.13.0",
     "react-resizable-panels": "^2.0.20",
     "sharp": "^0.33.4",
-    "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",
-    "use-sound": "^4.0.3",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@iconify-icon/react": "^2.1.0",
     "@tanstack/eslint-plugin-query": "^5.51.15",
     "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",
