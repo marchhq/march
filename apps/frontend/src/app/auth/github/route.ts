@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const res = NextResponse.redirect(
       // redirecting to inbox for test
       isNewUser
-        ? new URL("/app/inbox", request.url)
+        ? new URL("/calendar", request.url)
         : new URL("/app/today", request.url)
     )
 
