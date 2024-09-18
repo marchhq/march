@@ -12,6 +12,7 @@ interface AuthContextType {
   session: string
   loading: boolean
   googleLogin: (code: string) => Promise<void>
+  githubLogin: (code: string) => Promise<void> // Added GitHub login function
   logout: () => Promise<void>
 }
 
@@ -42,12 +43,9 @@ export function AuthProvider({
   /**
    * Logs in the user using Google OAuth.
    * @param code The code returned from Google OAuth.
-   * @returns redirects to today page from server side
    */
   const googleLogin = async (code: string): Promise<void> => {
     try {
-      console.log(code)
-
       const res = await axios.post(`${BACKEND_URL}/auth/google/login`, null, {
         headers: {
           "x-google-auth": `${code}`,
@@ -55,32 +53,55 @@ export function AuthProvider({
       })
 
       console.log(res)
+      // Handle successful login, e.g., setting session
     } catch (error) {
       const e = error as AxiosError
       if (e.response?.status === 401) {
         console.error("Login error", e.response.data)
-        // Handle login error (e.g., show error message to session)
+        // Handle login error (e.g., show error message to user)
       } else {
         console.error("Login error", error)
       }
-      // Handle login error (e.g., show error message to session)
+    }
+  }
+
+  /**
+   * Logs in the user using GitHub OAuth.
+   * @param code The code returned from GitHub OAuth.
+   */
+  const githubLogin = async (code: string): Promise<void> => {
+    try {
+      const res = await axios.post(`${BACKEND_URL}/auth/github/login`, null, {
+        headers: {
+          "x-github-auth": `${code}`,
+        },
+      })
+
+      console.log(res)
+    } catch (error) {
+      const e = error as AxiosError
+      if (e.response?.status === 401) {
+        console.error("GitHub login error", e.response.data)
+      } else {
+        console.error("GitHub login error", error)
+      }
     }
   }
 
   /**
    * Logs out the user.
-   * @returns redirects to login page from server side
    */
   const logout = async (): Promise<void> => {
     try {
       await clearSession()
+      // Handle successful logout
     } catch (error) {
       console.error("Logout error", error)
       // toast.error("Logout error")
     }
   }
 
-  const value = { session, loading, googleLogin, logout }
+  const value = { session, loading, googleLogin, githubLogin, logout }
 
   if (loading) {
     return (

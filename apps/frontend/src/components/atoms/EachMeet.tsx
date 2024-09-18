@@ -10,11 +10,7 @@ interface EachMeetProps {
   isActive: boolean
 }
 
-const EachMeet: React.FC<EachMeetProps> = ({
-  meet,
-  setMeet,
-  isActive,
-}) => {
+const EachMeet: React.FC<EachMeetProps> = ({ meet, setMeet, isActive }) => {
   return (
     <button
       className={`rounded-lg border ${isActive ? "border-white/10 bg-white/10" : " border-transparent hover:bg-white/5"} p-2`}

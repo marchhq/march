@@ -5,7 +5,7 @@ import React from "react"
 import { useGoogleLogin } from "@react-oauth/google"
 
 import { FRONTEND_URL } from "@/src/lib/constants/urls"
-import Google from "@/src/lib/icons/Google"
+import { GoogleColored } from "@/src/lib/icons/GoogleColored"
 
 const GoogleLogin = (): JSX.Element => {
   const LoginWithGoogle = useGoogleLogin({
@@ -20,9 +20,9 @@ const GoogleLogin = (): JSX.Element => {
   return (
     <button
       onClick={LoginWithGoogle}
-      className="flex w-80 items-center justify-center gap-x-6 rounded-2xl border border-button-stroke bg-transparent p-2 text-black"
+      className="flex w-96 items-center justify-center gap-x-6 bg-transparent  p-3 font-semibold text-[#464748] hover:text-gray-100"
     >
-      <Google />
+      <GoogleColored />
       Continue with google
     </button>
   )

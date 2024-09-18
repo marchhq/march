@@ -45,5 +45,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     path: "/",
   })
   console.log("cookie was set")
-  return redirect("/app/today")
+
+  if (res.isNewUser) {
+    return redirect("/calendar")
+  } else {
+    return redirect("/app/today")
+  }
 }
