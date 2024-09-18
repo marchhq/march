@@ -195,6 +195,7 @@ const config: Config = {
         border: {
           DEFAULT: "rgba(var(--border))",
         },
+        muted: "#9C9C9D",
         "gray-color": "#676767",
         "button-stroke": "#D0D0D0",
       },

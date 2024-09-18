@@ -27,7 +27,7 @@ const EachNote: FC<EachNoteProps> = ({
         className="w-full truncate"
       >
         <div
-          className={`flex items-center justify-between gap-x-4 rounded-lg border p-2 ${isActive ? "border-border bg-background" : "hover:bg-background border-transparent"} text-tertiary-foreground text-sm`}
+          className={`flex items-center justify-between gap-x-4 rounded-lg border p-2 ${isActive ? "border-border bg-background" : "border-transparent hover:bg-background"} text-sm text-tertiary-foreground`}
         >
           <div className="flex items-center gap-x-4 truncate">
             <Notepad size={18} weight="duotone" className="shrink-0" />
