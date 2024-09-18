@@ -4,7 +4,7 @@ import { LinearDark } from "@/src/lib/icons/LinearCircle"
 
 export const IntegrationCard = (): JSX.Element => {
   return (
-    <Card className="flex max-w-sm justify-center rounded-md bg-background text-gray-color">
+    <Card className="flex max-w-sm cursor-pointer justify-center rounded-md bg-background text-gray-color hover:text-gray-100">
       <div className="max-w-sm">
         <CardHeader>
           <CardTitle className="flex items-center justify-start gap-2">
