@@ -1,11 +1,14 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { useAuth } from "@/src/contexts/AuthContext"
 import classNames from "../utils/classNames"
+import useNotesStore from "@/src/lib/store/notes.store"
+import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 
 const navLinkClassName =
   "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
@@ -21,7 +24,7 @@ const Item = ({
 }) => {
   const activeClass = isActive ? "text-foreground" : ""
   return (
-    <Link href={`/app/space/${href}`} className={navLinkClassName}>
+    <Link href={`/space/${href}`} className={navLinkClassName}>
       <span className={classNames(activeClass, "truncate")}>{name}</span>
     </Link>
   )
@@ -30,9 +33,43 @@ const Item = ({
 const SecondSidebar: React.FC = () => {
   const pathname = usePathname()
   const [closeToggle, setCloseToggle] = useState(false)
+  const { session } = useAuth()
+  const [loading, setLoading] = useState(false)
 
   const handleClose = () => {
     setCloseToggle(!closeToggle)
+  }
+
+  const { fetchNotes, notes, isFetched, setIsFetched, addNote } =
+    useNotesStore()
+
+  const fetchTheNotes = async (): Promise<void> => {
+    await fetchNotes(session)
+    setIsFetched(true)
+  }
+
+  useEffect(() => {
+    void fetchTheNotes()
+  }, [])
+
+  useEffect(() => {
+    if (isFetched) {
+      console.log(notes)
+    }
+  }, [isFetched])
+
+  const addFirstNote = async (): Promise<void> => {
+    try {
+      setLoading(true)
+      const newNote = await addNote(session, "", "<p></p>")
+      if (newNote !== null) {
+        redirectNote(newNote.uuid)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -49,15 +86,33 @@ const SecondSidebar: React.FC = () => {
           "w-[160px] h-full flex flex-col justify-center gap-2 pr-4 bg-background"
         )}
       >
-        <Item
-          href="notes"
-          name="Notes"
-          isActive={pathname.includes("/app/space/notes/")}
-        />
+        {isFetched && (
+          <>
+            {notes.length > 0 ? (
+              <Item
+                href={`notes/${notes[0]?.uuid}`}
+                name="Notes"
+                isActive={pathname.includes("/space/notes/")}
+              />
+            ) : (
+              <>
+                {!loading ? (
+                  <button onClick={addFirstNote} className={navLinkClassName}>
+                    <span className="truncate">Notes</span>
+                  </button>
+                ) : (
+                  <div className={navLinkClassName}>
+                    <p>loading</p>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
         <Item
           href="meeting"
           name="Meeting"
-          isActive={pathname.includes("/app/space/meeting/")}
+          isActive={pathname.includes("/space/meeting/")}
         />
       </div>
     </div>
