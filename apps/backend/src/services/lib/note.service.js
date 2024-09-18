@@ -58,10 +58,23 @@ const deleteNote = async (noteId) => {
     return '';
 };
 
+const getMostRecentUpdatedNote = async (user) => {
+    const note = await Note.findOne({
+        user
+    })
+        .sort({ updatedAt: -1 });
+
+    if (!note) {
+        throw new Error('Note not found');
+    }
+    return note;
+};
+
 export {
     createNote,
     getNotes,
     getNote,
     updateNote,
-    deleteNote
+    deleteNote,
+    getMostRecentUpdatedNote
 }

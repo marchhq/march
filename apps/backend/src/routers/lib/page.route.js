@@ -3,7 +3,7 @@ import { getUserItemsController, getUserTodayItemsController, getUserOverdueItem
 import { createPageController, getPagesController, getPageController, updatePageController } from "../../controllers/lib/page.controller.js";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController } from "../../controllers/lib/journal.controller.js";
 import { createItemController, getItemsController, updateItemController, getItemController } from "../../controllers/lib/item.controller.js";
-import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController } from "../../controllers/lib/note.controller.js";
+import { createNoteController, getNotesController, getNoteController, updateNoteController, deleteNoteController, getMostRecentUpdatedNoteController } from "../../controllers/lib/note.controller.js";
 import { createRecordController, getRecordsController, getRecordController, updateRecordController } from "../../controllers/lib/record.controller.js";
 import { createBlockController, getBlocksController, deleteBlockController, getBlockController, updateBlockController } from "../../controllers/lib/block.controller.js";
 import { getMeetingsController, getUpcomingMeetingsController, updateMeetingController, deleteMeetingController } from "../../controllers/page/meeting.controller.js";
@@ -46,6 +46,7 @@ router.route("/items/:item/").put(updateItemController)
 // note controllers
 router.route("/notes/create/").post(createNoteController)
 router.route("/notes/overview/").get(getNotesController)
+router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController)
 router.route("/notes/:note/").get(getNoteController)
 router.route("/notes/:note/").put(updateNoteController)
 router.route("/notes/:note/").delete(deleteNoteController)
