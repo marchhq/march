@@ -7,7 +7,7 @@ export default async function feedbackController(req, res) {
       return res.status(500).json({ message: "File upload error", error: err });
     }
 
-    const { feedback } = req.body;
+    const { title, feedback } = req.body;
     const attachments = req.files; // The uploaded file
 
     try {
@@ -26,7 +26,7 @@ export default async function feedbackController(req, res) {
       const mailOptions = {
         from: `"Feedback Form" <${process.env.SMTP_USER}>`,
         to: process.env.FEEDBACK_RECEIVER_EMAIL, // Email to receive feedback
-        subject: "New Feedback Submission",
+        subject: `New Feedback Submission: ${title}`, 
         text: `${feedback}`,
         attachments: attachments.map((file) => ({
           filename: file.originalname,

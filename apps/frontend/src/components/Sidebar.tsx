@@ -39,12 +39,22 @@ const SidebarLink = ({
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link
+        {label === "Feedback" ? (
+            <div
+            className={classNames(navLinkClassName, activeClass)}
+              onClick={() => showModal(<FeedbackModal />)}
+            >
+              {icon}
+            </div>
+          ) : (
+            <Link
             className={classNames(navLinkClassName, activeClass)}
             href={href}
           >
             {icon}
           </Link>
+          )}
+        
         </TooltipTrigger>
         <TooltipContent side="right">
           <p>{label}</p>
@@ -120,6 +130,39 @@ const Sidebar: React.FC = () => {
             />
           }
           label="space"
+          isActive={pathname.includes("/app/space/")}
+        />
+         <SidebarLink
+          href="#"
+          icon={
+            <svg
+            width="22"
+            height="23"
+            viewBox="0 0 22 23"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.0491 21.3315C16.572 21.3315 21.0491 16.8544 21.0491 11.3315C21.0491 5.8087 16.572 1.33154 11.0491 1.33154C5.52629 1.33154 1.04913 5.8087 1.04913 11.3315C1.04913 16.8544 5.52629 21.3315 11.0491 21.3315Z"
+              stroke={pathname === "/app/info/" ? "#000" : "#676767"}
+              strokeWidth="1.5"
+            />
+            <path
+              d="M9.04913 8.33154C9.04913 7.22697 9.94453 6.33154 11.0491 6.33154C12.1537 6.33154 13.0491 7.22697 13.0491 8.33154C13.0491 8.72969 12.9328 9.10067 12.7322 9.41234C12.1345 10.3412 11.0491 11.2269 11.0491 12.3315V12.8315"
+              stroke={pathname === "/app/info/" ? "#000" : "#676767"}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+            <path
+              d="M11.0413 16.3315H11.0503"
+              stroke={pathname === "/app/info/" ? "#000" : "#676767"}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          }
+          label="Feedback"
           isActive={pathname.includes("/app/space/")}
         />
       </div>
