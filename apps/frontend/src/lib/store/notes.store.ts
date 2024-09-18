@@ -32,10 +32,15 @@ export interface NotesStoreType {
    */
   setNotes: (notes: Note[]) => void
   /**
-   * Sets the notes in the store.
-   * @param notes The notes to set.
+   * Get note by uuid.
+   * @param session and note uuid.
    */
   getNoteByuuid: (session: string, uuid: string) => Promise<Note | null>
+  /**
+   * Get latest note.
+   * @param session.
+   */
+  getLatestNote: (session: string) => Promise<Note | null>
   /**
    * Adds a note to the store.
    * @param session The session of the user.
@@ -105,6 +110,24 @@ const useNotesStore = create<NotesStoreType>((set) => ({
         },
       })
       note = data.note[0]
+    } catch (error) {
+      const e = error as AxiosError
+      console.error(e.cause)
+    }
+    return note
+  },
+  getLatestNote: async (session: string) => {
+    let note: Note | null = null
+    try {
+      const { data } = await axios.get(
+        `${BACKEND_URL}/api/notes/recent-updated/`,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      note = data.note
     } catch (error) {
       const e = error as AxiosError
       console.error(e.cause)
