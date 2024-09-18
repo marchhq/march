@@ -12,7 +12,8 @@ import { type Note } from "@/src/lib/@types/Items/Note"
 
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const { session } = useAuth()
-  const { getNoteByuuid, addNote } = useNotesStore()
+
+  const { getNoteByuuid, addNote, saveNote } = useNotesStore()
 
   const [note, setNote] = useState<Note | null>(null)
 
@@ -20,7 +21,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const [height, setHeight] = useState("auto")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const [content, setContent] = useState("<p></p>")
+  const [content, setContent] = useState(note?.content ?? "<p></p>")
   const editor = useEditorHook({ content, setContent })
 
   const [loading, setLoading] = useState(false)
@@ -43,8 +44,8 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       const note = await getNoteByuuid(session, params.noteId)
       if (note) {
         setNote(note)
-        setTitle(note.title || "")
-        setContent(note.content || "<p></p>")
+        setTitle(note.title)
+        setContent(note.content)
       }
       setIsFetched(true)
       return note
@@ -58,6 +59,13 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     getNote()
   }, [])
 
+  useEffect(() => {
+    if (isFetched && note) {
+      editor?.setEditable(true)
+      editor?.commands.setContent(note.content)
+    }
+  }, [note, isFetched])
+
   const addNewNote = async (): Promise<void> => {
     try {
       setLoading(true)
@@ -70,6 +78,10 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const saveNoteToServer = async (note: Note): Promise<void> => {
+    await saveNote(session, note)
   }
 
   return (
@@ -91,7 +103,14 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
         )}
       </div>
       {isFetched && (
-        <div>
+        <div
+          onBlur={() => {
+            if (note === null) {
+              return
+            }
+            void saveNoteToServer({ ...note, title, content })
+          }}
+        >
           <textarea
             ref={textareaRef}
             value={title}
