@@ -6,14 +6,19 @@ import {
   SelectValue,
 } from "./ui/select"
 
-export const SelectBox = (): JSX.Element => {
+interface Props {
+  placeholder: string
+  item: string
+}
+
+export const SelectBox = ({ placeholder, item }: Props): JSX.Element => {
   return (
     <Select>
       <SelectTrigger className="max-w-[240px]">
-        <SelectValue placeholder="oliursahin@gmail.com" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="oliursahin">oliursahin@gmail.com</SelectItem>
+        <SelectItem value="oliursahin">{item}</SelectItem>
       </SelectContent>
     </Select>
   )
