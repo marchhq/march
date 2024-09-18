@@ -19,14 +19,14 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       href={"/space/notes"}
       key={"notes"}
       name="Notes"
-      isActive={pathname.includes("/app/space/notes")}
+      isActive={pathname.includes("/space/notes")}
     />,
 
     <SidebarItem
       href={"/space/meeting"}
       key={"meeting"}
       name="Meetings"
-      isActive={pathname.includes("/app/space/meetings")}
+      isActive={pathname.includes("/space/meetings")}
     />,
   ]
 

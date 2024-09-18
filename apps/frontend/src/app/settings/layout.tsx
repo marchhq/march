@@ -19,35 +19,35 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       href={"settings/account"}
       key={"account"}
       name="Account"
-      isActive={pathname.includes("/app/settings/account")}
+      isActive={pathname.includes("/settings/account")}
     />,
 
     <SidebarItem
       href={"settings/preference"}
       key={"preference"}
       name="Preferences"
-      isActive={pathname.includes("/app/settings/preference")}
+      isActive={pathname.includes("/settings/preference")}
     />,
 
     <SidebarItem
       href={"settings/calendars"}
       key={"settings/calendars"}
       name="Calendars"
-      isActive={pathname.includes("/app/settings/calendars")}
+      isActive={pathname.includes("/settings/calendars")}
     />,
 
     <SidebarItem
       href={"settings/integrations"}
       key={"integrations"}
       name="Integrations"
-      isActive={pathname.includes("/app/settings/integrations")}
+      isActive={pathname.includes("/settings/integrations")}
     />,
 
     <SidebarItem
       href={"settings/about"}
       key={"about"}
       name="About"
-      isActive={pathname.includes("/app/settings/about")}
+      isActive={pathname.includes("/settings/about")}
     />,
   ]
 

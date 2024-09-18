@@ -19,7 +19,7 @@ const SidebarItem: React.FC<ItemProps> = ({
   href,
   name,
   isActive,
-  baseUrl = "/app/",
+  baseUrl = "/",
 }) => {
   const activeClass = isActive ? "text-foreground" : ""
   return (
