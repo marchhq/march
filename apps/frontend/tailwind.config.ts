@@ -177,6 +177,7 @@ const config: Config = {
         background: {
           DEFAULT: "rgba(var(--background))",
           hover: "rgba(var(--background-hover))",
+          active: "rgba(var(--background-active))",
         },
         primary: {
           DEFAULT: "rgba(var(--primary))",
@@ -193,6 +194,7 @@ const config: Config = {
         border: {
           DEFAULT: "rgba(var(--border))",
         },
+        muted: "#9C9C9D",
         "gray-color": "#676767",
         "button-stroke": "#D0D0D0",
       },

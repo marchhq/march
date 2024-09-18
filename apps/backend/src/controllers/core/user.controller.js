@@ -8,14 +8,9 @@ const { ValidationError } = Joi;
 const userProfileController = async (req, res, next) => {
     try {
         const user = req.user;
-        const { fullName, username, avatar, timezone } = user
+        const { integration, ...userWithoutIntegration } = user.toObject ? user.toObject() : user;
 
-        res.json({
-            fullName,
-            username,
-            avatar,
-            timezone
-        })
+        res.json(userWithoutIntegration);
     } catch (err) {
         next(err)
     }
