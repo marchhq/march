@@ -49,6 +49,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (res.isNewUser) {
     return redirect("/calendar")
   } else {
-    return redirect("/app/today")
+    return redirect("/today")
   }
 }
