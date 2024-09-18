@@ -62,9 +62,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
         >
-          <ModalProvider>
           {children}
-          </ModalProvider>
         </GoogleOAuthProvider>
       </body>
     </html>

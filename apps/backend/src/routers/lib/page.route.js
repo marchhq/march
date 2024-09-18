@@ -9,6 +9,7 @@ import { createBlockController, getBlocksController, deleteBlockController, getB
 import { getMeetingsController, getUpcomingMeetingsController, updateMeetingController, deleteMeetingController } from "../../controllers/page/meeting.controller.js";
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
+import feedbackController from "../../controllers/lib/feedback.controller.js";
 
 const router = Router();
 
@@ -65,5 +66,8 @@ router.route("/meetings/:meeting/").delete(deleteMeetingController)
 
 // File Asset controllers
 router.route('/file-assets/upload/').post(upload.single('file'), uploadFileController);
+
+//Feedback controllers
+router.route("/feedback/").post(feedbackController)
 
 export default router;
