@@ -20,7 +20,7 @@ const GoogleLogin = (): JSX.Element => {
   return (
     <button
       onClick={LoginWithGoogle}
-      className="flex w-96 items-center justify-center gap-x-6 rounded-2xl border border-button-stroke bg-transparent p-3 font-semibold text-black"
+      className="flex w-96 items-center justify-center gap-x-6 bg-transparent  p-3 font-semibold text-[#464748] hover:text-gray-100"
     >
       <GoogleColored />
       Continue with google
