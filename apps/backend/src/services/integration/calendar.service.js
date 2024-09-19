@@ -8,7 +8,8 @@ import { environment } from "../../loaders/environment.loader.js";
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
     const authUrl = OauthClient.generateAuthUrl({
         access_type: 'offline',
-        scope: ['https://www.googleapis.com/auth/calendar']
+        scope: ['https://www.googleapis.com/auth/calendar'],
+        response_type: 'code'
     });
     return authUrl;
 };
