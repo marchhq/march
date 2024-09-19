@@ -1,5 +1,6 @@
 import { Info, ShareIcon } from "lucide-react"
 
+import { ConnectCalendarBtn } from "@/src/components/atoms/CalendarAuth"
 import { Heading } from "@/src/components/atoms/Heading"
 import { SelectBox } from "@/src/components/atoms/Select"
 import { GoogleColored } from "@/src/lib/icons/GoogleColored"
@@ -37,9 +38,7 @@ const Calendars = (): JSX.Element => {
                 Learn more
                 <ShareIcon className="ml-2" size={16} />
               </p>
-              <button className="rounded-md border border-gray-color p-1 text-sm hover:text-gray-100">
-                Connect
-              </button>
+              <ConnectCalendarBtn />
             </div>
           </div>
           <p>
