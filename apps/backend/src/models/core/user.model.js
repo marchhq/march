@@ -92,27 +92,32 @@ const UserSchema = new Schema({
     integration: {
         linear: {
             accessToken: String,
-            userId: String
+            userId: String,
+            connected: { type: Boolean, default: false }
         },
         googleCalendar: {
             accessToken: String,
-            refreshToken: String
+            refreshToken: String,
+            connected: { type: Boolean, default: false }
         },
         gmail: {
             email: String,
             accessToken: String,
             refreshToken: String,
             labelId: String,
-            historyId: String
+            historyId: String,
+            connected: { type: Boolean, default: false }
         },
         github: {
             installationId: String,
-            userName: String
+            userName: String,
+            connected: { type: Boolean, default: false }
         },
         notion: {
             accessToken: String,
             userId: String,
-            workspaceId: String
+            workspaceId: String,
+            connected: { type: Boolean, default: false }
         }
     }
 }, {
