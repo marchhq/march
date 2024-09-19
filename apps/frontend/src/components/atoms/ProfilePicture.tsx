@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 
 import axios from "axios"
+import Image from "next/image"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import { User } from "@/src/lib/@types/auth/user"
@@ -29,12 +30,12 @@ export const ProfilePicture = (): JSX.Element => {
   }, [session])
 
   return (
-    <div className="mb-4 flex w-full justify-center">
-      <img
-        src={user?.avatar || "https://via.placeholder.com/200"}
-        alt="Profile"
-        className="size-48 rounded-full object-cover"
-      />
-    </div>
+    <Image
+      src={user?.avatar as string}
+      alt="Profile"
+      width={68}
+      height={66}
+      className="border border-[#262626]/80"
+    />
   )
 }
