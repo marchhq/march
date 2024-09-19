@@ -30,11 +30,11 @@ const userProfileController = async (req, res, next) => {
             roles,
             timezone,
             integrations: {
-                linear: { connected: !!integration.linear.accessToken }, // Assume accessToken is required to be 'connected'
-                googleCalendar: { connected: !!integration.googleCalendar.accessToken }, // Check for accessToken
-                gmail: { connected: !!integration.gmail.accessToken }, // Check for accessToken
-                github: { connected: !!integration.github.installationId }, // Check for installationId
-                notion: { connected: !!integration.notion.accessToken } // Check for accessToken
+                linear: { connected: integration.linear.connected },
+                googleCalendar: { connected: integration.googleCalendar.connected },
+                gmail: { connected: integration.gmail.connected },
+                github: { connected: integration.github.connected },
+                notion: { connected: integration.notion.connected }
             }
         };
 
