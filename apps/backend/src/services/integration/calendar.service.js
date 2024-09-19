@@ -20,6 +20,7 @@ const getGoogleCalendarAccessToken = async (code, user) => {
 
     user.integration.googleCalendar.accessToken = tokens.access_token;
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
+    user.integration.googleCalendar.connected = true;
     await user.save();
     return tokens;
 };
