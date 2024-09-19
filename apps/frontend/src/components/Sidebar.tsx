@@ -99,13 +99,13 @@ const Sidebar: React.FC = () => {
     <div className="flex flex-col px-2 py-8 my-auto mx-4 border border-border rounded-[30px] bg-background select-none">
       <div className="flex flex-col gap-2">
         <SidebarLink
-          href="/app/inbox/"
+          href={"/inbox"}
           icon={<Icon icon="hugeicons:inbox" style={{ fontSize: "30px" }} />}
           label="inbox"
           isActive={pathname.includes("/app/inbox/")}
         />
         <SidebarLink
-          href="/app/today/"
+          href={"/today"}
           icon={
             <div
               className={classNames(
@@ -122,7 +122,7 @@ const Sidebar: React.FC = () => {
           isActive={pathname.includes("/app/today/")}
         />
         <SidebarLink
-          href="/app/space/"
+          href={"/space"}
           icon={
             <Icon
               icon="fluent:collections-20-filled"

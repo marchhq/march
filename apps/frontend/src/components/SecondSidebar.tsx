@@ -1,44 +1,29 @@
 "use client"
+import React, { useState, ReactElement } from "react"
 
-import React from "react"
-
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useState } from "react"
 import classNames from "../utils/classNames"
 
-const navLinkClassName =
-  "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
-
-const Item = ({
-  href,
-  name,
-  isActive,
-}: {
+interface ItemProps {
   href: string
   name: string
   isActive: boolean
-}) => {
-  const activeClass = isActive ? "text-foreground" : ""
-  return (
-    <Link href={`/app/space/${href}`} className={navLinkClassName}>
-      <span className={classNames(activeClass, "truncate")}>{name}</span>
-    </Link>
-  )
+  baseUrl?: string
 }
 
-const SecondSidebar: React.FC = () => {
-  const pathname = usePathname()
-  const [closeToggle, setCloseToggle] = useState(false)
+interface SecondSidebarProps {
+  items: ReactElement<ItemProps>[]
+}
 
+const SecondSidebar: React.FC<SecondSidebarProps> = ({ items }) => {
+  const [closeToggle, setCloseToggle] = useState(false)
   const handleClose = () => {
     setCloseToggle(!closeToggle)
   }
 
   return (
-    <div className="w-[160px] relative text-xs font-medium group">
+    <div className="group relative w-[160px] text-xs font-medium">
       <button
-        className="absolute right-2 top-2 text-secondary-foreground hover-text opacity-0 group-hover:opacity-100 transition-opacity"
+        className="hover-text absolute right-2 top-2 text-secondary-foreground opacity-0 transition-opacity group-hover:opacity-100"
         onClick={handleClose}
       >
         {closeToggle ? "open" : "close"}
@@ -49,16 +34,7 @@ const SecondSidebar: React.FC = () => {
           "w-[160px] h-full flex flex-col justify-center gap-2 pr-4 bg-background"
         )}
       >
-        <Item
-          href="notes"
-          name="Notes"
-          isActive={pathname.includes("/app/space/notes/")}
-        />
-        <Item
-          href="meeting"
-          name="Meeting"
-          isActive={pathname.includes("/app/space/meeting/")}
-        />
+        {items}
       </div>
     </div>
   )
