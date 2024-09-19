@@ -43,8 +43,10 @@ const AppLayout: React.FC<Props> = ({ children }) => {
     <AuthProvider>
       <QueryProvider>
         <main className="flex h-screen bg-background">
-          <Sidebar />
-          <section className="flex-1">{children}</section>
+          <ModalProvider>
+            <Sidebar />
+            <section className="flex-1">{children}</section>
+          </ModalProvider>
         </main>
       </QueryProvider>
     </AuthProvider>
@@ -65,11 +67,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
         >
-          <AppLayout>
-            <ModalProvider>
-            {children}
-            </ModalProvider>
-            </AppLayout>
+          <AppLayout>{children}</AppLayout>
         </GoogleOAuthProvider>
       </body>
     </html>
