@@ -1,61 +1,77 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import TextEditor from "@/src/components/atoms/Editor"
-import useEditorHook from "@/src/hooks/useEditor.hook"
-import { PlusIcon } from "@radix-ui/react-icons"
-import { useAuth } from "@/src/contexts/AuthContext"
+import React, { useEffect, useState } from "react"
 import useNotesStore from "@/src/lib/store/notes.store"
+import { useAuth } from "@/src/contexts/AuthContext"
+import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 
-import { type Note } from "@/src/lib/@types/Items/Note"
+interface Props {
+  children: React.ReactNode
+}
 
-const NotesPage: React.FC = () => {
+const navLinkClassName =
+  "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
+
+const NotesPage: React.FC<Props> = () => {
   const { session } = useAuth()
-  const {
-    fetchNotes,
-    notes,
-    isFetched,
-    setIsFetched,
-    updateNote,
-    saveNote,
-    addNote,
-    deleteNote,
-  } = useNotesStore()
 
-  const [note, setNote] = useState<Note | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [latestNoteId, setLatestNoteId] = useState<string>("")
 
-  const [title, setTitle] = useState("initial state title")
-  const [height, setHeight] = useState("auto")
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [isFetched, setIsFetched] = useState(false)
 
-  const [content, setContent] = useState("<p>initial state content</p>")
-  const editor = useEditorHook({ content, setContent })
+  const { getLatestNote, addNote } = useNotesStore()
 
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTitle(e.target.value)
+  const getNoteId = async (): Promise<string | null> => {
+    try {
+      const note = await getLatestNote(session)
+      if (note) {
+        setLatestNoteId(note.uuid)
+        setIsFetched(true)
+      }
+      return note?.uuid || ""
+    } catch (error) {
+      console.error(error)
+      setIsFetched(false)
+      return null
+    }
   }
 
   useEffect(() => {
-    const textarea = textareaRef.current
-    if (textarea) {
-      setHeight("auto")
-      setHeight(`${textarea.scrollHeight}px`)
-    }
-  }, [title])
+    getNoteId()
+  }, [])
 
-  const addNewNote = async (): Promise<void> => {
-    const newNote = await addNote(session, "", "<p></p>")
+  useEffect(() => {
+    if (isFetched) {
+      if (latestNoteId) {
+        redirectNote(latestNoteId)
+      } else {
+        addFirstNote()
+      }
+    }
+  }, [isFetched, latestNoteId])
+
+  const addFirstNote = async (): Promise<void> => {
+    try {
+      setLoading(true)
+      const newNote = await addNote(session, "", "<p></p>")
+      if (newNote !== null) {
+        redirectNote(newNote.uuid)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 p-16 bg-background">
-      <button
-        onClick={addNewNote}
-        className="w-fit flex items-center gap-1 px-1 rounded-md text-secondary-foreground hover-bg"
-      >
-        <PlusIcon />
-        <span>Add A New Note</span>
-      </button>{" "}
+    <div className="h-full flex">
+      {loading && (
+        <div className={navLinkClassName}>
+          <p>loading...</p>
+        </div>
+      )}
     </div>
   )
 }
