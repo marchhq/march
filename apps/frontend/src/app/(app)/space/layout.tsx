@@ -25,7 +25,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   const { session } = useAuth()
 
   const [loading, setLoading] = useState(false)
-  const [latestNoteId, setLatestNoteId] = useState<string>("fdsa")
+  const [latestNoteId, setLatestNoteId] = useState<string>("")
 
   const [isFetched, setIsFetched] = useState(false)
 
@@ -48,7 +48,6 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     getNoteId()
-    console.log("latestNote", latestNoteId)
   }, [])
 
   const addFirstNote = async (): Promise<void> => {
@@ -84,7 +83,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
                 </button>
               ) : (
                 <div className={navLinkClassName}>
-                  <p>loading</p>
+                  <p>loading...</p>
                 </div>
               )}
             </>
@@ -94,7 +93,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
     </div>,
 
     <SidebarItem
-      href={"/space/meeting"}
+      href={"space/meeting"}
       key={"meeting"}
       name="Meetings"
       isActive={pathname.includes("/space/meetings")}

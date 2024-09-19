@@ -55,7 +55,8 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           sansFont.variable,
           serifFont.variable,
           monoFont.variable,
-          "overflow-x-hidden font-sans"
+          "overflow-x-hidden font-sans",
+          "bg-background"
         )}
       >
         <GoogleOAuthProvider
