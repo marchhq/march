@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useState, ReactElement } from "react"
 
 import classNames from "../utils/classNames"
@@ -21,9 +20,9 @@ const SecondSidebar: React.FC<SecondSidebarProps> = ({ items }) => {
     setCloseToggle(!closeToggle)
   }
   return (
-    <div className="w-[160px] relative text-xs font-medium group">
+    <div className="group relative w-[160px] text-xs font-medium">
       <button
-        className="absolute right-2 top-2 text-secondary-foreground hover-text opacity-0 group-hover:opacity-100 transition-opacity"
+        className="hover-text absolute right-2 top-2 text-secondary-foreground opacity-0 transition-opacity group-hover:opacity-100"
         onClick={handleClose}
       >
         {closeToggle ? "open" : "close"}
