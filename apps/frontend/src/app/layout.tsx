@@ -6,9 +6,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
 import "../styles/main.css"
-import Sidebar from "@/src/components/Sidebar"
-import { AuthProvider } from "@/src/contexts/AuthContext"
-import QueryProvider from "@/src/contexts/QueryProvider"
 import classNames from "@/src/utils/classNames"
 
 const sansFont = Inter({
@@ -37,19 +34,6 @@ interface Props {
   children: React.ReactNode
 }
 
-const AppLayout: React.FC<Props> = ({ children }) => {
-  return (
-    <AuthProvider>
-      <QueryProvider>
-        <main className="flex h-screen bg-background">
-          <Sidebar />
-          <section className="flex-1">{children}</section>
-        </main>
-      </QueryProvider>
-    </AuthProvider>
-  )
-}
-
 const RootLayout: React.FC<Props> = ({ children }) => {
   return (
     <html lang="en">
@@ -65,7 +49,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
         >
-          <AppLayout>{children}</AppLayout>
+          {children}
         </GoogleOAuthProvider>
       </body>
     </html>
