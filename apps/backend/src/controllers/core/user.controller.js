@@ -5,14 +5,42 @@ import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
 
+// const userProfileController = async (req, res, next) => {
+//     try {
+//         const user = req.user;
+//         const { integration, ...userWithoutIntegration } = user.toObject ? user.toObject() : user;
+
+//         res.json(userWithoutIntegration);
+//     } catch (err) {
+//         next(err)
+//     }
+// };
+
 const userProfileController = async (req, res, next) => {
     try {
         const user = req.user;
-        const { integration, ...userWithoutIntegration } = user.toObject ? user.toObject() : user;
+        const { integration, uuid, fullName, userName, avatar, roles, timezone } = user.toObject ? user.toObject() : user;
 
-        res.json(userWithoutIntegration);
+        // Dynamically compute 'connected' status based on whether the fields have values
+        const response = {
+            uuid,
+            fullName,
+            userName,
+            avatar,
+            roles,
+            timezone,
+            integrations: {
+                linear: { connected: !!integration.linear.accessToken }, // Assume accessToken is required to be 'connected'
+                googleCalendar: { connected: !!integration.googleCalendar.accessToken }, // Check for accessToken
+                gmail: { connected: !!integration.gmail.accessToken }, // Check for accessToken
+                github: { connected: !!integration.github.installationId }, // Check for installationId
+                notion: { connected: !!integration.notion.accessToken } // Check for accessToken
+            }
+        };
+
+        res.json(response);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
 
