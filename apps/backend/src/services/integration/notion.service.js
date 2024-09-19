@@ -19,6 +19,7 @@ const getNotionAccessToken = async (code, user) => {
         user.integration.notion.accessToken = tokenResponse.data.access_token;
         user.integration.notion.workspaceId = tokenResponse.data.workspace_id;
         user.integration.notion.userId = tokenResponse.data.owner.user.id;
+        user.integration.notion.connected = true;
         user.save();
 
         return tokenResponse.data.access_token;
@@ -114,7 +115,6 @@ const syncNotionPages = async (user) => {
         // }
     }
 };
-
 
 export {
     getNotionAccessToken,
