@@ -105,8 +105,8 @@ const FeedbackModal = () => {
   return (
     <div className="border border-border rounded-lg">
       <DialogHeader className="dark:text-white">
-        <DialogTitle className="px-5 pt-5 text-base">
-          Share Feedback
+        <DialogTitle className="px-6 pt-5 mb-2 text-base">
+          Share feedback
         </DialogTitle>
       </DialogHeader>
       <form className="dark:text-white" onSubmit={handleSubmit(onSubmit)}>
@@ -121,7 +121,7 @@ const FeedbackModal = () => {
           )}
           <Textarea
             className="min-h-40 dark:border-none text-sm"
-            placeholder="Share feedback, feature request, or report a bug"
+            placeholder="add description..."
             {...register("feedback", { required: true })}
           />
           {errors.feedback && (
@@ -166,7 +166,7 @@ const FeedbackModal = () => {
             </ul>
           )}
         </div>
-        <DialogFooter className="px-4 py-2 border-t border-border">
+        <DialogFooter className="px-6 py-2 mt-2 border-t border-border">
           <div className="flex gap-2 items-center justify-between w-full">
             <Link
               href={"https://x.com/_marchhq"}
@@ -180,7 +180,7 @@ const FeedbackModal = () => {
               disabled={isLoading}
               type="submit"
             >
-              {isLoading ? "Submitting" : "Submit"}
+              {isLoading ? "Submitting" : "Send feedback"}
             </button>
           </div>
         </DialogFooter>
