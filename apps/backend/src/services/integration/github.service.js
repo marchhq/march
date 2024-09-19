@@ -26,6 +26,7 @@ const fetchInstallationDetails = async (installationId, user) => {
             installation_id: installationId
         });
         user.integration.github.installationId = installationId
+        user.integration.github.connected = true
         user.save();
     } catch (error) {
         console.error('Error fetching installation details:', error);
