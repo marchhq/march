@@ -68,7 +68,7 @@ const MeetingPage: React.FC = () => {
         <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-2 py-5 shadow-lg backdrop-blur-lg">
           <div className="px-3 font-semibold text-zinc-300">Upcoming</div>
           <div className="mt-12 flex flex-col gap-y-2 px-3">
-            {meets.map((m, index) => (
+            {meets.map((m) => (
               <EachMeet
                 key={meet.title}
                 isActive={meet?.uuid === m.uuid}
