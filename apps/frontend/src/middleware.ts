@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // If the user is authenticated and trying to access the '/' route
   if (session.length !== 0 && path === "/") {
-    return NextResponse.redirect(new URL("/app/today", request.url))
+    return NextResponse.redirect(new URL("/today", request.url))
   }
 
   // For all other cases, continue with the request
