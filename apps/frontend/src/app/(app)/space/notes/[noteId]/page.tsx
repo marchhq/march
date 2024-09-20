@@ -19,8 +19,31 @@ import { formatDateYear } from "@/src/utils/datetime"
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const { session } = useAuth()
 
-  const { fetchNotes, notes, getNoteByuuid, addNote, saveNote, deleteNote } =
-    useNotesStore()
+  const {
+    isFetched,
+    setIsFetched,
+    fetchNotes,
+    notes,
+    updateNote,
+    addNote,
+    saveNote,
+    deleteNote,
+  } = useNotesStore()
+
+  const fetchTheNotes = async (): Promise<void> => {
+    try {
+      await fetchNotes(session)
+      setIsFetched(true)
+    } catch (error) {
+      setIsFetched(false)
+    }
+  }
+
+  useEffect(() => {
+    if (notes.length == 0) {
+      void fetchTheNotes()
+    }
+  }, [])
 
   const [note, setNote] = useState<Note | null>(null)
 
@@ -39,11 +62,27 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     setCloseToggle(!closeToggle)
   }
 
+  useEffect(() => {
+    if (!isFetched || notes.length === 0) {
+      editor?.setEditable(false)
+      return
+    }
+    const noteByParams = notes.filter((n) => n.uuid === params.noteId)
+    editor?.setEditable(true)
+    editor?.commands.setContent(noteByParams[0].content)
+    setNote(noteByParams[0])
+    setTitle(noteByParams[0].title)
+    setContent(noteByParams[0].content)
+  }, [isFetched, note])
+
   const [titleDebounceTimer, setTitleDebounceTimer] =
     useState<NodeJS.Timeout | null>(null)
 
-  const handleTitle = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTitle(e.target.value)
+  const handleTitle = (title: string): void => {
+    setTitle(title)
+    if (note !== null) {
+      updateNote({ ...note, title })
+    }
 
     if (titleDebounceTimer) {
       clearTimeout(titleDebounceTimer)
@@ -69,39 +108,11 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [title])
 
-  const fetchTheNotes = async (): Promise<void> => {
-    await fetchNotes(session)
-  }
-
-  const getNote = async (): Promise<Note | null> => {
-    try {
-      const note = await getNoteByuuid(session, params.noteId)
-
-      if (note) {
-        setNote(note)
-        setTitle(note.title)
-        setContent(note.content)
-      } else {
-        setNotFound(true)
-      }
-      return note
-    } catch (error) {
-      console.error(error)
-      return null
-    }
-  }
-
-  useEffect(() => {
-    getNote()
-    void fetchTheNotes()
-  }, [])
-
   useEffect(() => {
     if (note !== null) {
-      editor?.setEditable(true)
-      editor?.commands.setContent(note.content)
+      void saveNoteToServer({ ...note, title, content })
     }
-  }, [note])
+  }, [content])
 
   const addNewNote = async (): Promise<void> => {
     try {
@@ -143,7 +154,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!isSaved) {
         e.preventDefault()
-        e.returnValue = ""
       }
     }
 
@@ -197,7 +207,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             <textarea
               ref={textareaRef}
               value={title}
-              onChange={handleTitle}
+              onChange={(e) => handleTitle(e.target.value)}
               placeholder="Untitled"
               className="w-full text-3xl py-2 bg-background text-foreground font-bold placeholder-secondary-foreground resize-none overflow-hidden outline-none focus:outline-none whitespace-pre-wrap break-words truncate"
               rows={1}
@@ -230,6 +240,11 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             <div
               key={n.uuid}
               className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group"
+              onClick={() => {
+                if (note) {
+                  void saveNoteToServer({ ...note, title, content })
+                }
+              }}
             >
               <Link href={`/space/notes/${n.uuid}`} className="flex-1 truncate">
                 {n.uuid === note?.uuid ? (
