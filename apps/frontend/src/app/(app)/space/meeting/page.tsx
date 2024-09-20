@@ -10,10 +10,9 @@ import {
   ResizablePanelGroup,
 } from "@/src/components/atoms/Resizable"
 import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
 import { type Meet } from "@/src/lib/@types/Items/Meet"
 import useMeetsStore from "@/src/lib/store/meets.store"
-
-import useEditorHook from "@/src/hooks/useEditor.hook"
 
 const MeetingPage: React.FC = () => {
   const { session } = useAuth()
