@@ -1,16 +1,14 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 
 import { usePathname } from "next/navigation"
 
-import useNotesStore from "@/src/lib/store/notes.store"
-import { useAuth } from "@/src/contexts/AuthContext"
-
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
-
+import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
+import useNotesStore from "@/src/lib/store/notes.store"
 
 interface Props {
   children: React.ReactNode
@@ -26,12 +24,11 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   const [loading, setLoading] = useState(false)
   const [latestNoteId, setLatestNoteId] = useState<string>("")
-
   const [isFetched, setIsFetched] = useState(false)
 
   const { getLatestNote, addNote } = useNotesStore()
 
-  const getNoteId = async (): Promise<string | null> => {
+  const getNoteId = useCallback(async (): Promise<string | null> => {
     try {
       const note = await getLatestNote(session)
       if (note) {
@@ -44,11 +41,11 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       setIsFetched(false)
       return null
     }
-  }
+  }, [session, getLatestNote])
 
   useEffect(() => {
     getNoteId()
-  }, [])
+  }, [getNoteId])
 
   const addFirstNote = async (): Promise<void> => {
     try {
@@ -66,30 +63,23 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   const items = [
     <div key={"notesdiv"}>
-      {isFetched && (
-        <>
-          {latestNoteId ? (
-            <SidebarItem
-              href={`space/notes/${latestNoteId}`}
-              key={"notes"}
-              name="Notes"
-              isActive={pathname.includes("/space/notes/")}
-            />
-          ) : (
-            <>
-              {!loading ? (
-                <button onClick={addFirstNote} className={navLinkClassName}>
-                  <span className="truncate">Notes</span>
-                </button>
-              ) : (
-                <div className={navLinkClassName}>
-                  <p>loading...</p>
-                </div>
-              )}
-            </>
-          )}
-        </>
-      )}
+      {isFetched &&
+        (latestNoteId ? (
+          <SidebarItem
+            href={`space/notes/${latestNoteId}`}
+            key={"notes"}
+            name="Notes"
+            isActive={pathname.includes("/space/notes/")}
+          />
+        ) : !loading ? (
+          <button onClick={addFirstNote} className={navLinkClassName}>
+            <span className="truncate">Notes</span>
+          </button>
+        ) : (
+          <div className={navLinkClassName}>
+            <p>loading...</p>
+          </div>
+        ))}
     </div>,
 
     <SidebarItem
@@ -101,7 +91,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   ]
 
   return (
-    <div className="h-full flex">
+    <div className="flex h-full">
       <SecondSidebar items={items} />
       <div className="flex-1">{children}</div>
     </div>

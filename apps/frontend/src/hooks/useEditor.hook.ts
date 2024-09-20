@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
+
 import Link from "@tiptap/extension-link"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
 import { type Editor, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
+
 import { SlashCommand } from "../extensions/SlashCommand"
 
 interface Props {
