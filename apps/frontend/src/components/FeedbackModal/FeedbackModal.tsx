@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog"
 import { Textarea } from "../ui/textarea"
-import { Link as LinkIcon, Paperclip, Trash } from "@phosphor-icons/react"
+import { Link as LinkIcon, Trash } from "@phosphor-icons/react"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useToast } from "@/src/hooks/use-toast"
@@ -27,6 +27,7 @@ const FeedbackModal = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Inputs>()
 
@@ -87,6 +88,10 @@ const FeedbackModal = () => {
         toast({
           title: "Submitted successfully!",
         })
+
+        // Clear the form fields and selected files after successful submission
+        reset() // reset method from useForm
+        setSelectedFiles([]) // clear the selected files
         console.log("Feedback submitted successfully!")
       } else {
         toast({
@@ -176,7 +181,7 @@ const FeedbackModal = () => {
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="px-4 py-1 cursor-pointer rounded-lg hover:bg-secondary-foreground  text-black dark:text-white hover:text-white  transition-colors duration-300 ease-linear hover:dark:bg-primary-foreground hover:dark:text-black"
+              className="px-4 py-1 cursor-pointer disabled:cursor-not-allowed rounded-lg hover:bg-secondary-foreground  text-black dark:text-white hover:text-white  transition-colors duration-300 ease-linear hover:dark:bg-primary-foreground hover:dark:text-black"
               disabled={isLoading}
               type="submit"
             >
