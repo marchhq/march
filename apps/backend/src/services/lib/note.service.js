@@ -20,7 +20,7 @@ const getNotes = async (user) => {
     const notes = await Note.find({
         user
     })
-        .sort({ updatedAt: -1 });
+        .sort({ createdAt: -1 });
 
     return notes;
 };
