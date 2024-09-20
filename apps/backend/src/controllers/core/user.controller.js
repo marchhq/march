@@ -19,9 +19,8 @@ const { ValidationError } = Joi;
 const userProfileController = async (req, res, next) => {
     try {
         const user = req.user;
-        const { integration, uuid, fullName, userName, avatar, roles, timezone } = user.toObject ? user.toObject() : user;
+        const { integration, uuid, fullName, userName, avatar, roles, timezone, accounts } = user.toObject ? user.toObject() : user;
 
-        // Dynamically compute 'connected' status based on whether the fields have values
         const response = {
             uuid,
             fullName,
@@ -29,6 +28,7 @@ const userProfileController = async (req, res, next) => {
             avatar,
             roles,
             timezone,
+            accounts,
             integrations: {
                 linear: { connected: integration.linear.connected },
                 googleCalendar: { connected: integration.googleCalendar.connected },
