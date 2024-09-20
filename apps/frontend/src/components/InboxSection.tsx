@@ -1,15 +1,15 @@
 "use client"
 import * as React from "react"
 
-import {
-  ArrowSquareOut,
-  GithubLogo,
-  GitPullRequest,
-} from "@phosphor-icons/react"
+// import {
+//   ArrowSquareOut,
+//   GithubLogo,
+//   GitPullRequest,
+// } from "@phosphor-icons/react"
 
 import { useAuth } from "../contexts/AuthContext"
-import Editor from "@/src/components/atoms/Editor"
-import { fromNow } from "@/src/utils/datetime"
+// import Editor from "@/src/components/atoms/Editor"
+// import { fromNow } from "@/src/utils/datetime"
 
 interface IntegrationType {
   uuid: string

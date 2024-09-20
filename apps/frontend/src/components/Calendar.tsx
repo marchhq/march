@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 
-import { type EventApi, formatDate } from "@fullcalendar/core"
+import { type EventApi } from "@fullcalendar/core"
 import interactionPlugin from "@fullcalendar/interaction"
 import FullCalendar from "@fullcalendar/react"
 import timeGridPlugin from "@fullcalendar/timegrid"
@@ -19,6 +19,7 @@ interface Props {
 const DayCalendar: React.FC<Props> = ({ currentDate, initialEvents }) => {
   const [currentEvents, setCurrentEvents] = React.useState<EventApi[]>([])
 
+  console.log(currentEvents)
   const handleDateSelect = (selectInfo): void => {
     const title = prompt("Please enter a new title for your event")
     const calendarApi = selectInfo.view.calendar
