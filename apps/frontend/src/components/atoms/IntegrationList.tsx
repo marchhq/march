@@ -2,15 +2,15 @@
 import { ChevronDown, ChevronRight } from "lucide-react"
 
 import { useUserInfo } from "@/src/hooks/useUserInfo"
+import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
-import { GmailDark } from "@/src/lib/icons/Gmail"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
 
 const integrations = [
   {
     key: "googleCalendar",
-    icon: <GmailDark />,
+    icon: <Cal />,
     name: "Google Calendar",
     description:
       "Link your Slack account to your Linear account and receive personal notification",

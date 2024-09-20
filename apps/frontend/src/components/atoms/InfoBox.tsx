@@ -9,7 +9,9 @@ export const InfoBox = (): JSX.Element => {
     <div>
       <div className=" text-xl font-medium text-white">Email</div>
       <div className="mt-2 text-white/80">
-        <ProfileBtn email="user@gmail.com" />
+        <ProfileBtn
+          email={user?.accounts.google?.email || user?.accounts.github?.email}
+        />
       </div>
       <div className="mt-6 text-xl font-medium text-white">Full Name</div>{" "}
       <div className="mt-4 text-white/80">
