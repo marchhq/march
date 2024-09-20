@@ -8,7 +8,8 @@ import { environment } from "../../loaders/environment.loader.js";
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
     const authUrl = OauthClient.generateAuthUrl({
         access_type: 'offline',
-        scope: ['https://www.googleapis.com/auth/calendar']
+        scope: ['https://www.googleapis.com/auth/calendar'],
+        response_type: 'code'
     });
     return authUrl;
 };
@@ -19,6 +20,7 @@ const getGoogleCalendarAccessToken = async (code, user) => {
 
     user.integration.googleCalendar.accessToken = tokens.access_token;
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
+    user.integration.googleCalendar.connected = true;
     await user.save();
     return tokens;
 };
