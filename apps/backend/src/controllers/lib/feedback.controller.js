@@ -1,45 +1,11 @@
-import nodemailer from "nodemailer";
-import { upload } from "../../loaders/s3.loader.js";
-
-export default async function feedbackController(req, res) {
-  upload.array("attachment")(req, res, async function (err) {
-    if (err) {
-      return res.status(500).json({ message: "File upload error", error: err });
-    }
-
-    const { title, feedback } = req.body;
-    const attachments = req.files; // The uploaded file
-
+import { sendFeedbackEmail } from "../../services/lib/feedback.service.js";
+const feedbackController = async (req, res) => {
     try {
-      // Nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-
-      // Email Content/ Format
-      const mailOptions = {
-        from: `"Feedback Form" <${process.env.SMTP_USER}>`,
-        to: process.env.FEEDBACK_RECEIVER_EMAIL, // Email to receive feedback
-        subject: `New Feedback Submission: ${title}`, 
-        text: `${feedback}`,
-        attachments: attachments.map((file) => ({
-          filename: file.originalname,
-          path: file.location, // S3 location from multer-s3
-        })),
-      };
-
-      // Send the email
-      await transporter.sendMail(mailOptions);
-      res.status(200).json({ message: "Feedback sent successfully" });
+        const response = await sendFeedbackEmail(req, res);
+        return res.status(response.status).json({ message: response.message });
     } catch (error) {
-      console.error("Error sending email: ", error);
-      res.status(500).json({ message: "Error sending feedback", error });
+        return res.status(500).json({ message: error.message });
     }
-  });
-}
+};
+
+export { feedbackController };

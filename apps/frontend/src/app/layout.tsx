@@ -11,6 +11,7 @@ import { AuthProvider } from "@/src/contexts/AuthContext"
 import QueryProvider from "@/src/contexts/QueryProvider"
 import classNames from "@/src/utils/classNames"
 import ModalProvider from "../contexts/ModalProvider"
+import { Toaster } from "../components/ui/toaster"
 
 const sansFont = Inter({
   variable: "--sans-font",
@@ -46,6 +47,7 @@ const AppLayout: React.FC<Props> = ({ children }) => {
           <ModalProvider>
             <Sidebar />
             <section className="flex-1">{children}</section>
+            <Toaster/>
           </ModalProvider>
         </main>
       </QueryProvider>
