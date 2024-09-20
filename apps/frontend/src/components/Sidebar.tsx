@@ -1,20 +1,22 @@
 "use client"
 
 import React, { useEffect } from "react"
+
+import { Icon } from "@iconify-icon/react"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+
+import { useAuth } from "../contexts/AuthContext"
+import { type User } from "../lib/@types/auth/user"
+import { BACKEND_URL } from "../lib/constants/urls"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/src/components/atoms/Tooltip"
-import { useQuery } from "@tanstack/react-query"
-import { useAuth } from "../contexts/AuthContext"
-import axios from "axios"
-import { BACKEND_URL } from "../lib/constants/urls"
-import { type User } from "../lib/@types/auth/user"
-import { Icon } from "@iconify-icon/react"
 import classNames from "@/src/utils/classNames"
 
 const navLinkClassName =
@@ -63,6 +65,7 @@ const Sidebar: React.FC = () => {
   const today = new Date()
   const day = today.getDate()
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data } = useQuery<User>({
     queryKey: ["user"],
     queryFn: async () => {
@@ -81,7 +84,7 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-    <div className="flex flex-col px-2 py-8 my-auto mx-4 border border-border rounded-[30px] bg-background select-none">
+    <div className="mx-4 my-auto flex select-none flex-col rounded-[30px] border border-border bg-background px-2 py-8">
       <div className="flex flex-col gap-2">
         <SidebarLink
           href={"/inbox"}
