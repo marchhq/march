@@ -110,7 +110,8 @@ const TextEditor: React.FC<Props> = ({ editor }) => {
         </BubbleMenu>
       )}{" "}
       <EditorContent
-        className="[&>.ProseMirror.tiptap]:min-h-[70vh]"
+        // eslint-disable-next-line tailwindcss/no-contradicting-classname
+        className="w-full break-words break-all [&>.ProseMirror.tiptap]:min-h-[70vh]"
         editor={editor}
       />
     </div>

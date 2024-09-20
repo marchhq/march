@@ -28,8 +28,9 @@ const MeetingPage: React.FC = () => {
 
   const [title, setTitle] = useState<string>("Meeting with Persona")
   const [content, setContent] = useState<string>("")
+  const [isSaved, setIsSaved] = useState<boolean>(false)
 
-  const editor = useEditorHook({ content, setContent })
+  const editor = useEditorHook({ content, setContent, setIsSaved })
 
   if (meet === null) {
     return null
@@ -43,9 +44,7 @@ const MeetingPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-x-2 text-sm text-zinc-300">
                 <div className="size-4 rounded-full border border-white/30 bg-white/10" />
-                {/* <span>{meet.metadata.start.dateTime}</span> */}
                 <div className="size-1 rounded-full bg-zinc-300" />
-                {/* <span>{meet.time}</span> */}
               </div>
 
               <input

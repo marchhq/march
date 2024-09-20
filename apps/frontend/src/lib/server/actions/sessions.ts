@@ -28,7 +28,7 @@ const setSession = async (session: string): Promise<void> => {
     sameSite: "lax",
     path: "/",
   })
-  return redirect("/app/today")
+  return redirect("/today")
 }
 
 /**

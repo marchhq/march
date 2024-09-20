@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+
 import Link from "@tiptap/extension-link"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
@@ -9,9 +11,18 @@ import { SlashCommand } from "../extensions/SlashCommand"
 interface Props {
   content: string
   setContent: (content: string) => void
+  setIsSaved: (isSaved: boolean) => void
 }
 
-const useEditorHook = ({ content, setContent }: Props): Editor | null => {
+const useEditorHook = ({
+  content,
+  setContent,
+  setIsSaved,
+}: Props): Editor | null => {
+  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
+    null
+  )
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
@@ -31,11 +42,30 @@ const useEditorHook = ({ content, setContent }: Props): Editor | null => {
     ],
     content,
     autofocus: "end",
-    onBlur: ({ editor }) => {
-      setContent(editor.getHTML())
+    onUpdate: ({ editor }) => {
+      setIsSaved(false)
+
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
+
+      const newTimer = setTimeout(() => {
+        setContent(editor.getHTML())
+        setIsSaved(true)
+      }, 2000)
+
+      setDebounceTimer(newTimer)
     },
     immediatelyRender: false,
   })
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
+    }
+  }, [debounceTimer])
 
   return editor
 }
