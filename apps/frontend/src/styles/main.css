@@ -284,7 +284,7 @@ button {
 
 /* width */
 ::-webkit-scrollbar {
-  @apply w-2 rounded-sm;
+  @apply w-1 rounded-sm;
 }
 
 /* Track */
@@ -294,12 +294,12 @@ button {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-600 rounded-sm;
+  @apply bg-zinc-800 rounded-sm;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-500;
+  @apply bg-zinc-700;
 }
 
 [data-theme="slash-command"] {
