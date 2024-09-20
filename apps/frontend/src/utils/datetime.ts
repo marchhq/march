@@ -38,7 +38,7 @@ export const formatDate = (date: Date | string): string => {
 }
 
 export const formatDateYear = (date: Date | string): string => {
-  return format(date, "dd MMMM yy")
+  return format(date, "dd/MM/yy")
 }
 
 export const fromNow = (date: Date | string): string => {
