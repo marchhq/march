@@ -68,11 +68,15 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       return
     }
     const noteByParams = notes.filter((n) => n.uuid === params.noteId)
-    editor?.setEditable(true)
-    editor?.commands.setContent(noteByParams[0].content)
-    setNote(noteByParams[0])
-    setTitle(noteByParams[0].title)
-    setContent(noteByParams[0].content)
+    if (noteByParams.length !== 0) {
+      editor?.setEditable(true)
+      editor?.commands.setContent(noteByParams[0].content)
+      setNote(noteByParams[0])
+      setTitle(noteByParams[0].title)
+      setContent(noteByParams[0].content)
+    } else {
+      setNotFound(true)
+    }
   }, [isFetched, note])
 
   const [titleDebounceTimer, setTitleDebounceTimer] =
