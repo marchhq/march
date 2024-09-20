@@ -1,7 +1,7 @@
 "use server"
 
-import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
 export async function redirectNote(uuid: string) {
   revalidatePath("/space/notes")
