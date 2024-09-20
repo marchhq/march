@@ -7,12 +7,14 @@ export const InfoBox = (): JSX.Element => {
 
   return (
     <div>
-      <label htmlFor="email">Email</label>
-      <ProfileBtn
-        email={user?.accounts.google.email || user?.accounts.github.email}
-      />
-      <label htmlFor="fullname">Full Name</label>
-      <ProfileBtn fullname={user?.fullName} />
+      <div className=" text-xl font-medium text-white">Email</div>
+      <div className="mt-2 text-white/80">
+        <ProfileBtn email="user@gmail.com" />
+      </div>
+      <div className="mt-6 text-xl font-medium text-white">Full Name</div>{" "}
+      <div className="mt-4 text-white/80">
+        <ProfileBtn fullname={user?.fullName} />
+      </div>
     </div>
   )
 }
