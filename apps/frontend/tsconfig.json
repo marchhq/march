@@ -25,6 +25,8 @@
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "components/**/*",
+    "./components/ui/select.tsx",
     "tailwind.config.ts",
     "prettier.config.mjs",
     "postcss.config.mjs",
