@@ -5,14 +5,10 @@ import useNotesStore from "@/src/lib/store/notes.store"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 
-interface Props {
-  children: React.ReactNode
-}
-
 const navLinkClassName =
   "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
 
-const NotesPage: React.FC<Props> = () => {
+const NotesPage: React.FC = () => {
   const { session } = useAuth()
 
   const [loading, setLoading] = useState(false)
