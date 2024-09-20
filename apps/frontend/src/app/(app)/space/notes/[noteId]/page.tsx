@@ -24,7 +24,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   const [note, setNote] = useState<Note | null>(null)
 
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState(note?.title ?? "")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const [content, setContent] = useState(note?.content ?? "<p></p>")
@@ -69,10 +69,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [title])
 
-  useEffect(() => {
-    console.log(content)
-  }, [content])
-
   const fetchTheNotes = async (): Promise<void> => {
     await fetchNotes(session)
   }
@@ -99,14 +95,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     getNote()
     void fetchTheNotes()
   }, [])
-
-  useEffect(() => {
-    console.log(note)
-  }, [note])
-
-  useEffect(() => {
-    console.log(notes)
-  }, [notes])
 
   useEffect(() => {
     if (note !== null) {
@@ -239,7 +227,10 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
         <span className="text-foreground">notes</span>
         <div className="flex flex-col gap-2 px-2">
           {notes?.map((n) => (
-            <div className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group">
+            <div
+              key={n.uuid}
+              className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group"
+            >
               <Link href={`/space/notes/${n.uuid}`} className="flex-1 truncate">
                 {n.uuid === note?.uuid ? (
                   <p className="text-foreground truncate">
