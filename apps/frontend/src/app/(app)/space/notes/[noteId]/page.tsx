@@ -18,7 +18,6 @@ import { formatDateYear } from "@/src/utils/datetime"
 
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const { session } = useAuth()
-
   const {
     isFetched,
     setIsFetched,
@@ -29,6 +28,18 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     saveNote,
     deleteNote,
   } = useNotesStore()
+
+  const [note, setNote] = useState<Note | null>(null)
+  const [title, setTitle] = useState(note?.title ?? "")
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [content, setContent] = useState(note?.content ?? "<p></p>")
+  const [isSaved, setIsSaved] = useState(true)
+  const editor = useEditorHook({ content, setContent, setIsSaved })
+  const [loading, setLoading] = useState(false)
+  const [notFound, setNotFound] = useState(false)
+  const [closeToggle, setCloseToggle] = useState(false)
+  const [titleDebounceTimer, setTitleDebounceTimer] =
+    useState<NodeJS.Timeout | null>(null)
 
   const fetchTheNotes = async (): Promise<void> => {
     try {
@@ -41,26 +52,11 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   useEffect(() => {
     if (notes.length == 0) {
-      void fetchTheNotes()
+      fetchTheNotes()
     }
   }, [])
 
-  const [note, setNote] = useState<Note | null>(null)
-
-  const [title, setTitle] = useState(note?.title ?? "")
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  const [content, setContent] = useState(note?.content ?? "<p></p>")
-  const [isSaved, setIsSaved] = useState(true)
-  const editor = useEditorHook({ content, setContent, setIsSaved })
-
-  const [loading, setLoading] = useState(false)
-  const [notFound, setNotFound] = useState(false)
-
-  const [closeToggle, setCloseToggle] = useState(false)
-  const handleClose = () => {
-    setCloseToggle(!closeToggle)
-  }
+  const handleClose = () => setCloseToggle(!closeToggle)
 
   useEffect(() => {
     if (!isFetched || notes.length === 0) {
@@ -79,9 +75,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [isFetched, note])
 
-  const [titleDebounceTimer, setTitleDebounceTimer] =
-    useState<NodeJS.Timeout | null>(null)
-
   const handleTitle = (title: string): void => {
     setTitle(title)
     if (note !== null) {
@@ -94,7 +87,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
     const newTimer = setTimeout(() => {
       if (note !== null) {
-        void saveNoteToServer({ ...note, title, content })
+        saveNoteToServer({ ...note, title, content })
         setIsSaved(true)
       }
     }, 2000)
@@ -114,7 +107,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   useEffect(() => {
     if (note !== null) {
-      void saveNoteToServer({ ...note, title, content })
+      saveNoteToServer({ ...note, title, content })
     }
   }, [content])
 
@@ -205,7 +198,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
         {note !== null ? (
           <div
             onBlur={() => {
-              void saveNoteToServer({ ...note, title, content })
+              saveNoteToServer({ ...note, title, content })
             }}
           >
             <textarea
@@ -218,18 +211,14 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             />
             <TextEditor editor={editor} />
           </div>
+        ) : notFound ? (
+          <div className="mt-4 text-secondary-foreground">
+            <p>note not found</p>
+          </div>
         ) : (
-          <>
-            {notFound ? (
-              <div className="mt-4 text-secondary-foreground">
-                <p>note not found</p>
-              </div>
-            ) : (
-              <div className="mt-4 text-secondary-foreground">
-                <p>loading...</p>
-              </div>
-            )}
-          </>
+          <div className="mt-4 text-secondary-foreground">
+            <p>loading...</p>
+          </div>
         )}
       </div>
       <div
@@ -246,7 +235,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group"
               onClick={() => {
                 if (note) {
-                  void saveNoteToServer({ ...note, title, content })
+                  saveNoteToServer({ ...note, title, content })
                 }
               }}
             >

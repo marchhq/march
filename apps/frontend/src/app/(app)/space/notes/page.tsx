@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import useNotesStore from "@/src/lib/store/notes.store"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
+
+import useNotesStore from "@/src/lib/store/notes.store"
 
 const navLinkClassName =
   "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"

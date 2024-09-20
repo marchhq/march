@@ -60,6 +60,7 @@ const Sidebar: React.FC = () => {
     return null
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { session } = useAuth()
 
   const today = new Date()

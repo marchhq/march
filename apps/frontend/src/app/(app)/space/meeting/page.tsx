@@ -28,8 +28,9 @@ const MeetingPage: React.FC = () => {
 
   const [title, setTitle] = useState<string>("Meeting with Persona")
   const [content, setContent] = useState<string>("")
+  const [isSaved, setIsSaved] = useState<boolean>(false)
 
-  const editor = useEditorHook({ content, setContent })
+  const editor = useEditorHook({ content, setContent, setIsSaved })
 
   if (meet === null) {
     return null
