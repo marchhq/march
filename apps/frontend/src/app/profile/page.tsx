@@ -7,7 +7,7 @@ import { ProfilePicture } from "@/src/components/atoms/ProfilePicture"
 const ProfilePage: React.FC = () => {
   return (
     <section className="ml-48 mt-20 bg-background text-gray-color">
-      <div className="mx-auto flex flex-col items-start">
+      <div className="flex flex-col items-start">
         <div className="max-w-6xl">
           <div className="space-y-2">
             <h1 className="text-[30px] font-medium text-white">Profile</h1>
@@ -32,13 +32,13 @@ const ProfilePage: React.FC = () => {
             <div className="my-8">
               <InfoBox />
             </div>
-            <div
-              style={{ borderBottomColor: "rgba(38, 38, 38, 0.9)" }}
-              className="border-b border-gray-color"
-            ></div>
           </div>
         </div>
         <div className="space-y-4">
+          <div
+            style={{ borderBottomColor: "rgba(38, 38, 38, 0.8)" }}
+            className="border-b border-gray-color"
+          ></div>
           <h1 className="mt-8 text-xl font-medium text-white">
             Personal Integrations
           </h1>

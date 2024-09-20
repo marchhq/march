@@ -21,6 +21,6 @@ export interface User {
   avatar: string
   timezone: string
   userName: string
-  // accounts: Partial<Record<AccountProvider, AuthAccount>>
+  accounts: Partial<Record<AccountProvider, AuthAccount>>
   integrations: Partial<Record<IntegrationType, { connected: boolean }>>
 }
