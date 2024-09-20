@@ -1,23 +1,19 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import useNotesStore from "@/src/lib/store/notes.store"
+
 import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
-
-interface Props {
-  children: React.ReactNode
-}
+import useNotesStore from "@/src/lib/store/notes.store"
 
 const navLinkClassName =
   "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
 
-const NotesPage: React.FC<Props> = () => {
+const NotesPage: React.FC = () => {
   const { session } = useAuth()
 
   const [loading, setLoading] = useState(false)
   const [latestNoteId, setLatestNoteId] = useState<string>("")
-
   const [isFetched, setIsFetched] = useState(false)
 
   const { getLatestNote, addNote } = useNotesStore()
@@ -66,7 +62,7 @@ const NotesPage: React.FC<Props> = () => {
   }
 
   return (
-    <div className="h-full flex">
+    <div className="flex h-full">
       {loading && (
         <div className={navLinkClassName}>
           <p>loading...</p>
