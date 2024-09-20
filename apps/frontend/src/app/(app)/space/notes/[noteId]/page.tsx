@@ -85,6 +85,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   useEffect(() => {
     getNote()
     fetchTheNotes()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -92,6 +93,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       editor?.setEditable(true)
       editor?.commands.setContent(note.content)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note])
 
   const addNewNote = async (): Promise<void> => {
