@@ -8,7 +8,9 @@ import axios from "axios"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import FeedbackModal from "./FeedbackModal/FeedbackModal"
 import { useAuth } from "../contexts/AuthContext"
+import { useModal } from "../contexts/ModalProvider"
 import { type User } from "../lib/@types/auth/user"
 import { BACKEND_URL } from "../lib/constants/urls"
 import {
@@ -55,6 +57,8 @@ const SidebarLink = ({
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname()
+
+  const { showModal } = useModal()
 
   if (pathname.includes("auth")) {
     return null
@@ -121,6 +125,23 @@ const Sidebar: React.FC = () => {
           label="space"
           isActive={pathname.includes("/space/")}
         />
+        {/* Feedback */}
+        <div
+          className={classNames(navLinkClassName, "text-secondary-foreground")}
+          role="button"
+          tabIndex={0}
+          onClick={() => showModal(<FeedbackModal />)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              showModal(<FeedbackModal />)
+            }
+          }}
+        >
+          <Icon
+            icon="fluent:question-circle-20-regular"
+            style={{ fontSize: "30px " }}
+          />
+        </div>
       </div>
       {/* 
       <div className="flex flex-col gap-0.5">
@@ -191,8 +212,10 @@ const Sidebar: React.FC = () => {
                 strokeLinejoin="round"
               />
             </svg>
+            
           }
-          label="info"
+          
+          label="Feedback"
         />
       </div>
       */}
