@@ -8,7 +8,9 @@ import axios from "axios"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import FeedbackModal from "./FeedbackModal/FeedbackModal"
 import { useAuth } from "../contexts/AuthContext"
+import { useModal } from "../contexts/ModalProvider"
 import { type User } from "../lib/@types/auth/user"
 import { BACKEND_URL } from "../lib/constants/urls"
 import {
@@ -18,8 +20,6 @@ import {
   TooltipTrigger,
 } from "@/src/components/atoms/Tooltip"
 import classNames from "@/src/utils/classNames"
-import FeedbackModal from "./FeedbackModal/FeedbackModal"
-import { useModal } from "../contexts/ModalProvider"
 
 const navLinkClassName =
   "flex items-center justify-center gap-2 p-3 rounded-lg cursor-pointer hover-bg"
@@ -40,7 +40,7 @@ const SidebarLink = ({
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-            <Link
+          <Link
             className={classNames(navLinkClassName, activeClass)}
             href={href}
           >
@@ -50,7 +50,6 @@ const SidebarLink = ({
         <TooltipContent side="right">
           <p>{label}</p>
         </TooltipContent>
-       
       </Tooltip>
     </TooltipProvider>
   )
@@ -58,6 +57,8 @@ const SidebarLink = ({
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname()
+
+  const { showModal } = useModal()
 
   if (pathname.includes("auth")) {
     return null
@@ -86,8 +87,6 @@ const Sidebar: React.FC = () => {
     },
     staleTime: 1000 * 60 * 5,
   })
-
-  const { showModal } = useModal()
 
   return (
     <div className="mx-4 my-auto flex select-none flex-col rounded-[30px] border border-border bg-background px-2 py-8">
@@ -128,14 +127,18 @@ const Sidebar: React.FC = () => {
         />
         {/* Feedback */}
         <div
-          className={classNames(navLinkClassName,"text-secondary-foreground")}
-          onClick={() => {
-            showModal(<FeedbackModal />)
+          className={classNames(navLinkClassName, "text-secondary-foreground")}
+          role="button"
+          tabIndex={0}
+          onClick={() => showModal(<FeedbackModal />)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              showModal(<FeedbackModal />)
+            }
           }}
         >
           <Icon
             icon="fluent:question-circle-20-regular"
-            
             style={{ fontSize: "30px " }}
           />
         </div>
