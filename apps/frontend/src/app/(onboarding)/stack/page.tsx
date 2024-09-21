@@ -14,7 +14,7 @@ const StackConnect: React.FC = () => {
         <Integrations />
       </div>
       <div className="mt-14 space-y-4">
-        <Link href={"/app/today"}>
+        <Link href={"/today"}>
           <button className="flex w-60 items-center justify-center gap-x-6 bg-transparent p-6 text-xl font-semibold hover:text-gray-100">
             Continue
           </button>

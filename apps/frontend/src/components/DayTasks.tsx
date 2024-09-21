@@ -7,7 +7,11 @@ import { motion, AnimatePresence } from "framer-motion"
 
 // import Editor from "./atoms/Editor"
 import Button from "@/src/components/atoms/Button"
-import { getOrdinalSuffix, getMonthName, getDayPhase } from "@/src/utils/datetime"
+import {
+  getOrdinalSuffix,
+  getMonthName,
+  getDayPhase,
+} from "@/src/utils/datetime"
 
 interface Props {
   dateChangeCounter: number

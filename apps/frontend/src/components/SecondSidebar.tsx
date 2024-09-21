@@ -19,7 +19,6 @@ const SecondSidebar: React.FC<SecondSidebarProps> = ({ items }) => {
   const handleClose = () => {
     setCloseToggle(!closeToggle)
   }
-
   return (
     <div className="group relative w-[160px] text-xs font-medium">
       <button
