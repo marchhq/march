@@ -5,19 +5,42 @@ import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
 
+// const userProfileController = async (req, res, next) => {
+//     try {
+//         const user = req.user;
+//         const { integration, ...userWithoutIntegration } = user.toObject ? user.toObject() : user;
+
+//         res.json(userWithoutIntegration);
+//     } catch (err) {
+//         next(err)
+//     }
+// };
+
 const userProfileController = async (req, res, next) => {
     try {
         const user = req.user;
-        const { fullName, username, avatar, timezone } = user
+        const { integration, uuid, fullName, userName, avatar, roles, timezone, accounts } = user.toObject ? user.toObject() : user;
 
-        res.json({
+        const response = {
+            uuid,
             fullName,
-            username,
+            userName,
             avatar,
-            timezone
-        })
+            roles,
+            timezone,
+            accounts,
+            integrations: {
+                linear: { connected: integration.linear.connected },
+                googleCalendar: { connected: integration.googleCalendar.connected },
+                gmail: { connected: integration.gmail.connected },
+                github: { connected: integration.github.connected },
+                notion: { connected: integration.notion.connected }
+            }
+        };
+
+        res.json(response);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
 
@@ -103,6 +126,7 @@ const getUserItemsByDateControlle = async (req, res, next) => {
         next(err);
     }
 };
+
 const moveItemtoDateController = async (req, res, next) => {
     try {
         const { id, date } = req.body;

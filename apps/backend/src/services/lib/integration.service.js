@@ -11,7 +11,7 @@ const getIntegration = async (user) => {
 };
 
 const moveItemtoDate = async (date, id) => {
-    const formattedDate = new Date(date);
+    const formattedDate = date ? new Date(date) : null;
 
     const item = await Item.findByIdAndUpdate(
         id,

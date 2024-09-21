@@ -20,7 +20,7 @@ const getNotes = async (user) => {
     const notes = await Note.find({
         user
     })
-        .sort({ updatedAt: -1 });
+        .sort({ createdAt: -1 });
 
     return notes;
 };
@@ -58,10 +58,24 @@ const deleteNote = async (noteId) => {
     return '';
 };
 
+const getMostRecentUpdatedNote = async (user) => {
+    const note = await Note.findOne({
+        user
+    })
+        .sort({ updatedAt: -1 });
+
+    if (!note) {
+        // eslint-disable-next-line no-unused-expressions
+        null;
+    }
+    return note;
+};
+
 export {
     createNote,
     getNotes,
     getNote,
     updateNote,
-    deleteNote
+    deleteNote,
+    getMostRecentUpdatedNote
 }

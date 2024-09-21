@@ -3,41 +3,65 @@
 @tailwind utilities;
 
 @layer base {
+
+  html,
+  body {
+    @apply bg-background
+  }
+}
+
+@layer base {
   :root {
-    --background: 242, 242, 242;
-    --background-hover: 228, 228, 231; /* e4e4e7 zinc-200 */
+    --background: 253, 253, 253;
+    /* fdfdfd */
+    --background-hover: 244, 244, 245;
+    /* f4f4f5 zinc-100 */
+    --background-active: 240, 240, 241;
 
     --foreground: 0, 0, 0;
 
-    --primary: 255, 255, 255;
-    --primary-foreground: 34, 34, 34; /* 222 */
+    --primary: ;
+    --primary-foreground: 34, 34, 34;
+    /* 222 */
 
-    --secondary: 253, 253, 253; /* fdfdfd */
-    --secondary-foreground: 161, 161, 170; /* a1a1aa zinc-400 */
+    --secondary: ;
+    --secondary-foreground: 161, 161, 170;
+    /* a1a1aa zinc-400 */
 
-    --tertiary: ; /*  */
-    --tertiary-foreground: 103, 103, 103; /* 676767 */
+    --tertiary: 255, 255, 255;
+    /* fff */
+    --tertiary-foreground: 34, 34, 34;
+    /* 222 */
 
-    --border: 219, 215, 216; /* DBD7D8 */
+    --border: 219, 215, 216;
+    /* DBD7D8 */
+    --radius: 0.5rem;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: 0, 0, 0;
-      --background-hover: 255, 255, 255, 0.1;
+      --background: 16, 16, 16;
+      /* 101010 */
+      --background-hover: 22, 22, 22;
+      --background-active: 24, 24, 24;
 
-      --foreground: 255, 255, 255;
+      --foreground: 237, 237, 237;
 
-      --primary: 34, 34, 34; /* 222 */
-      --primary-foreground: 255, 255, 255;
+      --primary: ;
+      --primary-foreground: 190, 194, 200;
+      /* BEC2C8 */
 
-      --secondary: 255, 255, 255, 0.1;
-      --secondary-foreground: 103, 103, 103; /* 676767 */
+      --secondary: ;
+      --secondary-foreground: 123, 123, 123;
+      /* 7B7B7B */
 
-      --tertiary: ; /*  */
-      --tertiary-foreground: 161, 161, 170; /* a1a1aa zinc-400 */
+      --tertiary: 34, 34, 34;
+      /* 222 */
+      --tertiary-foreground: 190, 194, 200;
+      /* BEC2C8 */
 
-      --border: 255, 255, 255, 0.1;
+      --border: 34, 34, 34;
+      /* 222 */
     }
   }
 }
@@ -60,10 +84,22 @@ input {
   @apply accent-white/10;
 }
 
+/*
 button {
   @apply outline-none focus:outline-none leading-none transition-all active:scale-95;
 }
+*/
 
+.hover-bg {
+  @apply hover:bg-background-hover active:bg-background-active;
+}
+
+.hover-text {
+  @apply hover:text-primary-foreground active:text-foreground;
+}
+
+/*
+* OLD HOVER BG BY JOAORCESCHINI
 .hover-bg {
   @apply relative;
   @apply hover:after:scale-100 hover:after:opacity-100;
@@ -82,8 +118,10 @@ button {
 
   @apply bg-background-hover;
 }
+/*
 
 /* 
+* OLD HOVER BG
 .hover-bg {
   @apply relative focus:outline-none;
   @apply hover:after:scale-100 hover:after:opacity-100 focus:after:scale-100 focus:after:opacity-100;
@@ -148,7 +186,7 @@ button {
     @apply bg-zinc-900 rounded-lg py-3 px-5 text-sm;
   }
 
-  p > code {
+  p>code {
     @apply bg-zinc-900 text-sm px-1 py-0.5 rounded-md;
   }
 
@@ -159,21 +197,21 @@ button {
   ul[data-type="taskList"] {
     @apply list-none ml-0 space-y-1 text-lg;
 
-    & > li {
+    &>li {
       @apply flex items-center;
 
-      & > label {
+      &>label {
         @apply mr-1;
 
-        & > span {
+        &>span {
           @apply flex bg-zinc-700 rounded-md size-5;
         }
 
-        & > input {
+        &>input {
           @apply hidden;
         }
 
-        & > input:checked ~ span {
+        &>input:checked~span {
           background-image: url("/icons/check.svg");
           background-size: calc(100% - 5px) calc(100% - 5px);
           @apply bg-center bg-no-repeat;
@@ -194,6 +232,7 @@ button {
     @apply border-zinc-700 my-3;
   }
 }
+
 :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
@@ -245,7 +284,7 @@ button {
 
 /* width */
 ::-webkit-scrollbar {
-  @apply w-2 rounded-sm;
+  @apply w-1 rounded-sm;
 }
 
 /* Track */
@@ -255,12 +294,12 @@ button {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-600 rounded-sm;
+  @apply bg-zinc-800 rounded-sm;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-500;
+  @apply bg-zinc-700;
 }
 
 [data-theme="slash-command"] {

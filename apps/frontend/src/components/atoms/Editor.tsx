@@ -5,10 +5,6 @@ import { BubbleMenu, EditorContent, type Editor } from "@tiptap/react"
 import {
   Bold,
   Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  Heading4,
   Italic,
   List,
   ListOrdered,
@@ -114,7 +110,8 @@ const TextEditor: React.FC<Props> = ({ editor }) => {
         </BubbleMenu>
       )}{" "}
       <EditorContent
-        className="[&>.ProseMirror.tiptap]:h-full [&>.ProseMirror.tiptap]:text-black dark:[&>.ProseMirror.tiptap]:text-white"
+        // eslint-disable-next-line tailwindcss/no-contradicting-classname
+        className="w-full break-words break-all"
         editor={editor}
       />
     </div>

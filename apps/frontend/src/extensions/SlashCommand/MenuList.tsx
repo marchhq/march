@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
+
 import type { MenuListProps } from "./types"
 import { DropdownButton } from "@/src/components/Dropdown"
 import { Icon } from "@/src/components/Icon"
@@ -117,13 +118,13 @@ export const MenuList = React.forwardRef((props: MenuListProps, ref) => {
   return (
     <Surface
       ref={scrollContainer}
-      className="max-h-[min(80vh,24rem)] overflow-auto mb-8 p-2"
+      className="mb-8 max-h-[min(80vh,24rem)] overflow-auto p-2"
     >
-      <div className="grid grid-cols-1 text-zinc-300 gap-0.5">
+      <div className="grid grid-cols-1 gap-0.5 text-zinc-300">
         {props.items.map((group, groupIndex) => (
           <React.Fragment key={`${group.title}-wrapper`}>
             <div
-              className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5"
+              className="col-[1/-1] mx-2 mt-4 select-none text-[0.65rem] font-semibold uppercase tracking-wider text-neutral-500 first:mt-0.5"
               key={`${group.title}`}
             >
               {group.title}

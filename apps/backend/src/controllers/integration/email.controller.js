@@ -348,6 +348,7 @@ const getGmailAccessTokenController = async (req, res, next) => {
         user.integration.gmail.accessToken = tokenInfo.access_token;
         user.integration.gmail.refreshToken = tokenInfo.refresh_token;
         user.integration.gmail.labelId = labelId;
+        user.integration.gmail.connected = true;
 
         await user.save();
 

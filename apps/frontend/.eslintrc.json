@@ -13,14 +13,12 @@
     "es2021": true
   },
   "extends": [
-    "standard-with-typescript",
     "eslint:recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:tailwindcss/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@tanstack/eslint-plugin-query/recommended",
     "next/core-web-vitals",
-    "next",
     "prettier"
   ],
   "plugins": [
@@ -33,21 +31,17 @@
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
-
+    "@typescript-eslint/no-unused-vars": "off",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-no-useless-fragment": "error",
     "react/sort-comp": "error",
-
     "react-hooks/exhaustive-deps": "warn",
     "react-hooks/rules-of-hooks": "error",
-
     "react-refresh/only-export-components": "off",
-
     "@tanstack/query/exhaustive-deps": "error",
     "@tanstack/query/stable-query-client": "error",
     "prettier/prettier": "error",
-
     "import/order": [
       "error",
       {

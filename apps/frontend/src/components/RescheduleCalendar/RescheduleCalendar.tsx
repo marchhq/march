@@ -1,13 +1,15 @@
 "use client"
 
 import * as React from "react"
+
+import { CalendarDot, CalendarDots, CalendarX } from "@phosphor-icons/react"
 import { addDays, format } from "date-fns"
 import { Calendar as CalendarIcon, SquareChevronRightIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Popover, PopoverContent, PopoverTrigger } from "../atoms/Popover"
+
 import { Calendar } from "./Calendar"
-import { CalendarDot, CalendarDots, CalendarX } from "@phosphor-icons/react"
 import DateSelectionButton from "./DateSelectionButton"
+import { Popover, PopoverContent, PopoverTrigger } from "../atoms/Popover"
+import { cn } from "@/lib/utils"
 
 interface RescheduleCalendarProps {
   date: Date | undefined
@@ -56,12 +58,12 @@ export function RescheduleCalendar({ date, setDate }: RescheduleCalendarProps) {
             !date && "text-muted-foreground"
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 size-4" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <div className="flex flex-row-reverse rounded-xl overflow-hidden bg-white text-black dark:bg-black dark:text-white">
-          <div className="p-4 text-sm border-l">
+        <div className="flex flex-row-reverse overflow-hidden rounded-xl bg-white text-black dark:bg-black dark:text-white">
+          <div className="border-l p-4 text-sm">
             <div className="mb-2 font-semibold">
               Due Date: {dueDateFormatted}
             </div>

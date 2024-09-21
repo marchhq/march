@@ -5,11 +5,8 @@ import type { Viewport } from "next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
-// import localFont from "next/font/local"
-import classNames from "@/src/utils/classNames"
-
 import "../styles/main.css"
-import { Toaster } from "../components/atoms/Toaster"
+import classNames from "@/src/utils/classNames"
 
 const sansFont = Inter({
   variable: "--sans-font",
@@ -29,17 +26,6 @@ const monoFont = JetBrains_Mono({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 })
 
-// const monoFont = localFont({
-//   variable: "--mono-font",
-//   src: [
-//     {
-//       path: "@/public/fonts/JetBrainsMono-Regular.ttf",
-//       weight: "regular",
-//       style: "normal",
-//     },
-//   ],
-// })
-
 export const viewport: Viewport = {
   themeColor: "#000000",
 }
@@ -56,13 +42,13 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           sansFont.variable,
           serifFont.variable,
           monoFont.variable,
-          "overflow-x-hidden font-sans"
+          "overflow-x-hidden font-sans dark",
+          "bg-background"
         )}
       >
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
         >
-          <Toaster />
           {children}
         </GoogleOAuthProvider>
       </body>

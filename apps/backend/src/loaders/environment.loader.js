@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-config()
+config();
 
 export const environment = {
     DB_USER: process.env.DB_USER,
@@ -11,7 +11,7 @@ export const environment = {
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_AUDIENCE: process.env.JWT_AUDIENCE,
-    JWT_EXPIRY: '30d',
+    JWT_EXPIRY: "30d",
     WEB_HOST: process.env.WEB_HOST,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
@@ -29,6 +29,8 @@ export const environment = {
     CALENDAR_WEBHOOK_URL: process.env.CALENDAR_WEBHOOK_URL,
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_ID: process.env.GITHUB_APP_ID,
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET,
     NGROK_AUTH_TOKEN: process.env.NGROK_AUTH_TOKEN,
     REDIS_DB_NAME: process.env.REDIS_HOST,
@@ -40,5 +42,12 @@ export const environment = {
     NOTION_CLIENT_SECRET: process.env.NOTION_CLIENT_SECRET,
     NOTION_REDIRECT_URL: process.env.NOTION_REDIRECT_URL,
     NOTION_AUTH_URL: process.env.NOTION_AUTH_URL,
-    FILE_SIZE_LIMIT: process.env.FILE_SIZE_LIMIT
-}
+    FILE_SIZE_LIMIT: process.env.FILE_SIZE_LIMIT,
+    TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASS: process.env.SMTP_PASS,
+    FEEDBACK_RECEIVER_EMAIL: process.env.FEEDBACK_RECEIVER_EMAIL
+};

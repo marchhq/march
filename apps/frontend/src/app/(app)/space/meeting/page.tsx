@@ -28,8 +28,9 @@ const MeetingPage: React.FC = () => {
 
   const [title, setTitle] = useState<string>("Meeting with Persona")
   const [content, setContent] = useState<string>("")
+  const [isSaved, setIsSaved] = useState<boolean>(false)
 
-  const editor = useEditorHook({ content, setContent })
+  const editor = useEditorHook({ content, setContent, setIsSaved })
 
   if (meet === null) {
     return null
@@ -43,9 +44,7 @@ const MeetingPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-x-2 text-sm text-zinc-300">
                 <div className="size-4 rounded-full border border-white/30 bg-white/10" />
-                {/* <span>{meet.metadata.start.dateTime}</span> */}
                 <div className="size-1 rounded-full bg-zinc-300" />
-                {/* <span>{meet.time}</span> */}
               </div>
 
               <input
@@ -68,7 +67,7 @@ const MeetingPage: React.FC = () => {
         <div className="h-full overflow-auto rounded-xl border border-white/10 bg-white/10 px-2 py-5 shadow-lg backdrop-blur-lg">
           <div className="px-3 font-semibold text-zinc-300">Upcoming</div>
           <div className="mt-12 flex flex-col gap-y-2 px-3">
-            {meets.map((m, index) => (
+            {meets.map((m) => (
               <EachMeet
                 key={meet.title}
                 isActive={meet?.uuid === m.uuid}

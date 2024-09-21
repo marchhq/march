@@ -9,7 +9,6 @@ const uploadFileController = async (req, res, next) => {
         const file = req.file;
         const s3Url = file.location;
         const fileAsset = await uploadFile(s3Url, user);
-        
         res.status(200).json({
             fileAsset
         });

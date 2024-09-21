@@ -18,7 +18,7 @@ const EachNote: FC<EachNoteProps> = ({
   isActive,
 }) => {
   return (
-    <div className="flex gap-2 group">
+    <div className="group flex gap-2">
       <button
         key={note.uuid}
         onClick={() => {
@@ -27,10 +27,10 @@ const EachNote: FC<EachNoteProps> = ({
         className="w-full truncate"
       >
         <div
-          className={`flex items-center justify-between gap-x-4 border rounded-lg p-2 ${isActive ? "border-border bg-secondary" : "border-transparent hover:bg-secondary"} text-sm text-tertiary-foreground`}
+          className={`flex items-center justify-between gap-x-4 rounded-lg border p-2 ${isActive ? "border-border bg-background" : "border-transparent hover:bg-background"} text-sm text-tertiary-foreground`}
         >
           <div className="flex items-center gap-x-4 truncate">
-            <Notepad size={18} weight="duotone" className="flex-shrink-0" />
+            <Notepad size={18} weight="duotone" className="shrink-0" />
             <p className="min-w-0 truncate">{note.title || "Untitled"}</p>
           </div>
         </div>
@@ -40,9 +40,9 @@ const EachNote: FC<EachNoteProps> = ({
           e.stopPropagation()
           handleDeleteNote(note)
         }}
-        className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100"
+        className="text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
       >
-        <Trash size={16} className="flex-shrink-0" />
+        <Trash size={16} className="shrink-0" />
       </button>
     </div>
   )

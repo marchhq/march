@@ -1,6 +1,6 @@
-import { Editor } from "@tiptap/react"
 import { Extension } from "@tiptap/core"
 import { PluginKey } from "@tiptap/pm/state"
+import { Editor } from "@tiptap/react"
 import { ReactRenderer } from "@tiptap/react"
 import Suggestion, {
   SuggestionProps,
@@ -223,7 +223,7 @@ export const SlashCommand = Extension.create({
                 return new DOMRect(rect.x, rect.y, rect.width, rect.height)
               }
 
-              let scrollHandler = () => {
+              const scrollHandler = () => {
                 popup?.[0].setProps({
                   getReferenceClientRect,
                 })

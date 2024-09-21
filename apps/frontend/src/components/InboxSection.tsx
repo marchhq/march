@@ -2,17 +2,17 @@
 import * as React from "react"
 
 import { Check, Plus, X } from "@phosphor-icons/react"
-
-import { useAuth } from "../contexts/AuthContext"
-import Button from "./atoms/Button"
-import useInboxStore from "../lib/store/inbox.store"
-import useEditorHook from "../hooks/useEditor.hook"
 import axios from "axios"
-import { BACKEND_URL } from "../lib/constants/urls"
-import TextEditor from "@/src/components/atoms/Editor"
-import InboxIcon from "../lib/icons/InboxIcon"
+
+import Button from "./atoms/Button"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
+import { useAuth } from "../contexts/AuthContext"
+import useEditorHook from "../hooks/useEditor.hook"
 import { useToast } from "../hooks/useToast"
+import { BACKEND_URL } from "../lib/constants/urls"
+import InboxIcon from "../lib/icons/InboxIcon"
+import useInboxStore from "../lib/store/inbox.store"
+import TextEditor from "@/src/components/atoms/Editor"
 
 interface IntegrationType {
   uuid: string
@@ -32,10 +32,11 @@ const InboxSection: React.FC = () => {
   const { session } = useAuth()
   const [content, setContent] = React.useState("")
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
+  const [isSaved, setIsSaved] = React.useState(false)
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
   const [selectedItemId, setSelectedItemId] = React.useState<string>("")
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const editor = useEditorHook({ content, setContent })
+  const editor = useEditorHook({ content, setContent, setIsSaved })
   const { toast } = useToast()
 
   const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } =
@@ -173,36 +174,36 @@ const InboxSection: React.FC = () => {
         ))}
       </div> */}
 
-      <h1 className=" text-4xl font-semibold text-black dark:text-zinc-300 flex items-center gap-4 mb-4">
+      <h1 className=" mb-4 flex items-center gap-4 text-4xl font-semibold text-black dark:text-zinc-300">
         <InboxIcon /> Inbox
       </h1>
       {isAddItem ? (
-        <div className="flex gap-4 items-center flex-wrap my-6">
+        <div className="my-6 flex flex-wrap items-center gap-4">
           <Button
             onClick={() => {
               setIsAddItem(false)
               setContent("")
             }}
             variant={"invisible"}
-            className="flex gap-2 py-2 items-center text-zinc-700 dark:text-zinc-300 hover:text-white"
+            className="flex items-center gap-2 py-2 text-zinc-700 hover:text-white dark:text-zinc-300"
           >
             <X size={20} />
-            <p className="text-medium ">Cancel</p>
+            <p className="text-base ">Cancel</p>
           </Button>
           <Button
             variant={"primary"}
             onClick={addItemToInbox}
-            className="flex items-center py-2 gap-2"
+            className="flex items-center gap-2 py-2"
           >
             <Check size={20} />
-            <p className="text-medium ">Save</p>
+            <p className="text-base ">Save</p>
           </Button>
         </div>
       ) : (
         <Button
           onClick={() => setIsAddItem(true)}
           variant={"invisible"}
-          className="flex gap-4 items-center py-2 my-6 text-zinc-700 hover:text-white dark:text-zinc-300 "
+          className="my-6 flex items-center gap-4 py-2 text-zinc-700 hover:text-white dark:text-zinc-300 "
         >
           <Plus size={21} />
           <h1 className="text-lg">Click to add an item</h1>
@@ -210,7 +211,7 @@ const InboxSection: React.FC = () => {
       )}
       {isAddItem && editor && (
         <div>
-          <div className="h-full border dark:border-black focus-within:border-black dark:focus-within:border-gray-400 bg-white dark:bg-zinc-700 rounded-xl mb-6 p-4 dark:text-white">
+          <div className="mb-6 h-full rounded-xl border bg-white p-4 focus-within:border-black dark:border-black dark:bg-zinc-700 dark:text-white dark:focus-within:border-gray-400">
             <TextEditor placeholder="Enter Details Here" editor={editor} />
           </div>
         </div>
@@ -219,14 +220,14 @@ const InboxSection: React.FC = () => {
       {/* Inbox items section */}
       <div>
         {inboxItems.length === 0 ? (
-          <div className="w-full h-full flex justify-center items-center my-6 text-gray-500 dark:text-zinc-300">
+          <div className="my-6 flex size-full items-center justify-center text-gray-500 dark:text-zinc-300">
             Inbox seems empty!
           </div>
         ) : (
           inboxItems?.map((item) => (
             <div
               key={item.uuid}
-              className="group flex justify-between items-center text-gray-500 dark:text-zinc-300 p-4 rounded-xl bg-white dark:bg-zinc-700 my-2 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-white/5"
+              className="group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-white/5"
             >
               <div className="rendered-content">
                 <p
@@ -234,10 +235,17 @@ const InboxSection: React.FC = () => {
                 />
               </div>
               <div
-                className="invisible group-hover:visible"
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   item._id && setSelectedItemId(item._id)
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    item._id && setSelectedItemId(item._id)
+                  }
+                }}
+                className="invisible group-hover:visible"
               >
                 <RescheduleCalendar
                   date={item.dueDate ? new Date(item.dueDate) : undefined}
