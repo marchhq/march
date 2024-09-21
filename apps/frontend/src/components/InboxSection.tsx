@@ -49,7 +49,7 @@ const InboxSection: React.FC = () => {
 
   React.useEffect(() => {
     fetchData()
-  }, [])
+  })
 
   // const renderIntegration = (integration: IntegrationType): React.ReactNode => {
   //   switch (integration.type) {

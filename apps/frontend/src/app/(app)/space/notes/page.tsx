@@ -35,6 +35,7 @@ const NotesPage: React.FC = () => {
 
   useEffect(() => {
     getNoteId()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -45,6 +46,7 @@ const NotesPage: React.FC = () => {
         addFirstNote()
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetched, latestNoteId])
 
   const addFirstNote = async (): Promise<void> => {
