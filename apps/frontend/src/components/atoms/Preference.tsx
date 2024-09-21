@@ -3,10 +3,13 @@ import React, { useState, useEffect } from "react"
 
 import { SelectBox } from "./Select"
 import { Switch } from "./Switch"
+import { useUserInfo } from "@/src/hooks/useUserInfo"
 
 export const PreferenceBox = (): JSX.Element => {
   const [is24HourFormat, setIs24HourFormat] = useState(false)
   const [currentDateTime, setCurrentDateTime] = useState(new Date())
+
+  const user = useUserInfo()
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -18,6 +21,7 @@ export const PreferenceBox = (): JSX.Element => {
 
   const formatDate = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = {
+      timeZone: user?.timezone,
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -39,7 +43,7 @@ export const PreferenceBox = (): JSX.Element => {
         </div>
         <div className="flex justify-between">
           <p>First day of the week</p>
-          <SelectBox placeholder="Sunday" item="Sunday" />
+          <SelectBox placeholder="Sunday" item="Sunday" item2="Monday" />
         </div>
         <div className="flex justify-between">
           <p>Regional format</p>
