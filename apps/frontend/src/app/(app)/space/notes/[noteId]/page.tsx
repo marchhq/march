@@ -169,7 +169,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-4 cursor-default">
+          <div className="flex cursor-default items-center gap-4">
             {!isSaved ? <span>...</span> : <span>saved</span>}
             <button
               className="flex items-center hover:text-secondary"
@@ -190,7 +190,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               value={title}
               onChange={handleTitle}
               placeholder="Untitled"
-              className="w-full text-3xl py-2 bg-background text-foreground font-bold placeholder:text-secondary-foreground resize-none overflow-hidden outline-none focus:outline-none whitespace-pre-wrap break-words truncate"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-3xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
             />
             <TextEditor editor={editor} />
@@ -216,21 +216,21 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
           {notes?.map((n) => (
             <div
               key={n.uuid}
-              className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover:bg-secondary truncate group"
+              className="group flex items-center justify-between gap-1 truncate rounded-md px-2 py-1 hover:bg-secondary"
             >
               <Link href={`/space/notes/${n.uuid}`} className="flex-1 truncate">
                 {n.uuid === note?.uuid ? (
-                  <p className="text-foreground truncate">
+                  <p className="truncate text-foreground">
                     {title || "Untitled"}
                   </p>
                 ) : (
-                  <p className="text-secondary-foreground truncate">
+                  <p className="truncate text-secondary-foreground">
                     {n.title || "Untitled"}
                   </p>
                 )}
               </Link>
               <button
-                className="hover:text-secondary opacity-0 group-hover:opacity-100"
+                className="opacity-0 hover:text-secondary group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteNote(n)

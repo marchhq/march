@@ -1,7 +1,14 @@
 "use client"
-import React, { createContext, ReactNode, useContext, useState, useEffect } from "react"
-import { Dialog, DialogContent } from "../components/ui/dialog"
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useEffect,
+} from "react"
+
 import FeedbackModal from "../components/FeedbackModal/FeedbackModal"
+import { Dialog, DialogContent } from "../components/ui/dialog"
 
 interface ModalContextType {
   showModal: (content: ReactNode) => void

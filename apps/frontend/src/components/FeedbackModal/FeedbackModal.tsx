@@ -2,18 +2,20 @@
 
 import React, { useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
+
+import { Link as LinkIcon, Trash } from "@phosphor-icons/react"
+import Link from "next/link"
+
+import { Textarea } from "../ui/textarea"
 import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog"
-import { Textarea } from "../ui/textarea"
-import { Link as LinkIcon, Trash } from "@phosphor-icons/react"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useToast } from "@/src/hooks/use-toast"
+import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { TwitterIcon } from "@/src/lib/icons/TwitterIcon"
-import Link from "next/link"
 
 type Inputs = {
   title: string
@@ -108,9 +110,9 @@ const FeedbackModal = () => {
   }
 
   return (
-    <div className="border border-border rounded-lg">
+    <div className="rounded-lg border border-border">
       <DialogHeader className="dark:text-white">
-        <DialogTitle className="px-6 pt-5 mb-2 text-base">
+        <DialogTitle className="mb-2 px-6 pt-5 text-base">
           Share feedback
         </DialogTitle>
       </DialogHeader>
@@ -118,14 +120,14 @@ const FeedbackModal = () => {
         <div className="px-4">
           <input
             placeholder="Title"
-            className="mt-2 dark:border-none dark:bg-transparent py-4 px-2 w-full text-xl focus:outline-none"
+            className="mt-2 w-full px-2 py-4 text-xl focus:outline-none dark:border-none dark:bg-transparent"
             {...register("title", { required: true })}
           />
           {errors.title && (
             <span className="text-red-500">Title is required</span>
           )}
           <Textarea
-            className="min-h-40 dark:border-none text-sm"
+            className="min-h-40 text-sm dark:border-none"
             placeholder="add description..."
             {...register("feedback", { required: true })}
           />
@@ -135,17 +137,17 @@ const FeedbackModal = () => {
           <div className="my-3 cursor-pointer rounded-lg">
             <label
               htmlFor="attachment"
-              className="relative px-2 py-1 flex items-center gap-2 "
+              className="relative flex items-center gap-2 px-2 py-1 "
             >
               <input
-                className="absolute w-full h-full opacity-0 border-primary-foreground rounded-lg"
+                className="absolute size-full rounded-lg border-primary-foreground opacity-0"
                 id="attachment"
                 type="file"
                 multiple
                 accept="image/*,video/*"
                 onChange={handleFileChange}
               />
-              <div className="cursor-pointer z-50 flex gap-2 items-center">
+              <div className="z-50 flex cursor-pointer items-center gap-2">
                 <LinkIcon />{" "}
                 <span className="text-primary-foreground">
                   {" "}
@@ -162,7 +164,7 @@ const FeedbackModal = () => {
                   <button
                     type="button"
                     onClick={() => removeFile(file)}
-                    className="text-red-500 ml-4"
+                    className="ml-4 text-red-500"
                   >
                     <Trash />
                   </button>
@@ -171,17 +173,17 @@ const FeedbackModal = () => {
             </ul>
           )}
         </div>
-        <DialogFooter className="px-6 py-2 mt-2 border-t border-border">
-          <div className="flex gap-2 items-center justify-between w-full">
+        <DialogFooter className="mt-2 border-t border-border px-6 py-2">
+          <div className="flex w-full items-center justify-between gap-2">
             <Link
               href={"https://x.com/_marchhq"}
               target="_blank"
-              className="flex gap-2 items-center"
+              className="flex items-center gap-2"
             >
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="px-4 py-1 cursor-pointer disabled:cursor-not-allowed rounded-lg hover:bg-secondary-foreground  text-black dark:text-white hover:text-white  transition-colors duration-300 ease-linear hover:dark:bg-primary-foreground hover:dark:text-black"
+              className="cursor-pointer rounded-lg px-4 py-1 text-black transition-colors  duration-300 ease-linear hover:bg-secondary-foreground  hover:text-white disabled:cursor-not-allowed dark:text-white hover:dark:bg-primary-foreground hover:dark:text-black"
               disabled={isLoading}
               type="submit"
             >
