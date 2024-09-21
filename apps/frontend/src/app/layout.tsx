@@ -7,8 +7,6 @@ import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
 import "../styles/main.css"
 import classNames from "@/src/utils/classNames"
-import ModalProvider from "../contexts/ModalProvider"
-import { Toaster } from "../components/ui/toaster"
 
 const sansFont = Inter({
   variable: "--sans-font",
