@@ -14,9 +14,10 @@ import { cn } from "@/lib/utils"
 interface RescheduleCalendarProps {
   date: Date | undefined
   setDate: (date: Date | undefined) => void
+  icon?: React.ReactNode
 }
 
-export function RescheduleCalendar({ date, setDate }: RescheduleCalendarProps) {
+export function RescheduleCalendar({ date, setDate, icon }: RescheduleCalendarProps) {
   const [noDate, setNoDateFlag] = React.useState<boolean>(false)
 
   // Helper functions to set date
@@ -54,16 +55,16 @@ export function RescheduleCalendar({ date, setDate }: RescheduleCalendarProps) {
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "w-10 p-3 rounded-lg border hover:bg-primary-foreground hover:text-primary",
+            "p-2 rounded-full hover:bg-secondary-foreground hover:text-primary",
             !date && "text-muted-foreground"
           )}
         >
-          <CalendarIcon className="mr-2 size-4" />
+        {icon ? icon :  <CalendarIcon className="mr-2 size-4" />}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <div className="flex flex-row-reverse overflow-hidden rounded-xl bg-white text-black dark:bg-black dark:text-white">
-          <div className="border-l p-4 text-sm">
+      <PopoverContent className="w-auto p-0 border-none">
+        <div className="flex flex-row-reverse overflow-hidden rounded-xl bg-white text-black dark:bg-background-active dark:text-white dark:border dark:border-border">
+          <div className="border-l border-border p-4 text-sm">
             <div className="mb-2 font-semibold">
               Due Date: {dueDateFormatted}
             </div>

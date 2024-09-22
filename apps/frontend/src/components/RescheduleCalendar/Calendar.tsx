@@ -42,14 +42,14 @@ function Calendar({
             : "[&:has([aria-selected])]:rounded-md"
         ),
         day: cn(
-          "h-8 w-8 p-0 font-normal aria-selected:opacity-100 hover:bg-black hover:text-white rounded-lg"
+          "h-8 w-8 p-0 font-normal aria-selected:opacity-100 hover:bg-border hover:text-white rounded-lg"
         ),
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
         day_selected:
-          "bg-primary-foreground text-primary hover:bg-primary-foreground hover:text-primary focus:bg-primary-foregorund focus:text-primary ",
+          "bg-secondary-foreground text-primary hover:bg-primary-foreground hover:text-primary focus:bg-primary-foregorund focus:text-primary ",
         day_today:
-          "border hover:bg-primary-foreground hover:!text-primary focus:bg-primary-foregorund focus:!text-primary",
+          "border border-border hover:bg-secondary-foreground hover:!text-primary focus:bg-primary-foregorund focus:!text-primary",
         day_outside:
           "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
         day_disabled: "text-muted-foreground opacity-50",

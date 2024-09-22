@@ -1,10 +1,9 @@
 "use client"
 import * as React from "react"
 
-import { Check, Plus, X } from "@phosphor-icons/react"
+import { Check, Clock, Plus, X } from "@phosphor-icons/react"
 import axios from "axios"
 
-import Button from "./atoms/Button"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { useAuth } from "../contexts/AuthContext"
 import useEditorHook from "../hooks/useEditor.hook"
@@ -13,6 +12,11 @@ import { BACKEND_URL } from "../lib/constants/urls"
 import InboxIcon from "../lib/icons/InboxIcon"
 import useInboxStore from "../lib/store/inbox.store"
 import TextEditor from "@/src/components/atoms/Editor"
+import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
+import useSpaceStore from "../lib/store/space.inbox"
+import { Page } from "../lib/@types/Items/space"
+import Button from "./atoms/Button"
+import InboxActions from "./InboxActions"
 
 interface IntegrationType {
   uuid: string
@@ -41,6 +45,13 @@ const InboxSection: React.FC = () => {
 
   const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } =
     useInboxStore()
+  const { pages, fetchPages, createPage } = useSpaceStore()
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${session}`,
+    },
+  }
 
   React.useEffect(() => {
     void fetchInboxData(session)
@@ -134,11 +145,7 @@ const InboxSection: React.FC = () => {
         {
           description: content,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${session}`,
-          },
-        }
+        config
       )
 
       if (res.status === 200) {
@@ -227,30 +234,37 @@ const InboxSection: React.FC = () => {
           inboxItems?.map((item) => (
             <div
               key={item.uuid}
-              className="group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-white/5"
+              className="group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 hover:bg-gray-100 focus-within:ring-2 focus-within:ring-blue-500 dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border"
+              tabIndex={0} // This is needed to allow the div to be focusable
             >
               <div className="rendered-content">
                 <p
                   dangerouslySetInnerHTML={{ __html: item.description || "" }}
                 />
               </div>
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  item._id && setSelectedItemId(item._id)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+              <div className="flex items-center gap-2">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
                     item._id && setSelectedItemId(item._id)
-                  }
-                }}
-                className="invisible group-hover:visible"
-              >
-                <RescheduleCalendar
-                  date={item.dueDate ? new Date(item.dueDate) : undefined}
-                  setDate={setDate}
-                />
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      item._id && setSelectedItemId(item._id)
+                    }
+                  }}
+                  className="invisible group-hover:visible focus-within:visible "
+                >
+                  <RescheduleCalendar
+                    date={item.dueDate ? new Date(item.dueDate) : undefined}
+                    setDate={setDate}
+                    icon={<Clock size={20} />}
+                  />
+                </div>
+                <div className="invisible group-hover:visible focus-within:visible ">
+                  <InboxActions pages={pages} />
+                </div>
               </div>
             </div>
           ))
@@ -259,5 +273,7 @@ const InboxSection: React.FC = () => {
     </section>
   )
 }
+
+
 
 export default InboxSection

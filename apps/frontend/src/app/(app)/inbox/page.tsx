@@ -5,7 +5,7 @@ import InboxSection from "@/src/components/InboxSection"
 
 const InboxPage: React.FC = () => {
   return (
-    <section className="h-full overflow-y-auto rounded-xl border border-white/10 bg-background px-6  py-8 pt-16 shadow-lg backdrop-blur-lg">
+    <section className="h-full overflow-y-auto bg-background px-6  py-8 pt-16 shadow-lg backdrop-blur-lg">
       <Container>
         <InboxSection />
       </Container>
