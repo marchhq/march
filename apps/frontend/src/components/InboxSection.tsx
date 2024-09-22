@@ -38,6 +38,7 @@ const InboxSection: React.FC = () => {
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
   const [selectedItemId, setSelectedItemId] = React.useState<string>("")
   const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [focusedItems, setFocusedItems] = React.useState<{ [key: string]: boolean }>({});
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const { toast } = useToast()
 
@@ -83,6 +84,9 @@ const InboxSection: React.FC = () => {
       // TODO:: ADD toast for better UX
       const response = await axios.put(`${BACKEND_URL}/api/items/${itemId}/`, updatedData, config);
       void fetchInboxData(session)
+      toast({
+        title: "Updated successfully!",
+      })
     }catch(error){
       console.error("Error moving item to the page:", error?.response?.data?.message || error.message);
     }
@@ -177,6 +181,14 @@ const InboxSection: React.FC = () => {
     }
   }
 
+  const handleFocus = (uuid: string) => {
+    setFocusedItems((prev) => ({ ...prev, [uuid]: true }));
+  };
+  
+  const handleBlur = (uuid: string) => {
+    setFocusedItems((prev) => ({ ...prev, [uuid]: false }));
+  };
+
   return (
     <section>
       {/* <div className="my-10 space-y-1 text-sm text-zinc-300">
@@ -249,9 +261,11 @@ const InboxSection: React.FC = () => {
         ) : (
           inboxItems?.map((item) => (
             <div
-              key={item.uuid}
-              className="group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 hover:bg-gray-100 focus-within:ring-2 focus-within:ring-blue-500 dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border"
-              tabIndex={0} // This is needed to allow the div to be focusable
+            key={item.uuid}
+            className={`group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 hover:bg-gray-100 focus-within:ring-2 focus-within:border-border dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border ${focusedItems[item.uuid] ? 'border border-border' : ''}`}
+            tabIndex={0}
+            onFocus={() => handleFocus(item.uuid)}
+            onBlur={() => handleBlur(item.uuid)} 
             >
               <div className="rendered-content">
                 <p
@@ -263,14 +277,14 @@ const InboxSection: React.FC = () => {
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    item._id && setSelectedItemId(item._id)
+                    item._id && setSelectedItemId(item._id);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      item._id && setSelectedItemId(item._id)
+                      item._id && setSelectedItemId(item._id);
                     }
                   }}
-                  className="invisible group-hover:visible focus-within:visible "
+                  className="invisible group-hover:visible focus-within:visible"
                 >
                   <RescheduleCalendar
                     date={item.dueDate ? new Date(item.dueDate) : undefined}
@@ -278,8 +292,13 @@ const InboxSection: React.FC = () => {
                     icon={<Clock size={20} />}
                   />
                 </div>
-                <div className="invisible group-hover:visible focus-within:visible ">
-                  <InboxActions pages={pages} itemId={item._id || ""}  moveItemToSpace={moveItemToSpace} itemBelongsToPages={item.pages}/>
+                <div className="invisible group-hover:visible focus-within:visible">
+                  <InboxActions
+                    pages={pages}
+                    itemId={item._id || ""}
+                    moveItemToSpace={moveItemToSpace}
+                    itemBelongsToPages={item.pages}
+                  />
                 </div>
               </div>
             </div>

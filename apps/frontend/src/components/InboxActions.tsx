@@ -1,6 +1,6 @@
 import { useState } from "react"
 import Button from "./atoms/Button"
-import { Check, Plus } from "@phosphor-icons/react"
+import { Check, Note, NoteBlank, Plus } from "@phosphor-icons/react"
 import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
 import useSpaceStore from "../lib/store/space.inbox"
 import { Page } from "../lib/@types/Items/space"
@@ -24,7 +24,7 @@ const InboxActions = ({
   const [newPageName, setNewPageName] = useState<string>("")
   const [isCreating, setIsCreating] = useState<boolean>(false)
 
-  const { showModal } = useModal()
+  const { showModal, hideModal } = useModal()
 
   const showCreateSpaceForm = () => {
     showModal(
@@ -33,7 +33,7 @@ const InboxActions = ({
           Create a space
         </DialogHeader>
         <DialogDescription>
-          <CreateSpaceForm />
+          <CreateSpaceForm hideModal={hideModal}/>
         </DialogDescription>
       </>
     )
@@ -46,7 +46,7 @@ const InboxActions = ({
           className="p-2 rounded-full hover:bg-secondary-foreground"
           type="button"
         >
-          <Plus />
+          <NoteBlank size={21}/>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80 dark:bg-background dark:text-primary-foreground">

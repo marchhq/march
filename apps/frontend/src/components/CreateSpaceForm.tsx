@@ -2,14 +2,17 @@ import React, { useState } from "react"
 import useSpaceStore from "../lib/store/space.inbox"
 import { useAuth } from "../contexts/AuthContext"
 import { Input } from "./ui/input"
+import { useToast } from "../hooks/useToast"
+import { AxiosError } from "axios"
 
-const CreateSpaceForm = () => {
+const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
   const [name, setName] = useState("")
   const [icon, setIcon] = useState("home")
   const [blocks, setBlocks] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const { createPage } = useSpaceStore()
   const { session } = useAuth()
+  const { toast } = useToast()
 
   const handleCreatePage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,9 +27,16 @@ const CreateSpaceForm = () => {
 
     try {
       await createPage(newPage, session)
-      alert("Page created successfully!")
-    } catch (err: any) {
+      toast({
+        title: "Space create successfully!"
+      })
+    hideModal && hideModal()
+    } catch (err) {
       setError(err.message || "Error creating page")
+      toast({
+        title: "Error while creating space",
+        variant: "destructive"
+      })
     }
   }
 
@@ -42,6 +52,7 @@ const CreateSpaceForm = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          className="border border-border outline-none focus-visible:border-secondary-foreground"
         />
       </div>
 
@@ -67,7 +78,7 @@ const CreateSpaceForm = () => {
 
       {error && <div style={{ color: "red" }}>{error}</div>}
 
-      <button type="submit" className="p-2 hover:bg-border cursor-pointer rounded-lg mt-6 self-end w-full">Create Page</button>
+      <button type="submit" className="p-2 hover:bg-border cursor-pointer rounded-lg mt-6 self-end w-full">Create Space</button>
     </form>
   )
 }
