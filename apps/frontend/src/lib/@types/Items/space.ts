@@ -12,13 +12,20 @@ export interface SpaceStoreTypes {
 
 
 export interface Page {
-    uuid: string;
+    _id?: string;
+    uuid?: string;
     name: string;
     icon: string;
-    users: string[];
+    users?: string[];
     blocks: string[];
-    isArchived: boolean;
-    isDeleted: boolean;
-    createdAt: string;
-    updatedAt: string;
+    isArchived?: boolean;
+    isDeleted?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface CreatePage {
+    name: string;
+    icon: string;
+    blocks: string[]
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 import { BACKEND_URL } from "../constants/urls";
-import { Page, SpaceStoreTypes } from "../@types/Items/space";
+import { CreatePage, Page, SpaceStoreTypes } from "../@types/Items/space";
 
 // Utility function to create config with Authorization header
 const getConfig = (session: string) => ({
@@ -41,19 +41,21 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
     },
 
     // Create a page
-    createPage: async (data: Page, session: string) => {
+    createPage: async (data: CreatePage, session: string) => {
         set({ loading: true, error: null });
         try {
             const config = getConfig(session);
+            // Post request, sending `CreatePage`, receiving `Page`
             const response = await axios.post<{ page: Page }>(`${BACKEND_URL}/api/spaces/create/`, data, config);
             set((state) => ({
-                pages: [response.data.page, ...state.pages],
+                pages: [response.data.page, ...state.pages], // Response contains the full `Page` object
                 loading: false,
             }));
         } catch (error: any) {
             set({ error: error?.response?.data?.message || "Error while creating page", loading: false });
         }
     },
+
 
     // Update an existing page
     updatePage: async (uuid: string, data: Page, session: string) => {

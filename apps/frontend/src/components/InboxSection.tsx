@@ -12,9 +12,7 @@ import { BACKEND_URL } from "../lib/constants/urls"
 import InboxIcon from "../lib/icons/InboxIcon"
 import useInboxStore from "../lib/store/inbox.store"
 import TextEditor from "@/src/components/atoms/Editor"
-import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
 import useSpaceStore from "../lib/store/space.inbox"
-import { Page } from "../lib/@types/Items/space"
 import Button from "./atoms/Button"
 import InboxActions from "./InboxActions"
 
@@ -45,7 +43,7 @@ const InboxSection: React.FC = () => {
 
   const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } =
     useInboxStore()
-  const { pages, fetchPages, createPage } = useSpaceStore()
+  const { pages, fetchPages } = useSpaceStore()
 
   const config = {
     headers: {
@@ -71,6 +69,24 @@ const InboxSection: React.FC = () => {
 
     updateDate()
   }, [date])
+
+  React.useEffect(()=>{
+   void fetchPages(session)
+  },[])
+
+  const moveItemToSpace = async(itemId: string, spaceId: string, action: 'add' | 'remove')=>{
+    try{
+      const updatedData = action === "add"
+      ? { pageId: spaceId } // Adding the item to the space
+      : { removePageId: spaceId } // Removing the item from the space
+
+      // TODO:: ADD toast for better UX
+      const response = await axios.put(`${BACKEND_URL}/api/items/${itemId}/`, updatedData, config);
+      void fetchInboxData(session)
+    }catch(error){
+      console.error("Error moving item to the page:", error?.response?.data?.message || error.message);
+    }
+  }
 
   // const renderIntegration = (integration: IntegrationType): React.ReactNode => {
   //   switch (integration.type) {
@@ -263,7 +279,7 @@ const InboxSection: React.FC = () => {
                   />
                 </div>
                 <div className="invisible group-hover:visible focus-within:visible ">
-                  <InboxActions pages={pages} />
+                  <InboxActions pages={pages} itemId={item._id || ""}  moveItemToSpace={moveItemToSpace} itemBelongsToPages={item.pages}/>
                 </div>
               </div>
             </div>
