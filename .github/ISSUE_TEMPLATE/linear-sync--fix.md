@@ -1,8 +1,8 @@
 ---
-name: 'linear sync: fix'
+name: 'goes to triage: for ui'
 about: This for only march internal team
-title: "[fix]"
-labels: linear
+title: "[ui]"
+labels: ui
 assignees: ''
 
 ---
