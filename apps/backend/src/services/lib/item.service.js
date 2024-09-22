@@ -163,12 +163,11 @@ const getItem = async (user, id) => {
 };
 
 const updateItem = async (id, updateData) => {
-    const updatedItem = await Item.findOneAndUpdate({
-        uuid: id
-    },
-    { $set: updateData },
-    { new: true }
-    )
+    const updatedItem = await Item.findOneAndUpdate(
+        { _id: id },
+        updateData, 
+        { new: true }
+    );
 
     return updatedItem;
 };

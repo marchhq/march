@@ -1,20 +1,43 @@
 import { useState } from "react"
 import Button from "./atoms/Button"
-import { Plus } from "@phosphor-icons/react"
+import { Check, Plus } from "@phosphor-icons/react"
 import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
 import useSpaceStore from "../lib/store/space.inbox"
 import { Page } from "../lib/@types/Items/space"
 import { useAuth } from "../contexts/AuthContext"
 import { useToast } from "../hooks/use-toast"
+import { useModal } from "../contexts/ModalProvider"
+import CreateSpaceForm from "./CreateSpaceForm"
+import { DialogDescription, DialogHeader } from "./ui/dialog"
 
-const InboxActions = ({ pages }: { pages: Page[] }) => {
+const InboxActions = ({
+  pages,
+  itemId,
+  itemBelongsToPages,
+  moveItemToSpace,
+}: {
+  pages: Page[]
+  itemId: string
+  itemBelongsToPages: string[] | undefined
+  moveItemToSpace: (itemId: string, spaceId: string, action: 'add' | 'remove') => void
+}) => {
   const [newPageName, setNewPageName] = useState<string>("")
   const [isCreating, setIsCreating] = useState<boolean>(false)
-  const { createPage, fetchPages } = useSpaceStore()
-  const { toast } = useToast()
-  const { session } = useAuth()
 
+  const { showModal } = useModal()
 
+  const showCreateSpaceForm = () => {
+    showModal(
+      <>
+        <DialogHeader className="dark:text-primary-foreground p-3">
+          Create a space
+        </DialogHeader>
+        <DialogDescription>
+          <CreateSpaceForm />
+        </DialogDescription>
+      </>
+    )
+  }
 
   return (
     <Popover>
@@ -26,10 +49,26 @@ const InboxActions = ({ pages }: { pages: Page[] }) => {
           <Plus />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 dark:bg-secondary-border dark:text-primary-foreground">
+      <PopoverContent className="w-80 dark:bg-background dark:text-primary-foreground">
         <div>
           {pages.length > 0 ? (
-            pages.map((page) => <div key={page.uuid}>{page.name}</div>)
+            pages.map((page) => {
+              const isItemInSpace = itemBelongsToPages?.includes(page._id || "")
+              return (
+                <div
+                  className="p-2 hover:bg-border cursor-pointer rounded-lg flex items-center justify-between"
+                  key={page.uuid}
+                  onClick={() =>
+                    // If item is in the page then remove it if clicked again
+                  isItemInSpace ? moveItemToSpace(itemId, page._id ? page._id : "", "remove") :   moveItemToSpace(itemId, page._id ? page._id : "", "add")
+                  }
+                >
+                  <span>{page.name}</span>
+                  {/* Conditionally render the checkmark if the item belongs to this page */}
+                  {isItemInSpace && <Check />}
+                </div>
+              )
+            })
           ) : (
             <div className="text-sm text-center">
               Seems like you don't have any spaces
@@ -37,28 +76,14 @@ const InboxActions = ({ pages }: { pages: Page[] }) => {
           )}
         </div>
 
-        <div className="mt-4">
-          <input
-            type="text"
-            value={newPageName}
-            onChange={(e) => setNewPageName(e.target.value)}
-            placeholder="Enter new space name"
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
         <div className="w-full flex justify-center items-center mt-2">
           <Button
             variant="invisible"
-           
+            onClick={showCreateSpaceForm}
             className="flex items-center gap-2"
             disabled={isCreating}
           >
-            {isCreating ? "Creating..." : (
-              <>
-                <Plus /> Create a new space
-              </>
-            )}
+            <Plus /> Create a new space
           </Button>
         </div>
       </PopoverContent>

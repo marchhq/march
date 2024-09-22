@@ -18,8 +18,26 @@ const createItemController = async (req, res, next) => {
 const updateItemController = async (req, res, next) => {
     try {
         const { item: id } = req.params;
-        const updateData = req.body;
-        const item = await updateItem(id, updateData);
+        const { pageId, removePageId, ...updateData } = req.body; // Destructure pageId and removePageId
+
+        const updateOperation = {};
+
+        // If pageId is provided, add it to the pages array using $addToSet (to prevent duplicates)
+        if (pageId) {
+            updateOperation.$addToSet = { pages: pageId };
+        }
+
+        // If removePageId is provided, remove it from the pages array
+        if (removePageId) {
+            updateOperation.$pull = { pages: removePageId };
+        }
+
+        // Set other fields if they exist
+        if (Object.keys(updateData).length) {
+            updateOperation.$set = updateData;
+        }
+
+        const item = await updateItem(id, updateOperation);
 
         res.status(200).json({
             item
