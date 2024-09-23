@@ -13,7 +13,7 @@ import { type Note } from "@/src/lib/@types/Items/Note"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
-import { formatDateYear } from "@/src/utils/datetime"
+import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const { session } = useAuth()
@@ -162,36 +162,38 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   return (
     <div className="flex size-full gap-16 bg-background p-16">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
-        <div className="flex w-full items-center justify-between text-sm text-secondary-foreground">
-          <div className="flex gap-4">
-            {note !== null && (
-              <p className="flex items-center">
-                {formatDateYear(note.createdAt)}
-              </p>
-            )}
-            {!loading ? (
-              <button
-                onClick={addNewNote}
-                className="flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground hover:bg-secondary"
-              >
-                <PlusIcon />
-                <span>Add A New Note</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground hover:bg-secondary">
-                <span>loading...</span>
-              </div>
-            )}
-          </div>
-          <div className="flex cursor-default items-center gap-4">
-            {!isSaved ? <span>...</span> : <span>saved</span>}
+        <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
+          <div className="flex gap-8">
+            <div className="flex gap-4">
+              {note !== null && (
+                <p className="flex items-center">
+                  {formatDateYear(note.createdAt)}
+                </p>
+              )}
+              {!loading ? (
+                <button
+                  onClick={addNewNote}
+                  className="flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground hover-bg"
+                >
+                  <PlusIcon />
+                  <span>Add A New Note</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground">
+                  <span>loading...</span>
+                </div>
+              )}
+            </div>
             <button
-              className="flex items-center hover:text-secondary"
+              className="flex items-center hover-text"
               onClick={handleClose}
             >
               <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
             </button>
           </div>
+          {note !== null && (
+            <p className="text-xs">edited {fromNow(note.updatedAt)}</p>
+          )}
         </div>
         {note !== null ? (
           <div
@@ -249,7 +251,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
                 )}
               </Link>
               <button
-                className="opacity-0 hover:text-secondary group-hover:opacity-100"
+                className="opacity-0 hover-text group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteNote(n)
