@@ -93,7 +93,7 @@ const Sidebar: React.FC = () => {
       <div className="flex flex-col gap-2">
         <SidebarLink
           href={"/inbox"}
-          icon={<Icon icon="hugeicons:inbox" style={{ fontSize: "30px" }} />}
+          icon={<Icon icon="hugeicons:inbox" style={{ fontSize: "28px" }} />}
           label="inbox"
           isActive={pathname.includes("/inbox/")}
         />
@@ -105,7 +105,7 @@ const Sidebar: React.FC = () => {
                 pathname.includes("/today/")
                   ? "border-foreground"
                   : "border-secondary-foreground",
-                "border-2 rounded-md py-0.5 px-1 text-sm font-medium"
+                "border-2 rounded-md py-0.5 px-1 text-xs font-medium"
               )}
             >
               {day}
@@ -119,7 +119,7 @@ const Sidebar: React.FC = () => {
           icon={
             <Icon
               icon="fluent:collections-20-filled"
-              style={{ fontSize: "30px " }}
+              style={{ fontSize: "28px " }}
             />
           }
           label="space"
@@ -139,7 +139,7 @@ const Sidebar: React.FC = () => {
         >
           <Icon
             icon="fluent:question-circle-20-regular"
-            style={{ fontSize: "30px " }}
+            style={{ fontSize: "28px " }}
           />
         </div>
       </div>
