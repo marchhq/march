@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import { PlusIcon } from "@radix-ui/react-icons"
@@ -40,20 +40,20 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const [titleDebounceTimer, setTitleDebounceTimer] =
     useState<NodeJS.Timeout | null>(null)
 
-  const fetchTheNotes = async (): Promise<void> => {
+  const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
       await fetchNotes(session)
       setIsFetched(true)
     } catch (error) {
       setIsFetched(false)
     }
-  }
+  }, [session, fetchNotes, setIsFetched])
 
   useEffect(() => {
     if (!isFetched) {
       fetchTheNotes()
     }
-  }, [])
+  }, [fetchTheNotes, isFetched])
 
   const handleClose = () => setCloseToggle(!closeToggle)
 
@@ -72,7 +72,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     } else {
       setNotFound(true)
     }
-  }, [isFetched, note])
+  }, [isFetched, editor, note, params.noteId])
 
   const handleTitle = (title: string): void => {
     setTitle(title)
@@ -103,11 +103,18 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [title])
 
+  const saveNoteToServer = useCallback(
+    async (note: Note): Promise<void> => {
+      await saveNote(session, note)
+    },
+    [session, saveNote]
+  )
+
   useEffect(() => {
     if (note !== null) {
       saveNoteToServer({ ...note, title, content })
     }
-  }, [content])
+  }, [note, saveNoteToServer, title, content])
 
   const addNewNote = async (): Promise<void> => {
     try {
@@ -121,10 +128,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     } finally {
       setLoading(false)
     }
-  }
-
-  const saveNoteToServer = async (note: Note): Promise<void> => {
-    await saveNote(session, note)
   }
 
   const handleDeleteNote = (n: Note): void => {
@@ -160,9 +163,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   }, [isSaved])
 
   return (
-    <div className="flex size-full gap-16 bg-background p-16">
+    <div className="flex size-full gap-16 p-16 bg-background">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
-        <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
+        <div className="flex items-center justify-between w-full gap-4 text-sm text-secondary-foreground">
           <div className="flex gap-8">
             <div className="flex gap-4">
               {note !== null && (
@@ -173,7 +176,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               {!loading ? (
                 <button
                   onClick={addNewNote}
-                  className="flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground hover-bg"
+                  className="flex items-center gap-1 px-1 rounded-md truncate text-secondary-foreground hover-bg"
                 >
                   <PlusIcon />
                   <span>Add A New Note</span>
@@ -206,7 +209,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               value={title}
               onChange={(e) => handleTitle(e.target.value)}
               placeholder="Untitled"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-3xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              className="w-full py-2 text-3xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
             />
             <TextEditor editor={editor} />
@@ -224,7 +227,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       <div
         className={classNames(
           closeToggle ? "hidden" : "visible",
-          "w-full max-h-screen max-w-[200px] flex flex-col gap-8 overflow-y-auto text-secondary-foreground text-sm"
+          "flex flex-col gap-8 w-full max-w-[200px] max-h-screen text-sm text-secondary-foreground overflow-y-auto"
         )}
       >
         <span className="text-foreground">notes</span>
@@ -233,9 +236,18 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             <div
               key={n.uuid}
               className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group"
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 if (note) {
                   saveNoteToServer({ ...note, title, content })
+                }
+              }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  if (note) {
+                    saveNoteToServer({ ...note, title, content })
+                  }
                 }
               }}
             >
