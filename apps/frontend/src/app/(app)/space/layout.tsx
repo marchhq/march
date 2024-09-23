@@ -33,8 +33,8 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       const note = await getLatestNote(session)
       if (note) {
         setLatestNoteId(note.uuid)
-        setIsFetched(true)
       }
+      setIsFetched(true)
       return note?.uuid || ""
     } catch (error) {
       console.error(error)
@@ -52,6 +52,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
+        setLatestNoteId(newNote.uuid)
         redirectNote(newNote.uuid)
       }
     } catch (error) {
@@ -64,7 +65,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   const items = [
     <div key={"notesdiv"}>
       {isFetched &&
-        (latestNoteId ? (
+        (latestNoteId !== "" ? (
           <SidebarItem
             href={`space/notes/${latestNoteId}`}
             key={"notes"}
