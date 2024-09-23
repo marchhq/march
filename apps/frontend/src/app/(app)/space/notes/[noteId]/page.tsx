@@ -50,7 +50,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   }
 
   useEffect(() => {
-    if (notes.length == 0) {
+    if (!isFetched) {
       fetchTheNotes()
     }
   }, [])
