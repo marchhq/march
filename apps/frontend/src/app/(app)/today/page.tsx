@@ -8,6 +8,23 @@ import { TodayTextArea } from "@/src/components/TodayTextArea"
 import { TodayCal } from "@/src/lib/icons/Calendar"
 import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
 
+const formatDate = () => {
+  const date = new Date()
+
+  const options = {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "2-digit",
+  }
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
+  const day = date.getDate() // Get day of the month
+  const month = date.toLocaleDateString("en-US", { month: "short" })
+  const year = date.toLocaleDateString("en-US", { year: "2-digit" })
+
+  return `${weekday}, ${day} ${month} ${year}`
+}
+
 const TodayPage: React.FC = () => {
   return (
     <main className="ml-36 text-gray-color">
@@ -20,7 +37,7 @@ const TodayPage: React.FC = () => {
           <TodayCal />
           <div>
             <h1 className="text-xl font-medium text-white">Today</h1>
-            <p className="text-sm">Tue, 6 Aug 24</p>
+            <p className="text-sm">{formatDate()}</p>
           </div>
           <div className=" ml-20 flex items-center justify-between gap-4">
             <LeftChevron />
