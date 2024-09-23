@@ -1,3 +1,6 @@
+"use client"
+
+import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import { GoogleColored } from "@/src/lib/icons/GoogleColored"
 
 const CalendarAuth = (): JSX.Element => {
@@ -10,3 +13,16 @@ const CalendarAuth = (): JSX.Element => {
 }
 
 export default CalendarAuth
+
+export const ConnectCalendarBtn = (): JSX.Element => {
+  const handleConnect = useGoogleCalendarLogin()
+
+  return (
+    <button
+      onClick={handleConnect}
+      className="rounded-md border border-gray-color p-1 text-sm hover:text-gray-100"
+    >
+      Connect
+    </button>
+  )
+}

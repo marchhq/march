@@ -44,9 +44,7 @@ const MeetingPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-x-2 text-sm text-zinc-300">
                 <div className="size-4 rounded-full border border-white/30 bg-white/10" />
-                {/* <span>{meet.metadata.start.dateTime}</span> */}
                 <div className="size-1 rounded-full bg-zinc-300" />
-                {/* <span>{meet.time}</span> */}
               </div>
 
               <input
