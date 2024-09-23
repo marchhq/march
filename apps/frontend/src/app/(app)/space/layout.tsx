@@ -24,7 +24,6 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   const [loading, setLoading] = useState(false)
   const [latestNoteId, setLatestNoteId] = useState<string>("")
-  const [isFetched, setIsFetched] = useState(false)
 
   const { getLatestNote, addNote } = useNotesStore()
 
@@ -34,17 +33,17 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       if (note) {
         setLatestNoteId(note.uuid)
       }
-      setIsFetched(true)
       return note?.uuid || ""
     } catch (error) {
       console.error(error)
-      setIsFetched(false)
       return null
     }
   }, [session, getLatestNote])
 
   useEffect(() => {
-    getNoteId()
+    if (!latestNoteId) {
+      getNoteId()
+    }
   }, [getNoteId])
 
   const addFirstNote = async (): Promise<void> => {
@@ -64,7 +63,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   const items = [
     <div key={"notesdiv"}>
-      {isFetched &&
+      {latestNoteId &&
         (latestNoteId !== "" ? (
           <SidebarItem
             href={`space/notes/${latestNoteId}`}
