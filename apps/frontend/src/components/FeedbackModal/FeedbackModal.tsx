@@ -111,23 +111,23 @@ const FeedbackModal = () => {
 
   return (
     <div className="rounded-lg border border-border">
-      <DialogHeader className="dark:text-white">
-        <DialogTitle className="mb-2 px-6 pt-5 text-base">
+      <DialogHeader>
+        <DialogTitle className="mb-2 px-6 pt-5 text-base text-primary-foreground">
           Share feedback
         </DialogTitle>
       </DialogHeader>
-      <form className="dark:text-white" onSubmit={handleSubmit(onSubmit)}>
+      <form className="text-black dark:text-white" onSubmit={handleSubmit(onSubmit)}>
         <div className="px-4">
           <input
             placeholder="Title"
-            className="mt-2 w-full px-2 py-4 text-xl focus:outline-none dark:border-none dark:bg-transparent"
+            className="mt-2 w-full px-2 py-4 text-xl focus:outline-none dark:border-none dark:bg-transparent text-primary-foreground"
             {...register("title", { required: true })}
           />
           {errors.title && (
             <span className="text-red-500">Title is required</span>
           )}
           <Textarea
-            className="min-h-40 text-sm dark:border-none"
+            className="min-h-40 text-sm dark:border-none text-primary-foreground"
             placeholder="add description..."
             {...register("feedback", { required: true })}
           />
@@ -140,7 +140,7 @@ const FeedbackModal = () => {
               className="relative flex items-center gap-2 px-2 py-1 "
             >
               <input
-                className="absolute size-full rounded-lg border-primary-foreground opacity-0"
+                className="absolute size-full rounded-lg border-primary-foreground text-primary-foreground opacity-0"
                 id="attachment"
                 type="file"
                 multiple
@@ -148,7 +148,7 @@ const FeedbackModal = () => {
                 onChange={handleFileChange}
               />
               <div className="z-50 flex cursor-pointer items-center gap-2">
-                <LinkIcon />{" "}
+                <LinkIcon className="text-primary-foreground"/>{" "}
                 <span className="text-primary-foreground">
                   {" "}
                   Attach Files (Max: 5MB){" "}
@@ -157,7 +157,7 @@ const FeedbackModal = () => {
             </label>
           </div>
           {selectedFiles.length > 0 && (
-            <ul className="mt-2 max-h-32 overflow-y-auto pr-2">
+            <ul className="mt-2 max-h-32 overflow-y-auto pr-2 text-primary-foreground">
               {selectedFiles.map((file, index) => (
                 <li key={index} className="flex items-center justify-between">
                   <span>{file.name}</span>
@@ -173,8 +173,8 @@ const FeedbackModal = () => {
             </ul>
           )}
         </div>
-        <DialogFooter className="mt-2 border-t border-border px-6 py-2">
-          <div className="flex w-full items-center justify-between gap-2">
+        <DialogFooter className="mt-2 border-t border-border px-6 py-2 text-primary-foreground">
+          <div className="flex w-full items-center justify-between gap-2 ">
             <Link
               href={"https://x.com/_marchhq"}
               target="_blank"
@@ -183,7 +183,7 @@ const FeedbackModal = () => {
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="cursor-pointer rounded-lg px-4 py-1 text-black transition-colors  duration-300 ease-linear hover:bg-secondary-foreground  hover:text-white disabled:cursor-not-allowed dark:text-white hover:dark:bg-primary-foreground hover:dark:text-black"
+              className="cursor-pointer rounded-lg px-4 py-1 text-primary-foreground transition-colors  duration-300 ease-linear  hover:text-secondary-foreground disabled:cursor-not-allowed  hover:dark:bg-primary-foreground "
               disabled={isLoading}
               type="submit"
             >

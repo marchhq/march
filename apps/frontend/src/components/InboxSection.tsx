@@ -4,18 +4,18 @@ import * as React from "react"
 import { Check, Clock, Plus, X } from "@phosphor-icons/react"
 import axios from "axios"
 
+import Button from "./atoms/Button"
+import InboxActions from "./InboxActions"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
+import { Input } from "./ui/input"
 import { useAuth } from "../contexts/AuthContext"
 import useEditorHook from "../hooks/useEditor.hook"
 import { useToast } from "../hooks/useToast"
 import { BACKEND_URL } from "../lib/constants/urls"
 import InboxIcon from "../lib/icons/InboxIcon"
 import useInboxStore from "../lib/store/inbox.store"
-import TextEditor from "@/src/components/atoms/Editor"
 import useSpaceStore from "../lib/store/space.inbox"
-import Button from "./atoms/Button"
-import InboxActions from "./InboxActions"
-import { Input } from "./ui/input"
+import TextEditor from "@/src/components/atoms/Editor"
 
 interface IntegrationType {
   uuid: string
@@ -184,10 +184,9 @@ const InboxSection: React.FC = () => {
       toast({
         title: "Title is required",
         variant: "destructive",
-      });
-      return;
+      })
+      return
     }
-    
 
     try {
       const res = await axios.post(
@@ -280,9 +279,9 @@ const InboxSection: React.FC = () => {
             <div>
               <Input
                 placeholder="Title"
-                className="text-xl border-none outline-none mb-2"
+                className="mb-2 border-none text-xl outline-none"
                 value={title}
-                onChange={(e)=> setTitle(e.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
             <div className="pl-3">
@@ -303,8 +302,7 @@ const InboxSection: React.FC = () => {
           inboxItems?.map((item) => (
             <div
               key={item.uuid}
-              className={`group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 hover:bg-gray-100 focus-within:ring-2 focus-within:border-border dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border ${focusedItems[item.uuid] ? "border border-border" : ""}`}
-              tabIndex={0}
+              className={`group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 focus-within:border-border focus-within:ring-2 hover:bg-gray-100 dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border ${focusedItems[item.uuid] ? "border border-border" : ""}`}
               onFocus={() => handleFocus(item.uuid)}
               onBlur={() => handleBlur(item.uuid)}
             >
@@ -315,16 +313,15 @@ const InboxSection: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 {/* Reschedule Action */}
-                     <InboxActions
-                     dueDate = {item.dueDate ? new Date(item.dueDate) : undefined}
-                    setSelectedItemId={setSelectedItemId}
-                    setDate={setDate}
-                    itemId={item._id || ""}
-                    actions={["reschedule"]}
-                   
-                  />
-                  {/* Space Action */}
-                <div className="invisible group-hover:visible focus-within:visible">
+                <InboxActions
+                  dueDate={item.dueDate ? new Date(item.dueDate) : undefined}
+                  setSelectedItemId={setSelectedItemId}
+                  setDate={setDate}
+                  itemId={item._id || ""}
+                  actions={["reschedule"]}
+                />
+                {/* Space Action */}
+                <div className="invisible focus-within:visible group-hover:visible">
                   <InboxActions
                     pages={pages}
                     itemId={item._id || ""}

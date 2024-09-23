@@ -17,7 +17,11 @@ interface RescheduleCalendarProps {
   icon?: React.ReactNode
 }
 
-export function RescheduleCalendar({ date, setDate, icon }: RescheduleCalendarProps) {
+export function RescheduleCalendar({
+  date,
+  setDate,
+  icon,
+}: RescheduleCalendarProps) {
   const [noDate, setNoDateFlag] = React.useState<boolean>(false)
 
   // Helper functions to set date
@@ -59,11 +63,11 @@ export function RescheduleCalendar({ date, setDate, icon }: RescheduleCalendarPr
             !date && "text-muted-foreground"
           )}
         >
-        {icon ? icon :  <CalendarIcon className="mr-2 size-4" />}
+          {icon ? icon : <CalendarIcon className="mr-2 size-4" />}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 border-none">
-        <div className="flex flex-row-reverse overflow-hidden rounded-xl bg-white text-black dark:bg-background-active dark:text-white dark:border dark:border-border">
+      <PopoverContent className="w-auto border-none p-0">
+        <div className="flex flex-row-reverse overflow-hidden rounded-xl bg-white text-black dark:border dark:border-border dark:bg-background-active dark:text-white">
           <div className="border-l border-border p-4 text-sm">
             <div className="mb-2 font-semibold">
               Due Date: {dueDateFormatted}
