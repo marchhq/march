@@ -12,5 +12,5 @@ export const TodayTextArea = (): JSX.Element => {
     setIsSaved,
     placeholder: "press / for markdown format",
   })
-  return <TextEditor editor={editor} />
+  return <TextEditor editor={editor} minH="40vh" />
 }
