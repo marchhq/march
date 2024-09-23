@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Issue Auto-Creator",
-    "description": "Automatically create an issue with the page heading and URL.",
+    "name": "march",
+    "description": "An extension for march.",
     "version": "1.0",
     "permissions": [
       "activeTab",
@@ -20,8 +20,8 @@
       }
     ],
     "icons": {
-      "16": "icons/icon16.jpg",
-      "48": "icons/icon48.jpg"
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
     }
   }
   
