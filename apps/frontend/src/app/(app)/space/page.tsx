@@ -2,7 +2,7 @@ import * as React from "react"
 
 const SpacePage: React.FC = () => {
   return (
-    <section className="w-full h-full overflow-auto px-8 py-16 bg-background">
+    <section className="size-full overflow-auto bg-background px-8 py-16">
       <p className="text-secondary-foreground">
         Select a space from the sidebar
       </p>

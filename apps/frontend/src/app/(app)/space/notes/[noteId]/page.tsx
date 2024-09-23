@@ -1,19 +1,18 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import TextEditor from "@/src/components/atoms/Editor"
-import useEditorHook from "@/src/hooks/useEditor.hook"
-import { PlusIcon } from "@radix-ui/react-icons"
-import { useAuth } from "@/src/contexts/AuthContext"
-import useNotesStore from "@/src/lib/store/notes.store"
-import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
+import { PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
 
+import TextEditor from "@/src/components/atoms/Editor"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
 import { type Note } from "@/src/lib/@types/Items/Note"
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
+import { redirectNote } from "@/src/lib/server/actions/redirectNote"
+import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
-
 import { formatDateYear } from "@/src/utils/datetime"
 
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
@@ -98,7 +97,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   useEffect(() => {
     const textarea = textareaRef.current
-
     if (textarea) {
       textarea.style.height = "auto"
       textarea.style.height = `${textarea.scrollHeight}px`
@@ -162,9 +160,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   }, [isSaved])
 
   return (
-    <div className="w-full h-full flex gap-16 p-16 bg-background">
-      <div className="flex flex-col gap-2 flex-1 overflow-y-auto pr-4">
-        <div className="w-full flex items-center justify-between text-sm text-secondary-foreground">
+    <div className="flex size-full gap-16 bg-background p-16">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
+        <div className="flex w-full items-center justify-between text-sm text-secondary-foreground">
           <div className="flex gap-4">
             {note !== null && (
               <p className="flex items-center">
@@ -174,21 +172,21 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             {!loading ? (
               <button
                 onClick={addNewNote}
-                className="flex items-center gap-1 px-1 rounded-md text-secondary-foreground hover-bg truncate"
+                className="flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground hover:bg-secondary"
               >
                 <PlusIcon />
                 <span>Add A New Note</span>
               </button>
             ) : (
-              <div className="flex items-center gap-1 px-1 rounded-md text-secondary-foreground hover-bg">
+              <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground hover:bg-secondary">
                 <span>loading...</span>
               </div>
             )}
           </div>
-          <div className="flex items-center gap-4 cursor-default">
+          <div className="flex cursor-default items-center gap-4">
             {!isSaved ? <span>...</span> : <span>saved</span>}
             <button
-              className="flex items-center hover-text"
+              className="flex items-center hover:text-secondary"
               onClick={handleClose}
             >
               <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
@@ -206,7 +204,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               value={title}
               onChange={(e) => handleTitle(e.target.value)}
               placeholder="Untitled"
-              className="w-full text-3xl py-2 bg-background text-foreground font-bold placeholder-secondary-foreground resize-none overflow-hidden outline-none focus:outline-none whitespace-pre-wrap break-words truncate"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-3xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
             />
             <TextEditor editor={editor} />
@@ -241,17 +239,17 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             >
               <Link href={`/space/notes/${n.uuid}`} className="flex-1 truncate">
                 {n.uuid === note?.uuid ? (
-                  <p className="text-foreground truncate">
+                  <p className="truncate text-foreground">
                     {title || "Untitled"}
                   </p>
                 ) : (
-                  <p className="text-secondary-foreground truncate">
+                  <p className="truncate text-secondary-foreground">
                     {n.title || "Untitled"}
                   </p>
                 )}
               </Link>
               <button
-                className="hover-text opacity-0 group-hover:opacity-100"
+                className="opacity-0 hover:text-secondary group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteNote(n)

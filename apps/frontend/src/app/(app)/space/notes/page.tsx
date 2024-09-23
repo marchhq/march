@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+
 import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
-
 import useNotesStore from "@/src/lib/store/notes.store"
 
 const navLinkClassName =
@@ -14,7 +14,6 @@ const NotesPage: React.FC = () => {
 
   const [loading, setLoading] = useState(false)
   const [latestNoteId, setLatestNoteId] = useState<string>("")
-
   const [isFetched, setIsFetched] = useState(false)
 
   const { getLatestNote, addNote } = useNotesStore()
@@ -36,6 +35,7 @@ const NotesPage: React.FC = () => {
 
   useEffect(() => {
     getNoteId()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -46,6 +46,7 @@ const NotesPage: React.FC = () => {
         addFirstNote()
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetched, latestNoteId])
 
   const addFirstNote = async (): Promise<void> => {
@@ -63,7 +64,7 @@ const NotesPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex">
+    <div className="flex h-full">
       {loading && (
         <div className={navLinkClassName}>
           <p>loading...</p>

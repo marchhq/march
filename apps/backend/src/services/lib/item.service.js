@@ -1,4 +1,3 @@
-import { Integration } from "../../models/integration/integration.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import moment from 'moment-timezone';
 
@@ -14,16 +13,16 @@ const getUserItems = async (me) => {
     return items;
 }
 
-const getUserTodayItems = async (me) => {
-    // const today = new Date();
-    const startOfDay = moment().startOf('day');
-    const items = await Integration.find({
-        user: me,
-        date: { $gte: startOfDay, $lt: moment().endOf('day') }
-    })
+// const getUserTodayItems = async (me) => {
+//     // const today = new Date();
+//     const startOfDay = moment().startOf('day');
+//     const items = await Integration.find({
+//         user: me,
+//         date: { $gte: startOfDay, $lt: moment().endOf('day') }
+//     })
 
-    return items;
-}
+//     return items;
+// }
 
 const getUserOverdueItems = async (me) => {
     const startOfDay = moment().startOf('day');
@@ -173,13 +172,25 @@ const updateItem = async (id, updateData) => {
     return updatedItem;
 };
 
+const moveItemtoDate = async (date, id) => {
+    const formattedDate = date ? new Date(date) : null;
+
+    const item = await Item.findByIdAndUpdate(
+        id,
+        { $set: { dueDate: formattedDate } },
+        { new: true }
+    );
+
+    return item;
+};
+
 export {
     getUserItems,
     createItem,
     getItems,
     updateItem,
     getItem,
-    getUserTodayItems,
     getUserOverdueItems,
-    getUserItemsByDate
+    getUserItemsByDate,
+    moveItemtoDate
 }

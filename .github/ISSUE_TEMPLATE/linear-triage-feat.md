@@ -1,8 +1,8 @@
 ---
-name: linear sync:feat
+name: goes to triage:feat
 about: this is only for march internal team
 title: "[feat]"
-labels: linear
+labels: feature
 assignees: ''
 
 ---
