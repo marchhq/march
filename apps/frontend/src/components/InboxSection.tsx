@@ -15,6 +15,7 @@ import TextEditor from "@/src/components/atoms/Editor"
 import useSpaceStore from "../lib/store/space.inbox"
 import Button from "./atoms/Button"
 import InboxActions from "./InboxActions"
+import { Input } from "./ui/input"
 
 interface IntegrationType {
   uuid: string
@@ -32,16 +33,22 @@ interface IntegrationType {
 
 const InboxSection: React.FC = () => {
   const { session } = useAuth()
+  const [title, setTitle] = React.useState<string>("")
   const [content, setContent] = React.useState("")
   const [integrations, setIntegrations] = React.useState<IntegrationType[]>([])
-  const [isSaved, setIsSaved] = React.useState(false)
+  const [, setIsSaved] = React.useState(false)
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
   const [selectedItemId, setSelectedItemId] = React.useState<string>("")
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [focusedItems, setFocusedItems] = React.useState<{
     [key: string]: boolean
   }>({})
-  const editor = useEditorHook({ content, setContent, setIsSaved , placeholder:"Enter your description here or use '/' for markdown" })
+  const editor = useEditorHook({
+    content,
+    setContent,
+    setIsSaved,
+    placeholder: "Enter your description here or use '/' for markdown",
+  })
   const { toast } = useToast()
 
   const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } =
@@ -173,6 +180,15 @@ const InboxSection: React.FC = () => {
       return
     }
 
+    if (!title.trim()) {
+      toast({
+        title: "Title is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+
     try {
       const res = await axios.post(
         `${BACKEND_URL}/api/items/create`,
@@ -260,8 +276,18 @@ const InboxSection: React.FC = () => {
       )}
       {isAddItem && editor && (
         <div>
-          <div className="mb-6 h-full rounded-xl border bg-white p-4 focus-within:border-black dark:border-black dark:bg-background dark:text-white dark:focus-within:border-gray-400">
-            <TextEditor editor={editor} />
+          <div className="mb-6 h-full rounded-xl border bg-white p-4 focus-within:border-border dark:border-border dark:bg-background dark:text-white dark:focus-within:border-border">
+            <div>
+              <Input
+                placeholder="Title"
+                className="text-xl border-none outline-none mb-2"
+                value={title}
+                onChange={(e)=> setTitle(e.target.value)}
+              />
+            </div>
+            <div className="pl-3">
+              <TextEditor editor={editor} />
+            </div>
           </div>
         </div>
       )}
@@ -273,6 +299,7 @@ const InboxSection: React.FC = () => {
             Inbox seems empty!
           </div>
         ) : (
+          // TODO:: Create a separate component for this called InboxItems
           inboxItems?.map((item) => (
             <div
               key={item.uuid}
@@ -287,29 +314,21 @@ const InboxSection: React.FC = () => {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    item._id && setSelectedItemId(item._id)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      item._id && setSelectedItemId(item._id)
-                    }
-                  }}
-                  className="invisible group-hover:visible focus-within:visible"
-                >
-                  <RescheduleCalendar
-                    date={item.dueDate ? new Date(item.dueDate) : undefined}
+                {/* Reschedule Action */}
+                     <InboxActions
+                     dueDate = {item.dueDate ? new Date(item.dueDate) : undefined}
+                    setSelectedItemId={setSelectedItemId}
                     setDate={setDate}
-                    icon={<Clock size={20} />}
+                    itemId={item._id || ""}
+                    actions={["reschedule"]}
+                   
                   />
-                </div>
+                  {/* Space Action */}
                 <div className="invisible group-hover:visible focus-within:visible">
                   <InboxActions
                     pages={pages}
                     itemId={item._id || ""}
+                    actions={["space"]}
                     moveItemToSpace={moveItemToSpace}
                     itemBelongsToPages={item.pages}
                   />

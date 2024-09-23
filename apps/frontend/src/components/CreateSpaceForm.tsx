@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { Input } from "./ui/input"
 import { useToast } from "../hooks/useToast"
 import { AxiosError } from "axios"
-import EmojiPicker, {EmojiClickData, Theme} from 'emoji-picker-react'
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import Button from "./atoms/Button"
 import { SmilePlusIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
 const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
   const [name, setName] = useState("")
   const [icon, setIcon] = useState("home")
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false)
   const [blocks, setBlocks] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const { createPage } = useSpaceStore()
@@ -21,9 +21,9 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
 
   const onEmojiClick = (emojiData: EmojiClickData) => {
     console.log(typeof emojiData.emoji)
-    setIcon(emojiData.emoji);
-    setIsEmojiPickerOpen(false); // Close the picker after selection
-  };
+    setIcon(emojiData.emoji)
+    setIsEmojiPickerOpen(false) // Close the picker after selection
+  }
 
   const handleCreatePage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,14 +39,14 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
     try {
       await createPage(newPage, session)
       toast({
-        title: "Space create successfully!"
+        title: "Space create successfully!",
       })
-    hideModal && hideModal()
+      hideModal && hideModal()
     } catch (err) {
       setError(err.message || "Error creating page")
       toast({
         title: "Error while creating space",
-        variant: "destructive"
+        variant: "destructive",
       })
     }
   }
@@ -70,7 +70,11 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
           type="button"
           className="rounded-full p-2 cursor-pointer"
         >
-        {(icon && icon !== "home") ? <div className="size-5">{icon}</div>:  <SmilePlusIcon />}
+          {icon && icon !== "home" ? (
+            <div className="size-5">{icon}</div>
+          ) : (
+            <SmilePlusIcon />
+          )}
         </button>
         {isEmojiPickerOpen && (
           <div className="absolute w-full top-12 right-0">
