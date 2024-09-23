@@ -49,7 +49,7 @@ const TodayPage: React.FC = () => {
         <TodayTextArea />
       </section>
       <section className="space-y-8 text-[16px]">
-        <div className="max-w-xs border-b border-[#3A3A3A]"></div>
+        <div className="max-w-xs border-b border-[#3A3A3A] opacity-30"></div>
         <div className="flex items-center justify-start gap-2 text-white">
           <Square />
           <span>how to get product market fit </span>
