@@ -72,7 +72,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     } else {
       setNotFound(true)
     }
-  }, [isFetched, editor, note, params.noteId])
+  }, [isFetched, editor, notes, params.noteId])
 
   const handleTitle = (title: string): void => {
     setTitle(title)
