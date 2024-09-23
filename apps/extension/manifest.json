@@ -1,18 +1,17 @@
 {
     "manifest_version": 3,
-    "name": "march",
-    "description": "An extension for march",
+    "name": "Issue Auto-Creator",
+    "description": "Automatically create an issue with the page heading and URL.",
     "version": "1.0",
     "permissions": [
       "activeTab",
-      "storage",
-      "contextMenus"
+      "storage"
     ],
     "background": {
       "service_worker": "background.js"
     },
     "action": {
-      "default_popup": "popup/popup.html"
+      "default_title": "Create Issue"
     },
     "content_scripts": [
       {
@@ -21,9 +20,9 @@
       }
     ],
     "icons": {
-    //   "16": "icons/icon16.png",
-    //   "48": "icons/icon48.png",
-    //   "128": "icons/icon128.png"
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
   }
   
