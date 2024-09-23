@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Square, SquareCheck } from "lucide-react"
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
 import { TodayCal } from "@/src/lib/icons/Calendar"
+import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
 
 const TodayPage: React.FC = () => {
   return (
@@ -21,13 +22,17 @@ const TodayPage: React.FC = () => {
             <h1 className="text-xl font-medium text-white">Today</h1>
             <p className="text-sm">Tue, 6 Aug 24</p>
           </div>
-          <div className="flex items-center justify-between"></div>
+          <div className=" ml-20 flex items-center justify-between gap-4">
+            <LeftChevron />
+            <RightChevron />
+          </div>
         </header>
       </section>
       <section className="mt-6">
         <TodayTextArea />
       </section>
       <section className="space-y-8 text-[16px]">
+        <div className="max-w-xs border-b border-[#3A3A3A]"></div>
         <div className="flex items-center justify-start gap-2 text-white">
           <Square />
           <span>how to get product market fit </span>
