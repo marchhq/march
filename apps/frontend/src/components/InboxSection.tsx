@@ -38,8 +38,10 @@ const InboxSection: React.FC = () => {
   const [isAddItem, setIsAddItem] = React.useState<boolean>(false)
   const [selectedItemId, setSelectedItemId] = React.useState<string>("")
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [focusedItems, setFocusedItems] = React.useState<{ [key: string]: boolean }>({});
-  const editor = useEditorHook({ content, setContent, setIsSaved })
+  const [focusedItems, setFocusedItems] = React.useState<{
+    [key: string]: boolean
+  }>({})
+  const editor = useEditorHook({ content, setContent, setIsSaved , placeholder:"Enter your description here or use '/' for markdown" })
   const { toast } = useToast()
 
   const { fetchInboxData, inboxItems, setInboxItems, moveItemToDate } =
@@ -71,24 +73,36 @@ const InboxSection: React.FC = () => {
     updateDate()
   }, [date])
 
-  React.useEffect(()=>{
-   void fetchPages(session)
-  },[])
+  React.useEffect(() => {
+    void fetchPages(session)
+  }, [])
 
-  const moveItemToSpace = async(itemId: string, spaceId: string, action: 'add' | 'remove')=>{
-    try{
-      const updatedData = action === "add"
-      ? { pageId: spaceId } // Adding the item to the space
-      : { removePageId: spaceId } // Removing the item from the space
+  const moveItemToSpace = async (
+    itemId: string,
+    spaceId: string,
+    action: "add" | "remove"
+  ) => {
+    try {
+      const updatedData =
+        action === "add"
+          ? { pageId: spaceId } // Adding the item to the space
+          : { removePageId: spaceId } // Removing the item from the space
 
       // TODO:: ADD toast for better UX
-      const response = await axios.put(`${BACKEND_URL}/api/items/${itemId}/`, updatedData, config);
+      const response = await axios.put(
+        `${BACKEND_URL}/api/items/${itemId}/`,
+        updatedData,
+        config
+      )
       void fetchInboxData(session)
       toast({
         title: "Updated successfully!",
       })
-    }catch(error){
-      console.error("Error moving item to the page:", error?.response?.data?.message || error.message);
+    } catch (error) {
+      console.error(
+        "Error moving item to the page:",
+        error?.response?.data?.message || error.message
+      )
     }
   }
 
@@ -182,12 +196,12 @@ const InboxSection: React.FC = () => {
   }
 
   const handleFocus = (uuid: string) => {
-    setFocusedItems((prev) => ({ ...prev, [uuid]: true }));
-  };
-  
+    setFocusedItems((prev) => ({ ...prev, [uuid]: true }))
+  }
+
   const handleBlur = (uuid: string) => {
-    setFocusedItems((prev) => ({ ...prev, [uuid]: false }));
-  };
+    setFocusedItems((prev) => ({ ...prev, [uuid]: false }))
+  }
 
   return (
     <section>
@@ -246,8 +260,8 @@ const InboxSection: React.FC = () => {
       )}
       {isAddItem && editor && (
         <div>
-          <div className="mb-6 h-full rounded-xl border bg-white p-4 focus-within:border-black dark:border-black dark:bg-zinc-700 dark:text-white dark:focus-within:border-gray-400">
-            <TextEditor placeholder="Enter Details Here" editor={editor} />
+          <div className="mb-6 h-full rounded-xl border bg-white p-4 focus-within:border-black dark:border-black dark:bg-background dark:text-white dark:focus-within:border-gray-400">
+            <TextEditor editor={editor} />
           </div>
         </div>
       )}
@@ -261,11 +275,11 @@ const InboxSection: React.FC = () => {
         ) : (
           inboxItems?.map((item) => (
             <div
-            key={item.uuid}
-            className={`group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 hover:bg-gray-100 focus-within:ring-2 focus-within:border-border dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border ${focusedItems[item.uuid] ? 'border border-border' : ''}`}
-            tabIndex={0}
-            onFocus={() => handleFocus(item.uuid)}
-            onBlur={() => handleBlur(item.uuid)} 
+              key={item.uuid}
+              className={`group my-2 flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 text-gray-500 hover:bg-gray-100 focus-within:ring-2 focus-within:border-border dark:bg-background dark:text-zinc-300 dark:hover:border dark:hover:border-border ${focusedItems[item.uuid] ? "border border-border" : ""}`}
+              tabIndex={0}
+              onFocus={() => handleFocus(item.uuid)}
+              onBlur={() => handleBlur(item.uuid)}
             >
               <div className="rendered-content">
                 <p
@@ -277,11 +291,11 @@ const InboxSection: React.FC = () => {
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    item._id && setSelectedItemId(item._id);
+                    item._id && setSelectedItemId(item._id)
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      item._id && setSelectedItemId(item._id);
+                      item._id && setSelectedItemId(item._id)
                     }
                   }}
                   className="invisible group-hover:visible focus-within:visible"
@@ -308,7 +322,5 @@ const InboxSection: React.FC = () => {
     </section>
   )
 }
-
-
 
 export default InboxSection

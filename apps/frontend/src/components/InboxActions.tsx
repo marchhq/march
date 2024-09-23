@@ -8,7 +8,8 @@ import { useAuth } from "../contexts/AuthContext"
 import { useToast } from "../hooks/use-toast"
 import { useModal } from "../contexts/ModalProvider"
 import CreateSpaceForm from "./CreateSpaceForm"
-import { DialogDescription, DialogHeader } from "./ui/dialog"
+import { DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
+import { House } from "@phosphor-icons/react/dist/ssr"
 
 const InboxActions = ({
   pages,
@@ -29,9 +30,9 @@ const InboxActions = ({
   const showCreateSpaceForm = () => {
     showModal(
       <>
-        <DialogHeader className="dark:text-primary-foreground p-3">
+        <DialogTitle className="dark:text-primary-foreground p-3">
           Create a space
-        </DialogHeader>
+        </DialogTitle>
         <DialogDescription>
           <CreateSpaceForm hideModal={hideModal}/>
         </DialogDescription>
@@ -60,10 +61,26 @@ const InboxActions = ({
                   key={page.uuid}
                   onClick={() =>
                     // If item is in the page then remove it if clicked again
-                  isItemInSpace ? moveItemToSpace(itemId, page._id ? page._id : "", "remove") :   moveItemToSpace(itemId, page._id ? page._id : "", "add")
+                    isItemInSpace
+                      ? moveItemToSpace(
+                          itemId,
+                          page._id ? page._id : "",
+                          "remove"
+                        )
+                      : moveItemToSpace(itemId, page._id ? page._id : "", "add")
                   }
                 >
-                  <span>{page.name}</span>
+                  <div className="flex items-center gap-2">
+                    {page.icon === "home" ? (
+                      <span>
+                        {" "}
+                        <House size={21}/>{" "}
+                      </span>
+                    ) : (
+                      <span> {page.icon}</span>
+                    )}
+                    {page.name}
+                  </div>
                   {/* Conditionally render the checkmark if the item belongs to this page */}
                   {isItemInSpace && <Check />}
                 </div>
