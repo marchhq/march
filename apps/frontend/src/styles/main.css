@@ -3,10 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-
   html,
   body {
-    @apply bg-background
+    @apply bg-background;
   }
 }
 
@@ -294,12 +293,12 @@ button {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-800 rounded-sm;
+  @apply bg-background rounded-sm;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-700;
+  @apply bg-zinc-800;
 }
 
 [data-theme="slash-command"] {
