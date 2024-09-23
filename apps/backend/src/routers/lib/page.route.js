@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
     getUserItemsController,
-    getUserTodayItemsController,
+    // getUserTodayItemsController,
     getUserOverdueItemsController,
     getUserItemsByDateControlle,
     moveItemtoDateController
@@ -58,7 +58,7 @@ const router = Router();
 
 // inbox
 router.route("/my/").get(getUserItemsController);
-router.route("/my/today/").get(getUserTodayItemsController);
+// router.route("/my/today/").get(getUserTodayItemsController);
 router.route("/my/overdue/").get(getUserOverdueItemsController);
 router.route("/my/:date/").get(getUserItemsByDateControlle);
 router.route("/setDate/").post(moveItemtoDateController);
