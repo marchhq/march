@@ -111,7 +111,7 @@ const FeedbackModal = () => {
 
   return (
     <div className="rounded-lg border border-border">
-      <DialogHeader className="dark:text-white">
+      <DialogHeader className="text-foreground">
         <DialogTitle className="mb-2 px-6 pt-5 text-base">
           Share feedback
         </DialogTitle>
