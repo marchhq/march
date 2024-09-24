@@ -37,4 +37,3 @@ export const RightChevron = (): JSX.Element => {
     </svg>
   )
 }
-
