@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "march",
+    "description": "An extension for march.",
+    "version": "1.0",
+    "permissions": ["tabs", "storage", "activeTab"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_title": "Create Issue"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  }
+  
