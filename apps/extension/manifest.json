@@ -3,10 +3,7 @@
     "name": "march",
     "description": "An extension for march.",
     "version": "1.0",
-    "permissions": [
-      "activeTab",
-      "storage"
-    ],
+    "permissions": ["tabs", "storage", "activeTab"],
     "background": {
       "service_worker": "background.js"
     },
