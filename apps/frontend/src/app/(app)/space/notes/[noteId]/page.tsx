@@ -85,7 +85,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
 
     const newTimer = setTimeout(() => {
-      if (note !== null) {
+      if (note) {
         saveNoteToServer({ ...note, title, content })
         setIsSaved(true)
       }
@@ -111,12 +111,15 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   )
 
   useEffect(() => {
-    if (note !== null) {
+    if (note) {
       saveNoteToServer({ ...note, title, content })
     }
   }, [note, saveNoteToServer, title, content])
 
   const addNewNote = async (): Promise<void> => {
+    if (!isSaved) {
+      if (note) await saveNoteToServer({ ...note, title, content })
+    }
     try {
       setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
@@ -239,15 +242,11 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               role="button"
               tabIndex={0}
               onClick={() => {
-                if (note) {
-                  saveNoteToServer({ ...note, title, content })
-                }
+                if (note) saveNoteToServer({ ...note, title, content })
               }}
               onKeyPress={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                  if (note) {
-                    saveNoteToServer({ ...note, title, content })
-                  }
+                  if (note) saveNoteToServer({ ...note, title, content })
                 }
               }}
             >
