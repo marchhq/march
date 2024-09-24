@@ -209,7 +209,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               value={title}
               onChange={(e) => handleTitle(e.target.value)}
               placeholder="Untitled"
-              className="w-full py-2 text-3xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+              className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
             />
             <TextEditor editor={editor} />
