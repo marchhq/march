@@ -111,28 +111,30 @@ const FeedbackModal = () => {
 
   return (
     <div className="rounded-lg border border-border">
-      <DialogHeader className="text-foreground">
+      <DialogHeader className="text-secondary-foreground">
         <DialogTitle className="mb-2 px-6 pt-5 text-base">
           Share feedback
         </DialogTitle>
       </DialogHeader>
-      <form className="dark:text-white" onSubmit={handleSubmit(onSubmit)}>
+      <form className="text-foreground" onSubmit={handleSubmit(onSubmit)}>
         <div className="px-4">
           <input
             placeholder="Title"
-            className="mt-2 w-full px-2 py-4 text-xl focus:outline-none dark:border-none dark:bg-transparent"
+            className="w-full mt-2 px-2 py-4 text-xl border-none bg-transparent placeholder-secondary-foreground focus:outline-none"
             {...register("title", { required: true })}
           />
           {errors.title && (
-            <span className="text-red-500">Title is required</span>
+            <span className="px-3 text-xs text-red-500">Title is required</span>
           )}
           <Textarea
-            className="min-h-40 text-sm dark:border-none"
+            className="min-h-40 text-sm border-none placeholder-secondary-foreground"
             placeholder="add description..."
             {...register("feedback", { required: true })}
           />
           {errors.feedback && (
-            <span className="text-red-500">Feedback is required</span>
+            <span className="px-3 text-xs text-red-500">
+              Feedback is required
+            </span>
           )}
           <div className="my-3 cursor-pointer rounded-lg">
             <label
@@ -148,8 +150,8 @@ const FeedbackModal = () => {
                 onChange={handleFileChange}
               />
               <div className="z-50 flex cursor-pointer items-center gap-2">
-                <LinkIcon />{" "}
-                <span className="text-primary-foreground">
+                <LinkIcon className="text-secondary-foreground" />{" "}
+                <span className="text-sm text-secondary-foreground">
                   {" "}
                   Attach Files (Max: 5MB){" "}
                 </span>
@@ -164,7 +166,7 @@ const FeedbackModal = () => {
                   <button
                     type="button"
                     onClick={() => removeFile(file)}
-                    className="ml-4 text-red-500"
+                    className="ml-4 text-xs text-red-500"
                   >
                     <Trash />
                   </button>
@@ -178,12 +180,12 @@ const FeedbackModal = () => {
             <Link
               href={"https://x.com/_marchhq"}
               target="_blank"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-sm text-secondary-foreground"
             >
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="cursor-pointer rounded-lg px-4 py-1 text-black transition-colors  duration-300 ease-linear hover:bg-secondary-foreground  hover:text-white disabled:cursor-not-allowed dark:text-white hover:dark:bg-primary-foreground hover:dark:text-black"
+              className="cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground hover-bg disabled:cursor-not-allowed"
               disabled={isLoading}
               type="submit"
             >
