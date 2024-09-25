@@ -1,5 +1,13 @@
 import { Switch } from "./Switch"
 
-export const ShowAgenda = (): JSX.Element => {
-  return <Switch />
+interface ShowAgendaProps {
+  toggle: boolean
+  onToggle: () => void
+}
+
+export const ShowAgenda = ({
+  toggle,
+  onToggle,
+}: ShowAgendaProps): JSX.Element => {
+  return <Switch checked={toggle} onCheckedChange={onToggle} />
 }
