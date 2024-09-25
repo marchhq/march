@@ -3,7 +3,7 @@ import { useState } from "react"
 import TextEditor from "./atoms/Editor"
 import useEditorHook from "../hooks/useEditor.hook"
 
-export const TodayTextArea = (): JSX.Element => {
+export const InboxTextArea = (): JSX.Element => {
   const [content, setContent] = useState("<p></p>")
   const [isSaved, setIsSaved] = useState(false)
   const editor = useEditorHook({
