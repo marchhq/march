@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import { PlusIcon } from "@radix-ui/react-icons"
@@ -13,12 +13,20 @@ import { type Note } from "@/src/lib/@types/Items/Note"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
-import { formatDateYear } from "@/src/utils/datetime"
+import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const { session } = useAuth()
-  const { fetchNotes, notes, getNoteByuuid, addNote, saveNote, deleteNote } =
-    useNotesStore()
+  const {
+    isFetched,
+    setIsFetched,
+    fetchNotes,
+    notes,
+    updateNote,
+    addNote,
+    saveNote,
+    deleteNote,
+  } = useNotesStore()
 
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState(note?.title ?? "")
@@ -26,24 +34,58 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const [content, setContent] = useState(note?.content ?? "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const editor = useEditorHook({ content, setContent, setIsSaved })
-
   const [loading, setLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [closeToggle, setCloseToggle] = useState(false)
   const [titleDebounceTimer, setTitleDebounceTimer] =
     useState<NodeJS.Timeout | null>(null)
 
+  const fetchTheNotes = useCallback(async (): Promise<void> => {
+    try {
+      await fetchNotes(session)
+      setIsFetched(true)
+    } catch (error) {
+      setIsFetched(false)
+    }
+  }, [session, fetchNotes, setIsFetched])
+
+  useEffect(() => {
+    if (!isFetched) {
+      fetchTheNotes()
+    }
+  }, [fetchTheNotes, isFetched])
+
   const handleClose = () => setCloseToggle(!closeToggle)
 
-  const handleTitle = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTitle(e.target.value)
+  useEffect(() => {
+    if (!isFetched || notes.length === 0) {
+      editor?.setEditable(false)
+      return
+    }
+    const noteByParams = notes.filter((n) => n.uuid === params.noteId)
+    if (noteByParams.length !== 0) {
+      editor?.setEditable(true)
+      editor?.commands.setContent(noteByParams[0].content)
+      setNote(noteByParams[0])
+      setTitle(noteByParams[0].title)
+      setContent(noteByParams[0].content)
+    } else {
+      setNotFound(true)
+    }
+  }, [isFetched, editor, notes, params.noteId])
+
+  const handleTitle = (title: string): void => {
+    setTitle(title)
+    if (note !== null) {
+      updateNote({ ...note, title })
+    }
 
     if (titleDebounceTimer) {
       clearTimeout(titleDebounceTimer)
     }
 
     const newTimer = setTimeout(() => {
-      if (note !== null) {
+      if (note) {
         saveNoteToServer({ ...note, title, content })
         setIsSaved(true)
       }
@@ -61,42 +103,23 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [title])
 
-  const fetchTheNotes = async (): Promise<void> => {
-    await fetchNotes(session)
-  }
-
-  const getNote = async (): Promise<Note | null> => {
-    try {
-      const note = await getNoteByuuid(session, params.noteId)
-      if (note) {
-        setNote(note)
-        setTitle(note.title)
-        setContent(note.content)
-      } else {
-        setNotFound(true)
-      }
-      return note
-    } catch (error) {
-      console.error(error)
-      return null
-    }
-  }
+  const saveNoteToServer = useCallback(
+    async (note: Note): Promise<void> => {
+      await saveNote(session, note)
+    },
+    [session, saveNote]
+  )
 
   useEffect(() => {
-    getNote()
-    fetchTheNotes()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    if (note !== null) {
-      editor?.setEditable(true)
-      editor?.commands.setContent(note.content)
+    if (note) {
+      saveNoteToServer({ ...note, title, content })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note])
+  }, [note, saveNoteToServer, title, content])
 
   const addNewNote = async (): Promise<void> => {
+    if (!isSaved) {
+      if (note) await saveNoteToServer({ ...note, title, content })
+    }
     try {
       setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
@@ -108,10 +131,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     } finally {
       setLoading(false)
     }
-  }
-
-  const saveNoteToServer = async (note: Note): Promise<void> => {
-    await saveNote(session, note)
   }
 
   const handleDeleteNote = (n: Note): void => {
@@ -136,7 +155,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!isSaved) {
         e.preventDefault()
-        e.returnValue = ""
       }
     }
 
@@ -148,38 +166,40 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   }, [isSaved])
 
   return (
-    <div className="flex size-full gap-16 bg-background p-16">
+    <div className="flex size-full gap-16 p-16 bg-background">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
-        <div className="flex w-full items-center justify-between text-sm text-secondary-foreground">
-          <div className="flex gap-4">
-            {note !== null && (
-              <p className="flex items-center">
-                {formatDateYear(note.createdAt)}
-              </p>
-            )}
-            {!loading ? (
-              <button
-                onClick={addNewNote}
-                className="flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground hover:bg-secondary"
-              >
-                <PlusIcon />
-                <span>Add A New Note</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground hover:bg-secondary">
-                <span>loading...</span>
-              </div>
-            )}
-          </div>
-          <div className="flex cursor-default items-center gap-4">
-            {!isSaved ? <span>...</span> : <span>saved</span>}
+        <div className="flex items-center justify-between w-full gap-4 text-sm text-secondary-foreground">
+          <div className="flex gap-8">
+            <div className="flex gap-4">
+              {note !== null && (
+                <p className="flex items-center">
+                  {formatDateYear(note.createdAt)}
+                </p>
+              )}
+              {!loading ? (
+                <button
+                  onClick={addNewNote}
+                  className="flex items-center gap-1 px-1 rounded-md truncate text-secondary-foreground hover-bg"
+                >
+                  <PlusIcon />
+                  <span>Add A New Note</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground">
+                  <span>loading...</span>
+                </div>
+              )}
+            </div>
             <button
-              className="flex items-center hover:text-secondary"
+              className="flex items-center hover-text"
               onClick={handleClose}
             >
               <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
             </button>
           </div>
+          {note !== null && (
+            <p className="text-xs">edited {fromNow(note.updatedAt)}</p>
+          )}
         </div>
         {note !== null ? (
           <div
@@ -190,9 +210,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             <textarea
               ref={textareaRef}
               value={title}
-              onChange={handleTitle}
+              onChange={(e) => handleTitle(e.target.value)}
               placeholder="Untitled"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-3xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
             />
             <TextEditor editor={editor} />
@@ -210,7 +230,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       <div
         className={classNames(
           closeToggle ? "hidden" : "visible",
-          "w-full max-h-screen max-w-[200px] flex flex-col gap-8 overflow-y-auto text-secondary-foreground text-sm"
+          "flex flex-col gap-8 w-full max-w-[200px] max-h-screen text-sm text-secondary-foreground overflow-y-auto"
         )}
       >
         <span className="text-foreground">notes</span>
@@ -218,7 +238,17 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
           {notes?.map((n) => (
             <div
               key={n.uuid}
-              className="group flex items-center justify-between gap-1 truncate rounded-md px-2 py-1 hover:bg-secondary"
+              className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (note) saveNoteToServer({ ...note, title, content })
+              }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  if (note) saveNoteToServer({ ...note, title, content })
+                }
+              }}
             >
               <Link href={`/space/notes/${n.uuid}`} className="flex-1 truncate">
                 {n.uuid === note?.uuid ? (
@@ -232,7 +262,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
                 )}
               </Link>
               <button
-                className="opacity-0 hover:text-secondary group-hover:opacity-100"
+                className="opacity-0 hover-text group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteNote(n)
