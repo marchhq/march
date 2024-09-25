@@ -233,6 +233,19 @@ button {
   }
 }
 
+.tiptap.is-editor-empty {
+  @apply cursor-default;
+  caret-color: transparent;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #6D7077;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
