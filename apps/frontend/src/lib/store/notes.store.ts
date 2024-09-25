@@ -86,7 +86,9 @@ const useNotesStore = create<NotesStoreType>((set) => ({
         },
       })
       const res = data as NotesResponse
-      notes_ = res.notes
+      notes_ = res.notes.sort(
+        (a, b) => Number(new Date(a.createdAt)) - Number(new Date(b.createdAt))
+      )
     } catch (error) {
       const e = error as AxiosError
       console.error(e.cause)
