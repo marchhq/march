@@ -63,8 +63,8 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   const items = [
     <div key={"notesdiv"}>
-      {latestNoteId &&
-        (latestNoteId !== "" ? (
+      {latestNoteId ? (
+        latestNoteId !== "" ? (
           <SidebarItem
             href={`space/notes/${latestNoteId}`}
             key={"notes"}
@@ -79,7 +79,10 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
           <div className={navLinkClassName}>
             <p>loading...</p>
           </div>
-        ))}
+        )
+      ) : (
+        <span className={navLinkClassName}>Notes</span>
+      )}
     </div>,
 
     <SidebarItem
