@@ -89,8 +89,8 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-    <div className="mx-4 my-auto flex select-none flex-col rounded-[30px] border border-border bg-background px-2 py-8">
-      <div className="flex flex-col gap-2">
+<div className="relative group mx-4 my-auto flex flex-col select-none rounded-[30px] border border-border bg-background transition-all duration-150 w-[60px] hover:w-[80px] hover:h-[520px] overflow-hidden">
+<div className="flex flex-col gap-2">
         <SidebarLink
           href={"/inbox"}
           icon={<Icon icon="hugeicons:inbox" style={{ fontSize: "30px" }} />}
