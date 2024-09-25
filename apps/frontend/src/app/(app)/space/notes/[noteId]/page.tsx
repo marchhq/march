@@ -167,7 +167,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   return (
     <div className="flex size-full gap-16 p-16 bg-background">
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden pr-4">
         <div className="flex items-center justify-between w-full gap-4 text-sm text-secondary-foreground">
           <div className="flex gap-8">
             <div className="flex gap-4">
