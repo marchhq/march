@@ -1,32 +1,41 @@
+import React from "react";
+import { useMeetings } from "../hooks/useMeetings";
+import { Link } from "../lib/icons/Link";
+
+const isSameDay = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
+
 export const TodayAgenda = (): JSX.Element => {
-  const agendaItems = [
-    {
-      title: "15 Min-onboarding call with @oliursahin",
-      time: "10:30 - 10:45PM 15 min",
-      startTime: "18:00",
-    },
-    {
-      title: "15 Min-onboarding call with @oliursahin",
-      time: "10:30 - 10:45PM 15 min",
-      startTime: "22:00",
-    },
-  ]
+  /* const meetings = useMeetings();
+   const today = new Date();
+ 
+   const todayMeetings = meetings?.meetings.filter((meeting) =>
+     isSameDay(new Date(meeting.start.dateTime), today)
+   );
+ 
+   const agendaItems = todayMeetings?.map((meeting) => ({
+     title: meeting.summary,
+     link: meeting.hangoutLink,
+     time: `${new Date(meeting.start.dateTime).toLocaleTimeString()} - ${new Date(meeting.end.dateTime).toLocaleTimeString()}`,
+   })) || []; */
 
   return (
-    <ol className="relative border-s border-gray-color">
-      <h1 className="mb-6 ml-6 text-lg text-white">Upcoming in 30mins</h1>
-      {agendaItems.map((item, index) => (
-        <li key={index} className="mb-16 ms-6 text-gray-color">
-          <h1 className="mb-1 flex items-center text-lg font-medium">
-            {item.title}
-          </h1>
-          <time className="mb-2 block text-sm">{item.time}</time>
-
-          <span className="absolute -start-5 flex size-16 items-center justify-start rounded-full bg-background text-white">
-            {item.startTime}
+    <ol>
+      <React.Fragment>
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">march stand up</li>
+        <p>5:00 - 5:30PM, 15 min</p>
+        <a href="#" className="text-[#DCDCDD] mt-4 flex justify-start items-center gap-2">
+          Join Meeting
+          <span>
+            <Link />
           </span>
-        </li>
-      ))}
+        </a>
+      </React.Fragment>
     </ol>
-  )
-}
+  );
+};

@@ -4,12 +4,9 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  console.log("Google Calendar callback function called");
-  console.log("Full request URL:", request.url);
 
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
-  console.log("Google Calendar code: ", code);
 
   if (!code) {
     return console.error("No code received from Google Calendar");
@@ -17,7 +14,6 @@ export async function GET(request: NextRequest) {
 
   const cookies = request.cookies;
   const session = cookies.get("__MARCH_ACCESS_TOKEN__")
-  console.log("session token: ", session)
   const token = session?.value
 
   try {
