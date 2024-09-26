@@ -10,32 +10,51 @@ const isSameDay = (date1: Date, date2: Date): boolean => {
   );
 };
 
+const formatTime = (date: Date): string => {
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+const calculateDuration = (start: Date, end: Date): number => {
+  return Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+};
+
 export const TodayAgenda = (): JSX.Element => {
-  /* const meetings = useMeetings();
-   const today = new Date();
- 
-   const todayMeetings = meetings?.meetings.filter((meeting) =>
-     isSameDay(new Date(meeting.start.dateTime), today)
-   );
- 
-   const agendaItems = todayMeetings?.map((meeting) => ({
-     title: meeting.summary,
-     link: meeting.hangoutLink,
-     time: `${new Date(meeting.start.dateTime).toLocaleTimeString()} - ${new Date(meeting.end.dateTime).toLocaleTimeString()}`,
-   })) || []; */
+  const meetings = useMeetings();
+  const today = new Date();
+
+  const todayMeetings = meetings?.meetings.filter((meeting) =>
+    isSameDay(new Date(meeting.start.dateTime), today)
+  );
+
+  const agendaItems = todayMeetings?.map((meeting) => {
+    const startTime = new Date(meeting.start.dateTime);
+    const endTime = new Date(meeting.end.dateTime);
+    return {
+      title: meeting.summary,
+      link: meeting.hangoutLink,
+      time: `${formatTime(startTime)} - ${formatTime(endTime)}`,
+      duration: calculateDuration(startTime, endTime),
+    };
+  }) || [];
 
   return (
     <ol>
-      <React.Fragment>
-        <li className="text-[#DCDCDD]/80 text-lg font-medium">march stand up</li>
-        <p>5:00 - 5:30PM, 15 min</p>
-        <a href="#" className="text-[#DCDCDD] mt-4 flex justify-start items-center gap-2">
-          Join Meeting
-          <span>
-            <Link />
-          </span>
-        </a>
-      </React.Fragment>
+      {agendaItems.length === 0 ? (
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">No meetings scheduled for today</li>
+      ) : (
+        agendaItems.map((item, index) => (
+          <React.Fragment key={index}>
+            <li className="text-[#DCDCDD]/80 text-lg font-medium">{item.title}</li>
+            <p>{item.time}, {item.duration} min</p>
+            <a href={item.link} className="text-[#DCDCDD] mt-4 flex justify-start items-center gap-2">
+              Join Meeting
+              <span>
+                <Link />
+              </span>
+            </a>
+          </React.Fragment>
+        ))
+      )}
     </ol>
   );
 };
