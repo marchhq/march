@@ -138,20 +138,20 @@ const InboxSection: React.FC = () => {
                   />
                 </div>
                 <button
-                  className="rounded-lg p-1 hover:bg-secondary-foreground"
+                  className="rounded-lg p-1 hover:bg-secondary-foreground text-primary-foreground"
                   onClick={addItemToInbox}
                 >
-                  <Check size={20} color="duotone"/>
+                  <Check size={20} />
                 </button>
                 <button
-                  className="rounded-lg p-1 hover:bg-secondary-foreground"
+                  className="rounded-lg p-1 hover:bg-secondary-foreground text-primary-foreground"
                   onClick={() => {
                     setIsAddItem(false)
                     setDescription("")
                     editor.commands.setContent("") //Reset the text-editor content
                   }}
                 >
-                  <X size={20} color="duotone"/>
+                  <X size={20}/>
                 </button>
               </div>
             </div>

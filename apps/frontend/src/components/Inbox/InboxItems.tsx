@@ -197,13 +197,13 @@ const InboxItems: React.FC<InboxItemProps> = ({
                     />
                     <div className="flex items-center gap-2">
                       <button
-                        className="rounded-lg p-1 hover:bg-secondary-foreground"
+                        className="rounded-lg p-1 hover:bg-secondary-foreground text-primary-foreground"
                         onClick={() => saveChanges(item)}
                       >
                         <Check size={20} />
                       </button>
                       <button
-                        className="rounded-lg p-1 hover:bg-secondary-foreground"
+                        className="rounded-lg p-1 hover:bg-secondary-foreground text-primary-foreground"
                         onClick={cancelEdit}
                       >
                         <X size={20} />
@@ -224,7 +224,7 @@ const InboxItems: React.FC<InboxItemProps> = ({
                     <div className="flex items-center gap-2">
                       {/* Inbox Actions */}
                       <button
-                        className="invisible rounded-full p-2 focus-within:visible hover:bg-secondary-foreground group-hover:visible"
+                        className="invisible rounded-full p-2 focus-within:visible hover:bg-secondary-foreground group-hover:visible text-primary-foreground"
                         onClick={() => handleEdit(item)}
                       >
                         <PencilLine size={20} />
