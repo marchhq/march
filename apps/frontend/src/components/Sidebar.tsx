@@ -67,7 +67,10 @@ const Sidebar: React.FC = () => {
 
   const [lastSpaceRoute, setLastSpaceRoute] = useState<string | null>(null)
 
-  //Can't call useEffect conditionally, so the blow condition will come this since useEffect triggeres when the component mount
+  if (pathname.includes("auth")) {
+    return null
+  }
+  // eslint-disable-next-line
   useEffect(() => {
     if (pathname.startsWith("/space/")) {
       setLastSpaceRoute(pathname)
