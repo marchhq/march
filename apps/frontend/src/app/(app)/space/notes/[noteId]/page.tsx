@@ -215,7 +215,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
             />
-            <TextEditor editor={editor} />
+            <div className="text-primary-foreground">
+              <TextEditor editor={editor} />
+            </div>
           </div>
         ) : notFound ? (
           <div className="mt-4 text-secondary-foreground">
