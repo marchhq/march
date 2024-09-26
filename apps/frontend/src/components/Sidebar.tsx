@@ -70,7 +70,7 @@ const Sidebar: React.FC = () => {
   if (pathname.includes("auth")) {
     return null
   }
-
+  // eslint-disable-next-line
   useEffect(() => {
     if (pathname.startsWith("/space/")) {
       setLastSpaceRoute(pathname)
