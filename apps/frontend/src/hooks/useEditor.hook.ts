@@ -60,7 +60,7 @@ const useEditorHook = ({
 
       const newTimer = setTimeout(() => {
         setContent(editor.getHTML())
-      setIsSaved &&  setIsSaved(true)
+        setIsSaved && setIsSaved(true)
       }, 1000)
 
       setDebounceTimer(newTimer)

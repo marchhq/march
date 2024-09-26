@@ -1,16 +1,18 @@
 import * as React from "react"
+
 import { Check, PencilLine, X } from "@phosphor-icons/react"
+import axios from "axios"
+
 import InboxActions from "./InboxActions"
+import { useAuth } from "../../contexts/AuthContext"
+import { useToast } from "../../hooks/useToast"
 import useInboxStore from "../../lib/store/inbox.store"
 import useSpaceStore from "../../lib/store/space.inbox"
-import { useToast } from "../../hooks/useToast"
-import { useAuth } from "../../contexts/AuthContext"
-import { Input } from "../ui/input"
-import axios from "axios"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
 import TextEditor from "../atoms/Editor"
-import useEditorHook from "@/src/hooks/useEditor.hook"
+import { Input } from "../ui/input"
 import { InboxItemProps } from "@/src/extensions/SlashCommand/types"
+import useEditorHook from "@/src/hooks/useEditor.hook"
+import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 const InboxItems: React.FC<InboxItemProps> = ({
   selectedItemId,
@@ -174,7 +176,7 @@ const InboxItems: React.FC<InboxItemProps> = ({
               {editItemId === item.uuid ? (
                 <>
                   {/* Editing Mode: Show Input Fields */}
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <Input
                       value={editedItem.title}
                       onChange={(e) =>
@@ -184,17 +186,17 @@ const InboxItems: React.FC<InboxItemProps> = ({
                         }))
                       }
                       placeholder="Title"
-                      className="mb-2 border-none text-xl font-bold w-full outline-none p-0"
+                      className="mb-2 w-full border-none p-0 text-xl font-bold outline-none"
                     />
                     <div className="flex items-center gap-2">
                       <button
-                        className="hover:bg-secondary-foreground rounded-lg p-1"
+                        className="rounded-lg p-1 hover:bg-secondary-foreground"
                         onClick={() => saveChanges(item)}
                       >
                         <Check size={20} />
                       </button>
                       <button
-                        className="hover:bg-secondary-foreground rounded-lg p-1"
+                        className="rounded-lg p-1 hover:bg-secondary-foreground"
                         onClick={cancelEdit}
                       >
                         <X size={20} />
@@ -208,14 +210,14 @@ const InboxItems: React.FC<InboxItemProps> = ({
               ) : (
                 <>
                   {/* Normal Mode: Show Title and Description */}
-                  <div className="flex justify-between items-center cursor-pointer">
-                    <h3 className="text-xl font-bold mb-2 cursor-pointer w-full">
+                  <div className="flex cursor-pointer items-center justify-between">
+                    <h3 className="mb-2 w-full cursor-pointer text-xl font-bold">
                       {item.title}
                     </h3>
                     <div className="flex items-center gap-2">
                       {/* Inbox Actions */}
                       <button
-                        className="invisible focus-within:visible group-hover:visible rounded-full p-2 hover:bg-secondary-foreground"
+                        className="invisible rounded-full p-2 focus-within:visible hover:bg-secondary-foreground group-hover:visible"
                         onClick={() => handleEdit(item)}
                       >
                         <PencilLine size={20} />

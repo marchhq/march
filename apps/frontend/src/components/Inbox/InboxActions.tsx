@@ -1,15 +1,16 @@
 import React, { useState } from "react"
+
 import { Check, NoteBlank, Plus } from "@phosphor-icons/react"
 import { House } from "@phosphor-icons/react/dist/ssr"
 import { Clock } from "lucide-react"
 
 import { useModal } from "../../contexts/ModalProvider"
 import { Page } from "../../lib/@types/Items/space"
-import { DialogDescription, DialogTitle } from "../ui/dialog"
+import Button from "../atoms/Button"
+import { Popover, PopoverContent, PopoverTrigger } from "../atoms/Popover"
 import CreateSpaceForm from "../CreateSpaceForm"
 import { RescheduleCalendar } from "../RescheduleCalendar/RescheduleCalendar"
-import { Popover, PopoverContent, PopoverTrigger } from "../atoms/Popover"
-import Button from "../atoms/Button"
+import { DialogDescription, DialogTitle } from "../ui/dialog"
 import { InboxActionsProps } from "@/src/extensions/SlashCommand/types"
 
 const InboxActions = ({
@@ -25,7 +26,7 @@ const InboxActions = ({
   setSelectedItemId,
   setSelectedPages = () => {},
 }: InboxActionsProps) => {
-  const [isCreating, ] = useState<boolean>(false)
+  const [isCreating] = useState<boolean>(false)
   const { showModal, hideModal } = useModal()
 
   // Show modal to create a new space

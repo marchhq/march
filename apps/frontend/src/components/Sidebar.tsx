@@ -67,15 +67,16 @@ const Sidebar: React.FC = () => {
 
   const [lastSpaceRoute, setLastSpaceRoute] = useState<string | null>(null)
 
-  if (pathname.includes("auth")) {
-    return null
-  }
-
+  //Can't call useEffect conditionally, so the blow condition will come this since useEffect triggeres when the component mount
   useEffect(() => {
     if (pathname.startsWith("/space/")) {
       setLastSpaceRoute(pathname)
     }
   }, [pathname])
+
+  if (pathname.includes("auth")) {
+    return null
+  }
 
   const handleSpaceClick = () => {
     if (lastSpaceRoute) {

@@ -140,8 +140,8 @@ const NotesPage: React.FC = () => {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-y-auto overflow-x-hidden border border-border rounded-xl bg-background px-8 py-5">
-          <div className="w-full flex items-center justify-between px-3 text-secondary-foreground">
+        <div className="h-full overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-background px-8 py-5">
+          <div className="flex w-full items-center justify-between px-3 text-secondary-foreground">
             <span>Notes</span>
             <button
               disabled={!isCreateEnabled()}
@@ -170,7 +170,7 @@ const NotesPage: React.FC = () => {
                 updateTitle(e.target.value)
               }}
               placeholder="Untitled"
-              className="w-full mb-10 bg-transparent text-2xl font-semibold text-foreground placeholder:text-secondary-foreground outline-none focus:outline-none"
+              className="mb-10 w-full bg-transparent text-2xl font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             />
             <TextEditor editor={editor} />
           </div>
@@ -178,11 +178,11 @@ const NotesPage: React.FC = () => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={25} minSize={25}>
-        <div className="h-full overflow-auto border border-border rounded-xl bg-background p-5">
+        <div className="h-full overflow-auto rounded-xl border border-border bg-background p-5">
           <div className="px-2 text-secondary-foreground">
             <span>Notes</span>
           </div>
-          <div className="flex flex-col gap-y-2 mt-4">
+          <div className="mt-4 flex flex-col gap-y-2">
             {notes?.map((n) => (
               <EachNote
                 key={n.uuid}

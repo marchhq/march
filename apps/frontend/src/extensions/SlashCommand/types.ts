@@ -1,6 +1,7 @@
-import { Page } from "@/src/lib/@types/Items/space"
 import type { Editor } from "@tiptap/react"
 import type { icons } from "lucide-react"
+
+import { Page } from "@/src/lib/@types/Items/space"
 
 export interface Group {
   name?: string
@@ -23,7 +24,6 @@ export interface MenuListProps {
   items: Group[]
   command: (command: Command) => void
 }
-
 
 type ActionType = "reschedule" | "space"
 export interface InboxActionsProps {

@@ -1,10 +1,11 @@
 "use client"
 import * as React from "react"
+
 import { Check, Plus, X } from "@phosphor-icons/react"
 import axios from "axios"
-import Button from "../atoms/Button"
+
 import InboxActions from "./InboxActions"
-import { Input } from "../ui/input"
+import InboxItems from "./InboxItems"
 import { useAuth } from "../../contexts/AuthContext"
 import useEditorHook from "../../hooks/useEditor.hook"
 import { useToast } from "../../hooks/useToast"
@@ -12,8 +13,9 @@ import { BACKEND_URL } from "../../lib/constants/urls"
 import InboxIcon from "../../lib/icons/InboxIcon"
 import useInboxStore from "../../lib/store/inbox.store"
 import useSpaceStore from "../../lib/store/space.inbox"
+import Button from "../atoms/Button"
+import { Input } from "../ui/input"
 import TextEditor from "@/src/components/atoms/Editor"
-import InboxItems from "./InboxItems"
 
 const InboxSection: React.FC = () => {
   const { session } = useAuth()
@@ -26,8 +28,8 @@ const InboxSection: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = React.useState<string>("")
 
   const editor = useEditorHook({
-    content : description,
-    setContent : setDescription,
+    content: description,
+    setContent: setDescription,
     setIsSaved,
     placeholder: "Enter your description here or use '/' for markdown",
   })
@@ -78,7 +80,7 @@ const InboxSection: React.FC = () => {
       if (res.status === 200) {
         void fetchInboxData(session)
         setDescription(" ")
-        editor?.commands.setContent(""); 
+        editor?.commands.setContent("")
         setTitle("")
         setDate(undefined)
         setSelectedPages([])
@@ -97,9 +99,7 @@ const InboxSection: React.FC = () => {
       <h1 className=" mb-4 flex items-center gap-4 text-4xl font-semibold text-black dark:text-zinc-300">
         <InboxIcon /> Inbox
       </h1>
-      {isAddItem ? (
-        <></>
-      ) : (
+      {isAddItem && (
         <Button
           onClick={() => setIsAddItem(true)}
           variant={"invisible"}
@@ -112,14 +112,14 @@ const InboxSection: React.FC = () => {
       {isAddItem && editor && (
         <div>
           <div className="group mb-6 h-full rounded-xl border bg-white p-2 focus-within:border-border dark:border-border dark:bg-background dark:text-white dark:focus-within:border-border">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <Input
                 placeholder="Title"
                 className="mb-2 border-none text-xl outline-none"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <div>
                   <InboxActions
                     actions={["reschedule"]}
@@ -138,17 +138,17 @@ const InboxSection: React.FC = () => {
                   />
                 </div>
                 <button
-                  className="hover:bg-secondary-foreground rounded-lg p-1"
+                  className="rounded-lg p-1 hover:bg-secondary-foreground"
                   onClick={addItemToInbox}
                 >
                   <Check size={20} />
                 </button>
                 <button
-                  className="hover:bg-secondary-foreground rounded-lg p-1"
+                  className="rounded-lg p-1 hover:bg-secondary-foreground"
                   onClick={() => {
                     setIsAddItem(false)
                     setDescription("")
-                    editor.commands.setContent(""); //Reset the text-editor content
+                    editor.commands.setContent("") //Reset the text-editor content
                   }}
                 >
                   <X size={20} />
