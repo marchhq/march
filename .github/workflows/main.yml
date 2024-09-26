@@ -1,0 +1,13 @@
+name: Notify on march discord
+on:
+  issues:
+    types: [opened, closed]
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"New issue created: ${{ github.event.issue.html_url }}\"}" \
+               ${{ secrets.DISCORD_WEBHOOK }}
