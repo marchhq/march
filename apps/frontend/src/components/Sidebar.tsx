@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
-
+import Image from "next/image"
 import { Icon } from "@iconify-icon/react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
@@ -89,7 +89,7 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-<div className="relative group mx-4 my-auto flex flex-col select-none rounded-[30px] border border-border bg-background transition-all duration-150 w-[60px] hover:w-[80px] hover:h-[520px] overflow-hidden">
+<div className="relative mx-4 my-auto flex flex-col group rounded-[30px] border border-border bg-background px-2 py-4 h-[200px] w-[60px] hover:h-[520px] hover:transition-all duration-300 ease-in-out overflow-hidden">
 <div className="flex flex-col gap-2">
         <SidebarLink
           href={"/inbox"}
@@ -125,7 +125,7 @@ const Sidebar: React.FC = () => {
           label="space"
           isActive={pathname.includes("/space/")}
         />
-        {/* Feedback */}
+        {/* Feedback 
         <div
           className={classNames(navLinkClassName, "text-secondary-foreground")}
           role="button"
@@ -142,83 +142,88 @@ const Sidebar: React.FC = () => {
             style={{ fontSize: "30px " }}
           />
         </div>
-      </div>
-      {/* 
-      <div className="flex flex-col gap-0.5">
+        */}
+      </div> 
+      <div className="hidden group-hover:flex flex-col gap-4 mt-6">
+        <SidebarLink
+          href="/record/"
+          icon={<svg fill="none" 
+            height="24"
+             viewBox="0 0 24 24"
+            width="24" 
+            xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 21L11 3C11 2.44772 11.4477 2 12 2C12.5523 2 13 2.44772 13 3L13 21C13 21.5523 12.5523 22 12 22C11.4477 22 11 21.5523 11 21Z" fill="grey"/>
+              <path d="M15 4C15.5523 4 16 4.44772 16 5L16 19C16 19.5523 15.5523 20 15 20C14.4477 20 14 19.5523 14 19L14 5C14 4.44772 14.4477 4 15 4Z" fill="grey"/>
+              <path d="M19 8C19 7.44772 18.5523 7 18 7C17.4477 7 17 7.44772 17 8L17 16C17 16.5523 17.4477 17 18 17C18.5523 17 19 16.5523 19 16L19 8Z" fill="grey"/>
+              <path d="M21 10C21.5523 10 22 10.4477 22 11L22 14C22 14.5523 21.5523 15 21 15C20.4477 15 20 14.5523 20 14L20 11C20 10.4477 20.4477 10 21 10Z" fill="grey"/>
+              <path d="M10 5C10 4.44772 9.55229 4 9 4C8.44772 4 8 4.44772 8 5L8 19C8 19.5523 8.44772 20 9 20C9.55229 20 10 19.5523 10 19L10 5Z" fill="grey"/>
+              <path d="M6 7C6.55229 7 7 7.44772 7 8L7 16C7 16.5523 6.55228 17 6 17C5.44772 17 5 16.5523 5 16L5 8C5 7.44772 5.44772 7 6 7Z" fill="grey"/>
+              <path d="M4 11C4 10.4477 3.55229 10 3 10C2.44772 10 2 10.4477 2 11V14C2 14.5523 2.44771 15 3 15C3.55228 15 4 14.5523 4 14L4 11Z" fill="grey"/>
+              </svg>}
+          label="Record" isActive={false}        />
         <SidebarLink
           href="/profile/"
-          icon={
-            <Image
-              src={data ? data.avatar : "/icons/user.jpg"}
-              alt="profile"
-              width={26}
-              height={26}
-              className="rounded-full"
-            />
-          }
-          label="profile"
-        />
+          icon={<Image
+            src={data ? data.avatar : "/icons/user.jpg"}
+            alt="profile"
+            width={26}
+            height={26}
+            className="rounded-full" />}
+          label="profile" isActive={false}        />
         <SidebarLink
-          href="/settings/"
-          icon={
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 22 22"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20.0668 6.20845L19.5858 5.39468C19.2221 4.77924 19.0403 4.47152 18.7308 4.34881C18.4214 4.22611 18.0714 4.32293 17.3715 4.51658L16.1826 4.8431C15.7358 4.94357 15.2669 4.88657 14.8589 4.68218L14.5307 4.49752C14.1808 4.27903 13.9117 3.95689 13.7627 3.57823L13.4374 2.63072C13.2234 2.0037 13.1164 1.69019 12.8617 1.51086C12.6071 1.33154 12.2688 1.33154 11.5922 1.33154H10.506C9.82951 1.33154 9.49121 1.33154 9.23651 1.51086C8.98187 1.69019 8.87489 2.0037 8.66095 2.63072L8.33556 3.57823C8.1866 3.95689 7.91748 4.27903 7.56761 4.49752L7.23937 4.68218C6.83135 4.88657 6.36254 4.94357 5.91569 4.8431L4.72675 4.51658C4.02683 4.32293 3.67688 4.22611 3.36745 4.34881C3.05801 4.47152 2.87616 4.77924 2.51243 5.39468L2.03151 6.20845C1.69057 6.78533 1.5201 7.07378 1.55319 7.38084C1.58626 7.6879 1.81448 7.93535 2.2709 8.43024L3.2755 9.52529C3.52104 9.82834 3.69536 10.3565 3.69536 10.8314C3.69536 11.3065 3.52109 11.8345 3.27553 12.1377L2.2709 13.2328C1.81448 13.7277 1.58627 13.9751 1.55319 14.2822C1.5201 14.5893 1.69057 14.8777 2.03151 15.4545L2.51242 16.2683C2.87614 16.8837 3.05801 17.1915 3.36745 17.3142C3.67688 17.4369 4.02684 17.3401 4.72677 17.1464L5.91565 16.8199C6.36258 16.7194 6.83148 16.7765 7.23954 16.9809L7.56773 17.1656C7.91754 17.3841 8.18659 17.7061 8.33553 18.0848L8.66095 19.0324C8.87489 19.6594 8.98187 19.9729 9.23651 20.1523C9.49121 20.3315 9.82951 20.3315 10.506 20.3315H11.5922C12.2688 20.3315 12.6071 20.3315 12.8617 20.1523C13.1164 19.9729 13.2234 19.6594 13.4374 19.0324L13.7628 18.0848C13.9117 17.7061 14.1807 17.3841 14.5306 17.1656L14.8587 16.9809C15.2668 16.7765 15.7357 16.7194 16.1826 16.8199L17.3715 17.1464C18.0714 17.3401 18.4214 17.4369 18.7308 17.3142C19.0403 17.1915 19.2221 16.8837 19.5858 16.2683L20.0668 15.4545C20.4077 14.8777 20.5781 14.5893 20.5451 14.2822C20.512 13.9751 20.2838 13.7277 19.8274 13.2328L18.8227 12.1377C18.5772 11.8345 18.4029 11.3065 18.4029 10.8314C18.4029 10.3565 18.5773 9.82834 18.8227 9.52529L19.8274 8.43024C20.2838 7.93535 20.512 7.6879 20.5451 7.38084C20.5781 7.07378 20.4077 6.78533 20.0668 6.20845Z"
-                stroke={pathname === "/settings/" ? "#000" : "#676767"}
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M14.5491 10.8315C14.5491 12.7645 12.9821 14.3315 11.0491 14.3315C9.11611 14.3315 7.54913 12.7645 7.54913 10.8315C7.54913 8.89854 9.11611 7.33154 11.0491 7.33154C12.9821 7.33154 14.5491 8.89854 14.5491 10.8315Z"
-                stroke={pathname === "/settings/" ? "#000" : "#676767"}
-                strokeWidth="1.5"
-              />
-            </svg>
-          }
-          label="settings"
-        />
+         href="/mode/"
+         icon={
+           <svg
+             width="24"
+             height="24"
+             viewBox="0 0 102.05 102.05"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg"
+           >
+             <path
+               stroke="white"
+               fill="none"
+               strokeWidth="2"
+               d="M50.51,51.42a34.94,34.94,0,0,1-9.76-29.91A30.77,30.77,0,1,0,80.92,61.1A34.86,34.86,0,0,1,50.51,51.42Z"
+             />
+             <path
+               stroke="white"
+               fill="#161616"
+               strokeWidth="2"
+               d="M85.29,57a2,2,0,0,0-1.94-.5A30.76,30.76,0,0,1,45.34,19a2,2,0,0,0-2.47-2.43A34.77,34.77,0,1,0,85.82,58.9,2,2,0,0,0,85.29,57ZM74,71.83a30.77,30.77,0,1,1-33.2-50.32A34.74,34.74,0,0,0,80.92,61.1,30.79,30.79,0,0,1,74,71.83Z"
+             />
+           </svg>
+         }
+          label="mode" isActive={false} />
         <SidebarLink
           href="/info/"
-          icon={
-            <svg
-              width="22"
-              height="23"
-              viewBox="0 0 22 23"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11.0491 21.3315C16.572 21.3315 21.0491 16.8544 21.0491 11.3315C21.0491 5.8087 16.572 1.33154 11.0491 1.33154C5.52629 1.33154 1.04913 5.8087 1.04913 11.3315C1.04913 16.8544 5.52629 21.3315 11.0491 21.3315Z"
-                stroke={pathname === "/info/" ? "#000" : "#676767"}
-                strokeWidth="1.5"
-              />
-              <path
-                d="M9.04913 8.33154C9.04913 7.22697 9.94453 6.33154 11.0491 6.33154C12.1537 6.33154 13.0491 7.22697 13.0491 8.33154C13.0491 8.72969 12.9328 9.10067 12.7322 9.41234C12.1345 10.3412 11.0491 11.2269 11.0491 12.3315V12.8315"
-                stroke={pathname === "/info/" ? "#000" : "#676767"}
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M11.0413 16.3315H11.0503"
-                stroke={pathname === "/info/" ? "#000" : "#676767"}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            
-          }
-          
-          label="Feedback"
-        />
+          icon={<svg
+            width="22"
+            height="23"
+            viewBox="0 0 22 23"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.0491 21.3315C16.572 21.3315 21.0491 16.8544 21.0491 11.3315C21.0491 5.8087 16.572 1.33154 11.0491 1.33154C5.52629 1.33154 1.04913 5.8087 1.04913 11.3315C1.04913 16.8544 5.52629 21.3315 11.0491 21.3315Z"
+              stroke={pathname === "/info/" ? "#000" : "#676767"}
+              strokeWidth="1.5" />
+            <path
+              d="M9.04913 8.33154C9.04913 7.22697 9.94453 6.33154 11.0491 6.33154C12.1537 6.33154 13.0491 7.22697 13.0491 8.33154C13.0491 8.72969 12.9328 9.10067 12.7322 9.41234C12.1345 10.3412 11.0491 11.2269 11.0491 12.3315V12.8315"
+              stroke={pathname === "/info/" ? "#000" : "#676767"}
+              strokeWidth="1.5"
+              strokeLinecap="round" />
+            <path
+              d="M11.0413 16.3315H11.0503"
+              stroke={pathname === "/info/" ? "#000" : "#676767"}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round" />
+          </svg>}
+
+          label="Feedback" isActive={false}        />
       </div>
-      */}
+      
     </div>
   )
 }
