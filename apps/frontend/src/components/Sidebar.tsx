@@ -145,7 +145,7 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-    <div className=" mx-4 my-auto flex select-none flex-col items-center justify-center rounded-[30px] border border-border bg-background px-2 py-8">
+    <div className="mx-4 my-auto flex select-none flex-col items-center justify-center rounded-[30px] border border-border bg-background px-2 py-8">
       <motion.div
         className="flex flex-col gap-2"
         onMouseMove={(e) => mouseY.set(e.pageY)}
