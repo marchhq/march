@@ -1,15 +1,13 @@
 import React, { useState } from "react"
-
+import useSpaceStore from "../lib/store/space.inbox"
+import { useAuth } from "../contexts/AuthContext"
+import { Input } from "./ui/input"
+import { useToast } from "../hooks/useToast"
 import { AxiosError } from "axios"
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
-import { SmilePlusIcon } from "lucide-react"
-
 import Button from "./atoms/Button"
+import { SmilePlusIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
-import { Input } from "./ui/input"
-import { useAuth } from "../contexts/AuthContext"
-import { useToast } from "../hooks/useToast"
-import useSpaceStore from "../lib/store/space.inbox"
 
 const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
   const [name, setName] = useState("")
@@ -55,10 +53,10 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
 
   return (
     <form
-      className="p-4 dark:text-primary-foreground"
+      className="dark:text-primary-foreground p-4"
       onSubmit={handleCreatePage}
     >
-      <div className="relative flex items-center gap-2">
+      <div className="relative flex gap-2 items-center">
         <Input
           type="text"
           placeholder="Enter a space Name"
@@ -70,18 +68,20 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
         <button
           onClick={() => setIsEmojiPickerOpen((val) => !val)}
           type="button"
-          className="cursor-pointer rounded-full p-2"
+          className={`rounded-full cursor-pointer ${isEmojiPickerOpen ? "bg-secondary-foreground animate-fadeIn" : "animate-fadeIn"}`}
         >
           {icon && icon !== "home" ? (
-            <div className="size-5">{icon}</div>
+            <div className="text-xl animate-slideDownAndFade p-2">{icon}</div>
           ) : (
-            <SmilePlusIcon />
+            <div className="p-2">
+              <SmilePlusIcon />
+            </div>
           )}
         </button>
         {isEmojiPickerOpen && (
-          <div className="absolute right-0 top-12 w-full">
+          <div className="absolute w-full top-12 right-0">
             {/* TODO:: Need to optimize this picker, fetches icons on every time modal is opened
-                       - One way would be to use a provider and move this to a separate component
+                       - One way would be to use a provider and move this to a separate compon
             */}
             <EmojiPicker
               theme={Theme.AUTO}
@@ -89,6 +89,7 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
               height={350}
               width={"100%"}
               onEmojiClick={onEmojiClick}
+              lazyLoadEmojis
             />
           </div>
         )}
@@ -109,7 +110,7 @@ const CreateSpaceForm = ({ hideModal }: { hideModal?: () => void }) => {
 
       <button
         type="submit"
-        className="mt-6 w-full cursor-pointer self-end rounded-lg p-2 hover:bg-border"
+        className="p-2 hover:bg-border cursor-pointer rounded-lg mt-6 self-end w-full"
       >
         Create Space
       </button>

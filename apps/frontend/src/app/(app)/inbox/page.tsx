@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import Container from "@/src/components/atoms/Container"
-import InboxSection from "@/src/components/InboxSection"
+import InboxSection from "@/src/components/Inbox/InboxSection"
 
 const InboxPage: React.FC = () => {
   return (

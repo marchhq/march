@@ -1,47 +1,34 @@
-import { useState } from "react"
-
+import React, { useState } from "react"
 import { Check, NoteBlank, Plus } from "@phosphor-icons/react"
 import { House } from "@phosphor-icons/react/dist/ssr"
 import { Clock } from "lucide-react"
 
-import Button from "./atoms/Button"
-import { Popover, PopoverContent, PopoverTrigger } from "./atoms/Popover"
-import CreateSpaceForm from "./CreateSpaceForm"
-import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
-import { DialogDescription, DialogTitle } from "./ui/dialog"
-import { useModal } from "../contexts/ModalProvider"
-import { Page } from "../lib/@types/Items/space"
-
-type ActionType = "reschedule" | "space"
-
-interface InboxActionsProps {
-  pages?: Page[]
-  itemId?: string
-  itemBelongsToPages?: string[]
-  moveItemToSpace?: (
-    itemId: string,
-    spaceId: string,
-    action: "add" | "remove"
-  ) => void
-  actions: ActionType[] | ""
-  setDate?: (date: Date | undefined) => void
-  setSelectedItemId?: (itemId: string) => void
-  dueDate?: Date
-}
+import { useModal } from "../../contexts/ModalProvider"
+import { Page } from "../../lib/@types/Items/space"
+import { DialogDescription, DialogTitle } from "../ui/dialog"
+import CreateSpaceForm from "../CreateSpaceForm"
+import { RescheduleCalendar } from "../RescheduleCalendar/RescheduleCalendar"
+import { Popover, PopoverContent, PopoverTrigger } from "../atoms/Popover"
+import Button from "../atoms/Button"
+import { InboxActionsProps } from "@/src/extensions/SlashCommand/types"
 
 const InboxActions = ({
-  pages = [], // Default empty array if no pages provided
+  pages = [],
   itemId,
-  itemBelongsToPages = [], // Default empty array for itemBelongsToPages
-  moveItemToSpace,
+  itemBelongsToPages = [],
+  dueDate,
   actions,
+  isAddItem,
+  selectedPages = [],
+  moveItemToSpace,
   setDate = () => {},
   setSelectedItemId,
-  dueDate,
+  setSelectedPages = () => {},
 }: InboxActionsProps) => {
-  const [isCreating, setIsCreating] = useState<boolean>(false)
+  const [isCreating, ] = useState<boolean>(false)
   const { showModal, hideModal } = useModal()
 
+  // Show modal to create a new space
   const showCreateSpaceForm = () => {
     showModal(
       <>
@@ -55,6 +42,21 @@ const InboxActions = ({
     )
   }
 
+  // Handle page selection for adding or moving items
+  const handlePageSelection = (pageId: string) => {
+    if (isAddItem) {
+      setSelectedPages((prevSelectedPages) => {
+        const isPageSelected = prevSelectedPages.includes(pageId)
+        return isPageSelected
+          ? prevSelectedPages.filter((id) => id !== pageId)
+          : [...prevSelectedPages, pageId]
+      })
+    } else if (moveItemToSpace) {
+      const isItemInSpace = itemBelongsToPages.includes(pageId)
+      moveItemToSpace(itemId || "", pageId, isItemInSpace ? "remove" : "add")
+    }
+  }
+
   return (
     <div>
       {/* Calendar Action */}
@@ -62,15 +64,13 @@ const InboxActions = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => {
-            itemId && setSelectedItemId?.(itemId)
-          }}
+          onClick={() => itemId && setSelectedItemId?.(itemId)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               itemId && setSelectedItemId?.(itemId)
             }
           }}
-          className="invisible focus-within:visible group-hover:visible"
+          className={`${isAddItem ? "visible" : "invisible focus-within:visible group-hover:visible"}`}
         >
           <RescheduleCalendar
             date={dueDate}
@@ -98,35 +98,23 @@ const InboxActions = ({
                   const isItemInSpace = itemBelongsToPages.includes(
                     page._id || ""
                   )
+                  const isPageSelected = selectedPages.includes(page._id || "")
+
                   return (
                     <button
                       className="flex w-full items-center justify-between rounded-lg p-2 hover:bg-border"
                       key={page.uuid}
-                      onClick={() =>
-                        isItemInSpace
-                          ? moveItemToSpace?.(
-                              itemId || "",
-                              page._id || "",
-                              "remove"
-                            )
-                          : moveItemToSpace?.(
-                              itemId || "",
-                              page._id || "",
-                              "add"
-                            )
-                      }
+                      onClick={() => handlePageSelection(page._id || "")}
                     >
                       <div className="flex items-center gap-2">
                         {page.icon === "home" ? (
-                          <span>
-                            <House size={21} />
-                          </span>
+                          <House size={21} />
                         ) : (
                           <span>{page.icon}</span>
                         )}
                         {page.name}
                       </div>
-                      {isItemInSpace && <Check />}
+                      {(isItemInSpace || isPageSelected) && <Check />}
                     </button>
                   )
                 })
