@@ -151,6 +151,10 @@ const InboxPage: React.FC = () => {
     }
   }
 
+  const handleDoubleClick = () => {
+    console.log("double click")
+  }
+
   return (
     <section className="h-full overflow-y-auto bg-background ml-[160px] p-16 text-secondary-foreground">
       <div className="max-w-[800px]">
@@ -206,6 +210,7 @@ const InboxPage: React.FC = () => {
                       console.log("item.uuid", item.uuid)
                       console.log("editedItemId", editItemId)
                     }}
+                    onDoubleClick={() => handleEditItem(item)}
                   >
                     <div className="flex justify-between text-foreground">
                       <div className="w-full flex items-start gap-2">
