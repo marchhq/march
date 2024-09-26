@@ -13,16 +13,16 @@ const getUserItems = async (me) => {
     return items;
 }
 
-// const getUserTodayItems = async (me) => {
-//     // const today = new Date();
-//     const startOfDay = moment().startOf('day');
-//     const items = await Integration.find({
-//         user: me,
-//         date: { $gte: startOfDay, $lt: moment().endOf('day') }
-//     })
+const getUserTodayItems = async (me) => {
+    // const today = new Date();
+    const startOfDay = moment().startOf('day');
+    const items = await Item.find({
+        user: me,
+        dueDate: { $gte: startOfDay, $lt: moment().endOf('day') }
+    })
 
-//     return items;
-// }
+    return items;
+}
 
 const getUserOverdueItems = async (me) => {
     const startOfDay = moment().startOf('day');
@@ -192,5 +192,6 @@ export {
     getItem,
     getUserOverdueItems,
     getUserItemsByDate,
-    moveItemtoDate
+    moveItemtoDate,
+    getUserTodayItems
 }
