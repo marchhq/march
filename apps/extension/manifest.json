@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "march",
+  "version": "1.0",
+  "description": "An extension for march",
+  "permissions": ["activeTab", "cookies", "storage", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "host_permissions": ["<all_urls>"]
+}

@@ -18,9 +18,10 @@ interface Props {
   editor: Editor | null
   placeholder?: string
   content?: string
+  minH?: string
 }
 
-const TextEditor: React.FC<Props> = ({ editor }) => {
+const TextEditor: React.FC<Props> = ({ editor, minH = "70vh" }) => {
   return (
     <div>
       {editor !== null && (
@@ -111,7 +112,9 @@ const TextEditor: React.FC<Props> = ({ editor }) => {
       )}{" "}
       <EditorContent
         // eslint-disable-next-line tailwindcss/no-contradicting-classname
-        className="w-full break-words break-all"
+        className={`[&>.ProseMirror.tiptap]:text-foreground w-full break-words break-all`}
+        style={{ minHeight: minH }}
+        // style={{ minHeight: "20vh" }}
         editor={editor}
       />
     </div>

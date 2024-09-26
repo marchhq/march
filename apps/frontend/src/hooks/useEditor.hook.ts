@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 import Link from "@tiptap/extension-link"
-import Placeholder from "@tiptap/extension-placeholder"
+import { Placeholder } from "@tiptap/extension-placeholder"
 import TaskItem from "@tiptap/extension-task-item"
 import TaskList from "@tiptap/extension-task-list"
 import { type Editor, useEditor } from "@tiptap/react"
@@ -20,7 +20,7 @@ const useEditorHook = ({
   content,
   setContent,
   setIsSaved,
-  placeholder,
+  placeholder = "press / for markdown format",
 }: Props): Editor | null => {
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
     null
@@ -45,6 +45,9 @@ const useEditorHook = ({
         },
       }),
       SlashCommand,
+      Placeholder.configure({
+        placeholder,
+      }),
     ],
     content,
     autofocus: "end",
@@ -57,8 +60,8 @@ const useEditorHook = ({
 
       const newTimer = setTimeout(() => {
         setContent(editor.getHTML())
-        setIsSaved && setIsSaved(true)
-      }, 2000)
+      setIsSaved &&  setIsSaved(true)
+      }, 1000)
 
       setDebounceTimer(newTimer)
     },

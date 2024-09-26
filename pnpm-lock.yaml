@@ -203,7 +203,7 @@ importers:
         specifier: ^2.5.8
         version: 2.5.8(@tiptap/core@2.6.6(@tiptap/pm@2.5.8))(@tiptap/pm@2.5.8)
       '@tiptap/extension-placeholder':
-        specifier: ^2.6.6
+        specifier: ^2.7.2
         version: 2.7.2(@tiptap/core@2.6.6(@tiptap/pm@2.5.8))(@tiptap/pm@2.5.8)
       '@tiptap/extension-task-item':
         specifier: ^2.5.8
