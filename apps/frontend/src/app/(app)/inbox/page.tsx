@@ -53,7 +53,7 @@ const InboxPage: React.FC = () => {
     if (editItemId && editorEditItem) {
       editorEditItem.commands.setContent(editedItem.description)
     }
-  }, [editItemId])
+  }, [editItemId, editedItem])
 
   useEffect(() => {
     const textarea = textareaRef.current
@@ -85,15 +85,16 @@ const InboxPage: React.FC = () => {
       title: item.title,
       description: item.description,
     })
+    editorEditItem?.setEditable(true)
   }
 
   const handleCancelEditItem = () => {
     setEditItemId(null)
     setEditedItem({ title: "", description: "" })
+    editorEditItem?.setEditable(false)
   }
 
   const handleSaveEditedItem = async (item: any) => {
-    console.log(editedItem)
     try {
       const config = {
         headers: {
@@ -209,6 +210,8 @@ const InboxPage: React.FC = () => {
                     onClick={() => {
                       console.log("item.uuid", item.uuid)
                       console.log("editedItemId", editItemId)
+                      console.log("editedItem", editedItem)
+                      console.log("item.description", item.description)
                     }}
                     onDoubleClick={() => handleEditItem(item)}
                   >
@@ -225,7 +228,7 @@ const InboxPage: React.FC = () => {
                               ref={textareaRef}
                               value={editedItem.title}
                               onChange={(e) =>
-                                setEditedItem((prev) => ({
+                                SetEditedItem((prev) => ({
                                   ...prev,
                                   title: e.target.value,
                                 }))
@@ -269,7 +272,11 @@ const InboxPage: React.FC = () => {
                       {editItemId === item.uuid ? (
                         <TextEditor editor={editorEditItem} minH="1vh" />
                       ) : (
-                        <p>{item.description}</p>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: item.description || "",
+                          }}
+                        />
                       )}
                     </div>
                   </div>
