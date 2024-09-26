@@ -6,6 +6,7 @@ import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
+import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 
 const integrations = [
   {
@@ -40,6 +41,7 @@ const integrations = [
 
 export const IntegrationList = (): JSX.Element => {
   const user = useUserInfo()
+  const handleLogin = useGoogleCalendarLogin()
 
   return (
     <div className=" space-y-4">
@@ -70,7 +72,9 @@ export const IntegrationList = (): JSX.Element => {
                 <ChevronDown size={13} />
               </button>
             ) : (
-              <button className="flex items-center text-sm">
+              <button
+                onClick={integration.key == "googleCalendar" ? handleLogin : () => { }}
+                className="flex items-center text-sm">
                 Connect
                 <ChevronRight size={13} />
               </button>

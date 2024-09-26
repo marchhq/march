@@ -1,23 +1,24 @@
 import { useCallback } from "react"
-
 import { useRouter } from "next/navigation"
-
 import { FRONTEND_URL } from "../lib/constants/urls"
 
 const useGoogleCalendarLogin = (): (() => Promise<void>) => {
   const router = useRouter()
 
   const handleLogin = useCallback(async () => {
+    console.log("handleLogin function called for Google Calendar")
     try {
       const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
       const GOOGLE_SCOPE = "https://www.googleapis.com/auth/calendar"
-      const GOOGLE_REDIRECT_URI = `${FRONTEND_URL}/auth/google`
+      const GOOGLE_REDIRECT_URI = `${FRONTEND_URL}/auth/google-calendar`
 
       if (!GOOGLE_CLIENT_ID || !GOOGLE_REDIRECT_URI) {
         throw new Error("Google Client ID or Redirect URI is not set")
       }
 
       const calAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=${GOOGLE_SCOPE}&access_type=offline`
+
+      console.log("Redirecting to Google Calendar auth URL:", calAuthUrl)
 
       router.push(calAuthUrl)
     } catch (error) {
