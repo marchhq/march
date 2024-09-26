@@ -1,12 +1,12 @@
 import { v4 as uuid } from "uuid";
 import { google } from "googleapis";
 import axios from 'axios';
-import { OauthClient } from "../../loaders/google.loader.js";
+import { OauthCalClient } from "../../loaders/google.loader.js";
 import { Meeting } from "../../models/page/meetings.model.js";
 import { environment } from "../../loaders/environment.loader.js";
 
 const getGoogleCalendarOAuthAuthorizationUrl = () => {
-    const authUrl = OauthClient.generateAuthUrl({
+    const authUrl = OauthCalClient.generateAuthUrl({
         access_type: 'offline',
         scope: ['https://www.googleapis.com/auth/calendar'],
         response_type: 'code'
@@ -15,8 +15,8 @@ const getGoogleCalendarOAuthAuthorizationUrl = () => {
 };
 
 const getGoogleCalendarAccessToken = async (code, user) => {
-    const { tokens } = await OauthClient.getToken(code);
-    OauthClient.setCredentials(tokens);
+    const { tokens } = await OauthCalClient.getToken(code);
+    OauthCalClient.setCredentials(tokens);
 
     user.integration.googleCalendar.accessToken = tokens.access_token;
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
@@ -26,11 +26,11 @@ const getGoogleCalendarAccessToken = async (code, user) => {
 };
 
 const refreshGoogleCalendarAccessToken = async (user) => {
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         refresh_token: user.privateMetadata.integration.googleCalendar.refreshToken
     });
 
-    const { credentials } = await OauthClient.refreshAccessToken();
+    const { credentials } = await OauthCalClient.refreshAccessToken();
     console.log("access_token: ", credentials.access_token);
     user.integration.googleCalendar.accessToken = credentials.access_token;
     user.integration.googleCalendar.refreshToken = credentials.refresh_token;
@@ -67,12 +67,12 @@ const getGoogleCalendarEvents = async (user) => {
         accessToken = await refreshGoogleCalendarAccessToken(user);
     }
 
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const events = await calendar.events.list({
         calendarId: 'primary'
     });
@@ -90,12 +90,12 @@ const getGoogleCalendarMeetings = async (user) => {
         accessToken = await refreshGoogleCalendarAccessToken(user);
     }
 
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const res = await calendar.events.list({
         calendarId: 'primary',
         singleEvents: true,
@@ -114,12 +114,12 @@ const getGoogleCalendarMeetings = async (user) => {
 };
 
 const getGoogleCalendarupComingMeetings = async (accessToken, refreshToken) => {
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const res = await calendar.events.list({
         calendarId: 'primary',
         timeMin: (new Date()).toISOString(),
@@ -147,12 +147,12 @@ const addGoogleCalendarEvent = async (user, event) => {
         accessToken = await refreshGoogleCalendarAccessToken(user);
     }
 
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const newEvent = await calendar.events.insert({
         calendarId: 'primary',
         resource: event
@@ -170,12 +170,12 @@ const updateGoogleCalendarEvent = async (user, eventId, event) => {
         accessToken = await refreshGoogleCalendarAccessToken(user);
     }
 
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const updatedEvent = await calendar.events.update({
         calendarId: 'primary',
         eventId: eventId,
@@ -195,12 +195,12 @@ const deleteGoogleCalendarEvent = async (user, eventId) => {
         accessToken = await refreshGoogleCalendarAccessToken(user);
     }
 
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     await calendar.events.delete({
         calendarId: 'primary',
         eventId
@@ -264,12 +264,12 @@ const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
 };
 
 const handleCalendarWebhookService = async (accessToken, refreshToken, userId) => {
-    OauthClient.setCredentials({
+    OauthCalClient.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
     });
 
-    const calendar = google.calendar({ version: 'v3', auth: OauthClient });
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
 
     const eventsResponse = await calendar.events.list({
         calendarId: 'primary',
