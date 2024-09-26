@@ -33,7 +33,6 @@
     "@tiptap/extension-placeholder": "^2.7.2",
     "@tiptap/extension-task-item": "^2.5.8",
     "@tiptap/extension-task-list": "^2.5.8",
-    "@tiptap/extension-text-style": "^2.7.4",
     "@tiptap/pm": "^2.5.8",
     "@tiptap/react": "^2.5.8",
     "@tiptap/starter-kit": "^2.5.8",
