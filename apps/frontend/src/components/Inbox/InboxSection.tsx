@@ -99,7 +99,7 @@ const InboxSection: React.FC = () => {
       <h1 className=" mb-4 flex items-center gap-4 text-4xl font-semibold text-black dark:text-zinc-300">
         <InboxIcon /> Inbox
       </h1>
-      {isAddItem && (
+      {!isAddItem && (
         <Button
           onClick={() => setIsAddItem(true)}
           variant={"invisible"}
@@ -141,7 +141,7 @@ const InboxSection: React.FC = () => {
                   className="rounded-lg p-1 hover:bg-secondary-foreground"
                   onClick={addItemToInbox}
                 >
-                  <Check size={20} />
+                  <Check size={20} color="duotone"/>
                 </button>
                 <button
                   className="rounded-lg p-1 hover:bg-secondary-foreground"
@@ -151,12 +151,12 @@ const InboxSection: React.FC = () => {
                     editor.commands.setContent("") //Reset the text-editor content
                   }}
                 >
-                  <X size={20} />
+                  <X size={20} color="duotone"/>
                 </button>
               </div>
             </div>
             <div className="pl-3">
-              <TextEditor editor={editor} />
+              <TextEditor minH="40px" editor={editor} />
             </div>
           </div>
         </div>

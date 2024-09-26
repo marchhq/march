@@ -121,6 +121,13 @@ const InboxItems: React.FC<InboxItemProps> = ({
 
   // Save edited changes
   const saveChanges = async (item: any) => {
+    if (!editedItem.title.trim()) {
+        toast({
+          title: "Title is required",
+          variant: "destructive",
+        })
+        return
+      }
     try {
       const config = {
         headers: {
@@ -204,7 +211,7 @@ const InboxItems: React.FC<InboxItemProps> = ({
                     </div>
                   </div>
                   <div className="cursor-text">
-                    <TextEditor editor={editor} />
+                    <TextEditor minH="20px" editor={editor} />
                   </div>
                 </>
               ) : (

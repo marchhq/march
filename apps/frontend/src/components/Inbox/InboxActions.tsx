@@ -5,7 +5,6 @@ import { House } from "@phosphor-icons/react/dist/ssr"
 import { Clock } from "lucide-react"
 
 import { useModal } from "../../contexts/ModalProvider"
-import { Page } from "../../lib/@types/Items/space"
 import Button from "../atoms/Button"
 import { Popover, PopoverContent, PopoverTrigger } from "../atoms/Popover"
 import CreateSpaceForm from "../CreateSpaceForm"
@@ -71,7 +70,7 @@ const InboxActions = ({
               itemId && setSelectedItemId?.(itemId)
             }
           }}
-          className={`${isAddItem ? "visible" : "invisible focus-within:visible group-hover:visible"}`}
+          className={`text-primary-foreground ${isAddItem ? "visible" : "invisible focus-within:visible group-hover:visible"}`}
         >
           <RescheduleCalendar
             date={dueDate}
@@ -86,7 +85,7 @@ const InboxActions = ({
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="rounded-full p-2 hover:bg-secondary-foreground"
+              className="rounded-full p-2 hover:bg-secondary-foreground text-primary-foreground"
               type="button"
             >
               <NoteBlank size={21} />
@@ -103,7 +102,7 @@ const InboxActions = ({
 
                   return (
                     <button
-                      className="flex w-full items-center justify-between rounded-lg p-2 hover:bg-border"
+                      className="flex w-full items-center justify-between rounded-lg p-2 hover:bg-border text-primary-foreground"
                       key={page.uuid}
                       onClick={() => handlePageSelection(page._id || "")}
                     >
