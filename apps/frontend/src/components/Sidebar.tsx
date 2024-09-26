@@ -24,7 +24,7 @@ import {
 import classNames from "@/src/utils/classNames"
 
 const navLinkClassName =
-  "flex items-center justify-center gap-2 p-3 rounded-lg cursor-pointer hover-bg"
+  "flex items-center justify-center gap-2 p-3 rounded-full cursor-pointer hover-bg"
 
 const SidebarLink = ({
   href,
