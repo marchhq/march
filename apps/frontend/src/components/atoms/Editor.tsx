@@ -112,9 +112,8 @@ const TextEditor: React.FC<Props> = ({ editor, minH = "70vh" }) => {
       )}{" "}
       <EditorContent
         // eslint-disable-next-line tailwindcss/no-contradicting-classname
-        className={`[&>.ProseMirror.tiptap]:text-foreground w-full break-words break-all`}
+        className={`w-full break-words break-all [&>.ProseMirror.tiptap]:text-foreground`}
         style={{ minHeight: minH }}
-        // style={{ minHeight: "20vh" }}
         editor={editor}
       />
     </div>
