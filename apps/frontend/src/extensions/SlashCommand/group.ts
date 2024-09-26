@@ -4,6 +4,16 @@ export const GROUPS: Group[] = [
   {
     commands: [
       {
+        name: "taskList",
+        label: "Task List",
+        iconName: "ListTodo",
+        description: "Task list with todo items",
+        aliases: ["todo"],
+        action: (editor) => {
+          editor.chain().focus().toggleTaskList().run()
+        },
+      },
+      {
         name: "heading1",
         label: "Heading 1",
         iconName: "Heading1",
@@ -50,16 +60,6 @@ export const GROUPS: Group[] = [
         aliases: ["ol"],
         action: (editor) => {
           editor.chain().focus().toggleOrderedList().run()
-        },
-      },
-      {
-        name: "taskList",
-        label: "Task List",
-        iconName: "ListTodo",
-        description: "Task list with todo items",
-        aliases: ["todo"],
-        action: (editor) => {
-          editor.chain().focus().toggleTaskList().run()
         },
       },
       {
