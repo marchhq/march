@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import { useMotionValue, useSpring, useTransform, motion } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useRouter } from "next/navigation"
@@ -30,23 +31,58 @@ const SidebarLink = ({
   icon,
   label,
   isActive,
+  mouseY,
+  magnification = 60,
+  distance = 140,
 }: {
   href: string
   icon: React.ReactNode
   label: string
   isActive: boolean
+  mouseY: any
+  magnification?: number
+  distance?: number
 }) => {
+  const ref = useRef<HTMLDivElement>(null)
+
+  const distanceCalc = useTransform(mouseY, (val: number) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 }
+
+    return val - bounds.y - bounds.height / 2
+  })
+
+  const heightSync = useTransform(
+    distanceCalc,
+    [-distance, 0, distance],
+    [40, magnification, 40]
+  )
+
+  const height = useSpring(heightSync, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  })
+
   const activeClass = isActive ? "text-foreground" : "text-secondary-foreground"
+
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link
-            className={classNames(navLinkClassName, activeClass)}
-            href={href}
+          <motion.div
+            ref={ref}
+            style={{ height }}
+            className={
+              "flex aspect-square cursor-pointer items-center justify-center rounded-full"
+            }
           >
-            {icon}
-          </Link>
+            <Link
+              className={classNames(navLinkClassName, activeClass)}
+              href={href}
+            >
+              {icon}
+            </Link>
+          </motion.div>
         </TooltipTrigger>
         <TooltipContent side="right">
           <p>{label}</p>
@@ -66,6 +102,8 @@ const Sidebar: React.FC = () => {
   const { showModal } = useModal()
 
   const [lastSpaceRoute, setLastSpaceRoute] = useState<string | null>(null)
+
+  const mouseY = useMotionValue(Infinity)
 
   if (pathname.includes("auth")) {
     return null
@@ -107,13 +145,18 @@ const Sidebar: React.FC = () => {
   })
 
   return (
-    <div className="mx-4 my-auto flex select-none flex-col rounded-[30px] border border-border bg-background px-2 py-8">
-      <div className="flex flex-col gap-2">
+    <div className=" mx-4 my-auto flex select-none flex-col items-center justify-center rounded-[30px] border border-border bg-background px-2 py-8">
+      <motion.div
+        className="flex flex-col gap-2"
+        onMouseMove={(e) => mouseY.set(e.pageY)}
+        onMouseLeave={() => mouseY.set(Infinity)}
+      >
         <SidebarLink
           href={"/inbox"}
           icon={<Icon icon="hugeicons:inbox" style={{ fontSize: "28px" }} />}
           label="inbox"
           isActive={pathname.includes("/inbox/")}
+          mouseY={mouseY}
         />
         <SidebarLink
           href={"/today"}
@@ -131,6 +174,7 @@ const Sidebar: React.FC = () => {
           }
           label="today"
           isActive={pathname.includes("/today/")}
+          mouseY={mouseY}
         />
         <button onClick={handleSpaceClick}>
           <SidebarLink
@@ -143,6 +187,7 @@ const Sidebar: React.FC = () => {
             }
             label="space"
             isActive={pathname.includes("/space/")}
+            mouseY={mouseY}
           />
         </button>
         {/* Feedback */}
@@ -162,8 +207,7 @@ const Sidebar: React.FC = () => {
             style={{ fontSize: "28px " }}
           />
         </div>
-      </div>
-      {/* 
+        {/* 
       <div className="flex flex-col gap-0.5">
         <SidebarLink
           href="/profile/"
@@ -239,6 +283,7 @@ const Sidebar: React.FC = () => {
         />
       </div>
       */}
+      </motion.div>
     </div>
   )
 }
