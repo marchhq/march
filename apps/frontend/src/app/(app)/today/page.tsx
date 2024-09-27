@@ -5,8 +5,8 @@ import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
 import { TodayCal } from "@/src/lib/icons/Calendar"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
-import { TodayEvents } from "@/src/components/TodayEvents"
 import { DateCycle } from "@/src/components/atoms/Date"
+import { TodayItems } from "@/src/components/TodayItems"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
@@ -35,7 +35,7 @@ const TodayPage: React.FC = () => {
           </section>
 
           <section className="space-y-8 text-[16px]">
-            <TodayEvents selectedDate={selectedDate} />
+            <TodayItems selectedDate={selectedDate} />
           </section>
         </div>
         {showAgenda && (
