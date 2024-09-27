@@ -6,7 +6,8 @@ import {
   InboxStoreType,
   OverdueInboxItem,
   TodayInboxItem,
-} from "../@types/Items/Inbox"
+} from "@/src/lib/@types/Items/Inbox"
+
 import { BACKEND_URL } from "../constants/urls"
 
 const useInboxStore = create<InboxStoreType>((set) => ({
@@ -106,6 +107,19 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       console.error("Error while moving item to new date::", e.message)
       return null
     }
+  },
+  updateItem: (editedItem: InboxItem, id: string) => {
+    set((state) => ({
+      inboxItems: state.inboxItems.map((item) =>
+        item.uuid === id
+          ? {
+              ...item,
+              title: editedItem.title,
+              description: editedItem.description,
+            }
+          : item
+      ),
+    }))
   },
 }))
 
