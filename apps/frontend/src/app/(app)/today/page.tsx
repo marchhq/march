@@ -2,36 +2,11 @@
 import * as React from "react"
 
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/atoms/Tooltip"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
-import { Box, CheckedBox } from "@/src/lib/icons/Box"
 import { TodayCal } from "@/src/lib/icons/Calendar"
-import { GithubToday } from "@/src/lib/icons/Github"
-import { Link } from "@/src/lib/icons/Link"
-import { Space } from "@/src/lib/icons/Space"
-import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { TodayEvents } from "@/src/components/TodayEvents"
-
-const todos = [
-  {
-    icon: <Link />,
-    description: "how to get product market fit",
-    completion: false,
-  },
-  {
-    icon: <GithubToday />,
-    description: "SAT 23: Revert back to normal auth",
-    completion: true,
-    due: "since Friday",
-  },
-]
-
+import { DateCycle } from "@/src/components/atoms/Date"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
