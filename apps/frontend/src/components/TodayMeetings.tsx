@@ -18,12 +18,14 @@ const calculateDuration = (start: Date, end: Date): number => {
   return Math.round((end.getTime() - start.getTime()) / (1000 * 60));
 };
 
-export const TodayAgenda = (): JSX.Element => {
-  const meetings = useMeetings();
-  const today = new Date();
+interface TodayAgendaProps {
+  selectedDate: Date;
+}
 
+export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
+  const meetings = useMeetings();
   const todayMeetings = meetings?.meetings.filter((meeting) =>
-    isSameDay(new Date(meeting.start.dateTime), today)
+    isSameDay(new Date(meeting.start.dateTime), selectedDate)
   );
 
   const agendaItems = todayMeetings?.map((meeting) => {
@@ -40,13 +42,13 @@ export const TodayAgenda = (): JSX.Element => {
   return (
     <ol>
       {agendaItems.length === 0 ? (
-        <li className="text-[#DCDCDD]/80 text-lg font-medium">No meetings scheduled for today</li>
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">No meetings scheduled for this day</li>
       ) : (
         agendaItems.map((item, index) => (
           <React.Fragment key={index}>
             <li className="text-[#DCDCDD]/80 text-lg font-medium">{item.title}</li>
             <p>{item.time}, {item.duration} min</p>
-            <a href={item.link} className="text-[#DCDCDD] mt-4 flex justify-start items-center gap-2">
+            <a href={item.link} className="text-[#DCDCDD] mt-4 mb-8 flex justify-start items-center gap-2">
               Join Meeting
               <span>
                 <Link />

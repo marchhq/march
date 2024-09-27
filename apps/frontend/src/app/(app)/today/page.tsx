@@ -8,14 +8,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/src/components/atoms/Tooltip"
-import { TodayAgenda } from "@/src/components/TodayAgenda"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
 import { Box, CheckedBox } from "@/src/lib/icons/Box"
 import { TodayCal } from "@/src/lib/icons/Calendar"
 import { GithubToday } from "@/src/lib/icons/Github"
 import { Link } from "@/src/lib/icons/Link"
-import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
 import { Space } from "@/src/lib/icons/Space"
+import { DateCycle } from "@/src/components/atoms/Date"
+import { TodayMeetings } from "@/src/components/TodayMeetings"
 
 const todos = [
   {
@@ -31,25 +31,10 @@ const todos = [
   },
 ]
 
-const formatDate = () => {
-  const date = new Date()
-
-  const options = {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "2-digit",
-  }
-  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
-  const day = date.getDate() // Get day of the month
-  const month = date.toLocaleDateString("en-US", { month: "short" })
-  const year = date.toLocaleDateString("en-US", { year: "2-digit" })
-
-  return `${weekday}, ${day} ${month} ${year}`
-}
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
 
   const handleToggleAgenda = () => {
     setShowAgenda((prev) => !prev)
@@ -62,19 +47,11 @@ const TodayPage: React.FC = () => {
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
       </section>
 
-      {/* Use flexbox to create two columns */}
       <section className="mt-6 flex justify-between">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
             <TodayCal />
-            <div>
-              <h1 className="text-xl font-medium text-white">Today</h1>
-              <p className="text-sm">{formatDate()}</p>
-            </div>
-            <div className="ml-20 flex items-center justify-between gap-4">
-              <LeftChevron />
-              <RightChevron />
-            </div>
+            <DateCycle onDateChange={setSelectedDate} />
           </header>
 
           <section className="mt-6">
@@ -118,7 +95,7 @@ const TodayPage: React.FC = () => {
         </div>
         {showAgenda && (
           <div className="w-1/4">
-            <TodayAgenda />
+            <TodayMeetings selectedDate={selectedDate} />
           </div>
         )}
       </section>
