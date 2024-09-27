@@ -11,7 +11,7 @@ Contributions are what makes the open source community such an amazing place to 
 — Now wait for someone from core to remove #need approval label so that you don't end up doing something that is not validated yet or march does not need it.
 
   - **Our Process**:
-    - W genrally respond to a PR within 14 hours.
+    - We genrally respond to a PR within 14 hours.
     - We greatly value new feature ideas. To ensure consistency in the product's direction, they undergo review and approval.
 
 
