@@ -32,7 +32,8 @@ const InboxPage: React.FC = () => {
     description: "",
   })
 
-  const { fetchInboxData, setInboxItems, inboxItems } = useInboxStore()
+  const { fetchInboxData, updateItem, setInboxItems, inboxItems } =
+    useInboxStore()
 
   const editor = useEditorHook({
     content: description,
@@ -50,12 +51,6 @@ const InboxPage: React.FC = () => {
   })
 
   useEffect(() => {
-    if (editItemId && editorEditItem) {
-      editorEditItem.commands.setContent(editedItem.description)
-    }
-  }, [editItemId, editedItem])
-
-  useEffect(() => {
     const textarea = textareaRef.current
     if (textarea) {
       textarea.style.height = "auto"
@@ -64,8 +59,13 @@ const InboxPage: React.FC = () => {
   }, [title])
 
   useEffect(() => {
-    void fetchInboxData(session)
-  }, [fetchInboxData, session, setInboxItems])
+    console.log("testttttttttttttt")
+    console.log("inboxItems", inboxItems)
+  }, [inboxItems])
+
+  useEffect(() => {
+    fetchInboxData(session)
+  }, [fetchInboxData, session])
 
   const config = {
     headers: {
@@ -86,6 +86,7 @@ const InboxPage: React.FC = () => {
       description: item.description,
     })
     editorEditItem?.setEditable(true)
+    editorEditItem?.commands.setContent(item.description)
   }
 
   const handleCancelEditItem = () => {
@@ -96,6 +97,18 @@ const InboxPage: React.FC = () => {
 
   const handleSaveEditedItem = async (item: any) => {
     try {
+      console.log("DESCRIPTIONNNNNNNNN", editedItem.description)
+      if (editItemId && editedItem) {
+        updateItem(
+          {
+            ...item,
+            title: editedItem.title,
+            description: editedItem.description,
+          },
+          item.uuid
+        )
+      }
+
       const config = {
         headers: {
           Authorization: `Bearer ${session}`,
@@ -108,7 +121,7 @@ const InboxPage: React.FC = () => {
         config
       )
 
-      void fetchInboxData(session)
+      // fetchInboxData(session)
       handleCancelEditItem()
     } catch (error) {
       console.error("error updating item:", error)
@@ -136,7 +149,7 @@ const InboxPage: React.FC = () => {
       )
 
       if (res.status === 200) {
-        void fetchInboxData(session)
+        fetchInboxData(session)
         editor?.commands.setContent("")
         setAddingItem(false)
         setTitle("")
@@ -194,6 +207,7 @@ const InboxPage: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="title"
                   className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+                  autoFocus
                   rows={1}
                 />
                 <TextEditor editor={editor} minH="20vh" />
@@ -206,7 +220,7 @@ const InboxPage: React.FC = () => {
                 inboxItems.map((item: any) => (
                   <div
                     key={item.uuid}
-                    className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg"
+                    className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group"
                     onClick={() => {
                       console.log("item.uuid", item.uuid)
                       console.log("editedItemId", editItemId)
@@ -228,7 +242,7 @@ const InboxPage: React.FC = () => {
                               ref={textareaRef}
                               value={editedItem.title}
                               onChange={(e) =>
-                                SetEditedItem((prev) => ({
+                                setEditedItem((prev) => ({
                                   ...prev,
                                   title: e.target.value,
                                 }))
@@ -260,7 +274,7 @@ const InboxPage: React.FC = () => {
                           </div>
                         ) : (
                           <button
-                            className="hover-text"
+                            className="invisible group-hover:visible hover-text"
                             onClick={() => handleEditItem(item)}
                           >
                             edit
