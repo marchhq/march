@@ -8,7 +8,7 @@ const getUserItems = async (me) => {
         isArchived: false,
         isDeleted: false
     })
-        .sort({ created_at: -1 });
+        .sort({ createdAt: -1 });
 
     return items;
 }
@@ -33,7 +33,7 @@ const getUserOverdueItems = async (me) => {
         isArchived: false,
         isDeleted: false
     })
-        .sort({ created_at: -1 });
+        .sort({ createdAt: -1 });
 
     return items;
 }
@@ -45,7 +45,7 @@ const getUserItemsByDate = async (me, date) => {
         isArchived: false,
         isDeleted: false
     })
-        .sort({ created_at: -1 });
+        .sort({ createdAt: -1 });
 
     return items;
 }
