@@ -59,11 +59,6 @@ const InboxPage: React.FC = () => {
   }, [title])
 
   useEffect(() => {
-    console.log("testttttttttttttt")
-    console.log("inboxItems", inboxItems)
-  }, [inboxItems])
-
-  useEffect(() => {
     fetchInboxData(session)
   }, [fetchInboxData, session])
 
@@ -163,10 +158,6 @@ const InboxPage: React.FC = () => {
     } catch (error) {
       console.error("error adding item to inbox:", error)
     }
-  }
-
-  const handleDoubleClick = () => {
-    console.log("double click")
   }
 
   return (
