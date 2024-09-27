@@ -27,11 +27,11 @@ const getGoogleCalendarAccessToken = async (code, user) => {
 
 const refreshGoogleCalendarAccessToken = async (user) => {
     OauthCalClient.setCredentials({
-        refresh_token: user.privateMetadata.integration.googleCalendar.refreshToken
+        refresh_token: user.integration.googleCalendar.refreshToken
     });
 
     const { credentials } = await OauthCalClient.refreshAccessToken();
-    console.log("access_token: ", credentials.access_token);
+    // console.log("access_token: ", credentials.access_token);
     user.integration.googleCalendar.accessToken = credentials.access_token;
     user.integration.googleCalendar.refreshToken = credentials.refresh_token;
     await user.save();
