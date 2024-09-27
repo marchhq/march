@@ -16,6 +16,7 @@ import { Link } from "@/src/lib/icons/Link"
 import { Space } from "@/src/lib/icons/Space"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
+import { TodayEvents } from "@/src/components/TodayEvents"
 
 const todos = [
   {
@@ -59,38 +60,7 @@ const TodayPage: React.FC = () => {
           </section>
 
           <section className="space-y-8 text-[16px]">
-            <div className="max-w-xs border-b border-[#3A3A3A] opacity-30"></div>
-            {todos.map((todo, index) => (
-              <div
-                key={index}
-                className="group flex items-center justify-start gap-2"
-              >
-                {todo.completion ? <CheckedBox /> : <Box />}
-                <p
-                  className={`${todo.completion ? "text-gray-color" : "text-white"}`}
-                >
-                  {todo.description}
-                </p>
-                <span>{todo.icon}</span>
-                {todo.due && (
-                  <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-red-600"></div>{" "}
-                    {/* Red dot */}
-                    <span>{todo.due}</span>
-                  </div>
-                )}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="invisible ml-2 cursor-pointer group-hover:visible">
-                      <Space />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>add to space</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            ))}
+            <TodayEvents selectedDate={selectedDate} />
           </section>
         </div>
         {showAgenda && (
