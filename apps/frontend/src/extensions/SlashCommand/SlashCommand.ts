@@ -81,9 +81,9 @@ export const SlashCommand = Extension.create({
           const end = $from.pos
           const from = $head?.nodeBefore
             ? end -
-              ($head.nodeBefore.text?.substring(
-                $head.nodeBefore.text?.indexOf("/")
-              ).length ?? 0)
+            ($head.nodeBefore.text?.substring(
+              $head.nodeBefore.text?.indexOf("/")
+            ).length ?? 0)
             : $from.start()
 
           const tr = state.tr.deleteRange(from, end)
@@ -139,7 +139,7 @@ export const SlashCommand = Extension.create({
           return withEnabledSettings
         },
         render: () => {
-          let component: any
+          let component: ReactRenderer | null
 
           let scrollHandler: (() => void) | null = null
 
@@ -168,12 +168,12 @@ export const SlashCommand = Extension.create({
                 let yPos = rect.y
 
                 if (
-                  rect.top + component.element.offsetHeight + 40 >
+                  rect.top + (component?.element as HTMLElement).offsetHeight + 40 >
                   window.innerHeight
                 ) {
                   const diff =
                     rect.top +
-                    component.element.offsetHeight -
+                    (component?.element as HTMLElement).offsetHeight -
                     window.innerHeight +
                     40
                   yPos = rect.y - diff
@@ -202,7 +202,7 @@ export const SlashCommand = Extension.create({
             },
 
             onUpdate(props: SuggestionProps) {
-              component.updateProps(props)
+              component?.updateProps(props)
 
               const { view } = props.editor
 
@@ -235,13 +235,13 @@ export const SlashCommand = Extension.create({
               props.editor.storage[extensionName].rect = props.clientRect
                 ? getReferenceClientRect()
                 : {
-                    width: 0,
-                    height: 0,
-                    left: 0,
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                  }
+                  width: 0,
+                  height: 0,
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                }
               popup?.[0].setProps({
                 getReferenceClientRect,
               })
@@ -258,7 +258,9 @@ export const SlashCommand = Extension.create({
                 popup?.[0].show()
               }
 
-              return component.ref?.onKeyDown(props)
+              const onKeyDown = (component?.ref as { onKeyDown?: (props: SuggestionKeyDownProps) => boolean })?.onKeyDown;
+
+              return onKeyDown ? onKeyDown(props) : false;
             },
 
             onExit(props) {
@@ -270,7 +272,7 @@ export const SlashCommand = Extension.create({
                   scrollHandler
                 )
               }
-              component.destroy()
+              component?.destroy()
             },
           }
         },
