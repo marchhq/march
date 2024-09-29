@@ -15,7 +15,9 @@ const AppLayout: React.FC<Props> = ({ children }) => {
       <QueryProvider>
         <ModalProvider>
           <main className="flex h-screen bg-background">
-            <Sidebar />
+            <div className="fixed inset-y-0 z-50 flex">
+              <Sidebar />
+            </div>
             <section className="flex-1">{children}</section>
             <Toaster />
           </main>
