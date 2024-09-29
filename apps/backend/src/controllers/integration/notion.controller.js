@@ -32,7 +32,7 @@ const getNotionPageController = async (req, res, next) => {
                 // Optional: include a filter to limit the results
                 filter: {
                     property: 'object',
-                    value: 'page'  // or 'database' if you're searching for databases
+                    value: 'page' // or 'database' if you're searching for databases
                 }
             },
             {
