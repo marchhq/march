@@ -21,28 +21,41 @@ The development branch is `main`. This is the branch that all pull
 requests should be made against. The changes on the `main`
 branch are tagged into a release monthly.
 
-To set up locally:
+### Setup
 
-1. [Fork](https://github.com/marchhq/march/fork/) this repository to your
-   own GitHub account and then
-   [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device.
-2. Create a new branch:
+1. Clone the repo into a public GitHub repository
 
-   ```sh
-   git checkout -b MY_BRANCH_NAME
-   ```
+```
+https://github.com/marchhq/march.git
 
-4. Install the dependencies with:
+```
 
-   ```sh
-   pnpm install
-   ```
+2. Switch to the project folder
 
-5. Set up your `.env` file:
+```
+cd march
+```
 
-   - Duplicate `.env.example` to `.env`.
-   - @sajda @add further
+3. Create your feature or fix branch you plan to work on using
 
+```
+git checkout -b <feature-branch-name>
+```
+4. Install packages with pnpm
+
+```
+pnpm install
+```
+
+5. Set up your .env file
+
+Go to the `app/backend` and `app/frontend` directories and duplicate the `.env.example` to `.env`.
+
+6. Run (in development mode)
+
+```
+pnpm dev
+```
 ## Making a Pull Request
 
 - Be sure to [check the "Allow edits from maintainers" option](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork) while creating your PR.
