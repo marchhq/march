@@ -14,6 +14,16 @@ const createLabel = async (labelData, user) => {
     }
     return label;
 }
+const getLabels = async (user) => {
+    const labels = await Label.find({
+        user
+    })
+        .sort({ name: 1 })
+        .exec();
+
+    return labels;
+}
 export {
-    createLabel
+    createLabel,
+    getLabels
 }
