@@ -34,8 +34,7 @@ const getLabelController = async (req, res, next) => {
         const label = await getLabel(id);
 
         res.json({
-            status: 200,
-            response: label
+            label
         });
     } catch (err) {
         next(err);
