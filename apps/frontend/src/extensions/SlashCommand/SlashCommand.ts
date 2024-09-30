@@ -81,9 +81,9 @@ export const SlashCommand = Extension.create({
           const end = $from.pos
           const from = $head?.nodeBefore
             ? end -
-            ($head.nodeBefore.text?.substring(
-              $head.nodeBefore.text?.indexOf("/")
-            ).length ?? 0)
+              ($head.nodeBefore.text?.substring(
+                $head.nodeBefore.text?.indexOf("/")
+              ).length ?? 0)
             : $from.start()
 
           const tr = state.tr.deleteRange(from, end)
@@ -168,7 +168,9 @@ export const SlashCommand = Extension.create({
                 let yPos = rect.y
 
                 if (
-                  rect.top + (component?.element as HTMLElement).offsetHeight + 40 >
+                  rect.top +
+                    (component?.element as HTMLElement).offsetHeight +
+                    40 >
                   window.innerHeight
                 ) {
                   const diff =
@@ -219,7 +221,6 @@ export const SlashCommand = Extension.create({
                   return props.editor.storage[extensionName].rect
                 }
 
-                // Account for when the editor is bound inside a container that doesn't go all the way to the edge of the screen
                 return new DOMRect(rect.x, rect.y, rect.width, rect.height)
               }
 
@@ -231,17 +232,16 @@ export const SlashCommand = Extension.create({
 
               view.dom.parentElement?.addEventListener("scroll", scrollHandler)
 
-              // eslint-disable-next-line no-param-reassign
               props.editor.storage[extensionName].rect = props.clientRect
                 ? getReferenceClientRect()
                 : {
-                  width: 0,
-                  height: 0,
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                }
+                    width: 0,
+                    height: 0,
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                  }
               popup?.[0].setProps({
                 getReferenceClientRect,
               })
@@ -258,9 +258,13 @@ export const SlashCommand = Extension.create({
                 popup?.[0].show()
               }
 
-              const onKeyDown = (component?.ref as { onKeyDown?: (props: SuggestionKeyDownProps) => boolean })?.onKeyDown;
+              const onKeyDown = (
+                component?.ref as {
+                  onKeyDown?: (props: SuggestionKeyDownProps) => boolean
+                }
+              )?.onKeyDown
 
-              return onKeyDown ? onKeyDown(props) : false;
+              return onKeyDown ? onKeyDown(props) : false
             },
 
             onExit(props) {

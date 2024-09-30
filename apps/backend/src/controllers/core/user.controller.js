@@ -83,12 +83,11 @@ const getUserItemsController = async (req, res, next) => {
 const getUserTodayItemsController = async (req, res, next) => {
     try {
         const me = req.user.id;
-        const items = await getUserTodayItems(me);
+        const todayItems = await getUserTodayItems(me);
+        const overdueItems = await getUserOverdueItems(me);
         res.json({
-            status: 200,
-            response: {
-                items
-            }
+            todayItems,
+            overdueItems
         });
     } catch (err) {
         next(err);
@@ -128,8 +127,8 @@ const getUserItemsByDateControlle = async (req, res, next) => {
 
 const moveItemtoDateController = async (req, res, next) => {
     try {
-        const { id, date } = req.body;
-        const items = await moveItemtoDate(date, id);
+        const { id, dueDate } = req.body;
+        const items = await moveItemtoDate(dueDate, id);
         res.json({
             status: 200,
             response: {
