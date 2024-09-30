@@ -36,8 +36,24 @@ const getLabel = async (id) => {
     return label;
 }
 
+const updateLabel = async (id, updatedData) => {
+    const updatedLabel = await Label.findOneAndUpdate({
+        uuid: id
+    },
+    { $set: updatedData },
+    { new: true }
+    )
+    if (!updatedLabel) {
+        const error = new Error("Failed to update Label");
+        error.statusCode = 500;
+        throw error;
+    }
+    return updatedLabel;
+}
+
 export {
     createLabel,
     getLabels,
-    getLabel
+    getLabel,
+    updateLabel
 }
