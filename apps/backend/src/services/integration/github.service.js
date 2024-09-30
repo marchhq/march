@@ -51,7 +51,7 @@ const processWebhookEvent = async (event, payload) => {
 
     const existingItem = await Item.findOne({
         id: issueOrPR.id,
-        type: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
+        source: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
         user: userId
     });
 
@@ -72,7 +72,7 @@ const processWebhookEvent = async (event, payload) => {
         // Create new item
         const newItem = new Item({
             title: issueOrPR.title,
-            type: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
+            source: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
             id: issueOrPR.id,
             description: issueOrPR.body,
             user: userId,
