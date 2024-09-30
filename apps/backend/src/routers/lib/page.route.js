@@ -45,6 +45,7 @@ import {
     updateMeetingController,
     deleteMeetingController
 } from "../../controllers/page/meeting.controller.js";
+import { createLabelController } from "../../controllers/lib/label.controller.js";
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
@@ -96,6 +97,9 @@ router.route("/meetings/overview/").get(getMeetingsController);
 router.route("/meetings/upcomings/").get(getUpcomingMeetingsController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
+
+// Labels controller
+router.route("/labels/create/").post(createLabelController)
 
 // File Asset controllers
 router
