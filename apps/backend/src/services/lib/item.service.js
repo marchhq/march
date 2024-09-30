@@ -29,7 +29,7 @@ const getUserOverdueItems = async (me) => {
     const items = await Item.find({
         user: me,
         dueDate: { $lt: startOfDay }, // Due date is before start of today (without time component)
-        status: { $ne: "done" },
+        isCompleted: false,
         isArchived: false,
         isDeleted: false
     })
