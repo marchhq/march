@@ -1,7 +1,7 @@
 name: Notify on march discord
 on:
   issues:
-    types: [opened, closed]
+    types: [opened]
 jobs:
   notify:
     runs-on: ubuntu-latest

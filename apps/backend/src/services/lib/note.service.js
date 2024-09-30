@@ -1,3 +1,4 @@
+import { Item } from "../../models/lib/item.model.js";
 import { Note } from "../../models/lib/note.model.js";
 
 const createNote = async (user, noteData) => {
@@ -17,8 +18,9 @@ const createNote = async (user, noteData) => {
 };
 
 const getNotes = async (user) => {
-    const notes = await Note.find({
-        user
+    const notes = await Item.find({
+        user,
+        type: "note"
     })
         .sort({ createdAt: -1 });
 
@@ -59,14 +61,14 @@ const deleteNote = async (noteId) => {
 };
 
 const getMostRecentUpdatedNote = async (user) => {
-    const note = await Note.findOne({
-        user
+    const note = await Item.findOne({
+        user,
+        type: "note"
     })
         .sort({ updatedAt: -1 });
 
     if (!note) {
-        // eslint-disable-next-line no-unused-expressions
-        null;
+        return null;
     }
     return note;
 };
