@@ -77,12 +77,12 @@ router.route("/items/:item/").get(getItemController);
 router.route("/items/:item/").put(updateItemController);
 
 // note controllers
-router.route("/notes/create/").post(createNoteController);
+router.route("/notes/create/").post(createNoteController); // no need
 router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
-router.route("/notes/:note/").get(getNoteController);
-router.route("/notes/:note/").put(updateNoteController);
-router.route("/notes/:note/").delete(deleteNoteController);
+router.route("/notes/:note/").get(getNoteController); // no need
+router.route("/notes/:note/").put(updateNoteController); // no need
+router.route("/notes/:note/").delete(deleteNoteController); // no need
 
 // Block controllers
 router.route("/blocks/create/").post(createBlockController);
