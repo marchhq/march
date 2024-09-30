@@ -31,7 +31,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState(note?.title ?? "")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const [content, setContent] = useState(note?.content ?? "<p></p>")
+  const [content, setContent] = useState(note?.description ?? "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const [loading, setLoading] = useState(false)
@@ -65,10 +65,10 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     const noteByParams = notes.filter((n) => n.uuid === params.noteId)
     if (noteByParams.length !== 0) {
       editor?.setEditable(true)
-      editor?.commands.setContent(noteByParams[0].content)
+      editor?.commands.setContent(noteByParams[0].description)
       setNote(noteByParams[0])
       setTitle(noteByParams[0].title)
-      setContent(noteByParams[0].content)
+      setContent(noteByParams[0].description)
     } else {
       setNotFound(true)
     }
@@ -86,7 +86,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
     const newTimer = setTimeout(() => {
       if (note) {
-        saveNoteToServer({ ...note, title, content })
+        saveNoteToServer({ ...note, title, description: content })
         setIsSaved(true)
       }
     }, 2000)
@@ -112,13 +112,13 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   useEffect(() => {
     if (note) {
-      saveNoteToServer({ ...note, title, content })
+      saveNoteToServer({ ...note, title, description: content })
     }
   }, [note, saveNoteToServer, title, content])
 
   const addNewNote = async (): Promise<void> => {
     if (!isSaved) {
-      if (note) await saveNoteToServer({ ...note, title, content })
+      if (note) await saveNoteToServer({ ...note, title, description: content })
     }
     try {
       setLoading(true)
@@ -204,7 +204,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
         {note !== null ? (
           <div
             onBlur={() => {
-              saveNoteToServer({ ...note, title, content })
+              saveNoteToServer({ ...note, title, description: content })
             }}
           >
             <textarea
@@ -244,11 +244,14 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               role="button"
               tabIndex={0}
               onClick={() => {
-                if (note) saveNoteToServer({ ...note, title, content })
+                if (note)
+                  saveNoteToServer({ ...note, title, description: content })
               }}
               onKeyPress={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                  if (note) saveNoteToServer({ ...note, title, content })
+                  if (note) {
+                    saveNoteToServer({ ...note, title, description: content })
+                  }
                 }
               }}
             >
