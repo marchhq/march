@@ -57,10 +57,37 @@ const deleteLabel = async (id, space) => {
     });
 }
 
+const getOrCreateLabels = async (labels, userId) => {
+    const labelIds = [];
+
+    for (const label of labels) {
+        let existingLabel = await Label.findOne({
+            name: label.name,
+            user: userId
+        });
+
+        if (!existingLabel) {
+            const newLabel = new Label({
+                name: label.name,
+                description: label.description || '',
+                color: label.color || '',
+                user: userId
+            });
+
+            existingLabel = await newLabel.save();
+        }
+
+        labelIds.push(existingLabel._id);
+    }
+
+    return labelIds;
+};
+
 export {
     createLabel,
     getLabels,
     getLabel,
     updateLabel,
-    deleteLabel
+    deleteLabel,
+    getOrCreateLabels
 }
