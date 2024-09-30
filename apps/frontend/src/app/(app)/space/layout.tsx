@@ -44,6 +44,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
     if (!latestNoteId) {
       getNoteId()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getNoteId])
 
   const addFirstNote = async (): Promise<void> => {
@@ -95,7 +96,9 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   return (
     <div className="flex h-full">
-      <SecondSidebar items={items} />
+      <div className="ml-[100px] flex">
+        <SecondSidebar items={items} />
+      </div>
       <div className="flex-1">{children}</div>
     </div>
   )

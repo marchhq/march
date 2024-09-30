@@ -3,6 +3,7 @@ import { createAppAuth } from "@octokit/auth-app";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
+import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
 const fetchInstallationDetails = async (installationId, user) => {
     try {
@@ -49,9 +50,10 @@ const processWebhookEvent = async (event, payload) => {
     }
     const userId = user._id;
 
+    const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
     const existingItem = await Item.findOne({
         id: issueOrPR.id,
-        type: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
+        source: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
         user: userId
     });
 
@@ -59,7 +61,7 @@ const processWebhookEvent = async (event, payload) => {
         await Item.findByIdAndUpdate(existingItem._id, {
             title: issueOrPR.title,
             description: issueOrPR.body,
-            'metadata.labels': issueOrPR.labels,
+            labels: labelIds,
             'metadata.state': issueOrPR.state,
             'metadata.url': issueOrPR.html_url,
             'metadata.repo': repository.name,
@@ -72,12 +74,12 @@ const processWebhookEvent = async (event, payload) => {
         // Create new item
         const newItem = new Item({
             title: issueOrPR.title,
-            type: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
+            source: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
             id: issueOrPR.id,
             description: issueOrPR.body,
             user: userId,
+            labels: labelIds,
             metadata: {
-                labels: issueOrPR.labels,
                 state: issueOrPR.state,
                 url: issueOrPR.html_url,
                 repo: repository.name,

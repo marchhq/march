@@ -2,6 +2,7 @@ import axios from 'axios';
 import { environment } from '../../loaders/environment.loader.js';
 import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
+import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
 const getAccessToken = async (code, user) => {
     try {
@@ -64,13 +65,16 @@ const fetchUserInfo = async (linearToken, user) => {
 const saveIssuesToDatabase = async (issues, userId) => {
     try {
         const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
+
         for (const issue of filteredIssues) {
-            const existingIssue = await Item.findOne({ id: issue.id, type: 'linearIssue', user: userId });
+            const labelIds = await getOrCreateLabels(issue.labels.nodes, userId);
+
+            const existingIssue = await Item.findOne({ id: issue.id, source: 'linear', user: userId });
 
             if (existingIssue) {
                 existingIssue.title = issue.title;
                 existingIssue.description = issue.description;
-                existingIssue.metadata.labels = issue.labels;
+                existingIssue.labels = labelIds;
                 existingIssue.metadata.state = issue.state.name;
                 existingIssue.metadata.priority = issue.priority;
                 existingIssue.metadata.project = issue.project;
@@ -81,13 +85,13 @@ const saveIssuesToDatabase = async (issues, userId) => {
             } else {
                 const newIssue = new Item({
                     title: issue.title,
-                    type: 'linearIssue',
+                    source: 'linear',
                     description: issue.description,
                     id: issue.id,
                     user: userId,
                     dueDate: issue.dueDate,
+                    labels: labelIds,
                     metadata: {
-                        labels: issue.labels,
                         state: issue.state,
                         priority: issue.priority,
                         url: issue.url,
@@ -362,7 +366,7 @@ const getLinearIssuesByDate = async (user, date) => {
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
     if (payload.action === 'remove') {
-        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, type: 'linearIssue' });
+        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
         if (deletedIssue) {
             console.log(`Deleted issue with ID: ${issue.id}`);
         } else {
@@ -385,7 +389,7 @@ const handleWebhookEvent = async (payload) => {
     const userId = user._id;
 
     // Check if the issue already exists
-    const existingIssue = await Item.findOne({ id: issue.id, type: 'linearIssue', user: userId });
+    const existingIssue = await Item.findOne({ id: issue.id, source: 'linear', user: userId });
     if (existingIssue) {
         await Item.findByIdAndUpdate(existingIssue._id, {
             title: issue.title,
@@ -400,7 +404,7 @@ const handleWebhookEvent = async (payload) => {
     } else {
         const newIssue = new Item({
             title: issue.title,
-            type: 'linearIssue',
+            source: 'linear',
             id: issue.id,
             user: userId,
             description: issue.description,

@@ -12,8 +12,13 @@ const ItemSchema = new Schema({
     title: {
         type: String
     },
+    source: {
+        type: String,
+        default: "march"
+    },
     type: {
-        type: String
+        type: String,
+        default: 'issue'
     },
     description: {
         type: String,
@@ -43,6 +48,10 @@ const ItemSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    labels: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Label'
+    }],
     isCompleted: {
         type: Boolean,
         default: false

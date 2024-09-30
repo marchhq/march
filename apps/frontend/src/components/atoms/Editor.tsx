@@ -8,6 +8,7 @@ import {
   Italic,
   List,
   ListOrdered,
+  ListTodo,
   Quote,
   Strikethrough,
 } from "lucide-react"
@@ -86,7 +87,7 @@ const TextEditor: React.FC<Props> = ({ editor, minH = "70vh" }) => {
                 editor.isActive("taskList") ? "bg-neutral-800" : "bg-zinc-900"
               )}
             >
-              <ListOrdered size={18} />
+              <ListTodo size={18} />
             </button>
             <div className="h-6 w-px bg-zinc-900/50" />
             <button

@@ -139,7 +139,7 @@ export const SlashCommand = Extension.create({
           return withEnabledSettings
         },
         render: () => {
-          let component: any
+          let component: ReactRenderer | null
 
           let scrollHandler: (() => void) | null = null
 
@@ -168,12 +168,14 @@ export const SlashCommand = Extension.create({
                 let yPos = rect.y
 
                 if (
-                  rect.top + component.element.offsetHeight + 40 >
+                  rect.top +
+                    (component?.element as HTMLElement).offsetHeight +
+                    40 >
                   window.innerHeight
                 ) {
                   const diff =
                     rect.top +
-                    component.element.offsetHeight -
+                    (component?.element as HTMLElement).offsetHeight -
                     window.innerHeight +
                     40
                   yPos = rect.y - diff
@@ -202,7 +204,7 @@ export const SlashCommand = Extension.create({
             },
 
             onUpdate(props: SuggestionProps) {
-              component.updateProps(props)
+              component?.updateProps(props)
 
               const { view } = props.editor
 
@@ -219,7 +221,6 @@ export const SlashCommand = Extension.create({
                   return props.editor.storage[extensionName].rect
                 }
 
-                // Account for when the editor is bound inside a container that doesn't go all the way to the edge of the screen
                 return new DOMRect(rect.x, rect.y, rect.width, rect.height)
               }
 
@@ -231,7 +232,6 @@ export const SlashCommand = Extension.create({
 
               view.dom.parentElement?.addEventListener("scroll", scrollHandler)
 
-              // eslint-disable-next-line no-param-reassign
               props.editor.storage[extensionName].rect = props.clientRect
                 ? getReferenceClientRect()
                 : {
@@ -258,7 +258,13 @@ export const SlashCommand = Extension.create({
                 popup?.[0].show()
               }
 
-              return component.ref?.onKeyDown(props)
+              const onKeyDown = (
+                component?.ref as {
+                  onKeyDown?: (props: SuggestionKeyDownProps) => boolean
+                }
+              )?.onKeyDown
+
+              return onKeyDown ? onKeyDown(props) : false
             },
 
             onExit(props) {
@@ -270,7 +276,7 @@ export const SlashCommand = Extension.create({
                   scrollHandler
                 )
               }
-              component.destroy()
+              component?.destroy()
             },
           }
         },
