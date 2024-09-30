@@ -31,12 +31,7 @@ import {
     deleteNoteController,
     getMostRecentUpdatedNoteController
 } from "../../controllers/lib/note.controller.js";
-import {
-    createRecordController,
-    getRecordsController,
-    getRecordController,
-    updateRecordController
-} from "../../controllers/lib/record.controller.js";
+
 import {
     createBlockController,
     getBlocksController,
@@ -68,12 +63,6 @@ router.route("/spaces/create/").post(createPageController);
 router.route("/spaces/overview/").get(getPagesController);
 router.route("/spaces/:space/").get(getPageController);
 router.route("/spaces/:space/").put(updatePageController);
-
-// rocord controllers
-router.route("/records/create/").post(createRecordController);
-router.route("/records/overview/").get(getRecordsController);
-router.route("/records/:record/").get(getRecordController);
-router.route("/records/:record/").put(updateRecordController);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
