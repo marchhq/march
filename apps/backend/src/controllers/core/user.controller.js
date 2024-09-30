@@ -83,9 +83,11 @@ const getUserItemsController = async (req, res, next) => {
 const getUserTodayItemsController = async (req, res, next) => {
     try {
         const me = req.user.id;
-        const items = await getUserTodayItems(me);
+        const todayItems = await getUserTodayItems(me);
+        const overdueItems = await getUserOverdueItems(me);
         res.json({
-            items
+            todayItems,
+            overdueItems
         });
     } catch (err) {
         next(err);
