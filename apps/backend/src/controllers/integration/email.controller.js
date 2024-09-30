@@ -213,7 +213,7 @@ const createIssueFromEmail = async (email, user) => {
 
     const emailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`;
 
-    const existingIssue = await Item.findOne({ id: email.id, type: 'gmailIssue', user: user._id });
+    const existingIssue = await Item.findOne({ id: email.id, source: 'gmail', user: user._id });
 
     if (existingIssue) {
         existingIssue.title = subject;
@@ -224,7 +224,7 @@ const createIssueFromEmail = async (email, user) => {
     } else {
         const newIssue = new Item({
             title: subject,
-            type: 'gmailIssue',
+            source: 'gmail',
             id: email.id,
             user: user._id,
             description: emailBody,

@@ -33,7 +33,8 @@ function createIssue(title, url) {
         },
         body: JSON.stringify({ 
           title: title,
-          type: "marchClipper",
+          source: "marchClipper",
+          type: "url",
           description: url,
           metadata: {
             url: url

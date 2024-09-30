@@ -12,8 +12,13 @@ const ItemSchema = new Schema({
     title: {
         type: String
     },
+    source: {
+        type: String,
+        default: "march"
+    },
     type: {
-        type: String
+        type: String,
+        default: 'issue'
     },
     description: {
         type: String,
