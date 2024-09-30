@@ -1,5 +1,7 @@
 export interface Item {
+  _id: string;
   title: string;
+  source: string;
   type: string;
   description: string;
   dueDate: string;

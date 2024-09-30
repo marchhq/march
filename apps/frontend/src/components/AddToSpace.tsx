@@ -3,26 +3,41 @@
 import * as React from "react";
 import {
   DropdownMenuCheckboxItem,
-  DropdownMenuCheckboxItemProps,
 } from "@radix-ui/react-dropdown-menu";
 import { Space as SpaceIcon } from "@/src/lib/icons/Space";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown";
 import { useSpace } from "../hooks/useSpace";
 import { Check } from 'lucide-react';
+import { Space } from "../lib/@types/Items/Space";
+import axios from "axios";
+import { BACKEND_URL } from "../lib/constants/urls";
+import { useAuth } from "../contexts/AuthContext";
 
-type Checked = DropdownMenuCheckboxItemProps["checked"];
-
-export function AddToSpace() {
+export function AddToSpace({ itemUuid }) {
   const [selectedSpaces, setSelectedSpaces] = React.useState<string[]>([]);
   const { pages: spaces } = useSpace() || { pages: [] };
+  const { session } = useAuth();
 
-  const handleToggleSpace = (spaceId: string) => {
-    setSelectedSpaces((prevSelected) =>
-      prevSelected.includes(spaceId)
-        ? prevSelected.filter((id) => id !== spaceId)
-        : [...prevSelected, spaceId]
-    );
-  };
+  const handleToggleSpace = async (spaces: Space) => {
+    try {
+      const newSelectedSpaces = selectedSpaces.includes(spaces._id)
+        ? selectedSpaces.filter(id => id !== spaces._id)
+        : [...selectedSpaces, spaces._id];
+
+      setSelectedSpaces(newSelectedSpaces)
+
+      await axios.put(`${BACKEND_URL}/api/items/${itemUuid}`, {
+        pages: newSelectedSpaces,
+      }, {
+        headers: {
+          Authorization: `Bearer ${session}`
+        }
+      })
+
+    } catch (error) {
+      console.error("error updating space: ", error)
+    }
+  }
 
   if (!spaces.length) {
     return <div>Loading...</div>;
@@ -40,7 +55,7 @@ export function AddToSpace() {
           <DropdownMenuCheckboxItem
             key={space._id}
             checked={selectedSpaces.includes(space._id)}
-            onCheckedChange={() => handleToggleSpace(space._id)}
+            onCheckedChange={() => handleToggleSpace(space)}
             className="flex items-center space-x-2"
           >
             <div className="w-4 h-4 flex items-center justify-center">

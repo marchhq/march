@@ -23,7 +23,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({ item, onToggleComple
         onClick={() => setShowDropdown(!showDropdown)}
 
       >
-        <AddToSpace />
+        <AddToSpace itemUuid={item.uuid} />
       </button>
     </div>
   );
