@@ -30,8 +30,9 @@ const TodayPage: React.FC = () => {
             <DateCycle onDateChange={setSelectedDate} />
           </header>
 
-          <section className="mt-6">
-            <TodayTextArea />
+          <section className="mt-6 mb-4">
+            <TodayTextArea selectedDate={selectedDate} />
+            <div className="border-b border-[#3A3A3A] max-w-sm"></div>
           </section>
 
           <section className="space-y-8 text-[16px]">

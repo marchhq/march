@@ -73,6 +73,12 @@ const useEditorHook = ({
     }
   }, [debounceTimer])
 
+  useEffect(() => {
+    if (editor && content) {
+      editor.commands.setContent(content)
+    }
+  }, [editor, content])
+
   return editor
 }
 

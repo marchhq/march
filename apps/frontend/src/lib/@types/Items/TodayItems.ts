@@ -5,16 +5,15 @@ export interface Item {
   type: string;
   description: string;
   dueDate: string;
+  isOverdue: boolean;
   metadata: {
     url: string;
-    labels: string;
   };
   isCompleted: boolean;
   uuid: string;
 }
 
 export interface Items {
-  response: {
-    items: Item[]
-  }
+  todayItems: Item[]
+  overdueItems: Item[]
 }

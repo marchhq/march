@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../lib/constants/urls';
 import { useItems } from '../hooks/useEvents';
@@ -13,13 +13,33 @@ interface TodayEventsProps {
 
 export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.Element => {
   const items = useItems();
-  const [optimisticItems, setOptimisticItems] = useState(items?.response.items || []);
+  const [optimisticItems, setOptimisticItems] = useState<Item[]>([]);
 
   useEffect(() => {
     if (items) {
-      setOptimisticItems(items.response.items);
+      const combinedItems = [
+        ...items.todayItems.map((item) => ({ ...item, isOverdue: false })),
+        ...items.overdueItems.map((item) => ({ ...item, isOverdue: true })),
+      ];
+
+      const filteredItems = combinedItems.filter(item => {
+        const dueDate = new Date(item.dueDate);
+
+        if (item.isOverdue && !item.isCompleted) {
+          return true;
+        }
+
+        return (
+          !item.isOverdue &&
+          dueDate.getFullYear() === selectedDate.getFullYear() &&
+          dueDate.getMonth() === selectedDate.getMonth() &&
+          dueDate.getDate() === selectedDate.getDate()
+        );
+      });
+
+      setOptimisticItems(filteredItems);
     }
-  }, [items]);
+  }, [items, selectedDate]);
 
   const { session } = useAuth();
 
@@ -41,19 +61,22 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
       );
     } catch (error) {
       console.error('Error updating item:', error);
-      setOptimisticItems(items?.response.items || []);
+      setOptimisticItems(items ? [
+        ...items.todayItems.map((item) => ({ ...item, isOverdue: false })),
+        ...items.overdueItems.map((item) => ({ ...item, isOverdue: true })),
+      ] : []);
     }
   };
 
   if (!optimisticItems || optimisticItems.length === 0) {
-    return <div>Loading...</div>;
+    return <div>No items for the selected date.</div>;
   }
 
   return (
     <ul className="space-y-2">
       {optimisticItems.map((item) => (
         <React.Fragment key={item.uuid}>
-          <DropdownItem item={item} onToggleComplete={handleToggleComplete} />
+          <DropdownItem item={item} onToggleComplete={handleToggleComplete} isOverdue={item.isOverdue} />
         </React.Fragment>
       ))}
     </ul>
