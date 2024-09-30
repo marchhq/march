@@ -6,6 +6,7 @@ export interface Item {
   description: string;
   dueDate: string;
   metadata: {
+    url: string;
     labels: string;
   };
   isCompleted: boolean;
