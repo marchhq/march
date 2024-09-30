@@ -23,7 +23,21 @@ const getLabels = async (user) => {
 
     return labels;
 }
+
+const getLabel = async (id) => {
+    const label = await Label.findOne({
+        uuid: id
+    });
+    if (!label) {
+        const error = new Error("Label not found")
+        error.statusCode = 404
+        throw error
+    }
+    return label;
+}
+
 export {
     createLabel,
-    getLabels
+    getLabels,
+    getLabel
 }
