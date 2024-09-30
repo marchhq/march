@@ -26,8 +26,12 @@ const TodayPage: React.FC = () => {
       <section className="mt-6 flex justify-between">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
-            <TodayCal />
-            <DateCycle onDateChange={setSelectedDate} />
+            <span
+              onClick={() => setSelectedDate(new Date())}
+              className="cursor-pointer">
+              <TodayCal />
+            </span>
+            <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </header>
 
           <section className="mt-6 mb-4">
