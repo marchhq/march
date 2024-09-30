@@ -173,7 +173,6 @@ const updateItem = async (id, updateData) => {
 };
 
 const moveItemtoDate = async (date, id) => {
-    console.log("date: ", date);
     const formattedDate = date ? new Date(date) : null;
 
     const item = await Item.findByIdAndUpdate(
