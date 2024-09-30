@@ -13,6 +13,19 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import useInboxStore from "@/src/lib/store/inbox.store"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 
+const iconsMap = {
+  note: "fluent:note-16-regular",
+  githubIssue: "ri:github-fill",
+  linearIssue: "gg:linear",
+  default: "fluent:note-16-regular",
+}
+
+const ItemIcon = ({ type }: { type: string }) => {
+  const icon = iconsMap[type] || iconsMap["default"]
+
+  return <Icon icon={icon} style={{ fontSize: "18px" }} className="mt-0.5" />
+}
+
 const InboxPage: React.FC = () => {
   const { session } = useAuth()
 
@@ -217,16 +230,13 @@ const InboxPage: React.FC = () => {
                       console.log("editedItemId", editItemId)
                       console.log("editedItem", editedItem)
                       console.log("item.description", item.description)
+                      console.log("item.type", item.type)
                     }}
                     onDoubleClick={() => handleEditItem(item)}
                   >
                     <div className="flex justify-between text-foreground">
                       <div className="w-full flex items-start gap-2">
-                        <Icon
-                          icon="fluent:note-16-regular"
-                          className="mt-0.5"
-                          style={{ fontSize: "18px" }}
-                        />
+                        <ItemIcon type={item.type} />
                         {editItemId === item.uuid ? (
                           <div className="w-full">
                             <textarea
