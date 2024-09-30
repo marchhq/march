@@ -1,4 +1,4 @@
-import { createLabel, getLabels, getLabel, updateLabel } from "../../services/lib/label.service.js"
+import { createLabel, getLabels, getLabel, updateLabel, deleteLabel } from "../../services/lib/label.service.js"
 
 const createLabelController = async (req, res, next) => {
     try {
@@ -55,9 +55,22 @@ const updateLabelController = async (req, res, next) => {
     }
 };
 
+const deleteLabelController = async (req, res, next) => {
+    try {
+        const { label: id } = req.params;
+        await deleteLabel(id);
+        res.json({
+            message: "Label deleted successfully"
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createLabelController,
     getLabelsController,
     getLabelController,
-    updateLabelController
+    updateLabelController,
+    deleteLabelController
 }

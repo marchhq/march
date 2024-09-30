@@ -51,9 +51,16 @@ const updateLabel = async (id, updatedData) => {
     return updatedLabel;
 }
 
+const deleteLabel = async (id, space) => {
+    await Label.findOneAndDelete({
+        uuid: id
+    });
+}
+
 export {
     createLabel,
     getLabels,
     getLabel,
-    updateLabel
+    updateLabel,
+    deleteLabel
 }
