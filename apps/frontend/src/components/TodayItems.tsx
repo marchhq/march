@@ -6,6 +6,7 @@ import { useItems } from '../hooks/useEvents';
 import { useAuth } from '../contexts/AuthContext';
 import { Item } from '../lib/@types/Items/TodayItems';
 import { DropdownItem } from './DropDownItems';
+import { SkeletonCard } from './atoms/SkeletonCard';
 
 interface TodayEventsProps {
   selectedDate: Date;
@@ -69,7 +70,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
   };
 
   if (!optimisticItems || optimisticItems.length === 0) {
-    return <div>No items for the selected date.</div>;
+    return <SkeletonCard />
   }
 
   return (
