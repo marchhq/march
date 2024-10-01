@@ -174,7 +174,7 @@ const InboxPage: React.FC = () => {
   }
 
   return (
-    <section className="h-full overflow-y-auto bg-background ml-[160px] p-16 text-secondary-foreground">
+    <section className="h-full overflow-y-auto bg-background ml-[260px] p-16 text-secondary-foreground">
       <div className="max-w-[800px]">
         <div className="flex flex-col gap-8 text-sm">
           <header className="flex items-center gap-4 text-foreground">
