@@ -1,13 +1,24 @@
-name: Notify on march discord
+name: Notify on issue creation and comments
 on:
   issues:
     types: [opened]
+  issue_comment:
+    types: [created]
+
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Discord Notification
+      - name: Send Discord Notification for Issues
+        if: github.event_name == 'issues'
         run: |
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"New issue created: ${{ github.event.issue.html_url }}\"}" \
+               ${{ secrets.DISCORD_WEBHOOK }}
+          
+      - name: Send Discord Notification for Issue Comments
+        if: github.event_name == 'issue_comment'
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"New comment on issue: ${{ github.event.issue.html_url }} - Comment: ${{ github.event.comment.body }}\"}" \
                ${{ secrets.DISCORD_WEBHOOK }}
