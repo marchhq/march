@@ -11,6 +11,7 @@ import { handleSmsItemCreation } from "./controllers/integration/message.control
 import bodyParser from "body-parser";
 import { linearWorker } from "./jobs/linear.job.js";
 import { calendaWorker } from "./jobs/calendar.job.js";
+import { spaceWorker } from "./jobs/space.job.js";
 
 const { ValidationError } = Joi;
 const app = express();
