@@ -3,6 +3,7 @@ import { create } from "zustand"
 
 import {
   InboxItem,
+  InboxItemCreateResponse,
   InboxStoreType,
   OverdueInboxItem,
   TodayInboxItem,
@@ -120,6 +121,32 @@ const useInboxStore = create<InboxStoreType>((set) => ({
           : item
       ),
     }))
+  },
+  addItem: async (session: string, title: string, description: string) => {
+    let res: InboxItemCreateResponse
+    try {
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/items/create`,
+        {
+          title,
+          description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      res = data as InboxItemCreateResponse
+      set((state: InboxStoreType) => ({
+        inboxItems: [res.item, ...state.inboxItems],
+      }))
+      return res.item
+    } catch (error) {
+      const e = error as AxiosError
+      console.error("error adding item to inbox:", e)
+      return null
+    }
   },
 }))
 
