@@ -30,15 +30,18 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState(note?.title ?? "")
+  const [savedTitle, setSavedTitle] = useState(note?.title ?? "")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [content, setContent] = useState(note?.description ?? "<p></p>")
+  const [savedContent, setSavedContent] = useState(
+    note?.description ?? "<p></p>"
+  )
   const [isSaved, setIsSaved] = useState(true)
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const [loading, setLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [closeToggle, setCloseToggle] = useState(false)
-  const [titleDebounceTimer, setTitleDebounceTimer] =
-    useState<NodeJS.Timeout | null>(null)
 
   const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
@@ -54,6 +57,14 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       fetchTheNotes()
     }
   }, [fetchTheNotes, isFetched])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current)
+      }
+    }
+  }, [])
 
   const handleClose = () => setCloseToggle(!closeToggle)
 
@@ -74,27 +85,6 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [isFetched, editor, notes, params.noteId])
 
-  const handleTitle = (title: string): void => {
-    setTitle(title)
-    if (note !== null) {
-      updateNote({ ...note, title })
-    }
-
-    if (titleDebounceTimer) {
-      clearTimeout(titleDebounceTimer)
-    }
-
-    const newTimer = setTimeout(() => {
-      if (note) {
-        saveNoteToServer({ ...note, title, description: content })
-        setIsSaved(true)
-      }
-    }, 2000)
-
-    setTitleDebounceTimer(newTimer)
-    setIsSaved(false)
-  }
-
   useEffect(() => {
     const textarea = textareaRef.current
     if (textarea) {
@@ -114,7 +104,25 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     if (note) {
       saveNoteToServer({ ...note, title, description: content })
     }
-  }, [note, saveNoteToServer, title, content])
+  }, [note, saveNoteToServer, savedTitle, savedContent])
+
+  useEffect(() => {
+    setIsSaved(false)
+
+    if (note !== null) {
+      updateNote({ ...note, title, description: content })
+    }
+
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current)
+    }
+
+    timeoutId.current = setTimeout(() => {
+      setSavedTitle(title)
+      setSavedContent(content)
+      setIsSaved(true)
+    }, 1000)
+  }, [title, content])
 
   const addNewNote = async (): Promise<void> => {
     if (!isSaved) {
@@ -210,7 +218,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             <textarea
               ref={textareaRef}
               value={title}
-              onChange={(e) => handleTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Untitled"
               className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
