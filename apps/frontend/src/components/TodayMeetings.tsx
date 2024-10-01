@@ -1,6 +1,7 @@
 import React from "react";
 import { useMeetings } from "../hooks/useMeetings";
 import { Link } from "../lib/icons/Link";
+import { SkeletonCard } from "./atoms/SkeletonCard";
 
 const isSameDay = (date1: Date, date2: Date): boolean => {
   return (
@@ -42,7 +43,9 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
   return (
     <ol>
       {agendaItems.length === 0 ? (
-        <li className="text-[#DCDCDD]/80 text-lg font-medium">No meetings scheduled for this day</li>
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">
+          <SkeletonCard />
+        </li>
       ) : (
         agendaItems.map((item, index) => (
           <React.Fragment key={index}>

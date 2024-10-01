@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import TextEditor from "./atoms/Editor";
 import useEditorHook from "../hooks/useEditor.hook";
 import { useJournal } from "../hooks/useJournal";
@@ -19,7 +19,7 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   const [content, setContent] = useState("<p></p>");
   const [isSaved, setIsSaved] = useState(true);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const journal = useJournal();
+  const { journal, fetchJournal } = useJournal();
   const formattedDate = formatDate(selectedDate);
   const { session } = useAuth();
 
@@ -30,41 +30,41 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
     placeholder: "press / for markdown format",
   });
 
-  const saveJournal = async (content: string) => {
+  const saveJournal = useCallback(async (content: string) => {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/journals/create-update/`, {
         date: formattedDate,
-        content: content
+        content
       }, {
         headers: {
           Authorization: `Bearer ${session}`
         }
       });
 
-      if (!response) {
-        console.error('Failed to save journal');
-      } else {
+      if (response) {
         console.log('Journal saved');
         setIsSaved(true);
+      } else {
+        console.error('Failed to save journal');
       }
     } catch (err) {
       console.error('Error saving journal: ', err);
     }
-  };
+  }, [formattedDate, session]);
 
   useEffect(() => {
-    if (journal?.journal?.content && journal?.journal?.date) {
-      const isoJournalDate = journal.journal.date;
-      const cleanJournalDate = isoJournalDate.split('T')[0];
+    fetchJournal(formattedDate); // Fetch the journal for the selected date
 
-      if (formattedDate === cleanJournalDate) {
-        console.log("Updating content with journal data:", journal.journal.content);
-        setContent(journal.journal.content);
+    if (journal?.content && journal?.date) {
+      const isoJournalDate = journal.date.split('T')[0];
+
+      if (formattedDate === isoJournalDate) {
+        setContent(journal.content);
       } else {
         setContent("<p></p>");
       }
     }
-  }, [journal, formattedDate]);
+  }, [journal, formattedDate, fetchJournal]);
 
   useEffect(() => {
     if (!isSaved) {
@@ -74,7 +74,6 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
 
       saveTimerRef.current = setTimeout(() => {
         saveJournal(content);
-        setIsSaved(false);
       }, 1000);
     }
 
@@ -83,7 +82,15 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [content, isSaved]);
+  }, [content, isSaved, saveJournal]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <TextEditor editor={editor} minH="5vh" />

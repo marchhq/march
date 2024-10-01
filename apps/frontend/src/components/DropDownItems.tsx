@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, CheckedBox } from '../lib/icons/Box';
 import { Item } from '../lib/@types/Items/TodayItems';
 import { AddToSpace } from './AddToSpace';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './atoms/Tooltip';
 import { Link } from '../lib/icons/Link';
-import { GithubDark } from '../lib/icons/Github';
 import { LinearDark } from '../lib/icons/LinearCircle';
-import { NotionDark } from '../lib/icons/Notion';
-import { GmailDark } from '../lib/icons/Gmail';
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
 interface DropdownItemProps {
   item: Item;
@@ -18,13 +16,13 @@ interface DropdownItemProps {
 const getSourceIcon = (source) => {
   switch (source) {
     case 'github':
-      return <GithubDark />;
+      return <Icon icon="ri:github-fill" style={{ fontSize: "18px", marginTop: "6px" }} />
     case 'linear':
-      return <LinearDark />;
+      return <LinearDark />
     case 'notion':
-      return <NotionDark />;
+      return <Icon icon="ri:notion-fill" style={{ fontSize: "18px", marginTop: "6px" }} />
     case 'gmail':
-      return <GmailDark />;
+      return <Icon icon="mdi:gmail" style={{ fontSize: "18px", marginTop: "6px" }} />
     default:
       return null;
   }
@@ -75,10 +73,9 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({ item, onToggleComple
           </TooltipProvider>
         )}
       </li>
-      <div className="transition-opacity duration-200 opacity-0 group-hover:opacity-100 flex-shrink-0 ml-2">
+      <div className="transition-opacity duration-200 opacity-0 group-hover:opacity-100">
         <AddToSpace itemUuid={item.uuid} />
       </div>
     </div>
   );
 };
-
