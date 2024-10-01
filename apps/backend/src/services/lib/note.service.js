@@ -20,7 +20,8 @@ const createNote = async (user, noteData) => {
 const getNotes = async (user) => {
     const notes = await Item.find({
         user,
-        type: "note"
+        type: "note",
+        isDeleted: false
     })
         .sort({ createdAt: -1 });
 

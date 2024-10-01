@@ -15,7 +15,8 @@ import {
 import {
     createUpdateJournalController,
     getUserTodayJournalController,
-    getUserAllJournalsController
+    getUserAllJournalsController,
+    getUserJournalByDateController
 } from "../../controllers/lib/journal.controller.js";
 import {
     createItemController,
@@ -24,11 +25,7 @@ import {
     getItemController
 } from "../../controllers/lib/item.controller.js";
 import {
-    createNoteController,
     getNotesController,
-    getNoteController,
-    updateNoteController,
-    deleteNoteController,
     getMostRecentUpdatedNoteController
 } from "../../controllers/lib/note.controller.js";
 
@@ -68,8 +65,8 @@ router.route("/spaces/:space/").put(updatePageController);
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
 router.route("/journals/today/").get(getUserTodayJournalController);
-// todo: add a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController);
+router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // item controllers
 router.route("/items/create/").post(createItemController);
@@ -78,12 +75,8 @@ router.route("/items/:item/").get(getItemController);
 router.route("/items/:item/").put(updateItemController);
 
 // note controllers
-router.route("/notes/create/").post(createNoteController); // no need
 router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
-router.route("/notes/:note/").get(getNoteController); // no need
-router.route("/notes/:note/").put(updateNoteController); // no need
-router.route("/notes/:note/").delete(deleteNoteController); // no need
 
 // Block controllers
 router.route("/blocks/create/").post(createBlockController);
