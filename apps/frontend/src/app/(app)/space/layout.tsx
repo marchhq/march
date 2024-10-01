@@ -90,7 +90,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
       href={"space/meeting"}
       key={"meeting"}
       name="Meetings"
-      isActive={pathname.includes("/space/meetings")}
+      isActive={pathname.includes("/space/meeting")}
     />,
   ]
 
