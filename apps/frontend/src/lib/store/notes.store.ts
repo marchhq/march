@@ -106,7 +106,7 @@ const useNotesStore = create<NotesStoreType>((set) => ({
   getNoteByuuid: async (session: string, uuid: string) => {
     let note: Note | null = null
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/notes/${uuid}`, {
+      const { data } = await axios.get(`${BACKEND_URL}/api/items/${uuid}`, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
@@ -140,10 +140,11 @@ const useNotesStore = create<NotesStoreType>((set) => ({
     let res: NoteCreateResponse
     try {
       const { data } = await axios.post(
-        `${BACKEND_URL}/api/notes/create`,
+        `${BACKEND_URL}/api/items/create`,
         {
           title,
-          content,
+          description: content,
+          type: "note",
         },
         {
           headers: {
@@ -153,9 +154,9 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       )
       res = data as NoteCreateResponse
       set((state: NotesStoreType) => ({
-        notes: [...state.notes, res.note],
+        notes: [...state.notes, res.item],
       }))
-      return res.note
+      return res.item
     } catch (error) {
       const e = error as AxiosError
       console.error(e.cause)
@@ -176,10 +177,10 @@ const useNotesStore = create<NotesStoreType>((set) => ({
   saveNote: async (session: string, note: Note) => {
     try {
       const { data } = await axios.put(
-        `${BACKEND_URL}/api/notes/${note.uuid}`,
+        `${BACKEND_URL}/api/items/${note.uuid}`,
         {
           title: note.title,
-          content: note.content,
+          description: note.description,
         },
         {
           headers: {
@@ -189,9 +190,9 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       )
       const res = data as NoteCreateResponse
       set((state: NotesStoreType) => {
-        const index = state.notes.findIndex((n) => n.uuid === res.note.uuid)
+        const index = state.notes.findIndex((n) => n.uuid === res.item.uuid)
         if (index !== -1) {
-          state.notes[index] = res.note
+          state.notes[index] = res.item
         }
         return {
           notes: state.notes,
@@ -199,17 +200,11 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       })
     } catch (error) {
       const e = error as AxiosError
-      console.error(e.cause)
+      console.error(e)
     }
   },
   deleteNote: async (session: string, note: Note) => {
     try {
-      await axios.delete(`${BACKEND_URL}/api/notes/${note.uuid}`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
-
       set((state: NotesStoreType) => {
         const index = state.notes.findIndex((n) => n.uuid === note.uuid)
         if (index !== -1) {
@@ -219,6 +214,17 @@ const useNotesStore = create<NotesStoreType>((set) => ({
           notes: state.notes,
         }
       })
+      await axios.put(
+        `${BACKEND_URL}/api/items/${note.uuid}`,
+        {
+          isDeleted: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
     } catch (error) {
       const e = error as AxiosError
       console.error("failed to delete note: ", e.message)
