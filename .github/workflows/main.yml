@@ -1,4 +1,4 @@
-name: Notify on issue creation and comments
+name: Notify on issue creation and relevant comments
 on:
   issues:
     types: [opened]
@@ -9,15 +9,17 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
+      # Notify when a new issue is created
       - name: Send Discord Notification for Issues
         if: github.event_name == 'issues'
         run: |
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"New issue created: ${{ github.event.issue.html_url }}\"}" \
                ${{ secrets.DISCORD_WEBHOOK }}
-          
+
+      # Notify for relevant comments, excluding comments from specific bots
       - name: Send Discord Notification for Issue Comments
-        if: github.event_name == 'issue_comment'
+        if: github.event_name == 'issue_comment' && github.event.comment.user.login != 'github-actions[bot]' && github.event.comment.user.login != 'linear[bot]'
         run: |
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"New comment on issue: ${{ github.event.issue.html_url }} - Comment: ${{ github.event.comment.body }}\"}" \
