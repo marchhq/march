@@ -31,7 +31,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState(note?.title ?? "")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const [content, setContent] = useState(note?.content ?? "<p></p>")
+  const [content, setContent] = useState(note?.description ?? "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const [loading, setLoading] = useState(false)
@@ -65,10 +65,10 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     const noteByParams = notes.filter((n) => n.uuid === params.noteId)
     if (noteByParams.length !== 0) {
       editor?.setEditable(true)
-      editor?.commands.setContent(noteByParams[0].content)
+      editor?.commands.setContent(noteByParams[0].description)
       setNote(noteByParams[0])
       setTitle(noteByParams[0].title)
-      setContent(noteByParams[0].content)
+      setContent(noteByParams[0].description)
     } else {
       setNotFound(true)
     }
@@ -86,7 +86,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
     const newTimer = setTimeout(() => {
       if (note) {
-        saveNoteToServer({ ...note, title, content })
+        saveNoteToServer({ ...note, title, description: content })
         setIsSaved(true)
       }
     }, 2000)
@@ -112,13 +112,13 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   useEffect(() => {
     if (note) {
-      saveNoteToServer({ ...note, title, content })
+      saveNoteToServer({ ...note, title, description: content })
     }
   }, [note, saveNoteToServer, title, content])
 
   const addNewNote = async (): Promise<void> => {
     if (!isSaved) {
-      if (note) await saveNoteToServer({ ...note, title, content })
+      if (note) await saveNoteToServer({ ...note, title, description: content })
     }
     try {
       setLoading(true)
@@ -167,7 +167,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   return (
     <div className="flex size-full gap-16 p-16 bg-background">
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden pr-4">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
         <div className="flex items-center justify-between w-full gap-4 text-sm text-secondary-foreground">
           <div className="flex gap-8">
             <div className="flex gap-4">
@@ -204,7 +204,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
         {note !== null ? (
           <div
             onBlur={() => {
-              saveNoteToServer({ ...note, title, content })
+              saveNoteToServer({ ...note, title, description: content })
             }}
           >
             <textarea
@@ -215,7 +215,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
             />
-            <TextEditor editor={editor} />
+            <div className="text-primary-foreground">
+              <TextEditor editor={editor} />
+            </div>
           </div>
         ) : notFound ? (
           <div className="mt-4 text-secondary-foreground">
@@ -242,11 +244,14 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               role="button"
               tabIndex={0}
               onClick={() => {
-                if (note) saveNoteToServer({ ...note, title, content })
+                if (note)
+                  saveNoteToServer({ ...note, title, description: content })
               }}
               onKeyPress={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                  if (note) saveNoteToServer({ ...note, title, content })
+                  if (note) {
+                    saveNoteToServer({ ...note, title, description: content })
+                  }
                 }
               }}
             >
