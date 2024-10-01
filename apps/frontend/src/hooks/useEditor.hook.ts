@@ -74,12 +74,12 @@ const useEditorHook = ({
   }, [debounceTimer])
 
   useEffect(() => {
-    if (editor && content) {
-      editor.commands.setContent(content)
+    if (editor) {
+      editor.commands.setContent(content);
     }
-  }, [editor, content])
+  }, [content, editor]);
 
-  return editor
+  return editor;
 }
 
 export default useEditorHook
