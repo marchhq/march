@@ -30,13 +30,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
 
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState(note?.title ?? "")
-  const [savedTitle, setSavedTitle] = useState(note?.title ?? "")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [content, setContent] = useState(note?.description ?? "<p></p>")
-  const [savedContent, setSavedContent] = useState(
-    note?.description ?? "<p></p>"
-  )
   const [isSaved, setIsSaved] = useState(true)
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const [loading, setLoading] = useState(false)
