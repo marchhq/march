@@ -15,7 +15,8 @@ import {
 import {
     createUpdateJournalController,
     getUserTodayJournalController,
-    getUserAllJournalsController
+    getUserAllJournalsController,
+    getUserJournalByDateController
 } from "../../controllers/lib/journal.controller.js";
 import {
     createItemController,
@@ -64,8 +65,8 @@ router.route("/spaces/:space/").put(updatePageController);
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
 router.route("/journals/today/").get(getUserTodayJournalController);
-// todo: add a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController);
+router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // item controllers
 router.route("/items/create/").post(createItemController);
