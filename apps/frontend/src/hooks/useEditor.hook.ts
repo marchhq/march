@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react"
-
 import Link from "@tiptap/extension-link"
 import { Placeholder } from "@tiptap/extension-placeholder"
 import TaskItem from "@tiptap/extension-task-item"
@@ -22,10 +20,6 @@ const useEditorHook = ({
   setIsSaved,
   placeholder = "press / for markdown format",
 }: Props): Editor | null => {
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
-    null
-  )
-
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
@@ -49,29 +43,11 @@ const useEditorHook = ({
     content,
     autofocus: "end",
     onUpdate: ({ editor }) => {
-      setIsSaved(false)
-
-      if (debounceTimer) {
-        clearTimeout(debounceTimer)
-      }
-
-      const newTimer = setTimeout(() => {
-        setContent(editor.getHTML())
-        setIsSaved(true)
-      }, 1000)
-
-      setDebounceTimer(newTimer)
+      setContent(editor.getHTML())
+      setIsSaved(true)
     },
     immediatelyRender: false,
   })
-
-  useEffect(() => {
-    return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer)
-      }
-    }
-  }, [debounceTimer])
 
   return editor
 }
