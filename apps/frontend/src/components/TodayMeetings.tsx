@@ -42,9 +42,13 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
 
   return (
     <ol>
-      {agendaItems.length === 0 ? (
+      {agendaItems === undefined ? (
         <li className="text-[#DCDCDD]/80 text-lg font-medium">
           <SkeletonCard />
+        </li>
+      ) : agendaItems.length === 0 ? (
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">
+          No agenda items
         </li>
       ) : (
         agendaItems.map((item, index) => (
