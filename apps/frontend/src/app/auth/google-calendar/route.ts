@@ -4,12 +4,13 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
+  const state = searchParams.get("state");
 
   if (!code) {
-    return console.error("No code received from Google Calendar");
+    console.error("No code received from Google Calendar");
+    return NextResponse.redirect(new URL("/login?error=no_code", request.url));
   }
 
   const cookies = request.cookies;
@@ -17,18 +18,28 @@ export async function GET(request: NextRequest) {
   const token = session?.value
 
   try {
-    console.log("Attempting to get access token from backend");
     const response = await axios.get(`${BACKEND_URL}/calendar/getAccessToken`, {
       params: { code },
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log("Backend response received");
 
     const { accessToken, refreshToken } = response.data.tokenInfo;
 
-    const res = NextResponse.redirect(new URL('/profile', request.url));
+    let redirectUrl = '/profile';
+    if (state) {
+      try {
+        const stateData = JSON.parse(decodeURIComponent(state));
+        if (stateData.redirect) {
+          redirectUrl = stateData.redirect;
+        }
+      } catch (error) {
+        console.error("Error parsing state:", error);
+      }
+    }
+
+    const res = NextResponse.redirect(new URL(redirectUrl, request.url));
     res.cookies.set(GOOGLECALENDAR_ACCESS_TOKEN, accessToken, {
       httpOnly: true,
       secure: true,
@@ -43,12 +54,12 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 30, // 30 days
       path: "/",
     });
-    console.log("Cookies set, redirecting to /profile");
     return res;
   } catch (error) {
+    console.error("Error in Google Calendar callback:", error);
     if (axios.isAxiosError(error)) {
       console.error("Axios error details:", error.response?.data);
     }
-    return console.error("Error in Google Calendar callback:", error);
+    return NextResponse.redirect(new URL("/login?error=calendar_authentication_failed", request.url));
   }
 }

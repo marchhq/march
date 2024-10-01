@@ -41,7 +41,7 @@ const integrations = [
 
 export const IntegrationList = (): JSX.Element => {
   const user = useUserInfo()
-  const handleLogin = useGoogleCalendarLogin()
+  const handleLogin = useGoogleCalendarLogin('/profile')
 
   return (
     <div className=" space-y-4">

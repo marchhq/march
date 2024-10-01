@@ -69,8 +69,10 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
     }
   };
 
-  if (!optimisticItems || optimisticItems.length === 0) {
+  if (optimisticItems === undefined) {
     return <SkeletonCard />
+  } else if (optimisticItems.length === 0) {
+    return <div>no items today!</div>
   }
 
   return (
