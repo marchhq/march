@@ -2,6 +2,7 @@ import axios from 'axios';
 import { environment } from '../../loaders/environment.loader.js';
 import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
+import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
 const getAccessToken = async (code, user) => {
     try {
@@ -64,13 +65,16 @@ const fetchUserInfo = async (linearToken, user) => {
 const saveIssuesToDatabase = async (issues, userId) => {
     try {
         const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
+
         for (const issue of filteredIssues) {
+            const labelIds = await getOrCreateLabels(issue.labels.nodes, userId);
+
             const existingIssue = await Item.findOne({ id: issue.id, source: 'linear', user: userId });
 
             if (existingIssue) {
                 existingIssue.title = issue.title;
                 existingIssue.description = issue.description;
-                existingIssue.metadata.labels = issue.labels;
+                existingIssue.labels = labelIds;
                 existingIssue.metadata.state = issue.state.name;
                 existingIssue.metadata.priority = issue.priority;
                 existingIssue.metadata.project = issue.project;
@@ -86,8 +90,8 @@ const saveIssuesToDatabase = async (issues, userId) => {
                     id: issue.id,
                     user: userId,
                     dueDate: issue.dueDate,
+                    labels: labelIds,
                     metadata: {
-                        labels: issue.labels,
                         state: issue.state,
                         priority: issue.priority,
                         url: issue.url,

@@ -15,7 +15,8 @@ import {
 import {
     createUpdateJournalController,
     getUserTodayJournalController,
-    getUserAllJournalsController
+    getUserAllJournalsController,
+    getUserJournalByDateController
 } from "../../controllers/lib/journal.controller.js";
 import {
     createItemController,
@@ -24,11 +25,7 @@ import {
     getItemController
 } from "../../controllers/lib/item.controller.js";
 import {
-    createNoteController,
     getNotesController,
-    getNoteController,
-    updateNoteController,
-    deleteNoteController,
     getMostRecentUpdatedNoteController
 } from "../../controllers/lib/note.controller.js";
 
@@ -45,6 +42,7 @@ import {
     updateMeetingController,
     deleteMeetingController
 } from "../../controllers/page/meeting.controller.js";
+import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
@@ -67,8 +65,8 @@ router.route("/spaces/:space/").put(updatePageController);
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
 router.route("/journals/today/").get(getUserTodayJournalController);
-// todo: add a api to get journal by date
 router.route("/journals/overview/").get(getUserAllJournalsController);
+router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // item controllers
 router.route("/items/create/").post(createItemController);
@@ -77,12 +75,8 @@ router.route("/items/:item/").get(getItemController);
 router.route("/items/:item/").put(updateItemController);
 
 // note controllers
-router.route("/notes/create/").post(createNoteController);
 router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
-router.route("/notes/:note/").get(getNoteController);
-router.route("/notes/:note/").put(updateNoteController);
-router.route("/notes/:note/").delete(deleteNoteController);
 
 // Block controllers
 router.route("/blocks/create/").post(createBlockController);
@@ -96,6 +90,13 @@ router.route("/meetings/overview/").get(getMeetingsController);
 router.route("/meetings/upcomings/").get(getUpcomingMeetingsController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
+
+// Labels controller
+router.route("/labels/create/").post(createLabelController)
+router.route("/labels/overview/").get(getLabelsController)
+router.route("/labels/:label/").get(getLabelController)
+router.route("/labels/:label/").put(updateLabelController)
+router.route("/labels/:label/").delete(deleteLabelController)
 
 // File Asset controllers
 router
