@@ -101,16 +101,16 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   )
 
   useEffect(() => {
-    if (note) {
+    if (note && isSaved) {
       saveNoteToServer({ ...note, title, description: content })
     }
-  }, [note, saveNoteToServer, savedTitle, savedContent])
+  }, [note, saveNoteToServer, isSaved])
 
   useEffect(() => {
     setIsSaved(false)
 
     if (note !== null) {
-      updateNote({ ...note, title, description: content })
+      updateNote({ ...note, title })
     }
 
     if (timeoutId.current) {
@@ -118,11 +118,15 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
 
     timeoutId.current = setTimeout(() => {
-      setSavedTitle(title)
-      setSavedContent(content)
       setIsSaved(true)
     }, 1000)
-  }, [title, content])
+  }, [title])
+
+  useEffect(() => {
+    if (note !== null) {
+      updateNote({ ...note, description: content })
+    }
+  }, [content])
 
   const addNewNote = async (): Promise<void> => {
     if (!isSaved) {
