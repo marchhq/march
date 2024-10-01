@@ -8,31 +8,33 @@ interface JournalProps {
   selectedDate: Date;
 }
 
-const formatDate = (date: Date) => {
+/* const formatDate = (date: Date) => {
   const isoDate = date.toISOString();
   return isoDate.split("T")[0];
-};
+}; */
 
 export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
-  const [isSaved, setIsSaved] = useState(true);
-  const { journal, fetchJournal } = useJournal();
-  const formattedDate = formatDate(selectedDate);
-  const [content, setContent] = useState("<p></p>")
+  /*
+   const { journal, fetchJournal } = useJournal();
+   const formattedDate = formatDate(selectedDate);
+ 
+   useEffect(() => {
+     fetchJournal(formattedDate).then(() => {
+       if (journal?.journal?.content) {
+         setContent(journal?.journal?.content)
+       }
+     });
+   }, [formattedDate, fetchJournal]); */
 
-  useEffect(() => {
-    fetchJournal(formattedDate).then(() => {
-      if (journal?.journal?.content) {
-        setContent(journal?.journal?.content)
-      }
-    });
-  }, [formattedDate, fetchJournal]);
+
+  const [content, setContent] = useState("<p></p>")
+  const [isSaved, setIsSaved] = useState(true);
 
   const editor = useEditorHook({
     content,
     setContent: () => { },
     setIsSaved,
   });
-
   return (
     <TextEditor
       editor={editor}
