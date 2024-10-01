@@ -43,8 +43,7 @@ const InboxPage: React.FC = () => {
     description: "",
   })
 
-  const { fetchInboxData, updateItem, setInboxItems, inboxItems } =
-    useInboxStore()
+  const { fetchInboxData, addItem, updateItem, inboxItems } = useInboxStore()
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -71,6 +70,7 @@ const InboxPage: React.FC = () => {
       Authorization: `Bearer ${session}`,
     },
   }
+
   const handleCloseAddItemToInbox = async () => {
     setAddingItem(false)
     setTitle("")
@@ -104,19 +104,12 @@ const InboxPage: React.FC = () => {
         )
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      }
-
       await axios.put(
         `${BACKEND_URL}/api/items/${item.uuid}`,
         editedItem,
         config
       )
 
-      // fetchInboxData(session)
       handleCancelEditItem()
     } catch (error) {
       console.error("error updating item:", error)
@@ -129,22 +122,10 @@ const InboxPage: React.FC = () => {
       return
     }
 
-    console.log("test")
-
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/api/items/create`,
-        {
-          title: title,
-          description: description,
-          dueDate: date,
-          pages: selectedPages,
-        },
-        config
-      )
+      const newItem = await addItem(session, title, description)
 
-      if (res.status === 200) {
-        fetchInboxData(session)
+      if (newItem) {
         setAddingItem(false)
         setTitle("")
         setDescription("")
