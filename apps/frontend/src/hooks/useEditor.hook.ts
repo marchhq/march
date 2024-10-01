@@ -6,6 +6,7 @@ import { type Editor, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
 import { SlashCommand } from "../extensions/SlashCommand"
+import { useRef } from "react"
 
 interface Props {
   content: string
@@ -20,6 +21,8 @@ const useEditorHook = ({
   setIsSaved,
   placeholder = "press / for markdown format",
 }: Props): Editor | null => {
+  const timeoutId = useRef<NodeJS.Timeout | null>(null)
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
@@ -43,8 +46,16 @@ const useEditorHook = ({
     content,
     autofocus: "end",
     onUpdate: ({ editor }) => {
+      setIsSaved(false)
       setContent(editor.getHTML())
-      setIsSaved(true)
+
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current)
+      }
+
+      timeoutId.current = setTimeout(() => {
+        setIsSaved(true)
+      }, 1000)
     },
     immediatelyRender: false,
   })
