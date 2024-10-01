@@ -72,9 +72,8 @@ const authenticateWithGoogleController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGoogleUser(payload);
-            console.log("saju: ", user);
             await spaceQueue.add("spaceQueue", {
-                userId: user._id
+                user: user._id
             });
         }
         const tokenPair = await generateJWTTokenPair(user)
@@ -108,6 +107,9 @@ const authenticateWithGithubController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGithubUser(payload);
+            await spaceQueue.add("spaceQueue", {
+                user: user._id
+            });
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
