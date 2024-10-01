@@ -70,7 +70,7 @@ const authenticateWithGoogleController = async (req, res, next) => {
         let isNewUser = false;
         if (!user) {
             isNewUser = true;
-            user = await createGoogleUser(payload)
+            user = await createGoogleUser(payload);
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
