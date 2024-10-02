@@ -1,4 +1,4 @@
-import { createSpace, getPages, getPage, updatePage } from "../../services/lib/space.service.js"
+import { createSpace, getSpaces, getSpace, updateSpace } from "../../services/lib/space.service.js"
 
 const createSpaceController = async (req, res, next) => {
     try {
@@ -15,11 +15,11 @@ const createSpaceController = async (req, res, next) => {
     }
 };
 
-const getPagesController = async (req, res, next) => {
+const getSpacesController = async (req, res, next) => {
     try {
         const user = req.user._id;
 
-        const pages = await getPages(user);
+        const pages = await getSpaces(user);
 
         res.status(200).json({
             pages
@@ -29,12 +29,12 @@ const getPagesController = async (req, res, next) => {
     }
 };
 
-const getPageController = async (req, res, next) => {
+const getSpaceController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const { space: id } = req.params;
 
-        const page = await getPage(user, id);
+        const page = await getSpace(user, id);
 
         res.status(200).json({
             page
@@ -44,11 +44,11 @@ const getPageController = async (req, res, next) => {
     }
 };
 
-const updatePageController = async (req, res, next) => {
+const updateSpaceController = async (req, res, next) => {
     try {
         const { space: id } = req.params;
         const updateData = req.body;
-        const page = await updatePage(id, updateData);
+        const page = await updateSpace(id, updateData);
 
         res.status(200).json({
             page
@@ -60,7 +60,7 @@ const updatePageController = async (req, res, next) => {
 
 export {
     createSpaceController,
-    getPagesController,
-    getPageController,
-    updatePageController
+    getSpacesController,
+    getSpaceController,
+    updateSpaceController
 }
