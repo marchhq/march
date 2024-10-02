@@ -9,6 +9,7 @@ import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
+import { useSpace } from "@/src/hooks/useSpace"
 
 interface Props {
   children: React.ReactNode
@@ -62,38 +63,57 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
     }
   }
 
-  const items = [
-    <div key={"notesdiv"}>
-      {latestNoteId ? (
-        latestNoteId !== "" ? (
-          <SidebarItem
-            href={`space/notes/${latestNoteId}`}
-            key={"notes"}
-            name="Notes"
-            isActive={pathname.includes("/space/notes/")}
-          />
-        ) : !loading ? (
-          <button onClick={addFirstNote} className={navLinkClassName}>
-            <span className="truncate">Notes</span>
-          </button>
+  /*  const items = [
+      <div key={"notesdiv"}>
+        {latestNoteId ? (
+          latestNoteId !== "" ? (
+            <SidebarItem
+              href={`space/notes/${latestNoteId}`}
+              key={"notes"}
+              name="Notes"
+              isActive={pathname.includes("/space/notes/")}
+            />
+          ) : !loading ? (
+            <button onClick={addFirstNote} className={navLinkClassName}>
+              <span className="truncate">Notes</span>
+            </button>
+          ) : (
+            <div className={navLinkClassName}>
+              <p>loading...</p>
+            </div>
+          )
         ) : (
-          <div className={navLinkClassName}>
-            <p>loading...</p>
-          </div>
-        )
-      ) : (
-        <span className={navLinkClassName}>Notes</span>
-      )}
-    </div>,
+          <span className={navLinkClassName}>Notes</span>
+        )}
+      </div>,
+  
+      <SidebarItem
+        href={"space/meeting"}
+        key={"meeting"}
+        name="Meetings"
+        isActive={pathname.includes("/space/meetings")}
+      />,
+    ]
+  */
 
-    <SidebarItem
-      href={"space/meeting"}
-      key={"meeting"}
-      name="Meetings"
-      isActive={pathname.includes("/space/meetings")}
-    />,
-  ]
+  const { spaces } = useSpace() || { spaces: [] };
 
+  const constructPath = (spaceName) => {
+    return `space/${spaceName.toLowerCase().replace(/\s+/g, '-')}`
+  }
+
+  const items = spaces.map(space => {
+    const path = constructPath(space.name);
+    return (
+      <SidebarItem
+        href={path}
+        key={space._id}
+        name={space.name}
+        isActive={pathname.includes(path)}
+      />
+    )
+
+  })
   return (
     <div className="flex h-full">
       <div className="ml-[100px] flex">
