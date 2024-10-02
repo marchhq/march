@@ -4,9 +4,10 @@ import moment from 'moment-timezone';
 const getUserItems = async (me) => {
     const items = await Item.find({
         user: me,
-        status: { $ne: "done" },
+        isCompleted: false,
         isArchived: false,
-        isDeleted: false
+        isDeleted: false,
+        type: { $ne: 'note' }
     })
         .sort({ createdAt: -1 });
 
