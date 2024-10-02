@@ -35,7 +35,7 @@ export const DateCycle: React.FC<DateCycleProps> = ({ selectedDate, onDateChange
         <h1 className="text-xl font-medium text-white">
           {isToday ? "Today" : formatDate(selectedDate)}
         </h1>
-        {isToday && <p className="text-sm">{formatDate(selectedDate)}</p>}
+        {isToday && <p className="text-sm text-gray-color">{formatDate(selectedDate)}</p>}
       </div>
       <div className="flex items-center justify-between gap-4">
         <button onClick={goToPreviousDay} className="p-2">

@@ -3,10 +3,10 @@ import * as React from "react"
 
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
-import { TodayCal } from "@/src/lib/icons/Calendar"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayItems } from "@/src/components/TodayItems"
+import { DynamicDate } from "@/src/components/atoms/DynamicDate"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
@@ -17,7 +17,7 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="ml-36 text-gray-color">
+    <main className="ml-36 text-foreground">
       <section className=" mt-4 flex max-w-[96%] items-center justify-end gap-4">
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
@@ -29,7 +29,7 @@ const TodayPage: React.FC = () => {
             <span
               onClick={() => setSelectedDate(new Date())}
               className="cursor-pointer">
-              <TodayCal />
+              <DynamicDate />
             </span>
             <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </header>
