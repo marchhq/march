@@ -6,7 +6,6 @@ import { BACKEND_URL } from "../lib/constants/urls";
 
 export const useJournal = (selectedDate?: string) => {
   const [journal, setJournal] = useState<Journal | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { session } = useAuth();
 
   const fetchJournal = useCallback(async () => {
@@ -19,16 +18,11 @@ export const useJournal = (selectedDate?: string) => {
         }
       });
 
-      if (response.data) {
-        setJournal(response.data);
-        setError(null);
-      } else {
-        setJournal(null);
-        setError("No journal data received for the selected date");
-      }
+      setJournal(response.data)
+
     } catch (error) {
+      console.error(error)
       setJournal(null);
-      setError(`Failed to fetch journal: ${error instanceof Error ? error.message : String(error)}`);
     }
   }, [session, selectedDate]);
 
@@ -38,5 +32,5 @@ export const useJournal = (selectedDate?: string) => {
     }
   }, [session, selectedDate, fetchJournal]);
 
-  return { journal, error, fetchJournal };
+  return { journal, fetchJournal };
 };
