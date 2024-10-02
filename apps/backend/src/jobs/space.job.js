@@ -1,6 +1,6 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
-import { createPage } from "../services/lib/page.service.js"
+import { createSpace } from "../services/lib/space.service.js";
 
 const processSpaceJob = async (job) => {
     const { user } = job.data;
@@ -13,7 +13,7 @@ const processSpaceJob = async (job) => {
 
     try {
         for (const spaceData of spaces) {
-            await createPage(user, spaceData);
+            await createSpace(user, spaceData);
         }
     } catch (error) {
         console.error('Error processing pages:', error);
