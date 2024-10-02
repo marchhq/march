@@ -15,7 +15,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 export function AddToSpace({ itemUuid }) {
   const [selectedSpaces, setSelectedSpaces] = React.useState<string[]>([]);
-  const { pages: spaces } = useSpace() || { pages: [] };
+  const { spaces: spaces } = useSpace() || { spaces: [] };
   const { session } = useAuth();
 
   const handleToggleSpace = async (spaces: Space) => {
@@ -27,7 +27,7 @@ export function AddToSpace({ itemUuid }) {
       setSelectedSpaces(newSelectedSpaces)
 
       await axios.put(`${BACKEND_URL}/api/items/${itemUuid}`, {
-        pages: newSelectedSpaces,
+        spaces: newSelectedSpaces,
       }, {
         headers: {
           Authorization: `Bearer ${session}`
@@ -39,7 +39,7 @@ export function AddToSpace({ itemUuid }) {
     }
   }
 
-  if (!spaces.length) {
+  if (!spaces?.length) {
     return <div>Loading...</div>;
   }
 

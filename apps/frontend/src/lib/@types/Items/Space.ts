@@ -4,5 +4,5 @@ export interface Space {
 }
 
 export interface Spaces {
-  pages: Space[]
+  spaces: Space[]
 }
