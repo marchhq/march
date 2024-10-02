@@ -29,7 +29,7 @@ const TodayPage: React.FC = () => {
             <span
               onClick={() => setSelectedDate(new Date())}
               className="cursor-pointer">
-              <DynamicDate />
+              <DynamicDate selectedDate={selectedDate} />
             </span>
             <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </header>

@@ -1,11 +1,14 @@
-export const DynamicDate = (): JSX.Element => {
-  const today = new Date()
-  const day = today.getDate()
+interface Props {
+  selectedDate: Date
+}
+
+export const DynamicDate = ({ selectedDate }: Props): JSX.Element => {
+  const day = selectedDate.getDate()
 
   return (
     <div
       className={
-        "flex justify-center min-w-6 w-full border-2 rounded-md py-0.5 px-1 text-xs font-medium"
+        "flex justify-center min-w-6 w-full border-2 rounded-md py-0.5 px-2 text-sm font-medium"
       }
     >
       {day}

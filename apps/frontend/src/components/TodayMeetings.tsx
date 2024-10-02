@@ -40,12 +40,17 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
     };
   }) || [];
 
+  console.log('deewakar', agendaItems)
   return (
     <ol>
       {agendaItems === undefined ? (
-        <li className="text-[#DCDCDD]/80 text-lg font-medium">
-          <SkeletonCard />
-        </li>
+        <>
+          {console.log('deewakar1', agendaItems)}
+
+          <li className="text-[#DCDCDD]/80 text-lg font-medium">
+            <SkeletonCard />
+          </li>
+        </>
       ) : agendaItems.length === 0 ? (
         <li className="text-[#DCDCDD]/80 text-lg font-medium">
           No agenda items
@@ -55,7 +60,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
           <React.Fragment key={index}>
             <li className="text-[#DCDCDD]/80 text-lg font-medium">{item.title}</li>
             <p>{item.time}, {item.duration} min</p>
-            <a href={item.link} className="text-[#DCDCDD] mt-4 mb-8 flex justify-start items-center gap-2">
+            <a href={item.link} target="_blank" className="text-[#DCDCDD] mt-4 mb-8 flex justify-start items-center gap-2">
               Join Meeting
               <span>
                 <Link />
