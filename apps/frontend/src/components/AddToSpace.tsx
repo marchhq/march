@@ -1,46 +1,50 @@
-"use client";
+"use client"
+import * as React from "react"
 
-import * as React from "react";
+import { DropdownMenuCheckboxItem } from "@radix-ui/react-dropdown-menu"
+import axios from "axios"
+import { Check } from "lucide-react"
+
 import {
-  DropdownMenuCheckboxItem,
-} from "@radix-ui/react-dropdown-menu";
-import { Space as SpaceIcon } from "@/src/lib/icons/Space";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown";
-import { useSpace } from "../hooks/useSpace";
-import { Check } from 'lucide-react';
-import { Space } from "../lib/@types/Items/Space";
-import axios from "axios";
-import { BACKEND_URL } from "../lib/constants/urls";
-import { useAuth } from "../contexts/AuthContext";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown"
+import { useAuth } from "../contexts/AuthContext"
+import { useSpace } from "../hooks/useSpace"
+import { Space } from "../lib/@types/Items/Space"
+import { BACKEND_URL } from "../lib/constants/urls"
+import { Space as SpaceIcon } from "@/src/lib/icons/Space"
 
 export function AddToSpace({ itemUuid }) {
-  const [selectedSpaces, setSelectedSpaces] = React.useState<string[]>([]);
-  const { spaces: spaces } = useSpace() || { spaces: [] };
-  const { session } = useAuth();
+  const [selectedSpaces, setSelectedSpaces] = React.useState<string[]>([])
+  const { spaces: spaces } = useSpace() || { spaces: [] }
+  const { session } = useAuth()
 
   const handleToggleSpace = async (spaces: Space) => {
     try {
       const newSelectedSpaces = selectedSpaces.includes(spaces._id)
-        ? selectedSpaces.filter(id => id !== spaces._id)
-        : [...selectedSpaces, spaces._id];
-
+        ? selectedSpaces.filter((id) => id !== spaces._id)
+        : [...selectedSpaces, spaces._id]
       setSelectedSpaces(newSelectedSpaces)
-
-      await axios.put(`${BACKEND_URL}/api/items/${itemUuid}`, {
-        spaces: newSelectedSpaces,
-      }, {
-        headers: {
-          Authorization: `Bearer ${session}`
+      await axios.put(
+        `${BACKEND_URL}/api/items/${itemUuid}`,
+        {
+          spaces: newSelectedSpaces,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
         }
-      })
-
+      )
     } catch (error) {
       console.error("error updating space: ", error)
     }
   }
 
   if (!spaces?.length) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (
@@ -50,7 +54,7 @@ export function AddToSpace({ itemUuid }) {
           <SpaceIcon />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 text-white bg-background-active space-y-2 p-2 cursor-pointer border border-neutral-200 dark:border-neutral-800 shadow-sm">
+      <DropdownMenuContent className="w-56 cursor-pointer space-y-2 border border-neutral-200 bg-background-active p-2 text-white shadow-sm dark:border-neutral-800">
         {spaces.map((space) => (
           <DropdownMenuCheckboxItem
             key={space._id}
@@ -58,7 +62,7 @@ export function AddToSpace({ itemUuid }) {
             onCheckedChange={() => handleToggleSpace(space)}
             className="flex items-center space-x-2"
           >
-            <div className="w-4 h-4 flex items-center justify-center">
+            <div className="flex size-4 items-center justify-center">
               {selectedSpaces.includes(space._id) && (
                 <Check className="text-white" />
               )}
@@ -68,5 +72,5 @@ export function AddToSpace({ itemUuid }) {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
