@@ -1,11 +1,11 @@
-import { createPage, getPages, getPage, updatePage } from "../../services/lib/page.service.js"
+import { createSpace, getPages, getPage, updatePage } from "../../services/lib/page.service.js"
 
-const createPageController = async (req, res, next) => {
+const createSpaceController = async (req, res, next) => {
     try {
         const user = req.user._id;
 
         const requestedData = req.body;
-        const page = await createPage(user, requestedData);
+        const page = await createSpace(user, requestedData);
 
         res.status(200).json({
             page
@@ -59,7 +59,7 @@ const updatePageController = async (req, res, next) => {
 };
 
 export {
-    createPageController,
+    createSpaceController,
     getPagesController,
     getPageController,
     updatePageController
