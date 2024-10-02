@@ -1,6 +1,7 @@
 "use client"
 import TextEditor from "@/src/components/atoms/Editor"
 import useEditorHook from "@/src/hooks/useEditor.hook"
+import { Link } from "@/src/lib/icons/Link"
 import classNames from "@/src/utils/classNames"
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import { PlusIcon } from "@radix-ui/react-icons"
@@ -18,13 +19,13 @@ const MeetingPage: React.FC = () => {
   return (
     <main className="p-16 h-full text-gray-color flex justify-between">
       <section>
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-2 text-sm">
           <div className="size-4 rounded-sm bg-white mr-4"></div>
-          <p>12/15/2001.</p>
-          <p>Last Edited 24 Hours Ago.</p>
-          <button className="flex items-center gap-1 px-2 rounded-md text-secondary-foreground hover-bg">
-            <PlusIcon />
-            Add A New Note
+          <p>Tue, Aug 06 .</p>
+          <p>17:00: 18:00.</p>
+          <button className="flex items-center gap-3 px-4 rounded-md text-secondary-foreground hover-bg">
+            <Link />
+            Google Meet Url
           </button>
           <button
             onClick={handleClose}
@@ -34,7 +35,7 @@ const MeetingPage: React.FC = () => {
         </div>
         <div>
           <textarea
-            value={"The Power of Documenting"}
+            value={"march stand up"}
             placeholder="Untitled"
             className="w-full py-6 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             rows={1}
