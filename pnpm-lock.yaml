@@ -268,6 +268,9 @@ importers:
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
+      use-debounce:
+        specifier: ^10.0.3
+        version: 10.0.3(react@18.3.1)
       zustand:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.3)(react@18.3.1)
@@ -5863,6 +5866,12 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  use-debounce@10.0.3:
+    resolution: {integrity: sha512-DxQSI9ZKso689WM1mjgGU3ozcxU1TJElBJ3X6S4SMzMNcm2lVH0AHmyXB+K7ewjz2BSUKJTDqTcwtSMRfB89dg==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      react: '*'
 
   use-sidecar@1.1.2:
     resolution: {integrity: sha512-epTbsLuzZ7lPClpz2TyryBfztm7m+28DlEv2ZCQ3MDr5ssiwyOwGH/e5F9CkfWjJ1t4clvI58yF822/GUkjjhw==}
@@ -12664,6 +12673,10 @@ snapshots:
       tslib: 2.6.2
     optionalDependencies:
       '@types/react': 18.3.3
+
+  use-debounce@10.0.3(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   use-sidecar@1.1.2(@types/react@18.3.3)(react@18.3.1):
     dependencies:
