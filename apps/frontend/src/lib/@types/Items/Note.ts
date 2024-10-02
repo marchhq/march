@@ -1,12 +1,13 @@
 export interface Note {
   id: string
   title: string
-  content: string
+  description: string
   user: string
   uuid: string
   createdAt: string
   updatedAt: string
   __v: number
+  isDeleted: boolean
 }
 
 export interface NotesResponse {
@@ -14,5 +15,5 @@ export interface NotesResponse {
 }
 
 export interface NoteCreateResponse {
-  note: Note
+  item: Note
 }

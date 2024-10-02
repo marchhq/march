@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react"
-
 import Link from "@tiptap/extension-link"
 import { Placeholder } from "@tiptap/extension-placeholder"
 import TaskItem from "@tiptap/extension-task-item"
@@ -8,6 +6,7 @@ import { type Editor, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
 import { SlashCommand } from "../extensions/SlashCommand"
+import { useRef } from "react"
 
 interface Props {
   content: string
@@ -22,9 +21,7 @@ const useEditorHook = ({
   setIsSaved,
   placeholder = "press / for markdown format",
 }: Props): Editor | null => {
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
-    null
-  )
+  const timeoutId = useRef<NodeJS.Timeout | null>(null)
 
   const editor = useEditor({
     extensions: [
@@ -50,36 +47,20 @@ const useEditorHook = ({
     autofocus: "end",
     onUpdate: ({ editor }) => {
       setIsSaved(false)
+      setContent(editor.getHTML())
 
-      if (debounceTimer) {
-        clearTimeout(debounceTimer)
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current)
       }
 
-      const newTimer = setTimeout(() => {
-        setContent(editor.getHTML())
+      timeoutId.current = setTimeout(() => {
         setIsSaved(true)
       }, 1000)
-
-      setDebounceTimer(newTimer)
     },
     immediatelyRender: false,
   })
 
-  useEffect(() => {
-    return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer)
-      }
-    }
-  }, [debounceTimer])
-
-  useEffect(() => {
-    if (editor) {
-      editor.commands.setContent(content);
-    }
-  }, [content, editor]);
-
-  return editor;
+  return editor
 }
 
 export default useEditorHook
