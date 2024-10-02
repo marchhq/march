@@ -26,8 +26,12 @@ const ThisWeekPage: React.FC = () => {
           </div>
         </div>
         <div className="flex w-full max-w-screen-xl gap-8">
-          <div className="flex flex-col flex-1 gap-4">
-            <div className="text-xl text-foreground">
+          <div className="flex flex-col flex-1 gap-4 group/section">
+            <div className="flex items-center gap-2 text-xl text-foreground">
+              <Icon
+                icon="material-symbols:circle-outline"
+                style={{ fontSize: "20px" }}
+              />
               <h2>to do</h2>
             </div>
             <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
@@ -50,9 +54,16 @@ const ThisWeekPage: React.FC = () => {
                 <p>description</p>
               </div>
             </div>
+            <button className="invisible flex flex-col text-left text-sm gap-1 p-4 rounded-lg hover-bg group-hover/section:visible">
+              <div className="flex items-center gap-2">
+                <Icon icon="ic:round-plus" style={{ fontSize: "18px" }} />
+                <p>New item</p>
+              </div>
+            </button>
           </div>
-          <div className="flex flex-col flex-1 gap-4">
-            <div className="text-xl text-foreground">
+          <div className="flex flex-col flex-1 gap-4 group/section">
+            <div className="flex items-center gap-2 text-xl text-foreground">
+              <Icon icon="carbon:circle-dash" style={{ fontSize: "20px" }} />
               <h2>in progress</h2>
             </div>
             <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
@@ -75,9 +86,19 @@ const ThisWeekPage: React.FC = () => {
                 <p>description</p>
               </div>
             </div>
+            <button className="invisible flex flex-col text-left text-sm gap-1 p-4 rounded-lg hover-bg group-hover/section:visible">
+              <div className="flex items-center gap-2">
+                <Icon icon="ic:round-plus" style={{ fontSize: "18px" }} />
+                <p>New item</p>
+              </div>
+            </button>
           </div>
-          <div className="flex flex-col flex-1 gap-4">
-            <div className="text-xl text-foreground">
+          <div className="flex flex-col flex-1 gap-4 group/section">
+            <div className="flex items-center gap-2 text-xl text-foreground">
+              <Icon
+                icon="material-symbols:circle"
+                style={{ fontSize: "20px" }}
+              />
               <h2>done</h2>
             </div>
             <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
@@ -100,6 +121,12 @@ const ThisWeekPage: React.FC = () => {
                 <p>description</p>
               </div>
             </div>
+            <button className="invisible flex flex-col text-left text-sm gap-1 p-4 rounded-lg hover-bg group-hover/section:visible">
+              <div className="flex items-center gap-2">
+                <Icon icon="ic:round-plus" style={{ fontSize: "18px" }} />
+                <p>New item</p>
+              </div>
+            </button>
           </div>
         </div>
       </div>
