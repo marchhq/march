@@ -10,7 +10,7 @@ const meetingSchema = new Schema({
     title: {
         type: String
     },
-    content: {
+    description: {
         type: String,
         default: ''
     },
