@@ -1,8 +1,8 @@
 import { Space } from "../../models/lib/space.model.js";
 
-const createSpace = async (user, pageData) => {
+const createSpace = async (user, spaceData) => {
     const newSpace = new Space({
-        ...pageData,
+        ...spaceData,
         users: user
     });
     if (!newSpace) {
@@ -39,14 +39,14 @@ const getSpace = async (user, id) => {
 };
 
 const updateSpace = async (id, updateData) => {
-    const updatedPage = await Space.findOneAndUpdate({
+    const updatedSpace = await Space.findOneAndUpdate({
         uuid: id
     },
     { $set: updateData },
     { new: true }
     )
 
-    return updatedPage;
+    return updatedSpace;
 };
 
 export {
