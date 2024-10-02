@@ -1,41 +1,41 @@
 import { Space } from "../../models/lib/space.model.js";
 
 const createSpace = async (user, pageData) => {
-    const newPage = new Space({
+    const newSpace = new Space({
         ...pageData,
         users: user
     });
-    if (!newPage) {
+    if (!newSpace) {
         const error = new Error("Failed to create the item")
         error.statusCode = 500
         throw error
     }
 
-    const page = await newPage.save()
+    const space = await newSpace.save()
 
-    return page;
+    return space;
 };
 
 const getSpaces = async (user) => {
-    const items = await Space.find({
+    const space = await Space.find({
         users: user,
         isArchived: false,
         isDeleted: false
     })
         .sort({ created_at: -1 });
 
-    return items;
+    return space;
 }
 
 const getSpace = async (user, id) => {
-    const page = await Space.find({
+    const space = await Space.find({
         uuid: id,
         users: user,
         isArchived: false,
         isDeleted: false
     })
 
-    return page;
+    return space;
 };
 
 const updateSpace = async (id, updateData) => {
