@@ -6,26 +6,37 @@ import { BACKEND_URL } from "../lib/constants/urls";
 
 export const useJournal = (selectedDate?: string) => {
   const [journal, setJournal] = useState<Journal | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { session } = useAuth();
 
-  const fetchJournal = useCallback(async (date: string) => {
+  const fetchJournal = useCallback(async () => {
+    if (!selectedDate) return;
+
     try {
-      const response = await axios.get<Journal>(`${BACKEND_URL}/api/journals/${date}`, {
+      const response = await axios.get<Journal>(`${BACKEND_URL}/api/journals/${selectedDate}/`, {
         headers: {
           Authorization: `Bearer ${session}`
         }
       });
-      setJournal(response.data);
+
+      if (response.data) {
+        setJournal(response.data);
+        setError(null);
+      } else {
+        setJournal(null);
+        setError("No journal data received for the selected date");
+      }
     } catch (error) {
-      console.error(`Failed to fetch journal for date ${date}: `, error);
+      setJournal(null);
+      setError(`Failed to fetch journal: ${error instanceof Error ? error.message : String(error)}`);
     }
-  }, [session]);
+  }, [session, selectedDate]);
 
   useEffect(() => {
     if (session && selectedDate) {
-      fetchJournal(selectedDate);
+      fetchJournal();
     }
   }, [session, selectedDate, fetchJournal]);
 
-  return { journal, fetchJournal };
+  return { journal, error, fetchJournal };
 };
