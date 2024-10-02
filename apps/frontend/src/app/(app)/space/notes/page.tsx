@@ -64,7 +64,7 @@ const NotesPage: React.FC = () => {
   }
 
   return (
-    <div className="size-full overflow-auto bg-background px-8 py-16">
+    <div className="size-full overflow-auto bg-background p-16">
       {loading && <p className="text-secondary-foreground">loading...</p>}
     </div>
   )
