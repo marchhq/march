@@ -1,4 +1,4 @@
-name: Notify on issue creation and relevant comments
+name: Notify on issue creation and relevant comments (excluding PRs, bots, and specific users)
 on:
   issues:
     types: [opened]
@@ -17,9 +17,9 @@ jobs:
                -d "{\"content\": \"New issue created: ${{ github.event.issue.html_url }}\"}" \
                ${{ secrets.DISCORD_WEBHOOK }}
 
-      # Notify for relevant comments, including the username of the commenter
+      # Notify for relevant issue comments, excluding PR comments, bots, and specific users
       - name: Send Discord Notification for Issue Comments
-        if: github.event_name == 'issue_comment' && github.event.comment.user.login != 'github-actions[bot]' && github.event.comment.user.login != 'linear[bot]'
+        if: github.event_name == 'issue_comment' && !github.event.issue.pull_request && github.event.comment.user.login != 'github-actions[bot]' && github.event.comment.user.login != 'linear[bot]' && github.event.comment.user.login != 'sajdakabir' && github.event.comment.user.login != 'oliursahin' && github.event.comment.user.login != 'deewakar-k' && github.event.comment.user.login != 'joaorceschini'
         run: |
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"New comment on issue: ${{ github.event.issue.html_url }} - Comment by **${{ github.event.comment.user.login }}**: ${{ github.event.comment.body }}\"}" \

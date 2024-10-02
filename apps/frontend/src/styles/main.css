@@ -47,7 +47,7 @@
       --foreground: 237, 237, 237;
 
       --primary: ;
-      --primary-foreground: 190, 194, 200;
+      --primary-foreground: 212, 212, 216;
       /* BEC2C8 */
 
       --secondary: ;
@@ -147,7 +147,7 @@ button {
 */
 
 .tiptap.ProseMirror {
-  @apply focus:outline-none text-zinc-300;
+  @apply focus:outline-none;
 
   h1 {
     @apply text-2xl font-semibold;
@@ -178,7 +178,7 @@ button {
   }
 
   p {
-    @apply text-sm;
+    @apply text-inherit;
   }
 
   pre {
@@ -238,7 +238,6 @@ button {
 }
 
 .tiptap p.is-editor-empty:first-child::before {
-  color: #6d7077;
   content: attr(data-placeholder);
   float: left;
   height: 0;
