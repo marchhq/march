@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation"
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useSpace } from "@/src/hooks/useSpace"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
-import { useSpace } from "@/src/hooks/useSpace"
 
 interface Props {
   children: React.ReactNode
@@ -96,14 +96,14 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
     ]
   */
 
-  const { spaces } = useSpace() || { spaces: [] };
+  const { spaces } = useSpace() || { spaces: [] }
 
   const constructPath = (spaceName) => {
-    return `space/${spaceName.toLowerCase().replace(/\s+/g, '-')}`
+    return `space/${spaceName.toLowerCase().replace(/\s+/g, "-")}`
   }
 
-  const items = spaces.map(space => {
-    const path = constructPath(space.name);
+  const items = spaces.map((space) => {
+    const path = constructPath(space.name)
     return (
       <SidebarItem
         href={path}
@@ -112,7 +112,6 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
         isActive={pathname.includes(path)}
       />
     )
-
   })
   return (
     <div className="flex h-full">
