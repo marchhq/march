@@ -3,6 +3,7 @@ import { createEmailUser, validateEmailUser, validateGoogleUser, getUserByEmail,
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
+import { spaceQueue } from "../../loaders/bullmq.loader.js";
 
 const { ValidationError } = Joi;
 
@@ -70,7 +71,10 @@ const authenticateWithGoogleController = async (req, res, next) => {
         let isNewUser = false;
         if (!user) {
             isNewUser = true;
-            user = await createGoogleUser(payload)
+            user = await createGoogleUser(payload);
+            await spaceQueue.add("spaceQueue", {
+                user: user._id
+            });
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
@@ -103,6 +107,9 @@ const authenticateWithGithubController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGithubUser(payload);
+            await spaceQueue.add("spaceQueue", {
+                user: user._id
+            });
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
