@@ -8,8 +8,6 @@ import { PlusIcon } from "@radix-ui/react-icons"
 import axios from "axios"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import TextEditor from "@/src/components/atoms/Editor"
-import useEditorHook from "@/src/hooks/useEditor.hook"
 import useInboxStore from "@/src/lib/store/inbox.store"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 
@@ -30,10 +28,10 @@ const InboxPage: React.FC = () => {
   const { session } = useAuth()
 
   const [addingItem, setAddingItem] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
+  const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [isSaved, setIsSaved] = useState(false)
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [selectedPages, setSelectedPages] = React.useState<string[]>([])
   const [editItemId, setEditItemId] = React.useState<string | null>(null)
@@ -45,31 +43,23 @@ const InboxPage: React.FC = () => {
     description: "",
   })
 
-  const { fetchInboxData, updateItem, setInboxItems, inboxItems } =
-    useInboxStore()
-
-  const editor = useEditorHook({
-    content: description,
-    setContent: setDescription,
-    setIsSaved,
-    placeholder: "press / for markdown format",
-  })
-
-  const editorEditItem = useEditorHook({
-    content: editedItem.description,
-    setContent: (content) =>
-      setEditedItem((prev) => ({ ...prev, description: content })),
-    setIsSaved,
-    placeholder: "press / for markdown format",
-  })
+  const { fetchInboxData, addItem, updateItem, inboxItems } = useInboxStore()
 
   useEffect(() => {
-    const textarea = textareaRef.current
+    const textarea = textareaRefTitle.current
     if (textarea) {
       textarea.style.height = "auto"
       textarea.style.height = `${textarea.scrollHeight}px`
     }
   }, [title])
+
+  useEffect(() => {
+    const textarea = textareaRefDescription.current
+    if (textarea) {
+      textarea.style.height = "auto"
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }, [description])
 
   useEffect(() => {
     fetchInboxData(session)
@@ -80,11 +70,11 @@ const InboxPage: React.FC = () => {
       Authorization: `Bearer ${session}`,
     },
   }
+
   const handleCloseAddItemToInbox = async () => {
     setAddingItem(false)
     setTitle("")
     setDescription("")
-    editor?.commands.setContent("")
   }
 
   const handleEditItem = (item: any) => {
@@ -93,14 +83,11 @@ const InboxPage: React.FC = () => {
       title: item.title,
       description: item.description,
     })
-    editorEditItem?.setEditable(true)
-    editorEditItem?.commands.setContent(item.description)
   }
 
   const handleCancelEditItem = () => {
     setEditItemId(null)
     setEditedItem({ title: "", description: "" })
-    editorEditItem?.setEditable(false)
   }
 
   const handleSaveEditedItem = async (item: any) => {
@@ -117,19 +104,12 @@ const InboxPage: React.FC = () => {
         )
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      }
-
       await axios.put(
         `${BACKEND_URL}/api/items/${item.uuid}`,
         editedItem,
         config
       )
 
-      // fetchInboxData(session)
       handleCancelEditItem()
     } catch (error) {
       console.error("error updating item:", error)
@@ -142,23 +122,10 @@ const InboxPage: React.FC = () => {
       return
     }
 
-    console.log("test")
-
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/api/items/create`,
-        {
-          title: title,
-          description: description,
-          dueDate: date,
-          pages: selectedPages,
-        },
-        config
-      )
+      const newItem = await addItem(session, title, description)
 
-      if (res.status === 200) {
-        fetchInboxData(session)
-        editor?.commands.setContent("")
+      if (newItem) {
         setAddingItem(false)
         setTitle("")
         setDescription("")
@@ -172,6 +139,20 @@ const InboxPage: React.FC = () => {
       console.error("error adding item to inbox:", error)
     }
   }
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (addingItem) {
+        e.preventDefault()
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [addingItem])
 
   return (
     <section className="h-full overflow-y-auto bg-background ml-[260px] p-16 text-secondary-foreground">
@@ -206,7 +187,7 @@ const InboxPage: React.FC = () => {
                   </button>
                 </div>
                 <textarea
-                  ref={textareaRef}
+                  ref={textareaRefTitle}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="title"
@@ -214,7 +195,14 @@ const InboxPage: React.FC = () => {
                   autoFocus
                   rows={1}
                 />
-                <TextEditor editor={editor} minH="20vh" />
+                <textarea
+                  ref={textareaRefDescription}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="description"
+                  className="w-full py-2 text-sm resize-none overflow-hidden bg-background text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+                  rows={1}
+                />
               </div>
             )}
             <div className="flex flex-col gap-4">
@@ -240,7 +228,7 @@ const InboxPage: React.FC = () => {
                         {editItemId === item.uuid ? (
                           <div className="w-full">
                             <textarea
-                              ref={textareaRef}
+                              ref={textareaRefTitle}
                               value={editedItem.title}
                               onChange={(e) =>
                                 setEditedItem((prev) => ({
@@ -285,13 +273,21 @@ const InboxPage: React.FC = () => {
                     </div>
                     <div className="ml-[18px] pl-2 text-xs">
                       {editItemId === item.uuid ? (
-                        <TextEditor editor={editorEditItem} minH="1vh" />
-                      ) : (
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: item.description || "",
+                        <textarea
+                          ref={textareaRefDescription}
+                          value={editedItem.description}
+                          onChange={(e) => {
+                            setEditedItem((prev) => ({
+                              ...prev,
+                              description: e.target.value,
+                            }))
                           }}
+                          placeholder="description"
+                          className="w-full text-xs resize-none overflow-hidden bg-transparent text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+                          rows={1}
                         />
+                      ) : (
+                        <p>{item.description}</p>
                       )}
                     </div>
                   </div>
