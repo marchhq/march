@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation"
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useSpace } from "@/src/hooks/useSpace"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
-import { useSpace } from "@/src/hooks/useSpace"
 
 interface Props {
   children: React.ReactNode
