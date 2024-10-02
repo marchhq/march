@@ -21,9 +21,9 @@ const LabelSchema = new Schema({
         type: Number,
         default: 0
     },
-    page: {
+    space: {
         type: Schema.Types.ObjectId,
-        ref: 'Page'
+        ref: 'Space'
     },
     user: {
         type: Schema.Types.ObjectId,

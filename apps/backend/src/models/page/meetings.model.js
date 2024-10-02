@@ -26,9 +26,9 @@ const meetingSchema = new Schema({
     updatedAt: {
         type: Date
     },
-    pages: [{
+    Spaces: [{
         type: Schema.Types.ObjectId,
-        ref: 'Page'
+        ref: 'Space'
     }],
     user: {
         type: Schema.Types.ObjectId,
