@@ -23,8 +23,8 @@ const NotesPage: React.FC = () => {
       const note = await getLatestNote(session)
       if (note) {
         setLatestNoteId(note.uuid)
-        setIsFetched(true)
       }
+      setIsFetched(true)
       return note?.uuid || ""
     } catch (error) {
       console.error(error)
@@ -34,7 +34,7 @@ const NotesPage: React.FC = () => {
   }
 
   useEffect(() => {
-    getNoteId()
+    const test = getNoteId()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -64,12 +64,8 @@ const NotesPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full">
-      {loading && (
-        <div className={navLinkClassName}>
-          <p>loading...</p>
-        </div>
-      )}
+    <div className="size-full overflow-auto bg-background px-8 py-16">
+      {loading && <p className="text-secondary-foreground">loading...</p>}
     </div>
   )
 }
