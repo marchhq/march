@@ -16,8 +16,8 @@ const createSpace = async (user, pageData) => {
     return page;
 };
 
-const getPages = async (user) => {
-    const items = await Page.find({
+const getSpaces = async (user) => {
+    const items = await Space.find({
         users: user,
         isArchived: false,
         isDeleted: false
@@ -27,8 +27,8 @@ const getPages = async (user) => {
     return items;
 }
 
-const getPage = async (user, id) => {
-    const page = await Page.find({
+const getSpace = async (user, id) => {
+    const page = await Space.find({
         uuid: id,
         users: user,
         isArchived: false,
@@ -38,8 +38,8 @@ const getPage = async (user, id) => {
     return page;
 };
 
-const updatePage = async (id, updateData) => {
-    const updatedPage = await Page.findOneAndUpdate({
+const updateSpace = async (id, updateData) => {
+    const updatedPage = await Space.findOneAndUpdate({
         uuid: id
     },
     { $set: updateData },
@@ -51,7 +51,7 @@ const updatePage = async (id, updateData) => {
 
 export {
     createSpace,
-    getPages,
-    getPage,
-    updatePage
+    getSpaces,
+    getSpace,
+    updateSpace
 }

@@ -1,4 +1,4 @@
-import { createSpace, getPages, getPage, updatePage } from "../../services/lib/page.service.js"
+import { createSpace, getPages, getPage, updatePage } from "../../services/lib/space.service.js"
 
 const createSpaceController = async (req, res, next) => {
     try {

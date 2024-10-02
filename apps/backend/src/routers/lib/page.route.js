@@ -11,7 +11,7 @@ import {
     getPagesController,
     getPageController,
     updatePageController
-} from "../../controllers/lib/page.controller.js";
+} from "../../controllers/lib/space.controller.js";
 import {
     createUpdateJournalController,
     getUserTodayJournalController,
