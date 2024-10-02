@@ -12,7 +12,11 @@ export interface InboxStoreType {
     id: string | undefined,
     date: Date | undefined
   ) => Promise<InboxItem[]>
-  setInboxItems: (inboxItems: InboxItem[]) => void
+  addItem: (
+    session: string,
+    title: string,
+    description: string
+  ) => Promise<InboxItem | null>
   setTodayInboxItems: (todayInboxItems: TodayInboxItem[]) => void
   setOverdueInboxItems: (overdueInboxItems: OverdueInboxItem[]) => void
   updateItem: (editedItem: InboxItem, id: string) => void
@@ -68,4 +72,8 @@ export interface OverdueInboxItem {
   isArchived: boolean
   isDeleted: boolean
   isCompleted: boolean
+}
+
+export interface InboxItemCreateResponse {
+  item: InboxItem
 }
