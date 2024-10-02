@@ -4,7 +4,6 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Link } from "@/src/lib/icons/Link"
 import classNames from "@/src/utils/classNames"
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
-import { PlusIcon } from "@radix-ui/react-icons"
 import { useState } from "react"
 
 
@@ -19,18 +18,14 @@ const MeetingPage: React.FC = () => {
   return (
     <main className="p-16 h-full text-gray-color flex justify-between">
       <section>
-        <div className="flex items-center gap-2 text-sm">
-          <div className="size-4 rounded-sm bg-white mr-4"></div>
-          <p>Tue, Aug 06 .</p>
+        <div className="flex items-center gap-1 text-sm">
+          <div className="size-4 rounded-sm bg-[#E34136]/80 mr-4"></div>
+          <p>Tue, Aug 06</p>
+          <p>.</p>
           <p>17:00: 18:00.</p>
           <button className="flex items-center gap-3 px-4 rounded-md text-secondary-foreground hover-bg">
             <Link />
             Google Meet Url
-          </button>
-          <button
-            onClick={handleClose}
-            className="flex items-center hover-text">
-            <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
           </button>
         </div>
         <div>
@@ -43,12 +38,17 @@ const MeetingPage: React.FC = () => {
           <TextEditor editor={editor} />
         </div>
       </section>
-      <section className={classNames(
-        closeToggle ? "hidden" : "visible", "max-w-[200px] text-sm w-full text-secondary-foreground"
-      )}>
-        <span className="text-foreground">meetings</span>
+      <section className="max-w-[200px] text-sm w-full text-secondary-foreground">
+        <span
+          onClick={handleClose}
+          className="hover:text-foreground cursor-pointer">stack</span>
+        <div className={classNames(
+          closeToggle ? "hidden" : "visible", "mt-4"
+        )}>
+          march stand up
+        </div>
       </section>
-    </main>
+    </main >
   )
 }
 
