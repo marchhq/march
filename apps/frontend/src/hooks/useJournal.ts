@@ -8,22 +8,27 @@ export const useJournal = (selectedDate?: string) => {
   const [journal, setJournal] = useState<Journal | null>(null);
   const { session } = useAuth();
 
-  const fetchJournal = useCallback(async (date: string) => {
+  const fetchJournal = useCallback(async () => {
+    if (!selectedDate) return;
+
     try {
-      const response = await axios.get<Journal>(`${BACKEND_URL}/api/journals/${date}`, {
+      const response = await axios.get<Journal>(`${BACKEND_URL}/api/journals/${selectedDate}/`, {
         headers: {
           Authorization: `Bearer ${session}`
         }
       });
-      setJournal(response.data);
+
+      setJournal(response.data)
+
     } catch (error) {
-      console.error(`Failed to fetch journal for date ${date}: `, error);
+      console.error(error)
+      setJournal(null);
     }
-  }, [session]);
+  }, [session, selectedDate]);
 
   useEffect(() => {
     if (session && selectedDate) {
-      fetchJournal(selectedDate);
+      fetchJournal();
     }
   }, [session, selectedDate, fetchJournal]);
 
