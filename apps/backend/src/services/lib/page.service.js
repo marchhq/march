@@ -1,7 +1,7 @@
-import { Page } from "../../models/lib/page.model.js";
+import { Space } from "../../models/lib/space.model.js";
 
-const createPage = async (user, pageData) => {
-    const newPage = new Page({
+const createSpace = async (user, pageData) => {
+    const newPage = new Space({
         ...pageData,
         users: user
     });
@@ -50,7 +50,7 @@ const updatePage = async (id, updateData) => {
 };
 
 export {
-    createPage,
+    createSpace,
     getPages,
     getPage,
     updatePage

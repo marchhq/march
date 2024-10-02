@@ -7,7 +7,7 @@ import {
     moveItemtoDateController
 } from "../../controllers/core/user.controller.js";
 import {
-    createPageController,
+    createSpaceController,
     getPagesController,
     getPageController,
     updatePageController
@@ -57,7 +57,7 @@ router.route("/my/:date/").get(getUserItemsByDateControlle);
 router.route("/setDate/").post(moveItemtoDateController);
 
 // space controllers
-router.route("/spaces/create/").post(createPageController);
+router.route("/spaces/create/").post(createSpaceController);
 router.route("/spaces/overview/").get(getPagesController);
 router.route("/spaces/:space/").get(getPageController);
 router.route("/spaces/:space/").put(updatePageController);
