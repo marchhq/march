@@ -20,9 +20,9 @@ const NoteSchema = new Schema({
         ref: 'User',
         required: true
     },
-    page: {
+    space: {
         type: Schema.Types.ObjectId,
-        ref: 'Page'
+        ref: 'Space'
     }
 }, {
     timestamps: true
