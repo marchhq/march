@@ -1,16 +1,44 @@
-import { useState } from "react"
+"use client"
+import { useEffect, useState } from "react";
+import TextEditor from "./atoms/Editor";
+import useEditorHook from "../hooks/useEditor.hook";
+import { useJournal } from "../hooks/useJournal";
 
-import TextEditor from "./atoms/Editor"
-import useEditorHook from "../hooks/useEditor.hook"
+interface JournalProps {
+  selectedDate: Date;
+}
 
-export const TodayTextArea = (): JSX.Element => {
+/* const formatDate = (date: Date) => {
+  const isoDate = date.toISOString();
+  return isoDate.split("T")[0];
+}; */
+
+export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
+  /*
+   const { journal, fetchJournal } = useJournal();
+   const formattedDate = formatDate(selectedDate);
+ 
+   useEffect(() => {
+     fetchJournal(formattedDate).then(() => {
+       if (journal?.journal?.content) {
+         setContent(journal?.journal?.content)
+       }
+     });
+   }, [formattedDate, fetchJournal]); */
+
+
   const [content, setContent] = useState("<p></p>")
-  const [isSaved, setIsSaved] = useState(false)
+  const [isSaved, setIsSaved] = useState(true);
+
   const editor = useEditorHook({
     content,
-    setContent,
+    setContent: () => { },
     setIsSaved,
-    placeholder: "press / for markdown format",
-  })
-  return <TextEditor editor={editor} minH="20vh" />
-}
+  });
+  return (
+    <TextEditor
+      editor={editor}
+      minH="30vh"
+    />
+  );
+};
