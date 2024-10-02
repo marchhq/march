@@ -8,9 +8,9 @@ import {
 } from "../../controllers/core/user.controller.js";
 import {
     createSpaceController,
-    getPagesController,
-    getPageController,
-    updatePageController
+    getSpacesController,
+    getSpaceController,
+    updateSpaceController
 } from "../../controllers/lib/space.controller.js";
 import {
     createUpdateJournalController,
@@ -58,9 +58,9 @@ router.route("/setDate/").post(moveItemtoDateController);
 
 // space controllers
 router.route("/spaces/create/").post(createSpaceController);
-router.route("/spaces/overview/").get(getPagesController);
-router.route("/spaces/:space/").get(getPageController);
-router.route("/spaces/:space/").put(updatePageController);
+router.route("/spaces/overview/").get(getSpacesController);
+router.route("/spaces/:space/").get(getSpaceController);
+router.route("/spaces/:space/").put(updateSpaceController);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
