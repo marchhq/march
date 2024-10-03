@@ -6,7 +6,7 @@ import { TodayTextArea } from "@/src/components/TodayTextArea"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayItems } from "@/src/components/TodayItems"
-import { DynamicDate } from "@/src/components/atoms/DynamicDate"
+import { TodayCal } from "@/src/lib/icons/Calendar"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
@@ -29,7 +29,7 @@ const TodayPage: React.FC = () => {
             <span
               onClick={() => setSelectedDate(new Date())}
               className="cursor-pointer">
-              <DynamicDate selectedDate={selectedDate} />
+              <TodayCal />
             </span>
             <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </header>
