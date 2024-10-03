@@ -223,7 +223,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
             />
-            <div className="text-primary-foreground">
+            <div className="text-foreground">
               <TextEditor editor={editor} />
             </div>
           </div>
