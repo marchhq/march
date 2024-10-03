@@ -13,9 +13,6 @@ interface Props {
   children: React.ReactNode
 }
 
-const navLinkClassName =
-  "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
-
 const SpaceLayout: React.FC<Props> = ({ children }) => {
   const pathname = usePathname()
   const { session } = useAuth()
@@ -60,7 +57,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   }
 
   const constructPath = (spaceName: string) => {
-    return `space/${spaceName.toLowerCase().replace(/\s+/g, '-')}`
+    return `space/${spaceName.toLowerCase().replace(/\s+/g, "-")}`
   }
 
   const items = spaces.map((space) => {
