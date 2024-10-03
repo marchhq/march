@@ -6,9 +6,8 @@ const createBlock = async (user, blockData) => {
     let block;
 
     switch (type) {
-    case 'notes': {
+    case 'note': {
         const note = await createNote(user, {});
-        console.log("sajda: ", note._id);
         block = new Block({
             name: "Note",
             user,
@@ -26,7 +25,7 @@ const createBlock = async (user, blockData) => {
     }
     default:
         block = new Block({
-            name: type.capitalize(),
+            name: blockData.name ? blockData.name : type,
             user,
             data: { ...blockData.data }
         });
