@@ -73,6 +73,15 @@ const ItemSchema = new Schema({
     timestamps: true
 });
 
+ItemSchema.pre('save', function (next) {
+    if (this.status === 'done') {
+        this.isCompleted = true;
+    } else {
+        this.isCompleted = false;
+    }
+    next();
+});
+
 const Item = db.model('Item', ItemSchema, 'items')
 
 export {
