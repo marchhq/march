@@ -31,17 +31,14 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   });
 
   useEffect(() => {
-    console.log("Fetching journal for date: ", formattedDate);
     fetchJournal();
   }, [formattedDate, fetchJournal]);
 
   useEffect(() => {
     if (journal?.journal?.content) {
-      console.log("Updating editor content");
       setContent(journal.journal.content);
       editor?.commands.setContent(journal.journal.content);
     } else {
-      console.log("No journal content, resetting editor");
       setContent("<p></p>");
       editor?.commands.setContent("<p></p>");
     }
