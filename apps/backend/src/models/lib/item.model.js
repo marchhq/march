@@ -16,10 +16,6 @@ const ItemSchema = new Schema({
         type: String,
         default: "march"
     },
-    type: {
-        type: String,
-        default: 'issue'
-    },
     description: {
         type: String,
         default: ''
