@@ -3,10 +3,10 @@ import * as React from "react"
 
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
-import { TodayCal } from "@/src/lib/icons/Calendar"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayItems } from "@/src/components/TodayItems"
+import { TodayCal } from "@/src/lib/icons/Calendar"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
