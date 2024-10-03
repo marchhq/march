@@ -26,7 +26,6 @@ const processSpaceJob = async (job) => {
             { name: "This Week", icon: "", blocks: [blockIds[2]] },
             { name: "Reading List", icon: "book", blocks: [blockIds[3]] }
         ];
-        console.log("im here");
         for (const spaceData of spaces) {
             await createSpace(user, spaceData);
         }
