@@ -1,22 +1,36 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
 import { createSpace } from "../services/lib/space.service.js";
+import { createBlock } from "../services/lib/block.service.js";
 
 const processSpaceJob = async (job) => {
     const { user } = job.data;
-    const spaces = [
-        { name: "Notes", icon: "note" },
-        { name: "Meetings", icon: "meeting" },
-        { name: "This Week", icon: "" },
-        { name: "Reading List", icon: "book" }
+    const blocks = [
+        { name: "Notes", data: { type: "note" } },
+        { name: "Meetings", data: { type: "meeting" } },
+        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
+        { name: "Reading List", data: { type: "reading" } }
     ];
 
     try {
+        const blockIds = [];
+
+        for (const blockData of blocks) {
+            const block = await createBlock(user, blockData);
+            blockIds.push(block._id);
+        }
+
+        const spaces = [
+            { name: "Notes", icon: "note", blocks: [blockIds[0]] },
+            { name: "Meetings", icon: "meeting", blocks: [blockIds[1]] },
+            { name: "This Week", icon: "", blocks: [blockIds[2]] },
+            { name: "Reading List", icon: "book", blocks: [blockIds[3]] }
+        ];
         for (const spaceData of spaces) {
             await createSpace(user, spaceData);
         }
     } catch (error) {
-        console.error('Error processing Spaces:', error);
+        console.error('Error processing Spaces and Blocks:', error);
         throw error;
     }
 };
