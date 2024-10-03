@@ -1,6 +1,6 @@
 import React from "react";
 import { useMeetings } from "../hooks/useMeetings";
-import { Link } from "../lib/icons/Link";
+import { Link as LinkIcon } from "../lib/icons/Link";
 import { SkeletonCard } from "./atoms/SkeletonCard";
 
 const isSameDay = (date1: Date, date2: Date): boolean => {
@@ -40,13 +40,10 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
     };
   }) || [];
 
-  console.log('deewakar', agendaItems)
   return (
     <ol>
       {agendaItems === undefined ? (
         <>
-          {console.log('deewakar1', agendaItems)}
-
           <li className="text-[#DCDCDD]/80 text-lg font-medium">
             <SkeletonCard />
           </li>
@@ -63,7 +60,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
             <a href={item.link} target="_blank" className="text-[#DCDCDD] mt-4 mb-8 flex justify-start items-center gap-2">
               Join Meeting
               <span>
-                <Link />
+                <LinkIcon />
               </span>
             </a>
           </React.Fragment>
