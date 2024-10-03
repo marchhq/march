@@ -6,7 +6,7 @@ const createBlock = async (user, blockData) => {
     let block;
 
     switch (type) {
-    case 'notes': {
+    case 'note': {
         const note = await createNote(user, {});
         block = new Block({
             name: "Note",
