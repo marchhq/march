@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 import { db } from "../../loaders/db.loader.js";
 
-// const statusChoices = ["inbox", "todo", "in progress", "done"];
+const statusChoices = ["inbox", "todo", "in progress", "done"];
 
 const ItemSchema = new Schema({
     uuid: {
@@ -27,6 +27,11 @@ const ItemSchema = new Schema({
     dueDate: {
         type: Date,
         default: null
+    },
+    status: {
+        type: String,
+        enum: statusChoices,
+        default: "todo"
     },
     id: {
         type: String
