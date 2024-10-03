@@ -1,7 +1,5 @@
 "use client"
-
 import * as React from "react"
-
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Calendar } from "./ui/calendar"
 import { TodayCal } from "../lib/icons/Calendar"
@@ -12,11 +10,16 @@ interface Props {
 }
 
 export function DatePicker({ selectedDate, onDateChange }: Props) {
+  const handleDoubleClick = (event: React.MouseEvent) => {
+    event.preventDefault()
+    const currentDate = new Date()
+    onDateChange(currentDate)
+  }
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button>
+        <button onDoubleClick={handleDoubleClick}>
           <TodayCal />
         </button>
       </PopoverTrigger>
