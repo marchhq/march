@@ -6,18 +6,32 @@ import { createBlock } from "../services/lib/block.service.js";
 const processSpaceJob = async (job) => {
     const { user } = job.data;
     const blocks = [
-        { name: "Notes", data: { type: "notes" } },
-        { name: "Meetings", data: { type: "meetings" } },
+        { name: "Notes", data: { type: "note" } },
+        { name: "Meetings", data: { type: "meeting" } },
         { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
-        { name: "Reading List", icon: "reading" }
+        { name: "Reading List", data: { type: "reading" } }
     ];
 
     try {
+        const blockIds = [];
+
         for (const blockData of blocks) {
-            await createBlock(user, blockData);
+            const block = await createBlock(user, blockData);
+            blockIds.push(block._id);
+        }
+
+        const spaces = [
+            { name: "Notes", icon: "note", blocks: [blockIds[0]] },
+            { name: "Meetings", icon: "meeting", blocks: [blockIds[1]] },
+            { name: "This Week", icon: "", blocks: [blockIds[2]] },
+            { name: "Reading List", icon: "book", blocks: [blockIds[3]] }
+        ];
+        console.log("im here");
+        for (const spaceData of spaces) {
+            await createSpace(user, spaceData);
         }
     } catch (error) {
-        console.error('Error processing Spaces:', error);
+        console.error('Error processing Spaces and Blocks:', error);
         throw error;
     }
 };
