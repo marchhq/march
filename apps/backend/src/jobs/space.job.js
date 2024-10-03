@@ -16,7 +16,7 @@ const processSpaceJob = async (job) => {
             await createSpace(user, spaceData);
         }
     } catch (error) {
-        console.error('Error processing pages:', error);
+        console.error('Error processing Spaces:', error);
         throw error;
     }
 };

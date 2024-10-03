@@ -1,5 +1,5 @@
-"use client"
-import { useEffect, useState } from "react";
+"use client";
+import { useEffect, useState, useCallback } from "react";
 import TextEditor from "./atoms/Editor";
 import useEditorHook from "../hooks/useEditor.hook";
 import { useJournal } from "../hooks/useJournal";
@@ -14,35 +14,38 @@ const formatDate = (date: Date) => {
 };
 
 export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
-
-  const { journal, fetchJournal } = useJournal();
-  const formattedDate = formatDate(selectedDate);
-
-  useEffect(() => {
-    fetchJournal(formattedDate).then(() => {
-      if (journal?.journal?.content) {
-        setContent(journal?.journal?.content)
-      }
-    });
-  }, [formattedDate, fetchJournal]);
-
-  console.log('journal content: ', journal)
-
-  console.log('selected date: ', selectedDate)
-
-  const [content, setContent] = useState("<p></p>")
+  const [content, setContent] = useState("<p></p>");
   const [isSaved, setIsSaved] = useState(true);
+  const formattedDate = formatDate(selectedDate);
+  const { journal, fetchJournal } = useJournal(formattedDate);
+
+  const handleContentChange = useCallback((newContent: string) => {
+    setContent(newContent);
+    setIsSaved(false);
+  }, []);
 
   const editor = useEditorHook({
     content,
-    setContent,
+    setContent: handleContentChange,
     setIsSaved,
   });
 
-  return (
-    <TextEditor
-      editor={editor}
-      minH="30vh"
-    />
-  );
+  useEffect(() => {
+    console.log("Fetching journal for date: ", formattedDate);
+    fetchJournal();
+  }, [formattedDate, fetchJournal]);
+
+  useEffect(() => {
+    if (journal?.journal?.content) {
+      console.log("Updating editor content");
+      setContent(journal.journal.content);
+      editor?.commands.setContent(journal.journal.content);
+    } else {
+      console.log("No journal content, resetting editor");
+      setContent("<p></p>");
+      editor?.commands.setContent("<p></p>");
+    }
+  }, [journal, editor]);
+
+  return <TextEditor editor={editor} minH="30vh" />;
 };
