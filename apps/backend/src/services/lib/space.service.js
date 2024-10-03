@@ -1,7 +1,6 @@
 import { Space } from "../../models/lib/space.model.js";
 
 const createSpace = async (user, spaceData) => {
-    console.log("saju: ", user);
     const newSpace = new Space({
         ...spaceData,
         users: user
