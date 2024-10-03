@@ -3,10 +3,10 @@ import * as React from "react"
 
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
-import { TodayCal } from "@/src/lib/icons/Calendar"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayItems } from "@/src/components/TodayItems"
+import { DatePicker } from "@/src/components/DatePicker"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
@@ -26,11 +26,12 @@ const TodayPage: React.FC = () => {
       <section className="mt-6 flex justify-between">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
-            <span
+            {/*<span
               onClick={() => setSelectedDate(new Date())}
               className="cursor-pointer">
               <TodayCal />
-            </span>
+            </span> */}
+            <DatePicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
             <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </header>
 
