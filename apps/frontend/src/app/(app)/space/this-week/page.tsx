@@ -30,18 +30,14 @@ const ThisWeekPage: React.FC = () => {
             <div className="flex items-center gap-2 text-xl text-foreground">
               <Icon
                 icon="material-symbols:circle-outline"
-                style={{ fontSize: "20px" }}
+                className="text-[20px]"
               />
               <h2>to do</h2>
             </div>
             <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
               <div className="flex justify-between text-foreground">
                 <div className="w-full flex items-start gap-2">
-                  <Icon
-                    icon="ri:github-fill"
-                    style={{ fontSize: "18px" }}
-                    className="mt-0.5"
-                  />
+                  <Icon icon="ri:github-fill" className="mt-0.5 text-[18px]" />
                   <p>title</p>
                 </div>
                 <div className="text-secondary-foreground text-xs">
@@ -56,24 +52,20 @@ const ThisWeekPage: React.FC = () => {
             </div>
             <button className="invisible flex flex-col text-left text-sm gap-1 p-4 rounded-lg hover-bg group-hover/section:visible">
               <div className="flex items-center gap-2">
-                <Icon icon="ic:round-plus" style={{ fontSize: "18px" }} />
+                <Icon icon="ic:round-plus" className="text-[18px]" />
                 <p>New item</p>
               </div>
             </button>
           </div>
           <div className="flex flex-col flex-1 gap-4 group/section">
             <div className="flex items-center gap-2 text-xl text-foreground">
-              <Icon icon="carbon:circle-dash" style={{ fontSize: "20px" }} />
+              <Icon icon="carbon:circle-dash" className="text-[20px]" />
               <h2>in progress</h2>
             </div>
             <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
               <div className="flex justify-between text-foreground">
                 <div className="w-full flex items-start gap-2">
-                  <Icon
-                    icon="ri:github-fill"
-                    style={{ fontSize: "18px" }}
-                    className="mt-0.5"
-                  />
+                  <Icon icon="ri:github-fill" className="mt-0.5 text-[18px]" />
                   <p>title</p>
                 </div>
                 <div className="text-secondary-foreground text-xs">
@@ -88,27 +80,20 @@ const ThisWeekPage: React.FC = () => {
             </div>
             <button className="invisible flex flex-col text-left text-sm gap-1 p-4 rounded-lg hover-bg group-hover/section:visible">
               <div className="flex items-center gap-2">
-                <Icon icon="ic:round-plus" style={{ fontSize: "18px" }} />
+                <Icon icon="ic:round-plus" className="text-[18px]" />
                 <p>New item</p>
               </div>
             </button>
           </div>
           <div className="flex flex-col flex-1 gap-4 group/section">
             <div className="flex items-center gap-2 text-xl text-foreground">
-              <Icon
-                icon="material-symbols:circle"
-                style={{ fontSize: "20px" }}
-              />
+              <Icon icon="material-symbols:circle" className="text-[20px]" />
               <h2>done</h2>
             </div>
             <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
               <div className="flex justify-between text-foreground">
                 <div className="w-full flex items-start gap-2">
-                  <Icon
-                    icon="ri:github-fill"
-                    style={{ fontSize: "18px" }}
-                    className="mt-0.5"
-                  />
+                  <Icon icon="ri:github-fill" className="mt-0.5 text-[18px]" />
                   <p>title</p>
                 </div>
                 <div className="text-secondary-foreground text-xs">
@@ -123,7 +108,7 @@ const ThisWeekPage: React.FC = () => {
             </div>
             <button className="invisible flex flex-col text-left text-sm gap-1 p-4 rounded-lg hover-bg group-hover/section:visible">
               <div className="flex items-center gap-2">
-                <Icon icon="ic:round-plus" style={{ fontSize: "18px" }} />
+                <Icon icon="ic:round-plus" className="text-[18px]" />
                 <p>New item</p>
               </div>
             </button>
