@@ -6,7 +6,7 @@ import { TodayTextArea } from "@/src/components/TodayTextArea"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { TodayItems } from "@/src/components/TodayItems"
-import { TodayCal } from "@/src/lib/icons/Calendar"
+import { DatePicker } from "@/src/components/DatePicker"
 
 const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = React.useState(false)
@@ -17,7 +17,7 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="ml-36 text-gray-color">
+    <main className="ml-36 ">
       <section className=" mt-4 flex max-w-[96%] items-center justify-end gap-4">
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
@@ -26,11 +26,12 @@ const TodayPage: React.FC = () => {
       <section className="mt-6 flex justify-between">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
-            <span
+            {/*<span
               onClick={() => setSelectedDate(new Date())}
               className="cursor-pointer">
               <TodayCal />
-            </span>
+            </span> */}
+            <DatePicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
             <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </header>
 
@@ -39,12 +40,12 @@ const TodayPage: React.FC = () => {
             <div className="border-b border-[#3A3A3A] max-w-sm"></div>
           </section>
 
-          <section className="space-y-8 text-[16px]">
+          <section className="space-y-8 text-[16px] text-secondary-foreground">
             <TodayItems selectedDate={selectedDate} />
           </section>
         </div>
         {showAgenda && (
-          <div className="w-1/4">
+          <div className="w-1/4 text-secondary-foreground">
             <TodayMeetings selectedDate={selectedDate} />
           </div>
         )}

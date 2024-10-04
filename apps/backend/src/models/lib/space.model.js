@@ -21,7 +21,8 @@ const SpaceSchema = new Schema({
         required: true
     }],
     blocks: [{
-        type: Schema.Types.String
+        type: Schema.Types.String,
+        ref: 'Block'
     }],
     isArchived: {
         type: Boolean,
