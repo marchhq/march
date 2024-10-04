@@ -39,7 +39,6 @@ const getSpace = async (user, id) => {
 };
 
 const getSpaceByName = async (user, name) => {
-    console.log(name);
     const space = await Space.findOne({
         name,
         users: { $in: [user] },
