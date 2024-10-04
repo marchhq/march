@@ -8,7 +8,7 @@ const processSpaceJob = async (job) => {
     const blocks = [
         { name: "Notes", data: { type: "note", item: [] } },
         { name: "Meetings", data: { type: "meeting", item: [] } },
-        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } }, item: [] },
+        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] }, item: [] } },
         { name: "Reading List", data: { type: "reading", item: [] } }
     ];
 
