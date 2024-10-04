@@ -29,16 +29,24 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
     isSameDay(new Date(meeting.start.dateTime), selectedDate)
   );
 
+  console.log('today meetings: ', todayMeetings)
+
   const agendaItems = todayMeetings?.map((meeting) => {
+
+
     const startTime = new Date(meeting.start.dateTime);
     const endTime = new Date(meeting.end.dateTime);
+
     return {
       title: meeting.summary,
       link: meeting.hangoutLink,
       time: `${formatTime(startTime)} - ${formatTime(endTime)}`,
       duration: calculateDuration(startTime, endTime),
     };
+
+
   }) || [];
+
 
   return (
     <ol>
