@@ -153,7 +153,7 @@ const getItems = async (user, filters, sortOptions) => {
 
 const getItem = async (user, id) => {
     const item = await Item.find({
-        uuid: id,
+        _id: id,
         user,
         isArchived: false,
         isDeleted: false
@@ -164,7 +164,7 @@ const getItem = async (user, id) => {
 
 const updateItem = async (id, updateData) => {
     const updatedItem = await Item.findOneAndUpdate({
-        uuid: id
+        _id: id
     },
     { $set: updateData },
     { new: true }
