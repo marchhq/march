@@ -17,7 +17,7 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="ml-36 ">
+    <main className="h-full overflow-y-auto bg-background ml-[260px]">
       <section className=" mt-4 flex max-w-[96%] items-center justify-end gap-4">
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
@@ -37,7 +37,6 @@ const TodayPage: React.FC = () => {
 
           <section className="mt-6 mb-4">
             <TodayTextArea selectedDate={selectedDate} />
-            <div className="border-b border-[#3A3A3A] max-w-sm"></div>
           </section>
 
           <section className="space-y-8 text-[16px] text-secondary-foreground">

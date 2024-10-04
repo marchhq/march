@@ -27,8 +27,9 @@ export function AddToSpace({ itemId }) {
         ? selectedSpaces.filter((id) => id !== spaces._id)
         : [...selectedSpaces, spaces._id]
       setSelectedSpaces(newSelectedSpaces)
+
       await axios.put(
-        `${BACKEND_URL}/api/items/${itemId}`,
+        `${BACKEND_URL}/api/items/${itemId}/`,
         {
           spaces: newSelectedSpaces,
         },
