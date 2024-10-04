@@ -28,24 +28,19 @@ const getSpaces = async (user) => {
 }
 
 const getSpace = async (user, id) => {
-    try {
-        const space = await Space.findOne({
-            _id: id,
-            users: user,
-            isArchived: false,
-            isDeleted: false
-        }).populate("blocks");
+    const space = await Space.find({
+        uuid: id,
+        users: user,
+        isArchived: false,
+        isDeleted: false
+    })
 
-        return space;
-    } catch (err) {
-        console.error("Error fetching space: ", err);
-        throw err;
-    }
+    return space;
 };
 
 const updateSpace = async (id, updateData) => {
     const updatedSpace = await Space.findOneAndUpdate({
-        _id: id
+        uuid: id
     },
     { $set: updateData },
     { new: true }
