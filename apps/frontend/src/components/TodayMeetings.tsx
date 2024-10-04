@@ -24,39 +24,36 @@ interface TodayAgendaProps {
 }
 
 export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
-  const meetings = useMeetings();
+  const { meetings, isLoading } = useMeetings();
+
   const todayMeetings = meetings?.meetings.filter((meeting) =>
     isSameDay(new Date(meeting.start.dateTime), selectedDate)
   );
 
-  console.log('today meetings: ', todayMeetings)
-
   const agendaItems = todayMeetings?.map((meeting) => {
-
-
     const startTime = new Date(meeting.start.dateTime);
     const endTime = new Date(meeting.end.dateTime);
-
     return {
       title: meeting.summary,
       link: meeting.hangoutLink,
       time: `${formatTime(startTime)} - ${formatTime(endTime)}`,
       duration: calculateDuration(startTime, endTime),
     };
-
-
   }) || [];
 
+  if (isLoading) {
+    return (
+      <ol>
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">
+          <SkeletonCard />
+        </li>
+      </ol>
+    );
+  }
 
   return (
     <ol>
-      {agendaItems === undefined ? (
-        <>
-          <li className="text-[#DCDCDD]/80 text-lg font-medium">
-            <SkeletonCard />
-          </li>
-        </>
-      ) : agendaItems.length === 0 ? (
+      {agendaItems.length === 0 ? (
         <li className="text-[#DCDCDD]/80 text-lg font-medium">
           No agenda items
         </li>
