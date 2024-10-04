@@ -1,4 +1,4 @@
-import { createSpace, getSpaces, getSpace, updateSpace } from "../../services/lib/space.service.js"
+import { createSpace, getSpaces, getSpace, updateSpace, getSpaceByName } from "../../services/lib/space.service.js"
 
 const createSpaceController = async (req, res, next) => {
     try {
@@ -44,6 +44,21 @@ const getSpaceController = async (req, res, next) => {
     }
 };
 
+const getSpaceByNameController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { space: name } = req.params;
+
+        const space = await getSpaceByName(user, name);
+
+        res.status(200).json({
+            space
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 const updateSpaceController = async (req, res, next) => {
     try {
         const { space: id } = req.params;
@@ -62,5 +77,6 @@ export {
     createSpaceController,
     getSpacesController,
     getSpaceController,
-    updateSpaceController
+    updateSpaceController,
+    getSpaceByNameController
 }

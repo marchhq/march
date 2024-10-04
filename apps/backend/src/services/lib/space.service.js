@@ -38,6 +38,18 @@ const getSpace = async (user, id) => {
     return space;
 };
 
+const getSpaceByName = async (user, name) => {
+    console.log(name);
+    const space = await Space.findOne({
+        name,
+        users: { $in: [user] },
+        isArchived: false,
+        isDeleted: false
+    });
+
+    return space;
+};
+
 const updateSpace = async (id, updateData) => {
     const updatedSpace = await Space.findOneAndUpdate({
         uuid: id
@@ -53,5 +65,6 @@ export {
     createSpace,
     getSpaces,
     getSpace,
-    updateSpace
+    updateSpace,
+    getSpaceByName
 }

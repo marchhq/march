@@ -11,7 +11,8 @@ import {
     createSpaceController,
     getSpacesController,
     getSpaceController,
-    updateSpaceController
+    updateSpaceController,
+    getSpaceByNameController
 } from "../../controllers/lib/space.controller.js";
 import {
     createUpdateJournalController,
@@ -62,6 +63,7 @@ router.route("/spaces/create/").post(createSpaceController);
 router.route("/spaces/overview/").get(getSpacesController);
 router.route("/spaces/:space/").get(getSpaceController);
 router.route("/spaces/:space/").put(updateSpaceController);
+router.route("/spaces/name/:space").get(getSpaceByNameController);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
