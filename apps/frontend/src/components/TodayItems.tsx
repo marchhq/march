@@ -78,7 +78,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
   return (
     <ul className="space-y-2">
       {optimisticItems.map((item) => (
-        <React.Fragment key={item.uuid}>
+        <React.Fragment key={item._id}>
           <DropdownItem item={item} onToggleComplete={handleToggleComplete} isOverdue={item.isOverdue} />
         </React.Fragment>
       ))}

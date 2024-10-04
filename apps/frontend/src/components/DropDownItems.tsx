@@ -74,7 +74,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({ item, onToggleComple
         )}
       </li>
       <div className="transition-opacity duration-200 opacity-0 group-hover:opacity-100">
-        <AddToSpace itemUuid={item.uuid} />
+        <AddToSpace itemUuid={item._id} />
       </div>
     </div>
   );
