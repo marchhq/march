@@ -7,6 +7,7 @@ import GoogleLogin from "../components/atoms/GoogleLogin"
 import Line from "@/src/lib/icons/Line"
 import { LogoDark } from "@/src/lib/icons/Logo"
 import generateMetadata from "@/src/utils/seo"
+import Link from "next/link"
 
 export const metadata: Metadata = generateMetadata({
   path: "/",
@@ -41,8 +42,8 @@ const Home: React.FC = () => {
           <div className="mb-10 mt-6 text-center">
             <p>By continuing, you agree to our </p>
             <p>
-              <span className="text-gray-100">terms of services</span> and our{" "}
-              <span className="text-gray-100">privacy policy.</span>
+              <span className="text-gray-100"><Link target="_blank" href={"https://marchhq.notion.site/Terms-Privacy-67fb3e8525c04fcfa73dca152ecc1dec"}>terms of services</Link></span> and our{" "}
+              <span className="text-gray-100"><Link target="_blank" href={"https://marchhq.notion.site/Terms-Privacy-67fb3e8525c04fcfa73dca152ecc1dec"}>privacy policy.</Link></span>
             </p>
           </div>
         </div>
