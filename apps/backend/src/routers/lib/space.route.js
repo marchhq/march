@@ -69,12 +69,10 @@ router.route("/journals/overview/").get(getUserAllJournalsController);
 router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // item controllers
-// router.route("/items/create/").post(createItemController);
-router.route("/spaces/:space/items/create/").post(createItemController);
+router.route("/items/create/").post(createItemController);
 router.route("/items/overview/").get(getItemsController);
 router.route("/items/:item/").get(getItemController);
-// router.route("/items/:item/").put(updateItemController);
-router.route("/spaces/:space/items/:item/").put(updateItemController);
+router.route("/items/:item/").put(updateItemController);
 
 // note controllers
 router.route("/notes/overview/").get(getNotesController);
