@@ -62,11 +62,6 @@ const Sidebar: React.FC = () => {
   const { showModal } = useModal()
 
   const [isExpanded, setIsExpanded] = useState(false)
-  const [holdIsExpanded, setHoldIsExpanded] = useState(false)
-
-  useEffect(() => {
-    setHoldIsExpanded(isExpanded)
-  }, [isExpanded])
 
   if (pathname.includes("auth")) {
     return null
@@ -100,7 +95,7 @@ const Sidebar: React.FC = () => {
     <div
       className={classNames(
         "mx-4 my-auto flex select-none flex-col rounded-[30px] border border-border px-2 transition-all",
-        holdIsExpanded ? "py-8" : "pt-8 pb-2"
+        isExpanded ? "py-8" : "pt-8 pb-2"
       )}
       onMouseLeave={() => setIsExpanded(false)}
     >
@@ -136,7 +131,7 @@ const Sidebar: React.FC = () => {
           label="space"
           isActive={pathname.includes("/space/")}
         />
-        {holdIsExpanded ? (
+        {isExpanded ? (
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-0.5">
               <SidebarLink
@@ -182,9 +177,8 @@ const Sidebar: React.FC = () => {
           </div>
         ) : (
           <div
-            className="flex items-center justify-center gap-2 p-1 pb-7 rounded-lg text-secondary-foreground group"
+            className="flex items-center justify-center gap-2 p-1 pb-7 rounded-lg text-secondary-foreground"
             onMouseEnter={() => setIsExpanded(true)}
-            onMouseLeave={() => setIsExpanded(false)}
           >
             ...
           </div>
