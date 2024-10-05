@@ -7,7 +7,17 @@ const getUserItems = async (me) => {
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
-        type: { $ne: 'note' }
+        spaces: { $exists: true, $eq: [] }
+    })
+        .sort({ createdAt: -1 });
+
+    return items;
+}
+
+const getAllitems = async (me) => {
+    const items = await Item.find({
+        user: me,
+        isDeleted: false
     })
         .sort({ createdAt: -1 });
 
@@ -29,7 +39,7 @@ const getUserOverdueItems = async (me) => {
     const startOfDay = moment().startOf('day');
     const items = await Item.find({
         user: me,
-        dueDate: { $lt: startOfDay }, // Due date is before start of today (without time component)
+        dueDate: { $lt: startOfDay },
         isCompleted: false,
         isArchived: false,
         isDeleted: false
@@ -194,5 +204,6 @@ export {
     getUserOverdueItems,
     getUserItemsByDate,
     moveItemtoDate,
-    getUserTodayItems
+    getUserTodayItems,
+    getAllitems
 }
