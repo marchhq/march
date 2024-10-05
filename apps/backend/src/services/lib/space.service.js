@@ -38,6 +38,23 @@ const getSpace = async (user, id) => {
     return space;
 };
 
+const getSpaceByName = async (user, name) => {
+    const space = await Space.findOne({
+        name,
+        users: { $in: [user] },
+        isArchived: false,
+        isDeleted: false
+    }).populate({
+        path: 'blocks',
+        populate: {
+            path: 'data.item', // Assuming 'data.item' is the field you want to populate
+            model: 'Item' // The model for the item
+        }
+    });
+
+    return space;
+};
+
 const updateSpace = async (id, updateData) => {
     const updatedSpace = await Space.findOneAndUpdate({
         uuid: id
@@ -53,5 +70,6 @@ export {
     createSpace,
     getSpaces,
     getSpace,
-    updateSpace
+    updateSpace,
+    getSpaceByName
 }

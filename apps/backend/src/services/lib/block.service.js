@@ -46,7 +46,7 @@ const getBlocks = async (user) => {
 };
 
 const deleteBlock = async (id) => {
-    const block = await Block.findOneAndDelete({ uuid: id });
+    const block = await Block.findOneAndDelete({ _id: id });
 
     if (!block) {
         throw new Error('Block not found');
@@ -55,9 +55,12 @@ const deleteBlock = async (id) => {
 };
 
 const getBlock = async (user, id) => {
-    const block = await Block.find({
-        uuid: id,
+    const block = await Block.findOne({
+        _id: id,
         user
+    }).populate({
+        path: 'data.item',
+        model: 'Item'
     })
     if (!block) {
         throw new Error('Block not found');
@@ -67,7 +70,7 @@ const getBlock = async (user, id) => {
 
 const updateBlock = async (id, updateData) => {
     const updatedBlock = await Block.findOneAndUpdate({
-        uuid: id
+        _id: id
     },
     { $set: updateData },
     { new: true }
