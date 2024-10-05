@@ -157,7 +157,7 @@ const ReadingListPage: React.FC = () => {
                 value={newItemDescription}
                 onChange={(e) => setNewItemDescription(e.target.value)}
                 placeholder="Description (optional)"
-                className="w-full py-2 text-base resize-none overflow-hidden bg-background text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+                className="w-full py-2 text-base resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
                 rows={1}
               />
             </div>
@@ -171,7 +171,7 @@ const ReadingListPage: React.FC = () => {
                   <div key={item._id} className="flex items-start gap-4 group">
                     <Icon
                       icon="ph:circle-bold"
-                      className="text-secondary-foreground mt-1"
+                      className="text-secondary-foreground mt-2"
                       style={{ fontSize: "16px" }}
                     />
                     <div className="flex-grow">
@@ -182,7 +182,7 @@ const ReadingListPage: React.FC = () => {
                             href={item.metadata.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="ml-2 flex items-center ml-2"
+                            className="ml-2 flex items-center"
                           >
                             <Icon
                               icon="fluent:link-24-regular"
