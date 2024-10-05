@@ -1,0 +1,28 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db # Persisting MongoDB data
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - 6379:6379
+
+volumes:
+  mongo-data: # Volume for MongoDB persistence
