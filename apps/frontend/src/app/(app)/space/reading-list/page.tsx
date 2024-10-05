@@ -166,7 +166,7 @@ const ReadingListPage: React.FC = () => {
             {readingItems.length === 0 ? (
               <p>Reading list is empty</p>
             ) : (
-              readingItems.map((item: ReadingItem) => {
+              [...readingItems].reverse().map((item: ReadingItem) => {
                 return (
                   <div key={item._id} className="flex items-start gap-4 group">
                     <Icon
