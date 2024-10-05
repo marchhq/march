@@ -196,6 +196,11 @@ button {
   ul[data-type="taskList"] {
     @apply list-none ml-0 space-y-1 text-lg;
 
+
+    li[data-checked="true"] {
+      @apply line-through text-zinc-500;
+    }
+
     & > li {
       @apply flex items-center;
 
