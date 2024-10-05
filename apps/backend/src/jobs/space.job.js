@@ -6,10 +6,10 @@ import { createBlock } from "../services/lib/block.service.js";
 const processSpaceJob = async (job) => {
     const { user } = job.data;
     const blocks = [
-        { name: "Notes", data: { type: "note" } },
-        { name: "Meetings", data: { type: "meeting" } },
-        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
-        { name: "Reading List", data: { type: "reading" } }
+        { name: "Notes", data: { type: "note", item: [] } },
+        { name: "Meetings", data: { type: "meeting", item: [] } },
+        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] }, item: [] } },
+        { name: "Reading List", data: { type: "reading", item: [] } }
     ];
 
     try {

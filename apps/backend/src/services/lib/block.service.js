@@ -58,6 +58,9 @@ const getBlock = async (user, id) => {
     const block = await Block.findOne({
         _id: id,
         user
+    }).populate({
+        path: 'data.item',
+        model: 'Item'
     })
     if (!block) {
         throw new Error('Block not found');
