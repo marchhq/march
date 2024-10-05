@@ -6,35 +6,39 @@ import { useSpace } from "@/src/hooks/useSpace"
 import { Icon } from "@iconify-icon/react"
 import { PlusIcon } from "@radix-ui/react-icons"
 import useReadingStore from "@/src/lib/store/reading.store"
-
-interface ReadingItem {
-  _id: string
-  title: string
-  description?: string
-  metadata: { url: string }
-}
+import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 
 const ReadingListPage: React.FC = () => {
   const { session } = useAuth()
   const { spaces } = useSpace() || { spaces: [] }
   const {
     readingItems,
-    blockId,
     fetchReadingList,
     addItem: addItemToStore,
     deleteItem: deleteItemFromStore,
   } = useReadingStore()
 
   const [loading, setLoading] = useState(true)
+  const [blockId, setBlockId] = useState<string | null>(null)
 
   useEffect(() => {
     const loadReadingList = async () => {
       setLoading(true)
-      await fetchReadingList(session, spaces)
+      const readingListSpace = spaces.find(
+        (space) => space.name.toLowerCase() === "reading list"
+      )
+      if (readingListSpace) {
+        const fetchedBlockId = readingListSpace.blocks[0]
+        setBlockId(fetchedBlockId)
+        await fetchReadingList(session, fetchedBlockId)
+      }
       setLoading(false)
     }
-    loadReadingList()
-  }, [spaces, session, fetchReadingList])
+
+    if (spaces.length > 0 && !blockId) {
+      loadReadingList()
+    }
+  }, [spaces, session, fetchReadingList, blockId])
 
   const [addingItem, setAddingItem] = useState(false)
   const [newItemTitle, setNewItemTitle] = useState("")
@@ -69,11 +73,12 @@ const ReadingListPage: React.FC = () => {
   }, [newItemDescription])
 
   const addItem = async () => {
-    if (!newItemTitle || !newItemUrl) return
+    if (!newItemTitle || !newItemUrl || !blockId) return
 
     try {
       await addItemToStore(
         session,
+        blockId,
         newItemTitle,
         newItemUrl,
         newItemDescription
@@ -88,8 +93,10 @@ const ReadingListPage: React.FC = () => {
   }
 
   const deleteItem = async (itemId: string) => {
+    if (!blockId) return
+
     try {
-      await deleteItemFromStore(session, itemId)
+      await deleteItemFromStore(session, blockId, itemId)
     } catch (error) {
       console.error("Error deleting item:", error)
     }
