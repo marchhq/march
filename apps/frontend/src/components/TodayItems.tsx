@@ -67,10 +67,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
     return <SkeletonCard />;
   }
 
-  if (optimisticItems.length === 0) {
-    return <div>No items today!</div>;
-  }
-
   return (
     <ul className="space-y-2">
       {optimisticItems.map((item) => (
