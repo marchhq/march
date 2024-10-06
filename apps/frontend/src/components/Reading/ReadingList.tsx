@@ -34,18 +34,18 @@ const ReadingList: React.FC<ReadingListProps> = ({ blockId }) => {
           <div key={item._id} className="flex items-start gap-4 group">
             <Icon
               icon="ph:circle-bold"
-              className="text-secondary-foreground mt-2 text-[16px]"
+              className="text-secondary-foreground mt-2 text-[16px] flex-shrink-0"
             />
-            <div className="flex-grow">
+            <div className="flex-grow overflow-hidden">
               <div className="flex items-center gap-2">
-                <h3 className="text-foreground font-semibold text-lg flex items-center">
-                  {item.title}
+                <h3 className="text-foreground font-semibold text-lg flex items-center flex-wrap">
+                  <span className="break-all">{item.title}</span>
                   {isUrl && (
                     <a
                       href={item.title}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-2 flex items-center"
+                      className="ml-2 flex items-center flex-shrink-0"
                     >
                       <Icon
                         icon="fluent:link-24-regular"
