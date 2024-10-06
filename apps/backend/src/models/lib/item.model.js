@@ -45,6 +45,10 @@ const ItemSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Space'
     }],
+    blocks: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Block'
+    }],
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'
