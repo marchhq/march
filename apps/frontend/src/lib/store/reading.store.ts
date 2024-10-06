@@ -2,13 +2,7 @@ import axios from "axios"
 import { create } from "zustand"
 
 import { BACKEND_URL } from "../constants/urls"
-
-interface ReadingItem {
-  _id: string
-  title: string
-  description?: string
-  metadata: { url: string }
-}
+import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 
 export interface ReadingStoreType {
   readingItems: ReadingItem[]
@@ -20,7 +14,7 @@ export interface ReadingStoreType {
     session: string,
     blockId: string,
     title: string,
-    url: string,
+    isUrl: boolean,
     description?: string
   ) => Promise<void>
   deleteItem: (
@@ -38,7 +32,8 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
 
   fetchReadingList: async (session: string, blockId: string) => {
     if (!blockId) {
-      set({ isFetched: true })
+      console.warn("fetchReadingList: No blockId provided")
+      set({ isFetched: true, readingItems: [] })
       return
     }
 
@@ -51,7 +46,7 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       set({ readingItems: response.data.block.data.item, isFetched: true })
     } catch (error) {
       console.error("Error fetching reading list:", error)
-      set({ isFetched: true })
+      set({ isFetched: true, readingItems: [] })
     }
   },
 
@@ -61,14 +56,18 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     session: string,
     blockId: string,
     title: string,
-    url: string,
+    isUrl: boolean,
     description?: string
   ) => {
     const { readingItems } = get()
     try {
+      const itemData = isUrl
+        ? { title, metadata: { isUrl: true } }
+        : { title, description: description || "" }
+
       const createResponse = await axios.post(
         `${BACKEND_URL}/api/items/create/`,
-        { title, description: description || "", metadata: { url } },
+        itemData,
         { headers: { Authorization: `Bearer ${session}` } }
       )
 
