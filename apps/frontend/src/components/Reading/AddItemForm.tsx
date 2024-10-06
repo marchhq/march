@@ -8,7 +8,7 @@ function isValidUrl(url: string): boolean {
     return true
   } catch (error) {
     return false
-  } 
+  }
 }
 
 interface AddItemFormProps {
@@ -99,11 +99,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
   }, [input])
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-xs text-gray-500">Press enter to save</span>
-        {isSaving && <span className="text-xs text-gray-500">Saving...</span>}
-      </div>
+    <div className="relative">
       <input
         ref={inputRef}
         value={input}
@@ -111,10 +107,20 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="text-base text-foreground w-full p-3 border border-foreground/10 rounded bg-background focus:outline-none focus:border-foreground/50 transition-colors"
+        className="text-base text-foreground w-full px-3 py-5 pr-28 border border-foreground/10 rounded bg-background focus:outline-none focus:border-foreground/50 transition-colors truncate"
         autoFocus
         disabled={isSaving}
       />
+      {input && !isSaving && (
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 bg-background px-1">
+          Press ↵ to save
+        </span>
+      )}
+      {isSaving && (
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 bg-background px-1">
+          Saving...
+        </span>
+      )}
     </div>
   )
 }
