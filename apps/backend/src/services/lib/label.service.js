@@ -14,6 +14,25 @@ const createLabel = async (labelData, user) => {
     }
     return label;
 }
+
+const createLabels = async (labelsData, space, user) => {
+    const labels = labelsData.map(labelData => ({
+        ...labelData,
+        space: space,
+        user
+    }));
+
+    const createdLabels = await Label.insertMany(labels);
+
+    if (!createdLabels) {
+        const error = new Error("Failed to create the labels")
+        error.statusCode = 500
+        throw error
+    }
+
+    return createdLabels;
+}
+
 const getLabels = async (user) => {
     const labels = await Label.find({
         user
@@ -85,6 +104,7 @@ const getOrCreateLabels = async (labels, userId) => {
 
 export {
     createLabel,
+    createLabels,
     getLabels,
     getLabel,
     updateLabel,

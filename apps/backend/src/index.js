@@ -9,8 +9,6 @@ import { handleCalendarWebhook } from "./controllers/integration/calendar.contro
 import { handleGithubWebhook } from "./controllers/integration/github.controller.js";
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
-import * as cheerio from 'cheerio';
-import axios from "axios";
 import { linearWorker } from "./jobs/linear.job.js";
 import { calendaWorker } from "./jobs/calendar.job.js";
 import { spaceWorker } from "./jobs/space.job.js";
@@ -34,44 +32,6 @@ app.post("/gmail/webhook", handlePushNotification);
 app.post("/github/webhook", handleGithubWebhook);
 
 app.post("/sms", handleSmsItemCreation);
-
-const linkPreviewGenerator = async (url) => {
-    try {
-        const { data: html } = await axios.get(url);
-
-        // Load the HTML content into Cheerio for parsing
-        const $ = cheerio.load(html);
-
-        // Extract metadata from the HTML
-        const title = $('meta[property="og:title"]').attr('content') || $('title').text();
-        const description = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content');
-        const image = $('meta[property="og:image"]').attr('content');
-        const favicon = $('link[rel="icon"]').attr('href');
-        const domain = new URL(url).hostname;
-
-        // Return the extracted metadata as an object
-        return {
-            title: title || '',
-            description: description || '',
-            domain: domain || '',
-            img: image || '',
-            favicon: favicon || ''
-        };
-    } catch (error) {
-        console.error('Error fetching metadata:', error);
-        throw new Error('Failed to fetch metadata');
-    }
-};
-
-app.post('/api/get-link-preview', async (req, res) => {
-    const url = req.body.url;
-    try {
-        const previewData = await linkPreviewGenerator(url);
-        res.json(previewData);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch preview data' });
-    }
-});
 
 initRoutes(app);
 // Express error handler
