@@ -4,8 +4,10 @@ import { linkPreviewGenerator } from "../services/lib/linkPreview.service.js";
 import { Item } from "../models/lib/item.model.js";
 
 const processitamJob = async (job) => {
-    const { url, itemId } = job;
+    const { url, itemId } = job.data;
     const { title, favicon } = await linkPreviewGenerator(url);
+    console.log("title: ", title);
+    console.log("favicon: ", favicon);
     const updateData = {
         title: title,
         metadata: {
@@ -22,21 +24,21 @@ const processitamJob = async (job) => {
     )
 }
 
-const iteamWorker = new Worker('iteamQueue', async (job) => {
+const itemWorker = new Worker('itemQueue', async (job) => {
     await processitamJob(job);
 }, {
     connection: redisConnection
 });
 
-iteamWorker.on('completed', async (job) => {
+itemWorker.on('completed', async (job) => {
     console.log(`Job with id ${job.id} has been completed`);
     await job.remove();
 });
 
-iteamWorker.on('failed', (job, err) => {
+itemWorker.on('failed', (job, err) => {
     console.error(`Job with id ${job.id} has failed with error ${err.message}`);
 });
 
 export {
-    iteamWorker
+    itemWorker
 }
