@@ -3,6 +3,7 @@ import * as React from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Calendar } from "./ui/calendar"
 import { TodayCal } from "../lib/icons/Calendar"
+import { DynamicDate } from "./atoms/DynamicDate"
 
 interface Props {
   selectedDate: Date
@@ -20,7 +21,7 @@ export function DatePicker({ selectedDate, onDateChange }: Props) {
     <Popover>
       <PopoverTrigger asChild>
         <button onDoubleClick={handleDoubleClick}>
-          <TodayCal />
+          <DynamicDate selectedDate={selectedDate} />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
