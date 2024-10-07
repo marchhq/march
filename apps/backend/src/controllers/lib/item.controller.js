@@ -12,10 +12,12 @@ const createItemController = async (req, res, next) => {
         const requestedData = req.body;
         const { title } = requestedData;
         const urlInTitle = extractUrl(title);
-        if (urlInTitle){
-            //bg job to get the preview
-        }
+        console.log("urlInTitle: ", urlInTitle);
         const item = await createItem(user, requestedData);
+        if (urlInTitle) {
+            // bg job to get the preview
+            await processUrlAndCreateItem(urlInTitle, item._id, user);
+        }
 
         res.status(200).json({
             item
