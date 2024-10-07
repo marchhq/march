@@ -1,10 +1,20 @@
 import { createItem, getItems, updateItem, getItem } from "../../services/lib/item.service.js";
 
+const extractUrl = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = text.match(urlRegex);
+    return urls ? urls[0] : null;
+};
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
 
         const requestedData = req.body;
+        const { title } = requestedData;
+        const urlInTitle = extractUrl(title);
+        if (urlInTitle){
+            //bg job to get the preview
+        }
         const item = await createItem(user, requestedData);
 
         res.status(200).json({
