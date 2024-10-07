@@ -1,9 +1,9 @@
 import React from "react"
 
-import ThisWeekArrows from "@/src/components/ThisWeek/ThisWeekArrows"
-import ThisWeekSection from "./ThisWeekSection"
+import { ThisWeekArrows } from "@/src/components/ThisWeek/ThisWeekArrows"
+import { ThisWeekSection } from "@/src/components/ThisWeek/ThisWeekSection"
 
-const ThisWeekComponent: React.FC = () => {
+export const ThisWeekPage: React.FC = () => {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center gap-8 text-xs">
@@ -23,5 +23,3 @@ const ThisWeekComponent: React.FC = () => {
     </div>
   )
 }
-
-export default ThisWeekComponent

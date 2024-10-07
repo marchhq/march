@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/react"
 
-const ThisWeekItem: React.FC = () => {
+export const ThisWeekItem: React.FC = () => {
   return (
     <div className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group">
       <div className="flex justify-between text-foreground">
@@ -20,5 +20,3 @@ const ThisWeekItem: React.FC = () => {
     </div>
   )
 }
-
-export default ThisWeekItem

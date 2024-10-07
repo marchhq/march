@@ -1,13 +1,13 @@
 import { Icon } from "@iconify-icon/react"
-import ThisWeekItem from "./ThisWeekItem"
-import ThisWeekNewItem from "./ThisWeekNewItem"
+import { ThisWeekItem } from "@/src/components/ThisWeek/ThisWeekItem"
+import { ThisWeekNewItem } from "@/src/components/ThisWeek/ThisWeekNewItem"
 
 interface ThisWeekSectionProps {
   icon: string
   title: string
 }
 
-const ThisWeekSection: React.FC<ThisWeekSectionProps> = ({
+export const ThisWeekSection: React.FC<ThisWeekSectionProps> = ({
   icon,
   title,
 }: {
@@ -25,5 +25,3 @@ const ThisWeekSection: React.FC<ThisWeekSectionProps> = ({
     </div>
   )
 }
-
-export default ThisWeekSection
