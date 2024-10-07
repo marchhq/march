@@ -148,6 +148,33 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       return null
     }
   },
+  deleteItem: async (session: string, id: string) => {
+    try {
+      set((state: InboxStoreType) => {
+        const index = state.inboxItems.findIndex((i) => i._id === id)
+        if (index !== -1) {
+          state.inboxItems.splice(index, 1)
+        }
+        return {
+          inboxItems: state.inboxItems,
+        }
+      })
+      await axios.put(
+        `${BACKEND_URL}/api/items/${id}`,
+        {
+          isDeleted: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+    } catch (error) {
+      const e = error as AxiosError
+      console.error("error deleting inbox item:", e)
+    }
+  },
 }))
 
 export default useInboxStore
