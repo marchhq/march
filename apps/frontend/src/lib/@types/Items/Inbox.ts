@@ -20,7 +20,7 @@ export interface InboxStoreType {
   deleteItem: (session: string, id: string) => void
   setTodayInboxItems: (todayInboxItems: TodayInboxItem[]) => void
   setOverdueInboxItems: (overdueInboxItems: OverdueInboxItem[]) => void
-  updateItem: (editedItem: InboxItem, id: string) => void
+  updateItem: (session: string, editedItem: InboxItem, id: string) => void
 }
 
 export interface InboxItem {
