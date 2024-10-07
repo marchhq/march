@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../lib/constants/urls';
 import { useItems } from '../hooks/useEvents';
@@ -13,46 +13,40 @@ interface TodayEventsProps {
 }
 
 export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.Element => {
-  const items = useItems();
+  const { items, isLoading } = useItems();
   const [optimisticItems, setOptimisticItems] = useState<Item[]>([]);
-
-  useEffect(() => {
-    if (items) {
-      const combinedItems = [
-        ...items.todayItems.map((item) => ({ ...item, isOverdue: false })),
-        ...items.overdueItems.map((item) => ({ ...item, isOverdue: true })),
-      ];
-
-      const filteredItems = combinedItems.filter(item => {
-        const dueDate = new Date(item.dueDate);
-
-        if (item.isOverdue && !item.isCompleted) {
-          return true;
-        }
-
-        return (
-          !item.isOverdue &&
-          dueDate.getFullYear() === selectedDate.getFullYear() &&
-          dueDate.getMonth() === selectedDate.getMonth() &&
-          dueDate.getDate() === selectedDate.getDate()
-        );
-      });
-
-      setOptimisticItems(filteredItems);
-    }
-  }, [items, selectedDate]);
-
   const { session } = useAuth();
+
+  useMemo(() => {
+    if (!items) return [];
+
+    const combinedItems = [
+      ...items.todayItems.map((item) => ({ ...item, isOverdue: false })),
+      ...items.overdueItems.map((item) => ({ ...item, isOverdue: true })),
+    ];
+
+    return combinedItems.filter(item => {
+      const dueDate = new Date(item.dueDate);
+      if (item.isOverdue && !item.isCompleted) {
+        return true;
+      }
+      return (
+        !item.isOverdue &&
+        dueDate.getFullYear() === selectedDate.getFullYear() &&
+        dueDate.getMonth() === selectedDate.getMonth() &&
+        dueDate.getDate() === selectedDate.getDate()
+      );
+    });
+  }, [items, selectedDate]);
 
   const handleToggleComplete = async (item: Item) => {
     const updatedItems = optimisticItems.map((i) =>
-      i.uuid === item.uuid ? { ...i, isCompleted: !i.isCompleted } : i
+      i._id === item._id ? { ...i, isCompleted: !i.isCompleted } : i
     );
     setOptimisticItems(updatedItems);
-
     try {
       await axios.put(
-        `${BACKEND_URL}/api/items/${item.uuid}`,
+        `${BACKEND_URL}/api/items/${item._id}`,
         { isCompleted: !item.isCompleted },
         {
           headers: {
@@ -69,16 +63,14 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
     }
   };
 
-  if (optimisticItems === undefined) {
-    return <SkeletonCard />
-  } else if (optimisticItems.length === 0) {
-    return <div>no items today!</div>
+  if (isLoading) {
+    return <SkeletonCard />;
   }
 
   return (
     <ul className="space-y-2">
       {optimisticItems.map((item) => (
-        <React.Fragment key={item.uuid}>
+        <React.Fragment key={item._id}>
           <DropdownItem item={item} onToggleComplete={handleToggleComplete} isOverdue={item.isOverdue} />
         </React.Fragment>
       ))}
