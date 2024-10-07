@@ -24,7 +24,8 @@ interface TodayAgendaProps {
 }
 
 export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
-  const meetings = useMeetings();
+  const { meetings, isLoading } = useMeetings();
+
   const todayMeetings = meetings?.meetings.filter((meeting) =>
     isSameDay(new Date(meeting.start.dateTime), selectedDate)
   );
@@ -40,24 +41,28 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
     };
   }) || [];
 
+  if (isLoading) {
+    return (
+      <ol>
+        <li className="text-[#DCDCDD]/80 text-lg font-medium">
+          <SkeletonCard />
+        </li>
+      </ol>
+    );
+  }
+
   return (
-    <ol>
-      {agendaItems === undefined ? (
-        <>
-          <li className="text-[#DCDCDD]/80 text-lg font-medium">
-            <SkeletonCard />
-          </li>
-        </>
-      ) : agendaItems.length === 0 ? (
+    <ol className="text-[16px]">
+      {agendaItems.length === 0 ? (
         <li className="text-[#DCDCDD]/80 text-lg font-medium">
           No agenda items
         </li>
       ) : (
         agendaItems.map((item, index) => (
           <React.Fragment key={index}>
-            <li className="text-[#DCDCDD]/80 text-lg font-medium">{item.title}</li>
-            <p>{item.time}, {item.duration} min</p>
-            <a href={item.link} target="_blank" className="text-[#DCDCDD] mt-4 mb-8 flex justify-start items-center gap-2">
+            <li className="text-primary-foreground/80 font-medium">{item.title}</li>
+            <p className="mt-1">{item.time}, {item.duration} min</p>
+            <a href={item.link} target="_blank" className="text-primary-foreground mt-4 mb-8 flex justify-start items-center gap-2">
               Join Meeting
               <span>
                 <LinkIcon />
