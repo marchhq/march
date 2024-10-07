@@ -1,7 +1,7 @@
 import React from "react"
 
 import { Icon } from "@iconify-icon/react"
-import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
+import ThisWeekArrows from "@/src/components/ThisWeek/ThisWeekArrows"
 
 const ThisWeekComponent: React.FC = () => {
   return (
@@ -13,14 +13,7 @@ const ThisWeekComponent: React.FC = () => {
           <p>0%</p>
           <p>aug 19th - aug 26th</p>
         </div>
-        <div className="flex items-center justify-between gap-4">
-          <button onClick={() => console.log("left")} className="p-2">
-            <LeftChevron />
-          </button>
-          <button onClick={() => console.log("right")} className="p-2">
-            <RightChevron />
-          </button>
-        </div>
+        <ThisWeekArrows />
       </div>
       <div className="flex w-full max-w-screen-xl gap-8">
         <div className="flex flex-col flex-1 gap-4 group/section">
