@@ -114,7 +114,7 @@ const Sidebar: React.FC = () => {
                 pathname.includes("/today/")
                   ? "border-foreground"
                   : "border-secondary-foreground",
-                "flex justify-center min-w-6 w-full border-2 rounded-md py-0.5 px-1 text-xs font-medium"
+                "flex justify-center items-center w-[26px] h-[26px] border-2 rounded-md text-xs font-bold"
               )}
             >
               {day}
