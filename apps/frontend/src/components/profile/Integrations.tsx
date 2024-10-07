@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Integration, User } from '@/src/lib/@types/auth/user';
+import {  IntegrationType, User } from '@/src/lib/@types/auth/user';
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar";
 import { Cal } from "@/src/lib/icons/Calendar";
 import { GithubDark } from "@/src/lib/icons/Github";
@@ -48,6 +48,14 @@ interface IntegrationsProps {
   user: User;
 }
 
+export interface Integration {
+  key: IntegrationType;
+  icon: JSX.Element;
+  name: string;
+  description: string;
+  handleConnect: () => void;
+}
+
 const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   const handleGoogleCalendarLogin = useGoogleCalendarLogin('/profile');
 
@@ -58,6 +66,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       name: "Google Calendar",
       description:
         "Link your Google Calendar to manage, create, and view events without leaving the app.",
+      handleConnect: handleGoogleCalendarLogin,
     },
     {
       key: "github",
@@ -65,6 +74,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       name: "Github",
       description:
         "Connect your GitHub account to access repositories and manage issues.",
+      handleConnect: () => console.log("GitHub connection not implemented yet"),
     },
     {
       key: "linear",
@@ -72,6 +82,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       name: "Linear",
       description:
         "Integrate Linear to track and manage your project tasks and issues.",
+      handleConnect: () => console.log("Linear connection not implemented yet"),
     },
     {
       key: "notion",
@@ -79,19 +90,9 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       name: "Notion",
       description:
         "Link your Notion workspace to access and edit your documents seamlessly.",
+      handleConnect: () => console.log("Notion connection not implemented yet"),
     },
-  ], []);
-
-  const handleConnect = (key: string) => {
-    switch (key) {
-      case "googleCalendar":
-        handleGoogleCalendarLogin();
-        break;
-      // Add cases for other integrations in the future
-      default:
-        console.log(`Connect functionality not implemented for ${key}`);
-    }
-  };
+  ], [handleGoogleCalendarLogin]);
 
   return (
     <div className="mb-8">
@@ -102,7 +103,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
             key={integration.key}
             integration={integration}
             connected={user.integrations?.[integration.key]?.connected ?? false}
-            onConnect={() => handleConnect(integration.key)}
+            onConnect={integration.handleConnect}
           />
         ))}
       </div>
