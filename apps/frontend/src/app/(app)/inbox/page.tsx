@@ -1,28 +1,13 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 
 import { Icon } from "@iconify-icon/react"
 import { PlusIcon } from "@radix-ui/react-icons"
 
-import axios from "axios"
-
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
-
-const iconsMap = {
-  note: "fluent:note-16-regular",
-  githubIssue: "ri:github-fill",
-  linearIssue: "gg:linear",
-  default: "fluent:note-16-regular",
-}
-
-const ItemIcon = ({ type }: { type: string }) => {
-  const icon = iconsMap[type] || iconsMap["default"]
-
-  return <Icon icon={icon} style={{ fontSize: "18px" }} className="mt-0.5" />
-}
+import InboxItems from "@/src/components/Inbox/InboxItems"
 
 const InboxPage: React.FC = () => {
   const { session } = useAuth()
@@ -34,17 +19,23 @@ const InboxPage: React.FC = () => {
   const [description, setDescription] = useState("")
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [selectedPages, setSelectedPages] = React.useState<string[]>([])
-  const [editItemId, setEditItemId] = React.useState<string | null>(null)
-  const [editedItem, setEditedItem] = React.useState<{
-    title: string
-    description: string
-  }>({
-    title: "",
-    description: "",
-  })
 
-  const { fetchInboxData, addItem, updateItem, inboxItems, deleteItem } =
-    useInboxStore()
+  const { isFetched, setIsFetched, fetchInboxData, addItem } = useInboxStore()
+
+  const fetchInbox = async () => {
+    try {
+      fetchInboxData(session)
+      setIsFetched(true)
+    } catch (error) {
+      setIsFetched(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!isFetched) {
+      fetchInbox()
+    }
+  }, [session, fetchInboxData, setIsFetched])
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -62,71 +53,10 @@ const InboxPage: React.FC = () => {
     }
   }, [description])
 
-  useEffect(() => {
-    fetchInboxData(session)
-  }, [fetchInboxData, session])
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${session}`,
-    },
-  }
-
   const handleCloseAddItemToInbox = async () => {
     setAddingItem(false)
     setTitle("")
     setDescription("")
-  }
-
-  const handleEditItem = (item: any) => {
-    setEditItemId(item.uuid)
-    setEditedItem({
-      title: item.title,
-      description: item.description,
-    })
-  }
-
-  const handleDeleteItem = (itemId: any) => {
-    if (!session) {
-      console.error("user is not authenticated")
-      return
-    }
-    try {
-      deleteItem(session, itemId)
-    } catch (error) {
-      console.error("error deleting inbox item:", error)
-    }
-  }
-
-  const handleCancelEditItem = () => {
-    setEditItemId(null)
-    setEditedItem({ title: "", description: "" })
-  }
-
-  const handleSaveEditedItem = async (item: any) => {
-    try {
-      console.log("DESCRIPTIONNNNNNNNN", editedItem.description)
-      if (editItemId && editedItem) {
-        updateItem(
-          {
-            ...item,
-            title: editedItem.title,
-            description: editedItem.description,
-          },
-          item.uuid
-        )
-      }
-
-      await axios.put(
-        `${BACKEND_URL}/api/items/${item.uuid}`,
-        editedItem,
-        config
-      )
-
-      handleCancelEditItem()
-    } catch (error) {
-      console.error("error updating item:", error)
-    }
   }
 
   const handleAddItemToInbox = async () => {
@@ -218,103 +148,7 @@ const InboxPage: React.FC = () => {
                 />
               </div>
             )}
-            <div className="flex flex-col gap-4">
-              {inboxItems.length === 0 ? (
-                <p>inbox empty</p>
-              ) : (
-                inboxItems.map((item: any) => (
-                  <div
-                    key={item.uuid}
-                    className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group"
-                    onClick={() => {
-                      console.log("item.uuid", item.uuid)
-                      console.log("editedItemId", editItemId)
-                      console.log("editedItem", editedItem)
-                      console.log("item.description", item.description)
-                      console.log("item.type", item.type)
-                    }}
-                    onDoubleClick={() => handleEditItem(item)}
-                  >
-                    <div className="flex justify-between text-foreground">
-                      <div className="w-full flex items-start gap-2">
-                        <ItemIcon type={item.type} />
-                        {editItemId === item.uuid ? (
-                          <div className="w-full">
-                            <textarea
-                              ref={textareaRefTitle}
-                              value={editedItem.title}
-                              onChange={(e) =>
-                                setEditedItem((prev) => ({
-                                  ...prev,
-                                  title: e.target.value,
-                                }))
-                              }
-                              placeholder="title"
-                              className="w-full resize-none overflow-hidden bg-transparent placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
-                              rows={1}
-                            />
-                          </div>
-                        ) : (
-                          <p>{item.title}</p>
-                        )}
-                      </div>
-                      <div className="text-secondary-foreground text-xs">
-                        {editItemId === item.uuid ? (
-                          <div className="flex gap-4">
-                            <button
-                              className="hover-text"
-                              onClick={() => handleSaveEditedItem(item)}
-                            >
-                              save
-                            </button>
-                            <button
-                              className="hover-text"
-                              onClick={handleCancelEditItem}
-                            >
-                              cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-4">
-                            <button
-                              className="invisible group-hover:visible hover-text"
-                              onClick={() => handleEditItem(item)}
-                            >
-                              edit
-                            </button>
-                            <button
-                              className="invisible group-hover:visible hover-text"
-                              onClick={() => handleDeleteItem(item._id)}
-                            >
-                              del
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="ml-[18px] pl-2 text-xs">
-                      {editItemId === item.uuid ? (
-                        <textarea
-                          ref={textareaRefDescription}
-                          value={editedItem.description}
-                          onChange={(e) => {
-                            setEditedItem((prev) => ({
-                              ...prev,
-                              description: e.target.value,
-                            }))
-                          }}
-                          placeholder="description"
-                          className="w-full text-xs resize-none overflow-hidden bg-transparent text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
-                          rows={1}
-                        />
-                      ) : (
-                        <p>{item.description}</p>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <InboxItems />
           </div>
         </div>
       </div>
