@@ -18,7 +18,7 @@ const createLabel = async (labelData, user) => {
 const createLabels = async (labelsData, space, user) => {
     const labels = labelsData.map(labelData => ({
         ...labelData,
-        space: space,
+        space,
         user
     }));
 

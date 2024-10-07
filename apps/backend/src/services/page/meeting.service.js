@@ -9,6 +9,16 @@ const getMeeting = async (user) => {
     return meetings;
 };
 
+const getMeetingById = async (user, id) => {
+    const meeting = await Meeting.find({
+        user,
+        _id: id
+    })
+        .sort({ created_at: -1 });
+
+    return meeting;
+};
+
 const getUpcomingMeetings = async (user, currentDateTime) => {
     const upcomingMeetings = await Meeting.find({
         user,
@@ -41,5 +51,6 @@ export {
     getMeeting,
     getUpcomingMeetings,
     updateMeeting,
-    deleteMeeting
+    deleteMeeting,
+    getMeetingById
 }
