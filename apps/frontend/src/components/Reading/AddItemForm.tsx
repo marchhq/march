@@ -99,7 +99,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
   }, [input])
 
   return (
-    <div className="relative">
+    <div className="relative w-[769px]">
       <input
         ref={inputRef}
         value={input}
@@ -107,12 +107,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="text-base text-foreground w-full px-3 py-5 pr-28 border border-foreground/10 rounded bg-background focus:outline-none focus:border-foreground/50 transition-colors truncate"
+        
+        className="text-base text-foreground  w-full h-[61px] rounded-[11.17px] border border-[#262626] text-[#DCDCDD] bg-[transparent] px-[20px] outline-none"
         autoFocus
         disabled={isSaving}
       />
       {input && !isSaving && (
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 bg-background px-1">
+        <span className="absolute right-5 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 bg-background px-1">
           Press ↵ to save
         </span>
       )}
