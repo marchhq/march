@@ -20,7 +20,7 @@ export const useItems = () => {
         })
         setItems(response.data)
       } catch (error) {
-        console.error("failed to fetch items: ", error)
+        console.error(error)
       } finally {
         setIsLoading(false)
       }

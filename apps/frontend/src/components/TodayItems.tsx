@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../lib/constants/urls';
 import { useItems } from '../hooks/useEvents';
@@ -17,26 +17,26 @@ export const TodayItems: React.FC<TodayEventsProps> = ({ selectedDate }): JSX.El
   const [optimisticItems, setOptimisticItems] = useState<Item[]>([]);
   const { session } = useAuth();
 
-  useEffect(() => {
-    if (items) {
-      const combinedItems = [
-        ...items.todayItems.map((item) => ({ ...item, isOverdue: false })),
-        ...items.overdueItems.map((item) => ({ ...item, isOverdue: true })),
-      ];
-      const filteredItems = combinedItems.filter(item => {
-        const dueDate = new Date(item.dueDate);
-        if (item.isOverdue && !item.isCompleted) {
-          return true;
-        }
-        return (
-          !item.isOverdue &&
-          dueDate.getFullYear() === selectedDate.getFullYear() &&
-          dueDate.getMonth() === selectedDate.getMonth() &&
-          dueDate.getDate() === selectedDate.getDate()
-        );
-      });
-      setOptimisticItems(filteredItems);
-    }
+  useMemo(() => {
+    if (!items) return [];
+
+    const combinedItems = [
+      ...items.todayItems.map((item) => ({ ...item, isOverdue: false })),
+      ...items.overdueItems.map((item) => ({ ...item, isOverdue: true })),
+    ];
+
+    return combinedItems.filter(item => {
+      const dueDate = new Date(item.dueDate);
+      if (item.isOverdue && !item.isCompleted) {
+        return true;
+      }
+      return (
+        !item.isOverdue &&
+        dueDate.getFullYear() === selectedDate.getFullYear() &&
+        dueDate.getMonth() === selectedDate.getMonth() &&
+        dueDate.getDate() === selectedDate.getDate()
+      );
+    });
   }, [items, selectedDate]);
 
   const handleToggleComplete = async (item: Item) => {
