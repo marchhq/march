@@ -1,3 +1,4 @@
+import { itemQueue } from "../../loaders/bullmq.loader.js";
 import { createItem, getItems, updateItem, getItem } from "../../services/lib/item.service.js";
 
 const extractUrl = (text) => {
@@ -15,8 +16,10 @@ const createItemController = async (req, res, next) => {
         console.log("urlInTitle: ", urlInTitle);
         const item = await createItem(user, requestedData);
         if (urlInTitle) {
-            // bg job to get the preview
-            await processUrlAndCreateItem(urlInTitle, item._id, user);
+            await itemQueue.add("itemQueue", {
+                url: urlInTitle,
+                itemId: item._id
+            });
         }
 
         res.status(200).json({

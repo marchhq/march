@@ -1,8 +1,25 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
+import { linkPreviewGenerator } from "../services/lib/linkPreview.service.js";
+import { Item } from "../models/lib/item.model.js";
 
 const processitamJob = async (job) => {
+    const { url, itemId } = job;
+    const { title, favicon } = await linkPreviewGenerator(url);
+    const updateData = {
+        title: title,
+        metadata: {
+            url: url,
+            favicon: favicon
+        }
 
+    }
+    await Item.findOneAndUpdate({
+        _id: itemId
+    },
+    { $set: updateData },
+    { new: true }
+    )
 }
 
 const iteamWorker = new Worker('iteamQueue', async (job) => {
