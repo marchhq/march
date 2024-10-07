@@ -11,7 +11,7 @@ const formatDate = (date: Date) => {
   return `${weekday}, ${day} `;
 };
 
-export const Header = (): JSX.Element => {
+export const MeetNotes = (): JSX.Element => {
 
   const [content, setContent] = useState("<p></p>")
   const [isSaved, setIsSaved] = useState(true)
