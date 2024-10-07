@@ -43,7 +43,8 @@ import {
     getUpcomingMeetingsController,
     updateMeetingController,
     deleteMeetingController,
-    getMeetingByIdController
+    getMeetingByIdController,
+    recentUpcomingMeetingController
 } from "../../controllers/page/meeting.controller.js";
 import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController, getLabelsBySpaceController } from "../../controllers/lib/label.controller.js";
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
@@ -94,6 +95,7 @@ router.route("/blocks/:block/").delete(deleteBlockController);
 // Meeting controllers
 router.route("/meetings/overview/").get(getMeetingsController);
 router.route("/meetings/upcomings/").get(getUpcomingMeetingsController);
+router.route("/meetings/recent-upcoming-meeting/").get(recentUpcomingMeetingController);
 router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
