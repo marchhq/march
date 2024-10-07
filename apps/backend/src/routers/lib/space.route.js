@@ -48,6 +48,7 @@ import { createLabelController, getLabelsController, getLabelController, updateL
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
+import { linkPreviewGeneratorController } from "../../controllers/lib/linkPreview.controller.js";
 
 const router = Router();
 
@@ -108,7 +109,10 @@ router
     .route("/file-assets/upload/")
     .post(upload.single("file"), uploadFileController);
 
-// Feedback controllers
+// Feedback controller
 router.route("/feedback/").post(feedbackController);
+
+// Link preview controller
+router.route("/get-link-preview/").post(linkPreviewGeneratorController);
 
 export default router;
