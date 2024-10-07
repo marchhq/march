@@ -12,7 +12,7 @@ export interface MeetsStoreType {
   /**
    * Upcoming Meets array
    */
-  upcomingMeets: Meet[]
+  upcomingMeetings: Meet[]
   /**
    * Fetch Meets from the server
    * @param session - The session of the user
@@ -49,7 +49,7 @@ export interface MeetsStoreType {
 
 const useMeetsStore = create<MeetsStoreType>((set) => ({
   meets: [],
-  upcomingMeets: [],
+  upcomingMeetings: [],
 
   fetchMeets: async (session: string) => {
     try {
@@ -68,23 +68,35 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
       console.error(e.response?.data)
     }
   },
+
   fetchUpcomingMeets: async (session: string) => {
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/upcoming`, {
+      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/upcomings/`, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
-      })
-      const response = data as GetMeetResponse
+      });
+
+      console.log('Full API response:', data); // Log full response to inspect structure
+
+      const response = data; // Cast response to expected type
+      console.log('Fetched upcoming meets:', response.upcomingMeetings); // Log the meetings field
+
       set((state: MeetsStoreType) => ({
         ...state,
-        upcomingMeets: response.meetings,
-      }))
+        upcomingMeetings: response.upcomingMeetings, // Ensure this is correct
+      }));
     } catch (error) {
-      const e = error as AxiosError
-      console.error(e.response?.data)
+      const e = error as AxiosError;
+      console.error('API call failed with error:', e.message);
+      if (e.response) {
+        console.error('API response error:', e.response.data);
+      } else {
+        console.error('Error with request, no response received:', e);
+      }
     }
   },
+
   updateMeet: (meet: Meet, isUpcoming: boolean) => {
     if (isUpcoming) {
       set((state: MeetsStoreType) => ({
