@@ -13,7 +13,6 @@ const createItemController = async (req, res, next) => {
         const requestedData = req.body;
         const { title } = requestedData;
         const urlInTitle = extractUrl(title);
-        console.log("urlInTitle: ", urlInTitle);
         const item = await createItem(user, requestedData);
         if (urlInTitle) {
             await itemQueue.add("itemQueue", {
