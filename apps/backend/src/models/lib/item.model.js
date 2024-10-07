@@ -12,6 +12,9 @@ const ItemSchema = new Schema({
     title: {
         type: String
     },
+    type: {
+        type: String
+    },
     source: {
         type: String,
         default: "march"
