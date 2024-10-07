@@ -1,15 +1,17 @@
 "use client";
-
 import { useAuth } from "@/src/contexts/AuthContext";
 import { Meet } from "@/src/lib/@types/Items/Meet";
 import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store";
 import classNames from "@/src/utils/classNames"
 import { getCurrentWeekMeets } from "@/src/utils/meet";
 import { useEffect, useState } from "react"
+import { useRouter } from 'next/navigation';
 
-export const Stack = (): JSX.Element => {
-
+export const Stack = ({ meetId }: {
+  meetId: string
+}): JSX.Element => {
   const { session } = useAuth();
+  const router = useRouter();
   const fetchUpcomingMeets = useMeetsStore((state: MeetsStoreType) => state.fetchUpcomingMeets);
   const upcomingMeets = useMeetsStore((state: MeetsStoreType) => state.upcomingMeetings);
   const [currentWeekMeets, setCurrentWeekMeets] = useState<Meet[]>([]);
@@ -18,15 +20,18 @@ export const Stack = (): JSX.Element => {
 
   useEffect(() => {
     fetchUpcomingMeets(session)
-  }, [fetchUpcomingMeets])
+  }, [fetchUpcomingMeets, session])
 
   useEffect(() => {
     const meets = getCurrentWeekMeets(upcomingMeets);
     setCurrentWeekMeets(meets)
   }, [upcomingMeets])
 
-  console.log('upcoming week meets: ', upcomingMeets)
-  console.log('current week meets: ', currentWeekMeets)
+  const handleMeetingClick = (clickedMeetId: string) => {
+    if (clickedMeetId !== meetId) {
+      router.push(`/space/meetings/${clickedMeetId}`);
+    }
+  }
 
   return (
     <>
@@ -34,13 +39,18 @@ export const Stack = (): JSX.Element => {
         onClick={handleClose}
         className="hover:text-foreground cursor-pointer">stack</span>
       {currentWeekMeets.map((meet: Meet) => (
-        <div key={meet._id} className={classNames(
-          closeToggle ? "hidden" : "visible", "mt-4 cursor-pointer hover:text-foreground"
-        )}>
+        <div
+          key={meet._id}
+          className={classNames(
+            closeToggle ? "hidden" : "visible",
+            "mt-4 cursor-pointer hover:text-foreground",
+            meet._id === meetId ? "text-foreground" : ""
+          )}
+          onClick={() => handleMeetingClick(meet._id)}
+        >
           {meet.title}
         </div>
       ))}
     </>
-
   )
 }
