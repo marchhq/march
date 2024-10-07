@@ -43,7 +43,8 @@ const InboxPage: React.FC = () => {
     description: "",
   })
 
-  const { fetchInboxData, addItem, updateItem, inboxItems } = useInboxStore()
+  const { fetchInboxData, addItem, updateItem, inboxItems, deleteItem } =
+    useInboxStore()
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -85,6 +86,18 @@ const InboxPage: React.FC = () => {
     })
   }
 
+  const handleDeleteItem = (itemId: any) => {
+    if (!session) {
+      console.error("user is not authenticated")
+      return
+    }
+    try {
+      deleteItem(session, itemId)
+    } catch (error) {
+      console.error("error deleting inbox item:", error)
+    }
+  }
+
   const handleCancelEditItem = () => {
     setEditItemId(null)
     setEditedItem({ title: "", description: "" })
@@ -118,7 +131,7 @@ const InboxPage: React.FC = () => {
 
   const handleAddItemToInbox = async () => {
     if (!session) {
-      console.error("User is not authenticated")
+      console.error("user is not authenticated")
       return
     }
 
@@ -262,12 +275,20 @@ const InboxPage: React.FC = () => {
                             </button>
                           </div>
                         ) : (
-                          <button
-                            className="invisible group-hover:visible hover-text"
-                            onClick={() => handleEditItem(item)}
-                          >
-                            edit
-                          </button>
+                          <div className="flex gap-4">
+                            <button
+                              className="invisible group-hover:visible hover-text"
+                              onClick={() => handleEditItem(item)}
+                            >
+                              edit
+                            </button>
+                            <button
+                              className="invisible group-hover:visible hover-text"
+                              onClick={() => handleDeleteItem(item._id)}
+                            >
+                              del
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
