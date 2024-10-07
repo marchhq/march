@@ -20,7 +20,7 @@ const ItemIcon = ({ type }: { type: string }) => {
   return <Icon icon={icon} style={{ fontSize: "18px" }} className="mt-0.5" />
 }
 
-const InboxItems: React.FC = () => {
+export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
@@ -129,7 +129,7 @@ const InboxItems: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {inboxItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
@@ -228,5 +228,3 @@ const InboxItems: React.FC = () => {
     </div>
   )
 }
-
-export default InboxItems
