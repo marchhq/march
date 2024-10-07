@@ -24,6 +24,16 @@ export interface MeetsStoreType {
    */
   fetchUpcomingMeets: (session: string) => Promise<void>
   /**
+   * Fetch meeting by id
+   * @param session and meet _id
+   */
+  fetchMeetByid: (session: string, id: string) => Promise<Meet | null>
+  /**
+ * Fetch meeting by id
+ * @param session and meet _id
+ */
+  fetchLatestMeet: (session: string) => Promise<Meet | null>
+  /**
    * Update a Meet in local
    * @param meet - The Meet to update
    */
@@ -76,32 +86,54 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
           Authorization: `Bearer ${session}`,
         },
       });
-
-      console.log('Full API response:', data); // Log full response to inspect structure
-
-      const response = data; // Cast response to expected type
-      console.log('Fetched upcoming meets:', response.upcomingMeetings); // Log the meetings field
-
+      const response = data;
       set((state: MeetsStoreType) => ({
         ...state,
-        upcomingMeetings: response.upcomingMeetings, // Ensure this is correct
+        upcomingMeetings: response.upcomingMeetings,
       }));
     } catch (error) {
       const e = error as AxiosError;
-      console.error('API call failed with error:', e.message);
-      if (e.response) {
-        console.error('API response error:', e.response.data);
-      } else {
-        console.error('Error with request, no response received:', e);
-      }
+      console.error(e.cause)
     }
+  },
+
+  fetchMeetByid: async (session: string, id: string) => {
+    let meet: Meet | null = null
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/${id}`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+      meet = data.meeting[0]
+    } catch (error) {
+      const e = error as AxiosError
+      console.log(e.cause)
+    }
+    return meet;
+  },
+
+  fetchLatestMeet: async (session: string): Promise<Meet | null> => {
+    let meet: Meet | null = null
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/recent-upcoming-meeting/`, {
+        headers: {
+          Authorization: `Bearer ${session}`
+        }
+      })
+      meet = data.meetings[0]
+    } catch (error) {
+      const e = error as AxiosError
+      console.error(e.cause)
+    }
+    return meet;
   },
 
   updateMeet: (meet: Meet, isUpcoming: boolean) => {
     if (isUpcoming) {
       set((state: MeetsStoreType) => ({
         ...state,
-        upcomingMeets: state.upcomingMeets.map((m) =>
+        upcomingMeets: state.upcomingMeetings.map((m) =>
           m.uuid === meet.uuid ? meet : m
         ),
       }))
@@ -129,7 +161,7 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
       if (isUpcoming) {
         set((state: MeetsStoreType) => ({
           ...state,
-          upcomingMeets: state.upcomingMeets.filter((m) => m.uuid !== uuid),
+          upcomingMeets: state.upcomingMeetings.filter((m) => m.uuid !== uuid),
         }))
       } else {
         set((state: MeetsStoreType) => ({
