@@ -1,9 +1,7 @@
 import React from "react"
 
-import { Icon } from "@iconify-icon/react"
 import ThisWeekArrows from "@/src/components/ThisWeek/ThisWeekArrows"
-import ThisWeekItem from "./ThisWeekItem"
-import ThisWeekNewItem from "./ThisWeekNewItem"
+import ThisWeekSection from "./ThisWeekSection"
 
 const ThisWeekComponent: React.FC = () => {
   return (
@@ -18,33 +16,9 @@ const ThisWeekComponent: React.FC = () => {
         <ThisWeekArrows />
       </div>
       <div className="flex w-full max-w-screen-xl gap-8">
-        <div className="flex flex-col flex-1 gap-4 group/section">
-          <div className="flex items-center gap-2 text-xl text-foreground">
-            <Icon
-              icon="material-symbols:circle-outline"
-              className="text-[20px]"
-            />
-            <h2>to do</h2>
-          </div>
-          <ThisWeekItem />
-          <ThisWeekNewItem />
-        </div>
-        <div className="flex flex-col flex-1 gap-4 group/section">
-          <div className="flex items-center gap-2 text-xl text-foreground">
-            <Icon icon="carbon:circle-dash" className="text-[20px]" />
-            <h2>in progress</h2>
-          </div>
-          <ThisWeekItem />
-          <ThisWeekNewItem />
-        </div>
-        <div className="flex flex-col flex-1 gap-4 group/section">
-          <div className="flex items-center gap-2 text-xl text-foreground">
-            <Icon icon="material-symbols:circle" className="text-[20px]" />
-            <h2>done</h2>
-          </div>
-          <ThisWeekItem />
-          <ThisWeekNewItem />
-        </div>
+        <ThisWeekSection icon="material-symbols:circle-outline" title="to do" />
+        <ThisWeekSection icon="carbon:circle-dash" title="in progress" />
+        <ThisWeekSection icon="material-symbols:circle" title="done" />
       </div>
     </div>
   )
