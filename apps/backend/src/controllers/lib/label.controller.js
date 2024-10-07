@@ -1,4 +1,4 @@
-import { createLabel, getLabels, getLabel, updateLabel, deleteLabel } from "../../services/lib/label.service.js"
+import { createLabel, getLabels, getLabel, updateLabel, deleteLabel, getLabelsBySpace } from "../../services/lib/label.service.js"
 
 const createLabelController = async (req, res, next) => {
     try {
@@ -19,6 +19,20 @@ const getLabelsController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const labels = await getLabels(user);
+
+        res.json({
+            labels
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getLabelsBySpaceController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { space } = req.params;
+        const labels = await getLabelsBySpace(user, space);
 
         res.json({
             labels
@@ -72,5 +86,6 @@ export {
     getLabelsController,
     getLabelController,
     updateLabelController,
-    deleteLabelController
+    deleteLabelController,
+    getLabelsBySpaceController
 }

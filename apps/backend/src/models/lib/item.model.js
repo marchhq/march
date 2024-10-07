@@ -12,6 +12,9 @@ const ItemSchema = new Schema({
     title: {
         type: String
     },
+    type: {
+        type: String
+    },
     source: {
         type: String,
         default: "march"
@@ -44,6 +47,10 @@ const ItemSchema = new Schema({
     spaces: [{
         type: Schema.Types.ObjectId,
         ref: 'Space'
+    }],
+    blocks: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Block'
     }],
     user: {
         type: Schema.Types.ObjectId,
