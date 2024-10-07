@@ -14,7 +14,7 @@ export const getAuthInfo = (user: User): { authMethod: string, email: string, ic
   if (user.accounts?.local?.email) {
     return { authMethod: 'Email', email: user.accounts.local.email, icon: <Icon name="Mail" /> };
   }
-  return { authMethod: 'Unknown', email: user.userName, icon: <Icon name="User" /> };
+  return { authMethod: 'Unknown', email: 'No email provided', icon: <Icon name="User" /> };
 };
 
 interface UserInfoProps {
@@ -26,12 +26,14 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
 
   return (
     <div className="flex flex-col mb-8">
-      <img 
-        src={user.avatar} 
-        alt={`${user.fullName}'s Avatar`} 
-        className="w-12 h-12 rounded-full mb-4 border-2 border-secondary-foreground" 
-      />
-      <h2 className="text-xl font-semibold text-foreground mb-1">{user.fullName}</h2>
+      {user.avatar && (
+        <img 
+          src={user.avatar} 
+          alt={`${user.fullName}'s Avatar`} 
+          className="w-12 h-12 rounded-full mb-4 border-2 border-secondary-foreground" 
+        />
+      )}
+      <h2 className="text-xl font-semibold text-foreground mb-1">{user.fullName || 'Anonymous User'}</h2>
       <p className="text-sm text-secondary-foreground mb-4">{email}</p>
       <div className="flex items-center text-md text-secondary-foreground">
         <span className="mr-2">Logged in with {authMethod}</span>
