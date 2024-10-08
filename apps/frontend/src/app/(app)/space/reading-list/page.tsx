@@ -57,7 +57,7 @@ const ReadingListPage: React.FC = () => {
     <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
         {blockId && (
-          <div className="flex flex-col gap-8 text-base w-4/5 ml-[5%] mt-16">
+          <div className="flex flex-col gap-8 text-base w-3/5 ml-[10%] mt-32">
             <AddItemForm blockId={blockId} />
             <ReadingList blockId={blockId} />
           </div>

@@ -30,8 +30,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
       if (trimmedValue) {
         try {
           setIsSaving(true)
-          const isUrl = isValidUrl(trimmedValue)
-          await addItemToStore(session, blockId, trimmedValue, isUrl)
+          await addItemToStore(session, blockId, trimmedValue)
           setInput("")
           setIsPasting(false)
         } catch (error) {
@@ -107,12 +106,12 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="text-base text-foreground w-full px-3 py-5 pr-28 border border-foreground/10 rounded bg-background focus:outline-none focus:border-foreground/50 transition-colors truncate"
+        className="text-base text-foreground w-full p-5 pr-28 border border-foreground/10 rounded bg-background focus:outline-none focus:border-foreground/50 transition-colors truncate"
         autoFocus
         disabled={isSaving}
       />
       {input && !isSaving && (
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 bg-background px-1">
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-foreground/8 px-1">
           Press ↵ to save
         </span>
       )}
