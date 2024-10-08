@@ -15,12 +15,14 @@ const useInboxStore = create<InboxStoreType>((set) => ({
   inboxItems: [],
   todayInboxItems: [],
   overdueInboxItems: [],
+  isLoading: false,
   isFetched: false,
   setIsFetched: (isFetched: boolean) => {
     set({ isFetched })
   },
   fetchInboxData: async (session: string) => {
     let inboxItems_: InboxItem[] = []
+    set({ isLoading: true })
     try {
       const config = {
         headers: {
@@ -34,6 +36,7 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       console.error("error fetching my: ", e)
     }
     set({ inboxItems: inboxItems_ })
+    set({ isLoading: false })
     return inboxItems_
   },
   setInboxItems: (inboxItems: InboxItem[]) => {

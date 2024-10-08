@@ -28,7 +28,6 @@ export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [editItemId, setEditItemId] = React.useState<string | null>(null)
   const [editedItem, setEditedItem] = React.useState<{
     title: string
@@ -45,6 +44,7 @@ export const InboxItems: React.FC = () => {
     updateItem,
     inboxItems,
     deleteItem,
+    isLoading,
   } = useInboxStore()
 
   const fetchInbox = useCallback(async () => {
@@ -53,10 +53,8 @@ export const InboxItems: React.FC = () => {
       setIsFetched(true)
     } catch (error) {
       setIsFetched(false)
-    } finally {
-      setIsLoading(false)
     }
-  }, [session, fetchInboxData, setIsFetched, setIsLoading])
+  }, [session, fetchInboxData, setIsFetched])
 
   useEffect(() => {
     if (!isFetched) {
