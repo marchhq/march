@@ -37,7 +37,7 @@ export interface MeetsStoreType {
    * Update a Meet in local
    * @param meet - The Meet to update
    */
-  updateMeet: (meet: Meet, isUpcoming: boolean) => void
+  updateMeet: (meet: Meet, session: string) => Promise<void>
   /**
    * Save a Meet to the server
    * @param meet - The Meet to save
@@ -127,26 +127,31 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
       console.error(e.cause)
     }
     return meet;
-  },
-
-  updateMeet: (meet: Meet, isUpcoming: boolean) => {
-    if (isUpcoming) {
+  }
+  ,
+  updateMeet: async (meet: Meet, session: string) => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/meetings/${meet.uuid}`, meet, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      });
       set((state: MeetsStoreType) => ({
         ...state,
-        upcomingMeets: state.upcomingMeetings.map((m) =>
+        upcomingMeetings: state.upcomingMeetings.map((m) =>
           m.uuid === meet.uuid ? meet : m
         ),
-      }))
-    } else {
-      set((state: MeetsStoreType) => ({
-        ...state,
         meets: state.meets.map((m) => (m.uuid === meet.uuid ? meet : m)),
-      }))
+      }));
+    } catch (error) {
+      const e = error as AxiosError;
+      console.error(e.response?.data);
     }
   },
+
   saveMeet: async (meet: any, session: string) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/meetings/${meet.uuid}`, meet, {
+      await axios.put(`${BACKEND_URL}/api/meetings/${meet.uuid}`, meet, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
