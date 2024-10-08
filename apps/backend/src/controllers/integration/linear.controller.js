@@ -18,8 +18,8 @@ const redirectLinearOAuthLoginController = (req, res, next) => {
     try {
         const scopes = "read write";
         const authUrl = `https://linear.app/oauth/authorize?client_id=${environment.LINEAR_CLIENT_ID}&redirect_uri=${environment.LINEAR_REDIRECT_URL}&response_type=code&scope=${encodeURIComponent(scopes)}`;
-        console.log("Redirecting to Linear OAuth URL:", authUrl);
-        res.redirect(authUrl);
+        console.log("Linear OAuth URL:", authUrl);
+        res.json({ redirectUrl: authUrl });
     } catch (err) {
         console.error("Error in redirectLinearOAuthLoginController:", err);
         next(err);
@@ -31,7 +31,9 @@ const getAccessTokenController = async (req, res, next) => {
     const user = req.user;
     try {
         const accessToken = await getAccessToken(code, user);
+        console.log("accessToken", accessToken)
         const userInfo = await fetchUserInfo(accessToken, user);
+        console.log("userInfo", userInfo)
         await linearQueue.add('linearQueue', {
             accessToken,
             linearUserId: userInfo.id,
