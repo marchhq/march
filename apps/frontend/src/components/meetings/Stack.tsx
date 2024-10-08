@@ -1,56 +1,73 @@
 "use client";
-import { useAuth } from "@/src/contexts/AuthContext";
-import { Meet } from "@/src/lib/@types/Items/Meet";
-import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store";
-import classNames from "@/src/utils/classNames"
-import { getCurrentWeekMeets } from "@/src/utils/meet";
-import { useEffect, useState } from "react"
-import { useRouter } from 'next/navigation';
 
-export const Stack = ({ meetId }: {
-  meetId: string
-}): JSX.Element => {
-  const { session } = useAuth();
-  const router = useRouter();
-  const fetchUpcomingMeets = useMeetsStore((state: MeetsStoreType) => state.fetchUpcomingMeets);
-  const upcomingMeets = useMeetsStore((state: MeetsStoreType) => state.upcomingMeetings);
-  const [currentWeekMeets, setCurrentWeekMeets] = useState<Meet[]>([]);
+import { Meet } from "@/src/lib/@types/Items/Meet";
+import classNames from "@/src/utils/classNames"
+import { useState } from "react"
+import Link from "next/link";
+import { calculateMeetDuration, formatMeetTime } from "@/src/utils/meet";
+import { Link as LinkIcon } from "@/src/lib/icons/Link";
+
+interface StackProps {
+  currentWeekMeets: Meet[];
+  currentMeetId: string;
+}
+
+export const Stack: React.FC<StackProps> = ({ currentWeekMeets, currentMeetId }) => {
   const [closeToggle, setCloseToggle] = useState(false)
+
   const handleClose = () => setCloseToggle(!closeToggle)
 
-  useEffect(() => {
-    fetchUpcomingMeets(session)
-  }, [fetchUpcomingMeets, session])
+  const stackItems = currentWeekMeets.map((meet) => {
+    const startTime = new Date(meet.metadata.start.dateTime)
+    const endTime = new Date(meet.metadata.end.dateTime)
 
-  useEffect(() => {
-    const meets = getCurrentWeekMeets(upcomingMeets);
-    setCurrentWeekMeets(meets)
-  }, [upcomingMeets])
-
-  const handleMeetingClick = (clickedMeetId: string) => {
-    if (clickedMeetId !== meetId) {
-      router.push(`/space/meetings/${clickedMeetId}`);
-    }
-  }
+    return {
+      id: meet._id,
+      title: meet.title,
+      url: meet.metadata.hangoutLink,
+      time: formatMeetTime(startTime, endTime),
+      duration: calculateMeetDuration(startTime, endTime)
+    };
+  })
 
   return (
     <>
       <span
         onClick={handleClose}
-        className="hover:text-foreground cursor-pointer">stack</span>
-      {currentWeekMeets.map((meet: Meet) => (
+        className="hover:text-foreground cursor-pointer">
+        stack
+      </span>
+      {stackItems.map((meet) => (
         <div
-          key={meet._id}
+          key={meet.id}
           className={classNames(
             closeToggle ? "hidden" : "visible",
-            "mt-4 cursor-pointer hover:text-foreground",
-            meet._id === meetId ? "text-foreground" : ""
+            meet.id === currentMeetId ? "border border-[#262626CC] rounded-md p-3 -mx-3" : "",
+            "space-y-2 mb-8 mt-4"
           )}
-          onClick={() => handleMeetingClick(meet._id)}
         >
-          {meet.title}
+          <Link
+            href={`/space/meetings/${meet.id}`}
+            className=" cursor-pointer text-primary-foreground font-medium text-[16px] block"
+          >
+            {meet.title}
+          </Link>
+          <p className="text-[16px]">{meet.time}, {meet.duration} min</p>
+          <a
+            href={meet.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <span className="flex justify-start items-center gap-2 text-[16px] text-primary-foreground">
+              <LinkIcon />
+              Google Meet
+            </span>
+          </a>
         </div>
       ))}
     </>
   )
 }
+
+export default Stack;

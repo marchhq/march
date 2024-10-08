@@ -14,6 +14,17 @@ export function formatMeetDate(date: string): string {
   return format(new Date(date), 'EEE, MMM dd');
 }
 
-export function formatMeetTime(startTime: string, endTime: string): string {
-  return `${format(new Date(startTime), 'HH:mm')} - ${format(new Date(endTime), 'HH:mm')}`;
-}
+export const formatMeetTime = (startTime: Date, endTime: Date): string => {
+  const formatOptionsWithPeriod: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+
+  const start = startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/ AM| PM/, '');
+  const end = endTime.toLocaleTimeString([], formatOptionsWithPeriod);
+
+  return `${start} - ${end}`;
+};
+
+
+export const calculateMeetDuration = (start: Date, end: Date): number => {
+  return Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+};
+

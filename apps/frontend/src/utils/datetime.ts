@@ -46,8 +46,3 @@ export const fromNow = (date: Date | string): string => {
     addSuffix: true,
   })
 }
-
-export const calculateDuration = (start: Date, end: Date): number => {
-  return Math.round((end.getTime() - start.getTime()) / (1000 * 60));
-};
-

@@ -6,8 +6,7 @@ export default function MeetingsPage({ params }: {
   }
 }) {
   if (!params.meetingId) {
-    console.log("meetId is undefined");
-    return <div>Error: Meeting ID is missing</div>;
+    return console.log("meetId is undefined");
   }
 
   return (
