@@ -5,11 +5,11 @@ import { Icon } from "@iconify-icon/react"
 import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 import Image from "next/image"
 
-interface ReadingListProps {
+interface ItemsListProps {
   blockId: string | null
 }
 
-const ReadingList: React.FC<ReadingListProps> = ({ blockId }) => {
+const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
   const { session } = useAuth()
   const { readingItems, deleteItem: deleteItemFromStore } = useReadingStore()
 
@@ -86,4 +86,4 @@ const ReadingList: React.FC<ReadingListProps> = ({ blockId }) => {
   )
 }
 
-export default ReadingList
+export default ItemsList
