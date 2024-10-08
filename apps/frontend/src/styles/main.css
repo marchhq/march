@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+
   html,
   body {
     @apply bg-background;
@@ -185,7 +186,7 @@ button {
     @apply bg-zinc-900 rounded-lg py-3 px-5 text-sm;
   }
 
-  p > code {
+  p>code {
     @apply bg-zinc-900 text-sm px-1 py-0.5 rounded-md;
   }
 
@@ -194,23 +195,28 @@ button {
   }
 
   ul[data-type="taskList"] {
-    @apply list-none ml-0 space-y-1 text-lg;
+    @apply list-none mr-10 space-y-1 text-lg;
+
+
+    li[data-checked="true"] {
+      @apply line-through text-zinc-500;
+    }
 
     & > li {
       @apply flex items-center;
 
-      & > label {
+      &>label {
         @apply mr-1;
 
-        & > span {
+        &>span {
           @apply flex bg-zinc-700 rounded-md size-5;
         }
 
-        & > input {
+        &>input {
           @apply hidden;
         }
 
-        & > input:checked ~ span {
+        &>input:checked~span {
           background-image: url("/icons/check.svg");
           background-size: calc(100% - 5px) calc(100% - 5px);
           @apply bg-center bg-no-repeat;

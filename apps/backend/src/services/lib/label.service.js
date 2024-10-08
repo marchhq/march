@@ -18,7 +18,7 @@ const createLabel = async (labelData, user) => {
 const createLabels = async (labelsData, space, user) => {
     const labels = labelsData.map(labelData => ({
         ...labelData,
-        space: space,
+        space,
         user
     }));
 
@@ -36,6 +36,17 @@ const createLabels = async (labelsData, space, user) => {
 const getLabels = async (user) => {
     const labels = await Label.find({
         user
+    })
+        .sort({ name: 1 })
+        .exec();
+
+    return labels;
+}
+
+const getLabelsBySpace = async (user, space) => {
+    const labels = await Label.find({
+        user,
+        space
     })
         .sort({ name: 1 })
         .exec();
@@ -109,5 +120,6 @@ export {
     getLabel,
     updateLabel,
     deleteLabel,
-    getOrCreateLabels
+    getOrCreateLabels,
+    getLabelsBySpace
 }
