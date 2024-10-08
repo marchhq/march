@@ -3,6 +3,7 @@ import { create } from "zustand"
 
 import { BACKEND_URL } from "../constants/urls"
 import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
+import { type Label } from "@/src/lib/@types/Labels"
 
 export interface ReadingStoreType {
   readingItems: ReadingItem[]
@@ -21,6 +22,8 @@ export interface ReadingStoreType {
     blockId: string,
     itemId: string
   ) => Promise<void>
+  labels: Label[]
+  fetchLabels: (session: string, spaceId: string) => Promise<void>
 }
 
 const useReadingStore = create<ReadingStoreType>((set, get) => ({
@@ -104,6 +107,22 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       }))
     } catch (error) {
       console.error("Error deleting item:", error)
+    }
+  },
+
+  labels: [],
+
+  fetchLabels: async (session: string, spaceId: string) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/spaces/${spaceId}/labels/`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+      set({ labels: response.data.labels })
+    } catch (error) {
+      console.error("Error fetching labels:", error)
+      set({ labels: [] })
     }
   },
 }))
