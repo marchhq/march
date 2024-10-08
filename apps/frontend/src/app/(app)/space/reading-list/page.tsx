@@ -1,5 +1,5 @@
-const ReadingListPage: React.FC = () => {
-  return <div className="text-gray-color p-16">reading list page</div>
-}
+import ReadingListComponent from "@/src/components/Reading/ReadingListComponent"
 
-export default ReadingListPage
+export default function ReadingListPage() {
+  return <ReadingListComponent />
+}
