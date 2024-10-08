@@ -20,6 +20,7 @@ export const InboxAddItem: React.FC = () => {
 
   const { addItem } = useInboxStore()
 
+  /* todo: fix texarea */
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
