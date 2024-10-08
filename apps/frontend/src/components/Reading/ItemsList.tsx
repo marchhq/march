@@ -24,7 +24,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
   }
 
   if (readingItems.length === 0) {
-    return <p>Reading list is empty</p>
+    return <p>Reading list is empty </p>
   }
 
   return (
