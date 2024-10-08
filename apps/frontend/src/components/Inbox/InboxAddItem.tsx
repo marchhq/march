@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react"
 
-import { PlusIcon } from "@radix-ui/react-icons"
+import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
@@ -57,14 +57,16 @@ export const InboxAddItem: React.FC = () => {
         setAddingItem(false)
         setTitle("")
         setDescription("")
-        console.log("item added")
-        console.log("title", title)
-        console.log("description", description)
-        console.log("dueDate", date)
-        console.log("pages", selectedPages)
       }
     } catch (error) {
       console.error("error adding item to inbox:", error)
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      handleAddItemToInbox()
     }
   }
 
@@ -90,7 +92,7 @@ export const InboxAddItem: React.FC = () => {
           onClick={() => setAddingItem(true)}
         >
           <div className="flex items-center gap-2">
-            <PlusIcon />
+            <Icon icon="ic:round-plus" className="text-[18px]" />
             <p>Click to Add an Item</p>
           </div>
         </button>
@@ -108,6 +110,7 @@ export const InboxAddItem: React.FC = () => {
             ref={textareaRefTitle}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="title"
             className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             autoFocus
@@ -117,6 +120,7 @@ export const InboxAddItem: React.FC = () => {
             ref={textareaRefDescription}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="description"
             className="w-full py-2 text-sm resize-none overflow-hidden bg-background text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             rows={1}
