@@ -27,7 +27,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
       <div className="flex items-center gap-1 text-sm">
         <div className="size-4 rounded-sm bg-[#E34136]/80 mr-4"></div>
         <p>
-          {meetData?.createdAt ? formatDate(new Date(meetData.createdAt)) : 'Date not available'}
+          {meetData.metadata.start.dateTime ? formatDate(new Date(meetData.metadata.start.dateTime)) : 'Date not available'}
         </p>
         <p>.</p>
         <p>
