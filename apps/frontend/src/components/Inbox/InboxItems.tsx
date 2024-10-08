@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 
 import { Icon } from "@iconify-icon/react"
+import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
@@ -28,9 +29,8 @@ export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [editItemId, setEditItemId] = React.useState<string | null>(null)
-  const [editedItem, setEditedItem] = React.useState<{
+  const [editItemId, setEditItemId] = useState<string | null>(null)
+  const [editedItem, setEditedItem] = useState<{
     title: string
     description: string
   }>({
@@ -45,6 +45,7 @@ export const InboxItems: React.FC = () => {
     updateItem,
     inboxItems,
     deleteItem,
+    isLoading,
   } = useInboxStore()
 
   const fetchInbox = useCallback(async () => {
@@ -53,16 +54,16 @@ export const InboxItems: React.FC = () => {
       setIsFetched(true)
     } catch (error) {
       setIsFetched(false)
-    } finally {
-      setIsLoading(false)
     }
-  }, [session, fetchInboxData, setIsFetched, setIsLoading])
+  }, [session, fetchInboxData, setIsFetched])
 
   useEffect(() => {
     if (!isFetched) {
       fetchInbox()
     }
   }, [session, fetchInboxData, setIsFetched])
+
+  /* todo: fix textarea */
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -81,7 +82,7 @@ export const InboxItems: React.FC = () => {
   }, [editedItem.description])
 
   const handleEditItem = (item: any) => {
-    setEditItemId(item.uuid)
+    setEditItemId(item._id)
     setEditedItem({
       title: item.title,
       description: item.description,
@@ -137,16 +138,16 @@ export const InboxItems: React.FC = () => {
       {inboxItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
-        inboxItems.map((item: any) => (
+        inboxItems.map((item: InboxItem) => (
           <div
-            key={item.uuid}
+            key={item._id}
             className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group"
             onDoubleClick={() => handleEditItem(item)}
           >
             <div className="flex justify-between text-foreground">
               <div className="w-full flex items-start gap-2">
-                <ItemIcon type={item.source} />
-                {editItemId === item.uuid ? (
+                <ItemIcon type={item.source || "march"} />
+                {editItemId === item._id ? (
                   <div className="w-full">
                     <textarea
                       ref={textareaRefTitle}
@@ -167,7 +168,7 @@ export const InboxItems: React.FC = () => {
                 )}
               </div>
               <div className="text-secondary-foreground text-xs">
-                {editItemId === item.uuid ? (
+                {editItemId === item._id ? (
                   <div className="flex gap-4">
                     <button
                       className="hover-text"
@@ -201,7 +202,7 @@ export const InboxItems: React.FC = () => {
               </div>
             </div>
             <div className="ml-[18px] pl-2 text-xs">
-              {editItemId === item.uuid ? (
+              {editItemId === item._id ? (
                 <textarea
                   ref={textareaRefDescription}
                   value={editedItem.description}
