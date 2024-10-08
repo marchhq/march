@@ -14,7 +14,6 @@ export interface ReadingStoreType {
     session: string,
     blockId: string,
     title: string,
-    isUrl: boolean,
     description?: string
   ) => Promise<void>
   deleteItem: (
@@ -56,14 +55,11 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     session: string,
     blockId: string,
     title: string,
-    isUrl: boolean,
     description?: string
   ) => {
     const { readingItems } = get()
     try {
-      const itemData = isUrl
-        ? { title, metadata: { isUrl: true } }
-        : { title, description: description || "" }
+      const itemData = { title, description: description || "" }
 
       const createResponse = await axios.post(
         `${BACKEND_URL}/api/items/create/`,
