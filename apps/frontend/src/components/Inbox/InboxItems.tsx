@@ -8,9 +8,13 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
 
 const iconsMap = {
-  note: "fluent:note-16-regular",
+  linear: "gg:linear",
   githubIssue: "ri:github-fill",
-  linearIssue: "gg:linear",
+  githubPullRequest: "ri:git-pull-request-line",
+  march: "fluent:note-16-regular",
+  marchClipper: "material-symbols:circle-outline",
+  gmail: "bxl:gmail",
+  sms: "mdi:sms",
   default: "fluent:note-16-regular",
 }
 
@@ -137,18 +141,11 @@ export const InboxItems: React.FC = () => {
           <div
             key={item.uuid}
             className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group"
-            onClick={() => {
-              console.log("item.uuid", item.uuid)
-              console.log("editedItemId", editItemId)
-              console.log("editedItem", editedItem)
-              console.log("item.description", item.description)
-              console.log("item.type", item.type)
-            }}
             onDoubleClick={() => handleEditItem(item)}
           >
             <div className="flex justify-between text-foreground">
               <div className="w-full flex items-start gap-2">
-                <ItemIcon type={item.type} />
+                <ItemIcon type={item.source} />
                 {editItemId === item.uuid ? (
                   <div className="w-full">
                     <textarea
