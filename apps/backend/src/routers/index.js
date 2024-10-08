@@ -22,6 +22,10 @@ const initRoutes = (app) => {
     app.use('/github', JWTMiddleware, GithubRoute);
     app.use('/notion', JWTMiddleware, NotionRoute);
 
+    app.use('/protected-route/', JWTMiddleware, (req, res) => {
+        res.status(200).json({ message: "You are authorized", verified: true });
+    });
+
     app.get("/", async (req, res) => {
         res.json({
             "message": "Welcome to March Developers Portal"
