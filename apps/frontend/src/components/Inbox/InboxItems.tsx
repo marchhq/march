@@ -7,6 +7,7 @@ import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
 import { ItemIcon } from "../atoms/ItemIcon"
+import classNames from "@/src/utils/classNames"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -64,15 +65,15 @@ export const InboxItems: React.FC = () => {
     }
   }, [editedItem.description])
 
-  const handleEditItem = (item: any) => {
-    setEditItemId(item._id)
+  const handleEditItem = (item: InboxItem) => {
+    setEditItemId(item._id || null)
     setEditedItem({
-      title: item.title,
-      description: item.description,
+      title: item.title || "",
+      description: item.description || "",
     })
   }
 
-  const handleDeleteItem = (itemId: any) => {
+  const handleDeleteItem = (itemId: string) => {
     if (!session) {
       console.error("user is not authenticated")
       return
@@ -89,7 +90,7 @@ export const InboxItems: React.FC = () => {
     setEditedItem({ title: "", description: "" })
   }
 
-  const handleSaveEditedItem = async (item: any) => {
+  const handleSaveEditedItem = async (item: InboxItem) => {
     try {
       if (editItemId && editedItem) {
         updateItem(
@@ -99,12 +100,22 @@ export const InboxItems: React.FC = () => {
             title: editedItem.title,
             description: editedItem.description,
           },
-          item._id
+          item._id || ""
         )
       }
       handleCancelEditItem()
     } catch (error) {
       console.error("error updating item:", error)
+    }
+  }
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+    item: InboxItem
+  ) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      handleSaveEditedItem(item)
     }
   }
 
@@ -124,7 +135,12 @@ export const InboxItems: React.FC = () => {
         inboxItems.map((item: InboxItem) => (
           <div
             key={item._id}
-            className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group"
+            className={classNames(
+              "flex flex-col text-left gap-1 p-4 border rounded-lg hover:border-border hover-bg group",
+              editItemId === item._id
+                ? "bg-background-hover border-border"
+                : "bg-transparent border-transparent"
+            )}
             onDoubleClick={() => handleEditItem(item)}
           >
             <div className="flex justify-between text-foreground">
@@ -141,6 +157,7 @@ export const InboxItems: React.FC = () => {
                           title: e.target.value,
                         }))
                       }
+                      onKeyDown={(e) => handleKeyDown(e, item)}
                       placeholder="title"
                       className="w-full resize-none overflow-hidden bg-transparent placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
                       rows={1}
@@ -176,7 +193,7 @@ export const InboxItems: React.FC = () => {
                     </button>
                     <button
                       className="invisible group-hover:visible hover-text"
-                      onClick={() => handleDeleteItem(item._id)}
+                      onClick={() => handleDeleteItem(item._id || "")}
                     >
                       del
                     </button>
@@ -195,6 +212,7 @@ export const InboxItems: React.FC = () => {
                       description: e.target.value,
                     }))
                   }}
+                  onKeyDown={(e) => handleKeyDown(e, item)}
                   placeholder="description"
                   className="w-full text-xs resize-none overflow-hidden bg-transparent text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
                   rows={1}
