@@ -64,6 +64,8 @@ export const InboxItems: React.FC = () => {
     }
   }, [session, fetchInboxData, setIsFetched])
 
+  /* todo: fix textarea */
+
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
