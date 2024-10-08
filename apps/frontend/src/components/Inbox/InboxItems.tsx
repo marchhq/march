@@ -81,7 +81,7 @@ export const InboxItems: React.FC = () => {
   }, [editedItem.description])
 
   const handleEditItem = (item: any) => {
-    setEditItemId(item.uuid)
+    setEditItemId(item._id)
     setEditedItem({
       title: item.title,
       description: item.description,
@@ -139,14 +139,14 @@ export const InboxItems: React.FC = () => {
       ) : (
         inboxItems.map((item: any) => (
           <div
-            key={item.uuid}
+            key={item._id}
             className="flex flex-col text-left gap-1 p-4 border border-border rounded-lg hover-bg group"
             onDoubleClick={() => handleEditItem(item)}
           >
             <div className="flex justify-between text-foreground">
               <div className="w-full flex items-start gap-2">
                 <ItemIcon type={item.source} />
-                {editItemId === item.uuid ? (
+                {editItemId === item._id ? (
                   <div className="w-full">
                     <textarea
                       ref={textareaRefTitle}
@@ -167,7 +167,7 @@ export const InboxItems: React.FC = () => {
                 )}
               </div>
               <div className="text-secondary-foreground text-xs">
-                {editItemId === item.uuid ? (
+                {editItemId === item._id ? (
                   <div className="flex gap-4">
                     <button
                       className="hover-text"
@@ -201,7 +201,7 @@ export const InboxItems: React.FC = () => {
               </div>
             </div>
             <div className="ml-[18px] pl-2 text-xs">
-              {editItemId === item.uuid ? (
+              {editItemId === item._id ? (
                 <textarea
                   ref={textareaRefDescription}
                   value={editedItem.description}
