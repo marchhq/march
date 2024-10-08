@@ -6,7 +6,7 @@ export const ThisWeekItem: React.FC = () => {
       <div className="flex justify-between text-foreground">
         <div className="w-full flex items-start gap-2">
           <Icon icon="ri:github-fill" className="mt-0.5 text-[18px]" />
-          <p>title</p>
+          <p className="text-sm">title</p>
         </div>
         <div className="text-secondary-foreground text-xs">
           <button className="invisible group-hover:visible hover-text">
