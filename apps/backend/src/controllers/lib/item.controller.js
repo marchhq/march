@@ -1,11 +1,41 @@
+// import { itemQueue } from "../../loaders/bullmq.loader.js";
 import { createItem, getItems, updateItem, getItem } from "../../services/lib/item.service.js";
+import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
+const extractUrl = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = text.match(urlRegex);
+    return urls ? urls[0] : null;
+};
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
 
         const requestedData = req.body;
-        const item = await createItem(user, requestedData);
+        const { title } = requestedData;
+
+        const urlInTitle = extractUrl(title);
+        let item;
+
+        if (urlInTitle) {
+            // await itemQueue.add("itemQueue", {
+            //     url: urlInTitle,
+            //     itemId: item._id
+            // });
+            const { title, favicon } = await linkPreviewGenerator(urlInTitle);
+            console.log("title: ", title);
+            console.log("favicon: ", favicon);
+            const requestedData = {
+                title: title,
+                metadata: {
+                    url: urlInTitle,
+                    favicon: favicon
+                }
+            }
+            item = await createItem(user, requestedData);
+        } else {
+            item = await createItem(user, requestedData);
+        }
 
         res.status(200).json({
             item
