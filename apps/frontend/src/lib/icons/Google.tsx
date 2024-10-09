@@ -1,7 +1,7 @@
 import React from "react"
 
 interface GoogleIconProps {
-  className?: string;
+  className?: string
 }
 
 const Google: React.FC<GoogleIconProps> = ({ className = "" }) => {

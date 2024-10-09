@@ -1,3 +1,5 @@
+import { useRef } from "react"
+
 import Link from "@tiptap/extension-link"
 import { Placeholder } from "@tiptap/extension-placeholder"
 import TaskItem from "@tiptap/extension-task-item"
@@ -6,7 +8,6 @@ import { type Editor, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
 import { SlashCommand } from "../extensions/SlashCommand"
-import { useRef } from "react"
 
 interface Props {
   content: string
