@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, getItems, updateItem, getItem } from "../../services/lib/item.service.js";
+import { createItem, getItems, updateItem, getItem, getItemFilterByLabel } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -93,9 +93,22 @@ const getItemController = async (req, res, next) => {
     }
 };
 
+const getItemFilterByLabelController = async (req, res, next) => {
+    const { label } = req.query;
+    const user = req.user._id;
+
+    try {
+        const items = await getItemFilterByLabel(label, user);
+        res.status(200).json(items);
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createItemController,
     getItemsController,
     updateItemController,
-    getItemController
+    getItemController,
+    getItemFilterByLabelController
 }
