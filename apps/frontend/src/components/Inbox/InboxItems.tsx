@@ -31,6 +31,7 @@ export const InboxItems: React.FC = () => {
     inboxItems,
     deleteItem,
     isLoading,
+    setSelectedItem,
   } = useInboxStore()
 
   const fetchInbox = useCallback(async () => {
@@ -65,6 +66,10 @@ export const InboxItems: React.FC = () => {
       textarea.style.height = `${textarea.scrollHeight}px`
     }
   }, [editedItem.description])
+
+  const handleExpand = (item: InboxItem) => {
+    setSelectedItem(item)
+  }
 
   const handleEditItem = (item: InboxItem) => {
     setEditItemId(item._id || null)
@@ -142,7 +147,7 @@ export const InboxItems: React.FC = () => {
                 ? "bg-background-hover border-border"
                 : "bg-transparent border-transparent"
             )}
-            onDoubleClick={() => handleEditItem(item)}
+            onDoubleClick={() => handleExpand(item)}
           >
             <div className="flex flex-col w-full truncate">
               <div className="flex justify-between text-foreground">
