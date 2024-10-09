@@ -1,4 +1,12 @@
-import { endOfMonth, format, formatDistanceToNow, getDate, getWeek, startOfMonth } from "date-fns"
+import {
+  differenceInWeeks,
+  endOfWeek,
+  format,
+  formatDistanceToNow,
+  startOfMonth,
+  startOfWeek,
+  getWeeksInMonth,
+} from "date-fns"
 
 export const getOrdinalSuffix = (day) => {
   if (day > 3 && day < 21) return "th"
@@ -47,30 +55,16 @@ export const fromNow = (date: Date | string): string => {
   })
 }
 
-export function getWeeksInMonth(date: Date): number {
-  const start = startOfMonth(date);
-  const end = endOfMonth(date);
-
-  const weeks: number[] = [];
-
-  let current = start;
-  while (current <= end) {
-    weeks.push(getWeek(current));
-    current.setDate(current.getDate() + 7);
-  }
-
-  return Math.max(...weeks);
-}
-
 export function getCurrentWeek(date: Date): number {
-  const firstDayOfMonth = startOfMonth(date);
-  const dayOfMonth = getDate(date);
-
-  const firstDayOfWeek = firstDayOfMonth.getDay();
-
-  const adjustedDate = dayOfMonth + firstDayOfWeek;
-
-  return Math.ceil(adjustedDate / 7);
+  const startOfCurrentMonth = startOfMonth(date)
+  const weekDiff = differenceInWeeks(date, startOfCurrentMonth)
+  return weekDiff + 1
 }
 
+export function getFormattedDateRange(date: Date): string {
+  const startOfCurrentWeek = startOfWeek(date, { weekStartsOn: 0 })
+  const endOfCurrentWeek = endOfWeek(date, { weekStartsOn: 0 })
+  return `${format(startOfCurrentWeek, "MMM d")} - ${format(endOfCurrentWeek, "MMM d")}`
+}
 
+export { getWeeksInMonth }

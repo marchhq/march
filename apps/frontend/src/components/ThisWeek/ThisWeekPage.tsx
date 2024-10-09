@@ -1,31 +1,31 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { ThisWeekArrows } from "./ThisWeekArrows";
-import { ThisWeekSection } from "./ThisWeekSection";
-import { addWeeks, startOfMonth } from "date-fns";
-import { getCurrentWeek, getWeeksInMonth } from "@/src/utils/datetime";
+import React, { useState } from "react"
+import { ThisWeekArrows } from "./ThisWeekArrows"
+import { ThisWeekSection } from "./ThisWeekSection"
+import { addWeeks } from "date-fns"
+import {
+  getCurrentWeek,
+  getFormattedDateRange,
+  getWeeksInMonth,
+} from "@/src/utils/datetime"
 
 export const ThisWeekPage: React.FC = () => {
-  const today = new Date();
-
-  const [currentDate, setCurrentDate] = useState(today);
-
-  const weekNumber = getCurrentWeek(currentDate);
-  const totalWeeks = getWeeksInMonth(currentDate);
+  const today = new Date()
+  const [currentDate, setCurrentDate] = useState(today)
+  const weekNumber = getCurrentWeek(currentDate)
+  const totalWeeks = getWeeksInMonth(currentDate)
+  const formattedDateRange = getFormattedDateRange(currentDate)
 
   const handleWeekChange = (direction: "left" | "right") => {
     setCurrentDate((prevDate) => {
-      const newDate = addWeeks(prevDate, direction === "left" ? -1 : 1);
-      const newWeekNumber = getCurrentWeek(newDate);
-
-      if (newWeekNumber < 1 || newWeekNumber > totalWeeks) {
-        return prevDate;
-      }
-
-      return newDate;
-    });
-  };
+      const newDate = addWeeks(prevDate, direction === "left" ? -1 : 1)
+      const newWeekNumber = getCurrentWeek(newDate)
+      return newWeekNumber >= 1 && newWeekNumber <= totalWeeks
+        ? newDate
+        : prevDate
+    })
+  }
 
   return (
     <div className="w-9/12 flex flex-col gap-8">
@@ -34,7 +34,7 @@ export const ThisWeekPage: React.FC = () => {
         <div className="flex gap-4">
           <p>0/6 completed</p>
           <p>0%</p>
-          <p>aug 19th - aug 26th</p>
+          <p>{formattedDateRange}</p>
         </div>
         <ThisWeekArrows onChangeWeek={handleWeekChange} />
       </div>
@@ -44,5 +44,5 @@ export const ThisWeekPage: React.FC = () => {
         <ThisWeekSection icon="material-symbols:circle" title="done" />
       </div>
     </div>
-  );
-};
+  )
+}
