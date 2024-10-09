@@ -1,9 +1,5 @@
-import TodayPage from "@/src/components/Today/TodayPage";
+import TodayPage from "@/src/components/Today/TodayPage"
 
 export default function Today() {
-  return (
-    <>
-      <TodayPage />
-    </>
-  )
+  return <TodayPage />
 }
