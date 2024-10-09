@@ -68,3 +68,9 @@ export function getFormattedDateRange(date: Date): string {
 }
 
 export { getWeeksInMonth }
+
+export function getTodayISODate(): string {
+  const today = new Date()
+  today.setUTCHours(0, 0, 0, 0)
+  return today.toISOString()
+}
