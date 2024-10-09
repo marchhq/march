@@ -1,12 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
-import { TodayTextArea } from "@/src/components/TodayTextArea"
-import { TodayMeetings } from "@/src/components/TodayMeetings"
+
 import { DateCycle } from "@/src/components/atoms/Date"
-import { TodayItems } from "@/src/components/TodayItems"
+import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { DatePicker } from "@/src/components/DatePicker"
+import { TodayItems } from "@/src/components/TodayItems"
+import { TodayMeetings } from "@/src/components/TodayMeetings"
+import { TodayTextArea } from "@/src/components/TodayTextArea"
 import usePersistedState from "@/src/hooks/usePersistedState"
 
 const TodayPage: React.FC = () => {

@@ -1,7 +1,9 @@
 "use client"
 
 import React, { useEffect, useState, useCallback } from "react"
+
 import { usePathname } from "next/navigation"
+
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"

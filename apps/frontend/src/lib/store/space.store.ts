@@ -1,8 +1,8 @@
 import axios from "axios"
 import { create } from "zustand"
 
-import { CreatePage, Page, SpaceStoreTypes } from "../@types/Items/space"
 import { BACKEND_URL } from "../constants/urls"
+import { Space, SpaceStoreTypes } from "@/src/lib/@types/Items/Space"
 
 // Utility function to create config with Authorization header
 const getConfig = (session: string) => ({
@@ -22,7 +22,7 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      const response = await axios.get<{ pages: Page[] }>(
+      const response = await axios.get<{ pages: Space[] }>(
         `${BACKEND_URL}/api/spaces/overview/`,
         config
       )
@@ -40,7 +40,7 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      const response = await axios.get<{ page: Page }>(
+      const response = await axios.get<{ page: Space }>(
         `${BACKEND_URL}/api/spaces/${id}`,
         config
       )
@@ -54,12 +54,12 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   },
 
   // Create a page
-  createPage: async (data: CreatePage, session: string) => {
+  createPage: async (data: Space, session: string) => {
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
       // Post request, sending `CreatePage`, receiving `Page`
-      const response = await axios.post<{ page: Page }>(
+      const response = await axios.post<{ page: Space }>(
         `${BACKEND_URL}/api/spaces/create/`,
         data,
         config
@@ -77,19 +77,19 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   },
 
   // Update an existing page
-  updatePage: async (uuid: string, data: Page, session: string) => {
+  updatePage: async (_id: string, data: Space, session: string) => {
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      const response = await axios.put<{ page: Page }>(
-        `${BACKEND_URL}/api/spaces/${uuid}`,
+      const response = await axios.put<{ page: Space }>(
+        `${BACKEND_URL}/api/spaces/${_id}`,
         data,
         config
       )
       const updatedPage = response.data.page
       set({
         pages: get().pages.map((page) =>
-          page.uuid === uuid ? updatedPage : page
+          page._id === _id ? updatedPage : page
         ),
         loading: false,
       })
@@ -102,7 +102,7 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   },
 
   // Set selected page in state
-  setSelectedPage: (page: Page | null) => {
+  setSelectedPage: (page: Space | null) => {
     set({ page })
   },
 }))
