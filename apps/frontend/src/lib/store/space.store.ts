@@ -1,8 +1,8 @@
 import axios from "axios"
 import { create } from "zustand"
 
-import { Space, SpaceStoreTypes } from "@/src/lib/@types/Items/Space"
 import { BACKEND_URL } from "../constants/urls"
+import { Space, SpaceStoreTypes } from "@/src/lib/@types/Items/Space"
 
 // Utility function to create config with Authorization header
 const getConfig = (session: string) => ({

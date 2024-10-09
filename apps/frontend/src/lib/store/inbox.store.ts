@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios"
 import { create } from "zustand"
 
+import { BACKEND_URL } from "../constants/urls"
 import {
   InboxItem,
   InboxItemCreateResponse,
@@ -8,8 +9,6 @@ import {
   OverdueInboxItem,
   TodayInboxItem,
 } from "@/src/lib/@types/Items/Inbox"
-
-import { BACKEND_URL } from "../constants/urls"
 
 const useInboxStore = create<InboxStoreType>((set) => ({
   inboxItems: [],
