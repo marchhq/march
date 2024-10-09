@@ -2,28 +2,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react"
 
-import { Icon } from "@iconify-icon/react"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
-
-const iconsMap = {
-  linear: "gg:linear",
-  githubIssue: "ri:github-fill",
-  githubPullRequest: "ri:git-pull-request-line",
-  march: "fluent:note-16-regular",
-  marchClipper: "material-symbols:circle-outline",
-  gmail: "bxl:gmail",
-  sms: "mdi:sms",
-  default: "fluent:note-16-regular",
-}
-
-const ItemIcon = ({ type }: { type: string }) => {
-  const icon = iconsMap[type] || iconsMap["default"]
-
-  return <Icon icon={icon} style={{ fontSize: "18px" }} className="mt-0.5" />
-}
+import { ItemIcon } from "../atoms/ItemIcon"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
