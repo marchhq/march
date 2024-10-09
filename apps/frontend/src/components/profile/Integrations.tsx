@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ChevronDown, ChevronRight } from "lucide-react";
-import {  IntegrationType, User } from '@/src/lib/@types/auth/user';
+import { IntegrationType, User } from '@/src/lib/@types/auth/user';
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar";
 import { Cal } from "@/src/lib/icons/Calendar";
 import { GithubDark } from "@/src/lib/icons/Github";
@@ -19,9 +19,9 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({ integration, connecte
       <div className="flex size-5 items-center justify-center">
         {integration.icon}
       </div>
-      <div className="max-w-lg">
-        <h4 className="font-medium">{integration.name}</h4>
-        <p className="text-sm text-secondary-foreground">
+      <div className="max-w-md">
+        <h4 className="font-medium text-[13px]">{integration.name}</h4>
+        <p className="text-[13px] text-secondary-foreground">
           {integration.description}
         </p>
       </div>
@@ -29,13 +29,13 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({ integration, connecte
     {connected ? (
       <button className="flex items-center text-secondary-foreground">
         <div className="mr-2 size-1.5 rounded-full bg-green-500"></div>
-        <span className="text-sm">Connected</span>
+        <span className="text-[13px]">Connected</span>
         <ChevronDown size={13} />
       </button>
     ) : (
       <button
         onClick={onConnect}
-        className="flex items-center text-sm text-primary-foreground bg-primary px-4 py-2 rounded-md"
+        className="flex items-center text-[13px] text-primary-foreground bg-primary px-4 py-2 rounded-md"
       >
         Connect
         <ChevronRight size={13} className="ml-1" />
@@ -96,8 +96,8 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
 
   return (
     <div className="mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-foreground">Integrations</h3>
-      <div className="space-y-4 -ml-8">
+      <h3 className="text-[16px] font-semibold mb-4 text-foreground/80">Integrations</h3>
+      <div className="space-y-1 -ml-9">
         {integrations.map((integration) => (
           <IntegrationItem
             key={integration.key}
