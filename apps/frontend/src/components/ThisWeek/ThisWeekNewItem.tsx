@@ -100,7 +100,6 @@ export const ThisWeekNewItem: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="title"
             className="w-full py-1 text-base font-bold resize-none overflow-hidden bg-transparent text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
-            autoFocus
             rows={1}
           />
           <textarea
