@@ -1,13 +1,13 @@
 export interface Meeting {
-  summary: string,
+  summary: string
   start: {
-    dateTime: string,
-    timeZone: string,
-  },
-  end: {
-    dateTime: string,
+    dateTime: string
     timeZone: string
-  },
+  }
+  end: {
+    dateTime: string
+    timeZone: string
+  }
   hangoutLink: string
 }
 
