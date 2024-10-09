@@ -1,9 +1,11 @@
 import React from "react"
-import { useAuth } from "@/src/contexts/AuthContext"
-import useReadingStore from "@/src/lib/store/reading.store"
+
 import { Icon } from "@iconify-icon/react"
-import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 import Image from "next/image"
+
+import { useAuth } from "@/src/contexts/AuthContext"
+import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
+import useReadingStore from "@/src/lib/store/reading.store"
 
 interface ItemsListProps {
   blockId: string | null
@@ -53,7 +55,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`flex items-center gap-2 ${url ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`flex items-center gap-2 ${url ? "cursor-pointer" : "cursor-default"}`}
               >
                 <h3 className="text-foreground font-semibold text-lg flex items-center flex-wrap">
                   <span className="break-all">{item.title}</span>

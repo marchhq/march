@@ -41,7 +41,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL("/", request.url))
   }
 
-  const response = NextResponse.redirect(new URL(res.isNewUser ? "/calendar" : "/today", request.url))
+  const response = NextResponse.redirect(
+    new URL(res.isNewUser ? "/calendar" : "/today", request.url)
+  )
 
   response.cookies.set(ACCESS_TOKEN, res.accessToken, {
     maxAge: 60 * 60 * 24 * 30, // 30 days
