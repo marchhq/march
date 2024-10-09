@@ -81,6 +81,10 @@ router.route("/items/overview/").get(getItemsController);
 router.route("/items/:item/").get(getItemController);
 router.route("/items/:item/").put(updateItemController);
 
+// item search controllers
+
+router.route("/items/search").get(getAllitemsController);
+
 // note controllers
 router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
