@@ -30,14 +30,6 @@ export const InboxAddItem: React.FC = () => {
     }
   }, [title])
 
-  useEffect(() => {
-    const textarea = textareaRefDescription.current
-    if (textarea) {
-      textarea.style.height = "auto"
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-  }, [description])
-
   const handleCloseAddItemToInbox = async () => {
     setAddingItem(false)
     setTitle("")
@@ -70,6 +62,14 @@ export const InboxAddItem: React.FC = () => {
     }
   }
 
+  const handleOnBlur = () => {
+    if (title) {
+      handleAddItemToInbox()
+    } else {
+      handleCloseAddItemToInbox()
+    }
+  }
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (addingItem) {
@@ -88,7 +88,7 @@ export const InboxAddItem: React.FC = () => {
     <div className="flex flex-col">
       {!addingItem ? (
         <button
-          className="p-4 border border-border rounded-lg hover-bg"
+          className="p-4 rounded-lg hover-bg"
           onClick={() => setAddingItem(true)}
         >
           <div className="flex items-center gap-2">
@@ -97,15 +97,7 @@ export const InboxAddItem: React.FC = () => {
           </div>
         </button>
       ) : (
-        <div>
-          <div className="flex justify-end gap-4 text-xs">
-            <button className="hover-text" onClick={handleAddItemToInbox}>
-              save
-            </button>
-            <button className="hover-text" onClick={handleCloseAddItemToInbox}>
-              close
-            </button>
-          </div>
+        <div onBlur={handleOnBlur} className="ml-4">
           <textarea
             ref={textareaRefTitle}
             value={title}
@@ -115,15 +107,6 @@ export const InboxAddItem: React.FC = () => {
             className="w-full py-2 text-xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
-            rows={1}
-          />
-          <textarea
-            ref={textareaRefDescription}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="description"
-            className="w-full py-2 text-sm resize-none overflow-hidden bg-background text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             rows={1}
           />
         </div>

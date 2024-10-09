@@ -8,7 +8,7 @@ export const InboxPage: React.FC = () => {
     <div className="h-full max-w-[800px]">
       <div className="flex flex-col h-full gap-8 text-sm">
         <header className="flex items-center gap-4 text-foreground">
-          <Icon icon="hugeicons:inbox" style={{ fontSize: "38px" }} />
+          <Icon icon="hugeicons:inbox" className="text-[38px]" />
           <h1 className="text-2xl font-semibold">Inbox</h1>
         </header>
         <div className="flex flex-col h-full pb-16 gap-4">

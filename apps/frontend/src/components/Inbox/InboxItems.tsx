@@ -136,7 +136,7 @@ export const InboxItems: React.FC = () => {
           <div
             key={item._id}
             className={classNames(
-              "flex justify-between text-left gap-1 p-4 border rounded-lg hover:border-border hover-bg group",
+              "flex justify-between text-left gap-1 p-4 border rounded-lg hover:border-border group",
               editItemId === item._id
                 ? "bg-background-hover border-border"
                 : "bg-transparent border-transparent"
