@@ -1,13 +1,14 @@
 "use client"
 import * as React from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { Calendar } from "./ui/calendar"
-import { TodayCal } from "../lib/icons/Calendar"
+
 import { DynamicDate } from "./atoms/DynamicDate"
+import { Calendar } from "./ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { TodayCal } from "../lib/icons/Calendar"
 
 interface Props {
   selectedDate: Date
-  onDateChange: (date: Date) => void;
+  onDateChange: (date: Date) => void
 }
 
 export function DatePicker({ selectedDate, onDateChange }: Props) {
