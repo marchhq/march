@@ -205,14 +205,6 @@ export const InboxItems: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex gap-4">
-                  {/*
-                  <button
-                    className="invisible group-hover:visible hover-text"
-                    onClick={() => handleDeleteItem(item._id || "")}
-                  >
-                    del
-                  </button>
-                  */}
                   <button className="invisible group-hover:visible hover-text">
                     <Icon
                       icon="humbleicons:clock"

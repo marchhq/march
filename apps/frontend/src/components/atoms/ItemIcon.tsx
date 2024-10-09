@@ -4,11 +4,11 @@ const iconsMap = {
   linear: "gg:linear",
   githubIssue: "ri:github-fill",
   githubPullRequest: "ri:git-pull-request-line",
-  march: "fluent:note-16-regular",
+  march: "material-symbols:circle-outline",
   marchClipper: "material-symbols:circle-outline",
   gmail: "bxl:gmail",
   sms: "mdi:sms",
-  default: "fluent:note-16-regular",
+  default: "material-symbols:circle-outline",
 }
 
 export const ItemIcon = ({ type }: { type: string }) => {
