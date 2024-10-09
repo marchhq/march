@@ -2,6 +2,7 @@ export interface InboxStoreType {
   inboxItems: InboxItem[]
   todayInboxItems: TodayInboxItem[]
   overdueInboxItems: OverdueInboxItem[]
+  isLoading: boolean
   isFetched: boolean
   setIsFetched: (isFetched: boolean) => void
   fetchInboxData: (session: string) => Promise<InboxItem[]>
@@ -17,15 +18,16 @@ export interface InboxStoreType {
     title: string,
     description: string
   ) => Promise<InboxItem | null>
+  deleteItem: (session: string, id: string) => void
   setTodayInboxItems: (todayInboxItems: TodayInboxItem[]) => void
   setOverdueInboxItems: (overdueInboxItems: OverdueInboxItem[]) => void
-  updateItem: (editedItem: InboxItem, id: string) => void
+  updateItem: (session: string, editedItem: InboxItem, id: string) => void
 }
 
 export interface InboxItem {
   uuid: string
   title?: string
-  type?: string
+  source?: string
   description?: string
   effort?: string
   dueDate?: Date
