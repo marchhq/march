@@ -1,11 +1,13 @@
 "use client"
 import { useEffect, useState, useCallback, useRef } from "react"
+
+import axios from "axios"
+
 import TextEditor from "./atoms/Editor"
+import { useAuth } from "../contexts/AuthContext"
 import useEditorHook from "../hooks/useEditor.hook"
 import { useJournal } from "../hooks/useJournal"
-import axios from "axios"
 import { BACKEND_URL } from "../lib/constants/urls"
-import { useAuth } from "../contexts/AuthContext"
 
 interface JournalProps {
   selectedDate: Date

@@ -110,6 +110,7 @@ export const InboxAddItem: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="title"
             className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             rows={1}
           />
