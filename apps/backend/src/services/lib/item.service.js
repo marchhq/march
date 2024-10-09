@@ -7,7 +7,8 @@ const getUserItems = async (me) => {
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
-        spaces: { $exists: true, $eq: [] }
+        spaces: { $exists: true, $eq: [] },
+        status: { $ne: "archive" }
     })
         .sort({ createdAt: -1 });
 
