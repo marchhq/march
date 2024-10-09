@@ -51,7 +51,36 @@ const AdminJWTMiddleware = async (req, res, next) => {
     }
 };
 
+const checkUserVerificationController = async (req, res, next) => {
+    try {
+        const { authorization: header } = req.headers;
+
+        if (!header || !header.startsWith('Bearer ')) {
+            return res.status(401).json({ message: "Authorization token missing or invalid", isValidUser: false });
+        }
+
+        const token = header.split(' ')[1];
+
+        const checkIfBlacklisted = await BlackList.findOne({ token });
+        if (checkIfBlacklisted) {
+            return res.status(401).json({ isValidUser: false });
+        }
+
+        const payload = await verifyJWTToken(token);
+        if (!payload) {
+            return res.status(401).json({ isValidUser: false });
+        }
+
+        return res.status(200).json({ isValidUser: true });
+    } catch (err) {
+        const error = new Error(err.message);
+        error.statusCode = 401;
+        next(error);
+    }
+};
+
 export {
     JWTMiddleware,
-    AdminJWTMiddleware
+    AdminJWTMiddleware,
+    checkUserVerificationController
 };
