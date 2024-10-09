@@ -5,8 +5,8 @@ import { InboxItems } from "@/src/components/Inbox/InboxItems"
 
 export const InboxPage: React.FC = () => {
   return (
-    <div className="h-full max-w-[800px]">
-      <div className="flex flex-col h-full gap-8 text-sm">
+    <div className="h-full flex gap-8">
+      <div className="flex flex-col w-full h-full max-w-[800px] gap-8 text-sm">
         <header className="flex items-center gap-4 text-foreground">
           <Icon icon="hugeicons:inbox" className="text-[38px]" />
           <h1 className="text-2xl font-semibold">Inbox</h1>
