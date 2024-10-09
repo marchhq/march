@@ -1,8 +1,8 @@
 import axios, { AxiosError } from "axios"
 import { create } from "zustand"
 
-import { User } from "@/src/lib/@types/auth/user"
 import { BACKEND_URL } from "../constants/urls"
+import { User } from "@/src/lib/@types/auth/user"
 
 interface UserStoreType {
   user: User | null
