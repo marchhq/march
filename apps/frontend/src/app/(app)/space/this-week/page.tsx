@@ -1,5 +1,13 @@
-const ThisWeekPage: React.FC = () => {
-  return <div className="text-gray-color p-16">this week page</div>
+import React from "react"
+
+import { ThisWeekPage } from "@/src/components/ThisWeek/ThisWeekPage"
+
+const ThisWeek: React.FC = () => {
+  return (
+    <div className="size-full overflow-auto bg-background p-16 text-secondary-foreground">
+      <ThisWeekPage />
+    </div>
+  )
 }
 
-export default ThisWeekPage
+export default ThisWeek

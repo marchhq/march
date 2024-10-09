@@ -1,20 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
-import { TodayTextArea } from "@/src/components/TodayTextArea"
-import { TodayMeetings } from "@/src/components/TodayMeetings"
+
 import { DateCycle } from "@/src/components/atoms/Date"
-import { TodayItems } from "@/src/components/TodayItems"
+import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { DatePicker } from "@/src/components/DatePicker"
+import { TodayItems } from "@/src/components/TodayItems"
+import { TodayMeetings } from "@/src/components/TodayMeetings"
+import { TodayTextArea } from "@/src/components/TodayTextArea"
 import usePersistedState from "@/src/hooks/usePersistedState"
 
 const TodayPage: React.FC = () => {
-  const [showAgenda, setShowAgenda] = usePersistedState('showAgenda', false);
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [showAgenda, setShowAgenda] = usePersistedState("showAgenda", false)
+  const [selectedDate, setSelectedDate] = React.useState(new Date())
 
   const handleToggleAgenda = () => {
-    setShowAgenda(!showAgenda);
+    setShowAgenda(!showAgenda)
   }
 
   return (
@@ -26,8 +27,14 @@ const TodayPage: React.FC = () => {
       <section className="mt-6 flex justify-between">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
-            <DatePicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
-            <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
+            <DatePicker
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+            />
+            <DateCycle
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+            />
           </header>
           <section className="mt-6 mb-4">
             <TodayTextArea selectedDate={selectedDate} />

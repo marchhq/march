@@ -24,9 +24,9 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
       <div className="flex size-5 items-center justify-center">
         {integration.icon}
       </div>
-      <div className="max-w-lg">
-        <h4 className="font-medium">{integration.name}</h4>
-        <p className="text-sm text-secondary-foreground">
+      <div className="max-w-md">
+        <h4 className="font-medium text-[13px]">{integration.name}</h4>
+        <p className="text-[13px] text-secondary-foreground">
           {integration.description}
         </p>
       </div>
@@ -34,13 +34,13 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
     {connected ? (
       <button className="flex items-center text-secondary-foreground">
         <div className="mr-2 size-1.5 rounded-full bg-green-500"></div>
-        <span className="text-sm">Connected</span>
+        <span className="text-[13px]">Connected</span>
         <ChevronDown size={13} />
       </button>
     ) : (
       <button
         onClick={onConnect}
-        className="flex items-center text-sm text-primary-foreground bg-primary px-4 py-2 rounded-md"
+        className="flex items-center text-[13px] text-primary-foreground bg-primary px-4 py-2 rounded-md"
       >
         Connect
         <ChevronRight size={13} className="ml-1" />
