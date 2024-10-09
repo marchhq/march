@@ -127,7 +127,7 @@ export const InboxItems: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col h-full gap-2 overflow-y-auto pr-1">
       {inboxItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
