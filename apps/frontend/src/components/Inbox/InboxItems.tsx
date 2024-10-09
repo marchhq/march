@@ -6,6 +6,7 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
 import { ItemIcon } from "../atoms/ItemIcon"
+import { Icon } from "@iconify-icon/react"
 import classNames from "@/src/utils/classNames"
 
 export const InboxItems: React.FC = () => {
@@ -135,89 +136,102 @@ export const InboxItems: React.FC = () => {
           <div
             key={item._id}
             className={classNames(
-              "flex flex-col text-left gap-1 p-4 border rounded-lg hover:border-border hover-bg group",
+              "flex justify-between text-left gap-1 p-4 border rounded-lg hover:border-border hover-bg group",
               editItemId === item._id
                 ? "bg-background-hover border-border"
                 : "bg-transparent border-transparent"
             )}
             onDoubleClick={() => handleEditItem(item)}
           >
-            <div className="flex justify-between text-foreground">
-              <div className="w-full flex items-start gap-2">
-                <ItemIcon type={item.source || "march"} />
-                {editItemId === item._id ? (
-                  <div className="w-full">
-                    <textarea
-                      ref={textareaRefTitle}
-                      value={editedItem.title}
-                      onChange={(e) =>
-                        setEditedItem((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                      onKeyDown={(e) => handleKeyDown(e, item)}
-                      placeholder="title"
-                      className="w-full resize-none overflow-hidden bg-transparent placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
-                      rows={1}
-                    />
-                  </div>
-                ) : (
-                  <p>{item.title}</p>
-                )}
+            <div className="flex flex-col w-full truncate">
+              <div className="flex justify-between text-foreground">
+                <div className="w-full flex items-start gap-2">
+                  <ItemIcon type={item.source || "march"} />
+                  {editItemId === item._id ? (
+                    <div className="w-full">
+                      <textarea
+                        ref={textareaRefTitle}
+                        value={editedItem.title}
+                        onChange={(e) =>
+                          setEditedItem((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
+                        onKeyDown={(e) => handleKeyDown(e, item)}
+                        placeholder="title"
+                        className="w-full resize-none overflow-hidden bg-transparent placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+                        rows={1}
+                      />
+                    </div>
+                  ) : (
+                    <p>{item.title}</p>
+                  )}
+                </div>
               </div>
-              <div className="text-secondary-foreground text-xs">
+              <div className="ml-[18px] pl-2 text-xs">
                 {editItemId === item._id ? (
-                  <div className="flex gap-4">
-                    <button
-                      className="hover-text"
-                      onClick={() => handleSaveEditedItem(item)}
-                    >
-                      save
-                    </button>
-                    <button
-                      className="hover-text"
-                      onClick={handleCancelEditItem}
-                    >
-                      cancel
-                    </button>
-                  </div>
+                  <textarea
+                    ref={textareaRefDescription}
+                    value={editedItem.description}
+                    onChange={(e) => {
+                      setEditedItem((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, item)}
+                    placeholder="description"
+                    className="w-full text-xs resize-none overflow-hidden bg-transparent text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+                    rows={1}
+                  />
                 ) : (
-                  <div className="flex gap-4">
-                    <button
-                      className="invisible group-hover:visible hover-text"
-                      onClick={() => handleEditItem(item)}
-                    >
-                      edit
-                    </button>
-                    <button
-                      className="invisible group-hover:visible hover-text"
-                      onClick={() => handleDeleteItem(item._id || "")}
-                    >
-                      del
-                    </button>
-                  </div>
+                  <p>{item.description}</p>
                 )}
               </div>
             </div>
-            <div className="ml-[18px] pl-2 text-xs">
+            <div className="flex items-center text-secondary-foreground text-xs">
               {editItemId === item._id ? (
-                <textarea
-                  ref={textareaRefDescription}
-                  value={editedItem.description}
-                  onChange={(e) => {
-                    setEditedItem((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }}
-                  onKeyDown={(e) => handleKeyDown(e, item)}
-                  placeholder="description"
-                  className="w-full text-xs resize-none overflow-hidden bg-transparent text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
-                  rows={1}
-                />
+                <div className="flex gap-4">
+                  <button
+                    className="hover-text"
+                    onClick={() => handleSaveEditedItem(item)}
+                  >
+                    save
+                  </button>
+                  <button className="hover-text" onClick={handleCancelEditItem}>
+                    cancel
+                  </button>
+                </div>
               ) : (
-                <p>{item.description}</p>
+                <div className="flex gap-4">
+                  {/*
+                  <button
+                    className="invisible group-hover:visible hover-text"
+                    onClick={() => handleDeleteItem(item._id || "")}
+                  >
+                    del
+                  </button>
+                  */}
+                  <button className="invisible group-hover:visible hover-text">
+                    <Icon
+                      icon="humbleicons:clock"
+                      className="mt-0.5 text-[18px]"
+                    />
+                  </button>
+                  <button className="invisible group-hover:visible hover-text">
+                    <Icon
+                      icon="mingcute:move-line"
+                      className="mt-0.5 text-[18px]"
+                    />
+                  </button>
+                  <button className="invisible group-hover:visible hover-text">
+                    <Icon
+                      icon="fluent:archive-24-regular"
+                      className="mt-0.5 text-[18px]"
+                    />
+                  </button>
+                </div>
               )}
             </div>
           </div>
