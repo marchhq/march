@@ -2,12 +2,14 @@ import * as React from "react"
 
 import { type Metadata } from "next"
 
+import Link from "next/link"
+
 import { GithubLogin } from "../components/atoms/GithubLogin"
 import GoogleLogin from "../components/atoms/GoogleLogin"
 import Line from "@/src/lib/icons/Line"
 import { LogoDark } from "@/src/lib/icons/Logo"
 import generateMetadata from "@/src/utils/seo"
-import Link from "next/link"
+
 
 export const metadata: Metadata = generateMetadata({
   path: "/",

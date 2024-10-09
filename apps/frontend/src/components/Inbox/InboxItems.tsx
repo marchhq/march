@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 
 import { Icon } from "@iconify-icon/react"
-import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 
 import { useAuth } from "@/src/contexts/AuthContext"
+import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
 
 const iconsMap = {

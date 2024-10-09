@@ -1,7 +1,7 @@
 import { Icon } from "@iconify-icon/react"
 
-import { InboxItems } from "@/src/components/Inbox/InboxItems"
 import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
+import { InboxItems } from "@/src/components/Inbox/InboxItems"
 
 export const InboxPage: React.FC = () => {
   return (

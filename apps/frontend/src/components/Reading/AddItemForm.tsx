@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react"
+
 import { useAuth } from "@/src/contexts/AuthContext"
 import useReadingStore from "@/src/lib/store/reading.store"
 
