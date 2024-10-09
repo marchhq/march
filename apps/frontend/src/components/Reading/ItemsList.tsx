@@ -1,9 +1,8 @@
-// ItemsList.tsx
 import React, { useEffect, useMemo, useCallback } from "react"
-import { useAuth } from "@/src/contexts/AuthContext"
-import useReadingStore from "@/src/lib/store/reading.store"
 import { Icon } from "@iconify-icon/react"
 import Image from "next/image"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useReadingStore from "@/src/lib/store/reading.store"
 import { ReadingItem, ReadingLabelName } from "@/src/lib/@types/Items/Reading"
 
 interface ItemsListProps {
