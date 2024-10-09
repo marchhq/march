@@ -1,42 +1,56 @@
-import axios from "axios"
-import { create } from "zustand"
+// reading.store.ts
+import axios from "axios";
+import { create } from "zustand";
 
-import { BACKEND_URL } from "../constants/urls"
-import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
-import { type Label } from "@/src/lib/@types/Labels"
+import { BACKEND_URL } from "../constants/urls";
+import { ReadingItem, ReadingLabel } from "../@types/Items/Reading";
 
-export interface ReadingStoreType {
-  readingItems: ReadingItem[]
-  isFetched: boolean
-  setIsFetched: (isFetched: boolean) => void
-  fetchReadingList: (session: string, blockId: string) => Promise<void>
-  setReadingItems: (items: ReadingItem[]) => void
+interface ReadingStoreType {
+  spaceId: string;
+  readingItems: ReadingItem[];
+  isFetched: boolean;
+  labels: ReadingLabel[];
+  setIsFetched: (isFetched: boolean) => void;
+  setReadingItems: (items: ReadingItem[]) => void;
+  setSpaceId: (spaceId: string) => void;
+  fetchReadingList: (session: string, blockId: string) => Promise<void>;
   addItem: (
     session: string,
     blockId: string,
     title: string,
     description?: string
-  ) => Promise<void>
+  ) => Promise<void>;
   deleteItem: (
     session: string,
     blockId: string,
     itemId: string
-  ) => Promise<void>
-  labels: Label[]
-  fetchLabels: (session: string, spaceId: string) => Promise<void>
+  ) => Promise<void>;
+  fetchLabels: (session: string) => Promise<void>;
+  updateItem: (
+    session: string,
+    itemId: string,
+    updatedItem: Partial<ReadingItem>
+  ) => Promise<void>;
 }
 
 const useReadingStore = create<ReadingStoreType>((set, get) => ({
+  // State Variables
+  spaceId: "",
   readingItems: [],
   isFetched: false,
+  labels: [],
 
-  setIsFetched: (isFetched: boolean) => set({ isFetched }),
+  // State Setters
+  setIsFetched: (isFetched) => set({ isFetched }),
+  setReadingItems: (items) => set({ readingItems: items }),
+  setSpaceId: (spaceId) => set({ spaceId }),
 
-  fetchReadingList: async (session: string, blockId: string) => {
+  // API Calls
+  fetchReadingList: async (session, blockId) => {
     if (!blockId) {
-      console.warn("fetchReadingList: No blockId provided")
-      set({ isFetched: true, readingItems: [] })
-      return
+      console.warn("fetchReadingList: No blockId provided");
+      set({ isFetched: true, readingItems: [] });
+      return;
     }
 
     try {
@@ -44,87 +58,102 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
         headers: {
           Authorization: `Bearer ${session}`,
         },
-      })
-      set({ readingItems: response.data.block.data.item, isFetched: true })
+      });
+      set({ readingItems: response.data.block.data.item, isFetched: true });
     } catch (error) {
-      console.error("Error fetching reading list:", error)
-      set({ isFetched: true, readingItems: [] })
+      console.error("Error fetching reading list:", error);
+      set({ isFetched: true, readingItems: [] });
     }
   },
 
-  setReadingItems: (items: ReadingItem[]) => set({ readingItems: items }),
-
-  addItem: async (
-    session: string,
-    blockId: string,
-    title: string,
-    description?: string
-  ) => {
-    const { readingItems } = get()
+  addItem: async (session, blockId, title, description = "") => {
+    const { readingItems } = get();
     try {
-      const itemData = { title, description: description || "" }
+      const itemData = { title, description };
 
       const createResponse = await axios.post(
         `${BACKEND_URL}/api/items/create/`,
         itemData,
         { headers: { Authorization: `Bearer ${session}` } }
-      )
+      );
 
-      const createdItem = createResponse.data.item
+      const createdItem = createResponse.data.item;
 
       const updatedItems = [
         ...readingItems.map((item) => item._id),
         createdItem._id,
-      ]
+      ];
       await axios.put(
         `${BACKEND_URL}/api/blocks/${blockId}`,
         { data: { item: updatedItems } },
         { headers: { Authorization: `Bearer ${session}` } }
-      )
+      );
 
       set((state) => ({
         readingItems: [...state.readingItems, createdItem],
-      }))
+      }));
     } catch (error) {
-      console.error("Error adding item:", error)
+      console.error("Error adding item:", error);
     }
   },
 
-  deleteItem: async (session: string, blockId: string, itemId: string) => {
-    const { readingItems } = get()
+  deleteItem: async (session, blockId, itemId) => {
+    const { readingItems } = get();
     try {
       const updatedItems = readingItems
         .filter((item) => item._id !== itemId)
-        .map((item) => item._id)
+        .map((item) => item._id);
       await axios.put(
         `${BACKEND_URL}/api/blocks/${blockId}`,
         { data: { item: updatedItems } },
         { headers: { Authorization: `Bearer ${session}` } }
-      )
+      );
 
       set((state) => ({
         readingItems: state.readingItems.filter((item) => item._id !== itemId),
-      }))
+      }));
     } catch (error) {
-      console.error("Error deleting item:", error)
+      console.error("Error deleting item:", error);
     }
   },
 
-  labels: [],
-
-  fetchLabels: async (session: string, spaceId: string) => {
+  fetchLabels: async (session) => {
+    const { spaceId } = get();
+    if (!spaceId) {
+      console.warn("fetchLabels: No spaceId set in store");
+      return;
+    }
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/spaces/${spaceId}/labels/`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
-      set({ labels: response.data.labels })
+      const response = await axios.get(
+        `${BACKEND_URL}/api/spaces/${spaceId}/labels/`,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      );
+      set({ labels: response.data.labels });
     } catch (error) {
-      console.error("Error fetching labels:", error)
-      set({ labels: [] })
+      console.error("Error fetching labels:", error);
+      set({ labels: [] });
     }
   },
-}))
 
-export default useReadingStore
+  updateItem: async (session, itemId, updatedItem) => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/items/${itemId}`, updatedItem, {
+        headers: { Authorization: `Bearer ${session}` },
+      });
+
+      set((state) => ({
+        readingItems: state.readingItems.map((item) =>
+          item._id === itemId ? { ...item, ...updatedItem } : item
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
+  },
+}));
+
+export default useReadingStore;

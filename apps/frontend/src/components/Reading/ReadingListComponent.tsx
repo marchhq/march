@@ -6,17 +6,20 @@ import { useSpace } from "@/src/hooks/useSpace"
 import useReadingStore from "@/src/lib/store/reading.store"
 import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import ReadingListSelect from "@/src/components/Reading/LabelSelect"
+import { ReadingLabelName } from "@/src/lib/@types/Items/Reading"
 
 const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
   const { spaces } = useSpace() || { spaces: [] }
-  const { fetchReadingList, fetchLabels, labels } = useReadingStore()
+  const { fetchReadingList, fetchLabels, setSpaceId } = useReadingStore()
 
   const [loading, setLoading] = useState(true)
   const [blockId, setBlockId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [selectedLabel, setSelectedLabel] = useState<string | null>(null)
+  const [selectedLabel, setSelectedLabel] = useState<ReadingLabelName | "all">(
+    "all"
+  )
 
   const loadReadingList = useCallback(async () => {
     setLoading(true)
@@ -28,7 +31,8 @@ const ReadingListComponent: React.FC = () => {
       if (readingListSpace) {
         const fetchedBlockId = readingListSpace.blocks[0]
         setBlockId(fetchedBlockId)
-        await fetchLabels(session, readingListSpace._id)
+        setSpaceId(readingListSpace._id)
+        await fetchLabels(session)
         await fetchReadingList(session, fetchedBlockId)
       }
     } catch (err) {
@@ -36,18 +40,13 @@ const ReadingListComponent: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [spaces, session, fetchReadingList, fetchLabels])
+  }, [spaces, session, fetchReadingList, fetchLabels, setSpaceId])
 
   useEffect(() => {
     if (spaces.length > 0 && !blockId) {
       loadReadingList()
     }
   }, [spaces, blockId, loadReadingList])
-
-  const handleLabelChange = (value: string) => {
-    setSelectedLabel(value)
-    // You can add filtering logic here based on the selected label
-  }
 
   if (loading) {
     return (
@@ -64,26 +63,18 @@ const ReadingListComponent: React.FC = () => {
   return (
     <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
-        {blockId && (
-          <div className="flex flex-col gap-8 text-base w-3/5 ml-[10%] mt-32">
-            <div className="flex justify-between items-center mb-4">
-              <Select onValueChange={handleLabelChange}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a label" />
-                </SelectTrigger>
-                <SelectContent>
-                  {labels.map((label) => (
-                    <SelectItem key={label._id} value={label._id}>
-                      {label.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <AddItemForm blockId={blockId} />
-            <ItemsList blockId={blockId} />
-          </div>
-        )}
+        <div className="relative flex flex-col gap-8 text-base w-3/5 ml-[10%] mt-32">
+          <ReadingListSelect
+            selectedLabel={selectedLabel}
+            setSelectedLabel={setSelectedLabel}
+          />
+          {blockId && (
+            <>
+              <AddItemForm blockId={blockId} />
+              <ItemsList blockId={blockId} selectedLabel={selectedLabel} />
+            </>
+          )}
+        </div>
       </div>
     </section>
   )
