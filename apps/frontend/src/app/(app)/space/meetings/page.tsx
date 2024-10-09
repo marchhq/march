@@ -1,19 +1,25 @@
 "use client"
+import { useState } from "react"
+
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
+
 import TextEditor from "@/src/components/atoms/Editor"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Link } from "@/src/lib/icons/Link"
 import classNames from "@/src/utils/classNames"
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
-import { useState } from "react"
-
 
 const MeetingPage: React.FC = () => {
-
   const [content, setContent] = useState("<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const [closeToggle, setCloseToggle] = useState(false)
   const handleClose = () => setCloseToggle(!closeToggle)
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      handleClose()
+    }
+  }
 
   return (
     <main className="p-16 h-full text-gray-color flex justify-between">
@@ -40,15 +46,19 @@ const MeetingPage: React.FC = () => {
       </section>
       <section className="max-w-[200px] text-sm w-full text-secondary-foreground">
         <span
+          role="button"
+          tabIndex={0}
           onClick={handleClose}
-          className="hover:text-foreground cursor-pointer">stack</span>
-        <div className={classNames(
-          closeToggle ? "hidden" : "visible", "mt-4"
-        )}>
+          onKeyDown={handleKeyDown}
+          className="hover:text-foreground cursor-pointer"
+        >
+          stack
+        </span>
+        <div className={classNames(closeToggle ? "hidden" : "visible", "mt-4")}>
           march stand up
         </div>
       </section>
-    </main >
+    </main>
   )
 }
 

@@ -1,20 +1,21 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+
 import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 async function verifyToken(token: string): Promise<boolean> {
   try {
     const response = await fetch(`${BACKEND_URL}/auth/user-verification/`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
     const data = await response.json()
     return data.isValidUser
   } catch (error) {
-    console.error('Token verification failed:', error)
+    console.error("Token verification failed:", error)
     return false
   }
 }
@@ -24,13 +25,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const path = request.nextUrl.pathname
 
   // Public paths that don't require authentication, can be updated later
-  const publicPaths = ['/', '/login', '/register']
+  const publicPaths = ["/", "/login", "/register"]
 
   if (publicPaths.includes(path)) {
     // If the user has a token and trying to access a public route
     if (token) {
       const isValidToken = await verifyToken(token)
-      if (isValidToken && path === '/') {
+      if (isValidToken && path === "/") {
         return NextResponse.redirect(new URL("/today", request.url))
       }
     }
