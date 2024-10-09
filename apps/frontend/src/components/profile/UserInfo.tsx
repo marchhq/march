@@ -27,16 +27,16 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   return (
     <div className="flex flex-col mb-8">
       {user.avatar && (
-        <img 
-          src={user.avatar} 
-          alt={`${user.fullName}'s Avatar`} 
-          className="w-12 h-12 rounded-full mb-4 border-2 border-secondary-foreground" 
+        <img
+          src={user.avatar}
+          alt={`${user.fullName}'s Avatar`}
+          className="w-8 h-8 rounded-full mb-4 border-2 border-secondary-foreground"
         />
       )}
-      <h2 className="text-xl font-semibold text-foreground mb-1">{user.fullName || 'Anonymous User'}</h2>
-      <p className="text-sm text-secondary-foreground mb-4">{email}</p>
+      <h2 className="text-[16px] font-semibold text-foreground mb-1">{user.fullName || 'Anonymous User'}</h2>
+      <p className="text-xs text-secondary-foreground mb-4">{email}</p>
       <div className="flex items-center text-md text-secondary-foreground">
-        <span className="mr-2">Logged in with {authMethod}</span>
+        <span className="mr-2 text-[13px]">Logged in with {authMethod}</span>
         {icon}
       </div>
     </div>
