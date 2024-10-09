@@ -2,6 +2,7 @@ import { Icon } from "@iconify-icon/react"
 
 import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
 import { InboxItems } from "@/src/components/Inbox/InboxItems"
+import { InboxExpandedItem } from "@/src/components/Inbox/InboxExpandedItem"
 
 export const InboxPage: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ export const InboxPage: React.FC = () => {
           <InboxItems />
         </div>
       </div>
+      <InboxExpandedItem />
     </div>
   )
 }
