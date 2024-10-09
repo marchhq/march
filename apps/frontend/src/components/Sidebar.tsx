@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react"
 import { Icon } from "@iconify-icon/react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import Image from "next/image"
 
 import FeedbackModal from "./FeedbackModal/FeedbackModal"
 import { useAuth } from "../contexts/AuthContext"
@@ -137,6 +137,7 @@ const Sidebar: React.FC = () => {
               <SidebarLink
                 href={"/profile"}
                 icon={
+                  // eslint-disable-next-line react/jsx-no-useless-fragment
                   <>
                     {data?.avatar ? (
                       <Image
