@@ -1,12 +1,5 @@
 import { Router } from "express";
-import {
-    getUserItemsController,
-    getUserTodayItemsController,
-    getUserOverdueItemsController,
-    getUserItemsByDateControlle,
-    moveItemtoDateController,
-    getAllitemsController
-} from "../../controllers/core/user.controller.js";
+
 import {
     createSpaceController,
     getSpacesController,
@@ -14,19 +7,13 @@ import {
     updateSpaceController,
     getSpaceByNameController
 } from "../../controllers/lib/space.controller.js";
-import {
-    createUpdateJournalController,
-    getUserTodayJournalController,
-    getUserAllJournalsController,
-    getUserJournalByDateController
-} from "../../controllers/lib/journal.controller.js";
+
 import {
     createItemController,
-    getItemsController,
+    getAllItemsByBloackController,
     updateItemController,
     getItemController,
-    getItemFilterByLabelController,
-    searchItemsByTitleController
+    getItemFilterByLabelController
 } from "../../controllers/lib/item.controller.js";
 import {
     getNotesController,
@@ -49,53 +36,35 @@ import {
     recentUpcomingMeetingController
 } from "../../controllers/page/meeting.controller.js";
 import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController, getLabelsBySpaceController } from "../../controllers/lib/label.controller.js";
-import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
-import { upload } from "../../loaders/s3.loader.js";
-import { feedbackController } from "../../controllers/lib/feedback.controller.js";
-import { linkPreviewGeneratorController } from "../../controllers/lib/linkPreview.controller.js";
 
 const router = Router();
 
-// inbox
-router.route("/my/").get(getUserItemsController);
-router.route("/my/today/").get(getUserTodayItemsController);
-router.route("/my/overdue/").get(getUserOverdueItemsController);
-router.route("/my/:date/").get(getUserItemsByDateControlle);
-router.route("/setDate/").post(moveItemtoDateController);
-
 // space controllers
-router.route("/spaces/create/").post(createSpaceController);
-router.route("/spaces/overview/").get(getSpacesController);
-router.route("/spaces/:space/").get(getSpaceController);
-router.route("/spaces/:space/").put(updateSpaceController);
-router.route("/spaces/name/:space").get(getSpaceByNameController);
+router.route("/").post(createSpaceController);
+router.route("/").get(getSpacesController);
+router.route("/:space/").get(getSpaceController);
+router.route("/:space/").put(updateSpaceController);
+router.route("/name/:space").get(getSpaceByNameController);
 
-// journal controllers
-router.route("/journals/create-update/").post(createUpdateJournalController);
-router.route("/journals/today/").get(getUserTodayJournalController);
-router.route("/journals/overview/").get(getUserAllJournalsController);
-router.route("/journals/:date/").get(getUserJournalByDateController);
+// Block controllers
+router.route("/:space/blocks/").post(createBlockController);
+router.route("/:space/blocks/").get(getBlocksController);
+router.route("/:space/blocks/:block/").get(getBlockController);
+router.route("/:space/blocks/:block/").put(updateBlockController);
+router.route("/:space/blocks/:block/").delete(deleteBlockController);
 
 // item controllers
-router.route("/items/").get(getAllitemsController);
-router.route("/items/create/").post(createItemController);
+router.route("/:space/blocks/:block/items/").post(createItemController);
+// todo: take a look here
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
-router.route("/items/search/").get(searchItemsByTitleController);
 
-router.route("/items/overview/").get(getItemsController);
-router.route("/items/:item/").get(getItemController);
-router.route("/items/:item/").put(updateItemController);
+router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
+router.route("/:space/blocks/:block/items/:item/").get(getItemController);
+router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
 
 // note controllers
 router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
-
-// Block controllers
-router.route("/blocks/create/").post(createBlockController);
-router.route("/blocks/overview/").get(getBlocksController);
-router.route("/blocks/:block/").get(getBlockController);
-router.route("/blocks/:block/").put(updateBlockController);
-router.route("/blocks/:block/").delete(deleteBlockController);
 
 // Meeting controllers
 router.route("/meetings/overview/").get(getMeetingsController);
@@ -105,23 +74,12 @@ router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
 
-// Labels controller
+// Labels controller left with this
 router.route("/labels/create/").post(createLabelController)
 router.route("/labels/overview/").get(getLabelsController)
 router.route("/labels/:label/").get(getLabelController)
 router.route("/labels/:label/").put(updateLabelController)
 router.route("/labels/:label/").delete(deleteLabelController)
 router.route("/spaces/:space/labels/").get(getLabelsBySpaceController)
-
-// File Asset controllers
-router
-    .route("/file-assets/upload/")
-    .post(upload.single("file"), uploadFileController);
-
-// Feedback controller
-router.route("/feedback/").post(feedbackController);
-
-// Link preview controller
-router.route("/get-link-preview/").post(linkPreviewGeneratorController);
 
 export default router;
