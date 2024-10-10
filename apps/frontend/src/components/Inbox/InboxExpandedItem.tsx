@@ -7,6 +7,8 @@ import { Icon } from "@iconify-icon/react"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
 
+import { formatDateYear, fromNow } from "@/src/utils/datetime"
+
 export const InboxExpandedItem: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
@@ -95,11 +97,14 @@ export const InboxExpandedItem: React.FC = () => {
     <>
       {selectedItem && (
         <div className="flex flex-col w-1/2 h-full gap-4 text-foreground border-l border-border p-4">
-          <div className="flex items-center gap-4 text-sm text-secondary-foreground">
+          <div className="flex items-center gap-4 text-xs text-secondary-foreground">
             <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
             </button>
-            <p className="flex items-center">09/10/2024</p>
+            <p className="flex items-center">
+              {formatDateYear(selectedItem.createdAt || "")}
+            </p>
+            <p>edited {fromNow(selectedItem.updatedAt || "")}</p>
           </div>
           <div>
             <textarea
