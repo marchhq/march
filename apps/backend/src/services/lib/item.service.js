@@ -140,12 +140,6 @@ const getItems = async (user, filters, sortOptions) => {
         }
     }
 
-    // effort filter
-    if (filters.effort) {
-        const effortFilters = filters.effort.split(',');
-        query.effort = { $in: effortFilters };
-    }
-
     // sorting
     if (sortOptions) {
         const sortParams = sortOptions.split(',');

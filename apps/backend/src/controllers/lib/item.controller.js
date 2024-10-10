@@ -63,8 +63,7 @@ const getItemsController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const filters = {
-            dueDate: req.query.dueDate,
-            effort: req.query.effort
+            dueDate: req.query.dueDate
         };
         const sortOptions = req.query.sort;
 
