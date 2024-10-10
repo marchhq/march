@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, getItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -74,7 +74,7 @@ const updateItemController = async (req, res, next) => {
     }
 };
 
-const getItemsController = async (req, res, next) => {
+const filterItemsController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const filters = {
@@ -82,7 +82,7 @@ const getItemsController = async (req, res, next) => {
         };
         const sortOptions = req.query.sort;
 
-        const items = await getItems(user, filters, sortOptions);
+        const items = await filterItems(user, filters, sortOptions);
 
         res.status(200).json({
             items
@@ -148,7 +148,7 @@ const searchItemsByTitleController = async (req, res, next) => {
 
 export {
     createItemController,
-    getItemsController,
+    filterItemsController,
     updateItemController,
     getItemController,
     getItemFilterByLabelController,
