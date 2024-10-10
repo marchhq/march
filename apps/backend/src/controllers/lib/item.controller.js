@@ -10,6 +10,7 @@ const extractUrl = (text) => {
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
+        const { space, block } = req.params;
 
         const requestedData = req.body;
         const { title } = requestedData;
@@ -26,15 +27,15 @@ const createItemController = async (req, res, next) => {
             console.log("title: ", title);
             console.log("favicon: ", favicon);
             const requestedData = {
-                title: title,
+                title,
                 metadata: {
                     url: urlInTitle,
-                    favicon: favicon
+                    favicon
                 }
             }
-            item = await createItem(user, requestedData);
+            item = await createItem(user, requestedData, space, block);
         } else {
-            item = await createItem(user, requestedData);
+            item = await createItem(user, requestedData, space, block);
         }
 
         res.status(200).json({

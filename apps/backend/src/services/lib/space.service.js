@@ -44,13 +44,7 @@ const getSpaceByName = async (user, name) => {
         users: { $in: [user] },
         isArchived: false,
         isDeleted: false
-    }).populate({
-        path: 'blocks',
-        populate: {
-            path: 'data.item', // Assuming 'data.item' is the field you want to populate
-            model: 'Item' // The model for the item
-        }
-    });
+    })
 
     return space;
 };

@@ -62,10 +62,12 @@ const getUserItemsByDate = async (me, date) => {
     return items;
 }
 
-const createItem = async (user, itemData) => {
+const createItem = async (user, itemData, space, block) => {
     const newItem = new Item({
         ...itemData,
-        user
+        user,
+        spaces: [space],
+        blocks: [block]
     });
     if (!newItem) {
         const error = new Error("Failed to create the item")
