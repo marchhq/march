@@ -201,10 +201,11 @@ const getItemFilterByLabel = async (labelId, userId) => {
     return items;
 };
 
-const searchItemsByTitle = async (title) => {
+const searchItemsByTitle = async (title, user) => {
     const items = await Item.find({
         title: { $regex: title, $options: 'i' },
-        isDeleted: false
+        isDeleted: false,
+        user
     }).exec();
 
     return items;
