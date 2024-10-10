@@ -81,6 +81,22 @@ const createItem = async (user, itemData, space, block) => {
     return item;
 };
 
+const createInboxItem = async (user, itemData) => {
+    const newItem = new Item({
+        ...itemData,
+        user
+    });
+    if (!newItem) {
+        const error = new Error("Failed to create the item")
+        error.statusCode = 500
+        throw error
+    }
+
+    const item = await newItem.save()
+
+    return item;
+};
+
 const getItems = async (user, filters, sortOptions) => {
     const query = {
         user,
@@ -241,5 +257,6 @@ export {
     getAllitems,
     getItemFilterByLabel,
     getAllItemsByBloack,
-    searchItemsByTitle
+    searchItemsByTitle,
+    createInboxItem
 }
