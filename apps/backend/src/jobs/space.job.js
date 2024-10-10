@@ -7,10 +7,10 @@ import { createLabels } from '../services/lib/label.service.js';
 const processSpaceJob = async (job) => {
     const { user } = job.data;
     const blocks = [
-        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] }, item: [] } },
-        { name: "Meetings", data: { type: "meeting", item: [] } },
-        { name: "Notes", data: { type: "note", item: [] } },
-        { name: "Reading List", data: { type: "reading", item: [] } }
+        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
+        { name: "Meetings", data: { type: "meeting" } },
+        { name: "Notes", data: { type: "note" } },
+        { name: "Reading List", data: { type: "reading" } }
     ];
 
     try {
