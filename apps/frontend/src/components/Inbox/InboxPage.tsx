@@ -3,9 +3,8 @@
 import { Icon } from "@iconify-icon/react"
 
 import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
-import { InboxItems } from "@/src/components/Inbox/InboxItems"
 import { InboxExpandedItem } from "@/src/components/Inbox/InboxExpandedItem"
-
+import { InboxItems } from "@/src/components/Inbox/InboxItems"
 import useInboxStore from "@/src/lib/store/inbox.store"
 import classNames from "@/src/utils/classNames"
 

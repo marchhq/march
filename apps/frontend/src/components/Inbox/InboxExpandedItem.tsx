@@ -6,7 +6,6 @@ import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
-
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const InboxExpandedItem: React.FC = () => {
@@ -94,7 +93,7 @@ export const InboxExpandedItem: React.FC = () => {
   }
 
   return (
-    <>
+    <div>
       {selectedItem && (
         <div className="flex flex-col w-1/2 h-full gap-4 text-foreground border-l border-border p-4">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
@@ -137,6 +136,6 @@ export const InboxExpandedItem: React.FC = () => {
           <div className="w-full h-full"></div>
         </div>
       )}
-    </>
+    </div>
   )
 }

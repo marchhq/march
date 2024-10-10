@@ -2,11 +2,11 @@
 
 import React, { useEffect, useCallback } from "react"
 
-import { ItemIcon } from "../atoms/ItemIcon"
-import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import { Icon } from "@iconify-icon/react"
 
+import { ItemIcon } from "@/src/components/atoms/ItemIcon"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
 
 export const InboxItems: React.FC = () => {
