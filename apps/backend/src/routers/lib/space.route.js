@@ -72,7 +72,6 @@ router.route("/name/:space").get(getSpaceByNameController);
 
 // Block controllers
 router.route("/:space/blocks/create/").post(createBlockController);
-// /:workspace/spaces/
 router.route("/blocks/overview/").get(getBlocksController);
 router.route("/blocks/:block/").get(getBlockController);
 router.route("/blocks/:block/").put(updateBlockController);
