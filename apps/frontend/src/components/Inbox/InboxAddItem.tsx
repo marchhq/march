@@ -12,7 +12,6 @@ export const InboxAddItem: React.FC = () => {
 
   const [addingItem, setAddingItem] = useState(false)
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
-  const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [date, setDate] = React.useState<Date | undefined>(new Date())
