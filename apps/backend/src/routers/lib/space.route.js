@@ -40,15 +40,15 @@ import { createLabelController, getLabelsController, getLabelController, updateL
 const router = Router();
 
 // space controllers
-router.route("/create/").post(createSpaceController);
-router.route("/overview/").get(getSpacesController);
+router.route("/").post(createSpaceController);
+router.route("/").get(getSpacesController);
 router.route("/:space/").get(getSpaceController);
 router.route("/:space/").put(updateSpaceController);
 router.route("/name/:space").get(getSpaceByNameController);
 
 // Block controllers
-router.route("/:space/blocks/create/").post(createBlockController);
-router.route("/:space/blocks/overview/").get(getBlocksController);
+router.route("/:space/blocks/").post(createBlockController);
+router.route("/:space/blocks/").get(getBlocksController);
 router.route("/:space/blocks/:block/").get(getBlockController);
 router.route("/:space/blocks/:block/").put(updateBlockController);
 router.route("/:space/blocks/:block/").delete(deleteBlockController);
@@ -74,7 +74,7 @@ router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
 
-// Labels controller
+// Labels controller left with this
 router.route("/labels/create/").post(createLabelController)
 router.route("/labels/overview/").get(getLabelsController)
 router.route("/labels/:label/").get(getLabelController)

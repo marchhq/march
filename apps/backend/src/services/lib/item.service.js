@@ -1,14 +1,15 @@
 import { Item } from "../../models/lib/item.model.js";
 import moment from 'moment-timezone';
 
-const getUserItems = async (me) => {
+const getInboxItems = async (me) => {
     const items = await Item.find({
         user: me,
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        status: { $ne: "archive" }
+        status: { $ne: "archive" },
+        dueDate: null
     })
         .sort({ createdAt: -1 });
 
@@ -218,7 +219,7 @@ const searchItemsByTitle = async (title, user) => {
 };
 
 export {
-    getUserItems,
+    getInboxItems,
     createItem,
     getItems,
     updateItem,
