@@ -97,7 +97,7 @@ const createInboxItem = async (user, itemData) => {
     return item;
 };
 
-const getItems = async (user, filters, sortOptions) => {
+const filterItems = async (user, filters, sortOptions) => {
     const query = {
         user,
         isArchived: false,
@@ -247,7 +247,7 @@ const searchItemsByTitle = async (title, user) => {
 export {
     getInboxItems,
     createItem,
-    getItems,
+    filterItems,
     updateItem,
     getItem,
     getUserOverdueItems,
