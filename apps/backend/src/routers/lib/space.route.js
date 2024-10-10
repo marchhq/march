@@ -63,6 +63,12 @@ router.route("/my/overdue/").get(getUserOverdueItemsController);
 router.route("/my/:date/").get(getUserItemsByDateControlle);
 router.route("/setDate/").post(moveItemtoDateController);
 
+// journal controllers
+router.route("/journals/create-update/").post(createUpdateJournalController);
+router.route("/journals/today/").get(getUserTodayJournalController);
+router.route("/journals/overview/").get(getUserAllJournalsController);
+router.route("/journals/:date/").get(getUserJournalByDateController);
+
 // space controllers
 router.route("/create/").post(createSpaceController);
 router.route("/overview/").get(getSpacesController);
@@ -77,15 +83,9 @@ router.route("/:space/blocks/:block/").get(getBlockController);
 router.route("/:space/blocks/:block/").put(updateBlockController);
 router.route("/:space/blocks/:block/").delete(deleteBlockController);
 
-// journal controllers
-router.route("/journals/create-update/").post(createUpdateJournalController);
-router.route("/journals/today/").get(getUserTodayJournalController);
-router.route("/journals/overview/").get(getUserAllJournalsController);
-router.route("/journals/:date/").get(getUserJournalByDateController);
-
 // item controllers
 router.route("/items/").get(getAllitemsController);
-router.route("/items/create/").post(createItemController);
+router.route("/:space/blocks/:block/items/create/").post(createItemController);
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
 router.route("/items/search/").get(searchItemsByTitleController);
 
