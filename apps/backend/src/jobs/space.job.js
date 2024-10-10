@@ -25,7 +25,6 @@ const processSpaceJob = async (job) => {
                 readingSpace = space;
             }
         }
-        console.log("spaceIds: ", spaceIds);
 
         const blocks = [
             { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
