@@ -2,7 +2,6 @@ import { create } from "zustand"
 import { type Item } from "../@types/Items/Items"
 import axios, { AxiosError } from "axios"
 import { BACKEND_URL } from "../constants/urls"
-import { getTodayISODate } from "@/src/utils/datetime"
 
 export interface ItemStoreType {
   items: Item[]
@@ -14,6 +13,7 @@ export interface ItemStoreType {
     session: string,
     dueDate: string,
     title: string,
+    status: string,
     description?: string
   ) => Promise<void>
   mutateItem: (
@@ -50,13 +50,15 @@ const useItemsStore = create<ItemStoreType>((set) => ({
     session: string,
     dueDate: string,
     title: string,
+    status: string,
     description?: string
   ) => {
     try {
       const itemData = {
         title,
         description,
-        dueDate: dueDate || getTodayISODate(),
+        status,
+        dueDate,
       }
       const createResponse = await axios.post(
         `${BACKEND_URL}/api/items/create/`,
@@ -71,6 +73,7 @@ const useItemsStore = create<ItemStoreType>((set) => ({
       set((state) => ({
         items: [...state.items, createdItem],
       }))
+      return createdItem
     } catch (error) {
       console.error("Error adding item:", error)
       if (error instanceof AxiosError) {

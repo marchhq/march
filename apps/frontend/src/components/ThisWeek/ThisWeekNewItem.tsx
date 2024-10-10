@@ -1,17 +1,16 @@
-"use client"
-
 import React, { useState, useEffect, useRef } from "react"
-
 import { Icon } from "@iconify-icon/react"
-
-import useInboxStore from "@/src/lib/store/inbox.store"
+import useItemsStore, { ItemStoreType } from "@/src/lib/store/items.store"
+import { useAuth } from "@/src/contexts/AuthContext"
+import { getTodayISODate } from "@/src/utils/datetime"
 
 export const ThisWeekNewItem: React.FC = () => {
+  const { session } = useAuth()
+  const addItem = useItemsStore((state: ItemStoreType) => state.addItem)
   const [addingItem, setAddingItem] = useState(false)
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
-  const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
+  const addItemDivRef = useRef<HTMLDivElement>(null)
   const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -21,58 +20,59 @@ export const ThisWeekNewItem: React.FC = () => {
     }
   }, [title])
 
-  useEffect(() => {
-    const textarea = textareaRefDescription.current
-    if (textarea) {
-      textarea.style.height = "auto"
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-  }, [description])
-
-  const handleCloseAddItemToInbox = async () => {
+  const handleCloseAddItemToInbox = () => {
     setAddingItem(false)
     setTitle("")
-    setDescription("")
   }
 
   const handleAddItemToInbox = async () => {
-    /*if (!session) {
+    if (!session) {
       console.error("user is not authenticated")
       return
     }
-    */
-    /*try {
-      const newItem = await addItem(session, title, description)
-
-      if (newItem) {
-        setAddingItem(false)
-        setTitle("")
-        setDescription("")
-        console.log("item added")
-        console.log("title", title)
-        console.log("description", description)
-        console.log("dueDate", date)
-        console.log("pages", selectedPages)
-      }
+    if (!title.trim()) {
+      handleCloseAddItemToInbox()
+      return
+    }
+    try {
+      const dueDate = getTodayISODate()
+      const status = "todo"
+      await addItem(session, dueDate, title, status)
+      setAddingItem(false)
+      setTitle("")
     } catch (error) {
       console.error("error adding item to inbox:", error)
     }
-    */
   }
 
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (addingItem) {
-        e.preventDefault()
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        addingItem &&
+        addItemDivRef.current &&
+        !addItemDivRef.current.contains(event.target as Node)
+      ) {
+        handleAddItemToInbox()
       }
     }
 
-    window.addEventListener("beforeunload", handleBeforeUnload)
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [addingItem, title])
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (addingItem && title.trim()) {
+        e.preventDefault()
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload)
     }
-  }, [addingItem])
+  }, [addingItem, title])
 
   return (
     <div className="invisible flex flex-col text-left text-sm gap-1 rounded-lg hover-bg group-hover/section:visible">
@@ -85,15 +85,7 @@ export const ThisWeekNewItem: React.FC = () => {
           <p>New item</p>
         </button>
       ) : (
-        <div className="p-4">
-          <div className="flex justify-end gap-4 text-xs">
-            <button className="hover-text" onClick={handleAddItemToInbox}>
-              save
-            </button>
-            <button className="hover-text" onClick={handleCloseAddItemToInbox}>
-              close
-            </button>
-          </div>
+        <div ref={addItemDivRef} className="p-4">
           <textarea
             ref={textareaRefTitle}
             value={title}
@@ -101,14 +93,6 @@ export const ThisWeekNewItem: React.FC = () => {
             placeholder="title"
             className="w-full py-1 text-base font-bold resize-none overflow-hidden bg-transparent text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             autoFocus
-            rows={1}
-          />
-          <textarea
-            ref={textareaRefDescription}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="description"
-            className="w-full py-1 text-xs resize-none overflow-hidden bg-transparent text-secondary-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
             rows={1}
           />
         </div>
