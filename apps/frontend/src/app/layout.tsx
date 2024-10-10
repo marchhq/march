@@ -6,6 +6,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
 import "../styles/main.css"
+import "../styles/tiptap.css"
 import classNames from "@/src/utils/classNames"
 
 const sansFont = Inter({
