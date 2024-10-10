@@ -194,11 +194,21 @@ const moveItemtoDate = async (date, id) => {
 
     return item;
 };
+
 const getItemFilterByLabel = async (labelId, userId) => {
     const items = await Item.find({
         labels: { $in: [labelId] },
         user: userId
     })
+
+    return items;
+};
+
+const searchItemsByTitle = async (title) => {
+    const items = await Item.find({
+        title: { $regex: title, $options: 'i' },
+        isDeleted: false
+    }).exec();
 
     return items;
 };
@@ -214,5 +224,6 @@ export {
     moveItemtoDate,
     getUserTodayItems,
     getAllitems,
-    getItemFilterByLabel
+    getItemFilterByLabel,
+    searchItemsByTitle
 }
