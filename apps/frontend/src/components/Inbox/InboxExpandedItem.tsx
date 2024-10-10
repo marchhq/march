@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 
+import { Icon } from "@iconify-icon/react"
+
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
 
@@ -9,6 +11,7 @@ export const InboxExpandedItem: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
+  const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<{
     title: string
@@ -47,13 +50,21 @@ export const InboxExpandedItem: React.FC = () => {
     }
   }, [editedItem.description])
 
-  const handleClose = () => setSelectedItem(null)
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault()
-      console.log("enter pressed")
+  useEffect(() => {
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current)
     }
+
+    timeoutId.current = setTimeout(() => {
+      if (selectedItem) {
+        handleSaveEditedItem(selectedItem)
+      }
+    }, 1000)
+  }, [editedItem, selectedItem, timeoutId])
+
+  const handleClose = () => {
+    setSelectedItem(null)
+    handleCancelEditItem()
   }
 
   const handleCancelEditItem = () => {
@@ -83,20 +94,12 @@ export const InboxExpandedItem: React.FC = () => {
   return (
     <>
       {selectedItem && (
-        <div className="w-full h-full flex flex-col gap-4 text-foreground border-l border-border p-4">
-          <div className="flex justify-between text-xs text-secondary-foreground">
+        <div className="flex flex-col w-1/2 h-full gap-4 text-foreground border-l border-border p-4">
+          <div className="flex items-center gap-4 text-sm text-secondary-foreground">
+            <button className="flex items-center" onClick={handleClose}>
+              <Icon icon="ep:back" className="text-[18px]" />
+            </button>
             <p className="flex items-center">09/10/2024</p>
-            <div className="flex gap-4">
-              <button
-                className="hover-text"
-                onClick={() => handleSaveEditedItem(selectedItem)}
-              >
-                <span>save</span>
-              </button>
-              <button className="hover-text" onClick={handleClose}>
-                <span>close</span>
-              </button>
-            </div>
           </div>
           <div>
             <textarea
@@ -108,7 +111,6 @@ export const InboxExpandedItem: React.FC = () => {
                   title: e.target.value,
                 }))
               }
-              onKeyDown={handleKeyDown}
               placeholder="title"
               className="w-full py-2 text-xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
@@ -122,7 +124,6 @@ export const InboxExpandedItem: React.FC = () => {
                   description: e.target.value,
                 }))
               }}
-              onKeyDown={handleKeyDown}
               placeholder="description"
               className="w-full text-sm resize-none overflow-hidden bg-transparent text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
               rows={1}
