@@ -54,7 +54,7 @@ To set up the Linear integration:
 3. Fill in the following environment variables in your `.env` file:
 
 ```
-LINEAR_REDIRECT_URL=http://localhost:3000/api/auth/callback/linear
+LINEAR_REDIRECT_URL=http://localhost:3000/auth/linear
 LINEAR_CLIENT_ID=<your_linear_client_id>
 LINEAR_CLIENT_SECRET=<your_linear_client_secret>
 ```
