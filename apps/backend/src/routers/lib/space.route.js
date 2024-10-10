@@ -10,7 +10,7 @@ import {
 
 import {
     createItemController,
-    getItemsController,
+    getAllItemsByBloackController,
     updateItemController,
     getItemController,
     getItemFilterByLabelController
@@ -58,7 +58,7 @@ router.route("/:space/blocks/:block/items/").post(createItemController);
 // todo: take a look here
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
 
-router.route("/:space/blocks/:block/items/").get(getItemsController);
+router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
 router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
 

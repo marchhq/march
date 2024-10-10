@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, getItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle } from "../../services/lib/item.service.js";
+import { createItem, getItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -63,13 +63,26 @@ const updateItemController = async (req, res, next) => {
 const getItemsController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space, block } = req.params;
         const filters = {
             dueDate: req.query.dueDate
         };
         const sortOptions = req.query.sort;
 
-        const items = await getItems(user, filters, sortOptions, space, block);
+        const items = await getItems(user, filters, sortOptions);
+
+        res.status(200).json({
+            items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getAllItemsByBloackController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { space, block } = req.params;
+        const items = await getAllItemsByBloack(user, space, block);
 
         res.status(200).json({
             items
@@ -125,5 +138,6 @@ export {
     updateItemController,
     getItemController,
     getItemFilterByLabelController,
-    searchItemsByTitleController
+    searchItemsByTitleController,
+    getAllItemsByBloackController
 }

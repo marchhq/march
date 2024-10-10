@@ -81,11 +81,9 @@ const createItem = async (user, itemData, space, block) => {
     return item;
 };
 
-const getItems = async (user, filters, sortOptions, space, block) => {
+const getItems = async (user, filters, sortOptions) => {
     const query = {
         user,
-        spaces: { $elemMatch: { $eq: space } },
-        blocks: { $elemMatch: { $eq: block } },
         isArchived: false,
         isDeleted: false
     };
@@ -174,6 +172,18 @@ const getItem = async (user, id, space, block) => {
     return item;
 };
 
+const getAllItemsByBloack = async (user, space, block) => {
+    const item = await Item.find({
+        user,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } },
+        isArchived: false,
+        isDeleted: false
+    })
+
+    return item;
+};
+
 const updateItem = async (id, updateData, space, block) => {
     const updatedItem = await Item.findOneAndUpdate({
         _id: id,
@@ -230,5 +240,6 @@ export {
     getUserTodayItems,
     getAllitems,
     getItemFilterByLabel,
+    getAllItemsByBloack,
     searchItemsByTitle
 }
