@@ -73,9 +73,9 @@ router.route("/name/:space").get(getSpaceByNameController);
 // Block controllers
 router.route("/:space/blocks/create/").post(createBlockController);
 router.route("/:space/blocks/overview/").get(getBlocksController);
-router.route("/blocks/:block/").get(getBlockController);
-router.route("/blocks/:block/").put(updateBlockController);
-router.route("/blocks/:block/").delete(deleteBlockController);
+router.route("/:space/blocks/:block/").get(getBlockController);
+router.route("/:space/blocks/:block/").put(updateBlockController);
+router.route("/:space/blocks/:block/").delete(deleteBlockController);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);

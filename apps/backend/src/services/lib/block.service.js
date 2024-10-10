@@ -49,8 +49,8 @@ const getBlocks = async (user, space) => {
     return blocks;
 };
 
-const deleteBlock = async (id) => {
-    const block = await Block.findOneAndDelete({ _id: id });
+const deleteBlock = async (id, space, user) => {
+    const block = await Block.findOneAndDelete({ _id: id, user, space });
 
     if (!block) {
         throw new Error('Block not found');
@@ -58,10 +58,11 @@ const deleteBlock = async (id) => {
     return block;
 };
 
-const getBlock = async (user, id) => {
+const getBlock = async (user, id, space) => {
     const block = await Block.findOne({
         _id: id,
-        user
+        user,
+        space
     }).populate({
         path: 'data.item',
         model: 'Item'
@@ -72,9 +73,11 @@ const getBlock = async (user, id) => {
     return block;
 };
 
-const updateBlock = async (id, updateData) => {
+const updateBlock = async (id, updateData, space, user) => {
     const updatedBlock = await Block.findOneAndUpdate({
-        _id: id
+        _id: id,
+        user,
+        space
     },
     { $set: updateData },
     { new: true }
