@@ -4,93 +4,100 @@ import { db } from "../../loaders/db.loader.js";
 
 const statusChoices = ["null", "todo", "in progress", "done", "archive"];
 
-const ItemSchema = new Schema({
+const ItemSchema = new Schema(
+  {
     uuid: {
-        type: String,
-        default: () => uuid()
+      type: String,
+      default: () => uuid(),
     },
     title: {
-        type: String
+      type: String,
     },
     type: {
-        type: String,
-        default: "Issue"
+      type: String,
+      default: "Issue",
     },
     source: {
-        type: String,
-        default: "march"
+      type: String,
+      default: "march",
     },
     description: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     dueDate: {
-        type: Date,
-        default: null
+      type: Date,
+      default: null,
     },
     status: {
-        type: String,
-        enum: statusChoices,
-        default: "null"
+      type: String,
+      enum: statusChoices,
+      default: "null",
     },
     id: {
-        type: String
+      type: String,
     },
     metadata: {
-        type: Schema.Types.Mixed
+      type: Schema.Types.Mixed,
     },
     createdAt: {
-        type: Date
+      type: Date,
     },
     updatedAt: {
-        type: Date
+      type: Date,
     },
-    spaces: [{
+    spaces: [
+      {
         type: Schema.Types.ObjectId,
-        ref: 'Space'
-    }],
-    blocks: [{
+        ref: "Space",
+      },
+    ],
+    blocks: [
+      {
         type: Schema.Types.ObjectId,
-        ref: 'Block'
-    }],
+        ref: "Block",
+      },
+    ],
     user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
-    labels: [{
+    labels: [
+      {
         type: Schema.Types.ObjectId,
-        ref: 'Label'
-    }],
+        ref: "Label",
+      },
+    ],
     isCompleted: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     isArchived: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     isDeleted: {
-        type: Boolean,
-        default: false
-    }
-}, {
-    timestamps: true
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+ItemSchema.pre("save", function (next) {
+  if (this.status === "done") {
+    this.isCompleted = true;
+  } else {
+    this.isCompleted = false;
+  }
+  next();
 });
 
-ItemSchema.pre('save', function (next) {
-    if (this.status === 'done') {
-        this.isCompleted = true;
-    } else {
-        this.isCompleted = false;
-    }
-    next();
-});
+const Item = db.model("Item", ItemSchema, "items");
 
-const Item = db.model('Item', ItemSchema, 'items')
-
-export {
-    Item
-}
+export { Item };
 
 // old code
 // import { Schema } from "mongoose";

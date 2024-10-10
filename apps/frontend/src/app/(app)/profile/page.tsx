@@ -1,11 +1,10 @@
 "use client"
 
 import React, { useEffect } from "react"
-
-import Integrations from "@/src/components/profile/Integrations"
-import UserInfo from "@/src/components/profile/UserInfo"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useUserStore from "@/src/lib/store/user.store"
+import UserInfo from "@/src/components/profile/UserInfo"
+import Integrations from "@/src/components/profile/Integrations"
 
 const ProfilePage: React.FC = () => {
   const { session } = useAuth()
@@ -22,7 +21,7 @@ const ProfilePage: React.FC = () => {
   if (!user) return <div>User not found</div>
 
   return (
-    <div className=" mt-28 bg-background text-foreground w-1/2 ml-[15%]">
+    <div className="mt-28 bg-background text-foreground w-1/2 ml-[15%]">
       <UserInfo user={user} />
       <Integrations user={user} />
       <footer className="text-[16px] text-muted-foreground mt-24 mb-28">

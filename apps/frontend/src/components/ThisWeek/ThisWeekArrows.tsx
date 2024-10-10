@@ -1,18 +1,21 @@
-"use client"
+"use client";
 
-import React from "react"
+import React from "react";
+import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation";
 
-import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
+interface ThisWeekArrowsProps {
+  onChangeWeek: (direction: "left" | "right") => void;
+}
 
-export const ThisWeekArrows: React.FC = () => {
+export const ThisWeekArrows: React.FC<ThisWeekArrowsProps> = ({ onChangeWeek }) => {
   return (
     <div className="flex items-center justify-between gap-4">
-      <button onClick={() => console.log("left")} className="p-2">
+      <button onClick={() => onChangeWeek("left")} className="p-2">
         <LeftChevron />
       </button>
-      <button onClick={() => console.log("right")} className="p-2">
+      <button onClick={() => onChangeWeek("right")} className="p-2">
         <RightChevron />
       </button>
     </div>
-  )
-}
+  );
+};
