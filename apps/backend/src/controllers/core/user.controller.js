@@ -84,13 +84,8 @@ const getAllitemsController = async (req, res, next) => {
         const me = req.user._id;
         const items = await getAllitems(me);
 
-        // const IntegratedAppIssues = await getIntegration(me);
-        // res.json({
-        //     items
-        // });
         res.status(200).json({
-            statusCode: 200,
-            response: items
+            items
         });
     } catch (err) {
         next(err);
