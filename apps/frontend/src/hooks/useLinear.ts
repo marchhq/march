@@ -3,7 +3,34 @@ import axios from "axios"
 import { useAuth } from "../contexts/AuthContext"
 import { BACKEND_URL } from "../lib/constants/urls"
 
-interface LinearIssue {}
+interface LinearIssue {
+  id: string;
+  title: string;
+  description: string;
+  state: {
+    id: string;
+    name: string;
+  };
+  labels: {
+    nodes: {
+      id: string;
+      name: string;
+    }[];
+  };
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
+  priority: number;
+  project: {
+    id: string;
+    name: string;
+  };
+  assignee: {
+    id: string;
+    name: string;
+  };
+  url: string;
+}
 
 const useLinear = () => {
   const { session } = useAuth()
