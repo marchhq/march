@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController, getUserJournalByDateController } from "../../controllers/lib/journal.controller.js";
 import {
-    getUserItemsController,
+    getInboxItemsController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
     getUserItemsByDateControlle,
@@ -17,7 +17,7 @@ import { linkPreviewGeneratorController } from "../../controllers/lib/linkPrevie
 const router = Router();
 
 // inbox
-router.route("/my/").get(getUserItemsController);
+router.route("/inbox/").get(getInboxItemsController);
 router.route("/my/today/").get(getUserTodayItemsController);
 router.route("/my/overdue/").get(getUserOverdueItemsController);
 router.route("/my/:date/").get(getUserItemsByDateControlle);
