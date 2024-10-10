@@ -1,9 +1,8 @@
 import React, { useMemo } from "react"
-
 import { ChevronDown, ChevronRight } from "lucide-react"
-
-import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import { IntegrationType, User } from "@/src/lib/@types/auth/user"
+import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
+import useLinear from "@/src/hooks/useLinear"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
@@ -64,6 +63,7 @@ export interface Integration {
 
 const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   const handleGoogleCalendarLogin = useGoogleCalendarLogin("/profile")
+  const { handleLogin: handleLinearLogin } = useLinear()
 
   const integrations: Integration[] = useMemo(
     () => [
@@ -90,8 +90,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         name: "Linear",
         description:
           "Integrate Linear to track and manage your project tasks and issues.",
-        handleConnect: () =>
-          console.log("Linear connection not implemented yet"),
+        handleConnect: handleLinearLogin,
       },
       {
         key: "notion",
@@ -103,15 +102,15 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
           console.log("Notion connection not implemented yet"),
       },
     ],
-    [handleGoogleCalendarLogin]
+    [handleGoogleCalendarLogin, handleLinearLogin]
   )
 
   return (
     <div className="mb-8">
-      <h3 className="text-[16px] font-semibold mb-4 text-foreground/80">
+      <h3 className="text-xl font-semibold mb-4 text-foreground">
         Integrations
       </h3>
-      <div className="space-y-1 -ml-9">
+      <div className="space-y-4 -ml-8">
         {integrations.map((integration) => (
           <IntegrationItem
             key={integration.key}
