@@ -25,7 +25,8 @@ import {
     getItemsController,
     updateItemController,
     getItemController,
-    getItemFilterByLabelController
+    getItemFilterByLabelController,
+    searchItemsByTitleController
 } from "../../controllers/lib/item.controller.js";
 import {
     getNotesController,
@@ -79,11 +80,11 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 router.route("/items/").get(getAllitemsController);
 router.route("/items/create/").post(createItemController);
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
+router.route("/items/search/").get(searchItemsByTitleController);
+
 router.route("/items/overview/").get(getItemsController);
 router.route("/items/:item/").get(getItemController);
 router.route("/items/:item/").put(updateItemController);
-
-// router.route("/items/search").get(getAllitemsController);
 
 // note controllers
 router.route("/notes/overview/").get(getNotesController);
