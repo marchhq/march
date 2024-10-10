@@ -4,18 +4,23 @@ import React, { useEffect, useState, useCallback } from "react"
 
 import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
+import ReadingListSelect from "@/src/components/Reading/LabelSelect"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSpace } from "@/src/hooks/useSpace"
 import useReadingStore from "@/src/lib/store/reading.store"
+import { ReadingLabelName } from "@/src/lib/@types/Items/Reading"
 
 const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
   const { spaces } = useSpace() || { spaces: [] }
-  const { fetchReadingList } = useReadingStore()
+  const { fetchReadingList, fetchLabels, setSpaceId } = useReadingStore()
 
   const [loading, setLoading] = useState(true)
   const [blockId, setBlockId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [selectedLabel, setSelectedLabel] = useState<ReadingLabelName | "all">(
+    "all"
+  )
 
   const loadReadingList = useCallback(async () => {
     setLoading(true)
@@ -27,6 +32,8 @@ const ReadingListComponent: React.FC = () => {
       if (readingListSpace) {
         const fetchedBlockId = readingListSpace.blocks[0]
         setBlockId(fetchedBlockId)
+        setSpaceId(readingListSpace._id)
+        await fetchLabels(session)
         await fetchReadingList(session, fetchedBlockId)
       }
     } catch (err) {
@@ -34,7 +41,7 @@ const ReadingListComponent: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [spaces, session, fetchReadingList])
+  }, [spaces, session, fetchReadingList, fetchLabels, setSpaceId])
 
   useEffect(() => {
     if (spaces.length > 0 && !blockId) {
@@ -57,12 +64,18 @@ const ReadingListComponent: React.FC = () => {
   return (
     <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
-        {blockId && (
-          <div className="flex flex-col gap-8 text-base w-3/5 ml-[10%] mt-32">
-            <AddItemForm blockId={blockId} />
-            <ItemsList blockId={blockId} />
-          </div>
-        )}
+        <div className="relative flex flex-col gap-8 text-base w-3/5 ml-[10%] mt-32">
+          <ReadingListSelect
+            selectedLabel={selectedLabel}
+            setSelectedLabel={setSelectedLabel}
+          />
+          {blockId && (
+            <>
+              <AddItemForm blockId={blockId} />
+              <ItemsList blockId={blockId} selectedLabel={selectedLabel} />
+            </>
+          )}
+        </div>
       </div>
     </section>
   )

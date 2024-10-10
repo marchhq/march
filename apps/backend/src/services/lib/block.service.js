@@ -60,8 +60,13 @@ const getBlock = async (user, id) => {
         user
     }).populate({
         path: 'data.item',
-        model: 'Item'
-    })
+        model: 'Item',
+        populate: {
+            path: 'labels',
+            model: 'Label'
+        }
+    });
+
     if (!block) {
         throw new Error('Block not found');
     }
