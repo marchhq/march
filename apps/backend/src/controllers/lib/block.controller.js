@@ -19,8 +19,9 @@ const createBlockController = async (req, res, next) => {
 const getBlocksController = async (req, res, next) => {
     try {
         const user = req.user._id;
+        const { space } = req.params;
 
-        const blocks = await getBlocks(user);
+        const blocks = await getBlocks(user, space);
 
         res.status(200).json({
             blocks

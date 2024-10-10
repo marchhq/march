@@ -38,12 +38,13 @@ const createBlock = async (user, blockData, space) => {
     return block;
 };
 
-const getBlocks = async (user) => {
+const getBlocks = async (user, space) => {
     const blocks = await Block.find({
-        user
+        user,
+        space
     })
     if (!blocks) {
-        throw new Error('Block not found');
+        throw new Error('Blocks not found');
     }
     return blocks;
 };

@@ -72,7 +72,7 @@ router.route("/name/:space").get(getSpaceByNameController);
 
 // Block controllers
 router.route("/:space/blocks/create/").post(createBlockController);
-router.route("/blocks/overview/").get(getBlocksController);
+router.route("/:space/blocks/overview/").get(getBlocksController);
 router.route("/blocks/:block/").get(getBlockController);
 router.route("/blocks/:block/").put(updateBlockController);
 router.route("/blocks/:block/").delete(deleteBlockController);
