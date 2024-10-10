@@ -16,9 +16,11 @@ export interface ItemStoreType {
     status: string,
     description?: string
   ) => Promise<void>
+  updateItemStatus: (itemId: string, newStatus: string) => void
   mutateItem: (
     session: string,
     itemId: string,
+    status: string,
     title?: string,
     description?: string,
     isDeleted?: boolean
@@ -81,9 +83,19 @@ const useItemsStore = create<ItemStoreType>((set) => ({
       }
     }
   },
+
+  updateItemStatus: (itemId: string, newStatus: string) => {
+    set((state) => ({
+      items: state.items.map((item) =>
+        item._id === itemId ? { ...item, status: newStatus } : item
+      ),
+    }))
+  },
+
   mutateItem: async (
     session: string,
     itemId: string,
+    status: string,
     title?: string,
     description?: string,
     isDeleted?: boolean
@@ -91,6 +103,7 @@ const useItemsStore = create<ItemStoreType>((set) => ({
     try {
       const updateItemData = {
         title,
+        status,
         description,
         isDeleted,
       }
