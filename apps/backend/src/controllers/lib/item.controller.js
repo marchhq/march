@@ -63,12 +63,13 @@ const updateItemController = async (req, res, next) => {
 const getItemsController = async (req, res, next) => {
     try {
         const user = req.user._id;
+        const { space, block } = req.params;
         const filters = {
             dueDate: req.query.dueDate
         };
         const sortOptions = req.query.sort;
 
-        const items = await getItems(user, filters, sortOptions);
+        const items = await getItems(user, filters, sortOptions, space, block);
 
         res.status(200).json({
             items

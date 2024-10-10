@@ -55,9 +55,10 @@ router.route("/:space/blocks/:block/").delete(deleteBlockController);
 
 // item controllers
 router.route("/:space/blocks/:block/items/create/").post(createItemController);
+// todo: take a look here
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
 
-router.route("/items/overview/").get(getItemsController);
+router.route("/:space/blocks/:block/items/overview/").get(getItemsController);
 router.route("/items/:item/").get(getItemController);
 router.route("/items/:item/").put(updateItemController);
 

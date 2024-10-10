@@ -80,9 +80,11 @@ const createItem = async (user, itemData, space, block) => {
     return item;
 };
 
-const getItems = async (user, filters, sortOptions) => {
+const getItems = async (user, filters, sortOptions, space, block) => {
     const query = {
-        user: user,
+        user,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } },
         isArchived: false,
         isDeleted: false
     };
