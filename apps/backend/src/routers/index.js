@@ -15,7 +15,7 @@ import NotionRoute from "../routers/integration/notion.route.js";
 const initRoutes = (app) => {
     app.use("/auth", AuthRouter);
     app.use("/users", JWTMiddleware, UserRouter);
-    app.use("/api", JWTMiddleware, SpaceRouter);
+    app.use("/spaces", JWTMiddleware, SpaceRouter);
     app.use('/linear', JWTMiddleware, LinearRoute);
     app.use('/calendar', JWTMiddleware, CalenderRoute);
     app.use('/gmail', JWTMiddleware, EmailRoute);

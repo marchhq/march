@@ -64,11 +64,19 @@ router.route("/my/:date/").get(getUserItemsByDateControlle);
 router.route("/setDate/").post(moveItemtoDateController);
 
 // space controllers
-router.route("/spaces/create/").post(createSpaceController);
-router.route("/spaces/overview/").get(getSpacesController);
-router.route("/spaces/:space/").get(getSpaceController);
-router.route("/spaces/:space/").put(updateSpaceController);
-router.route("/spaces/name/:space").get(getSpaceByNameController);
+router.route("/create/").post(createSpaceController);
+router.route("/overview/").get(getSpacesController);
+router.route("/:space/").get(getSpaceController);
+router.route("/:space/").put(updateSpaceController);
+router.route("/name/:space").get(getSpaceByNameController);
+
+// Block controllers
+router.route("/:space/blocks/create/").post(createBlockController);
+// /:workspace/spaces/
+router.route("/blocks/overview/").get(getBlocksController);
+router.route("/blocks/:block/").get(getBlockController);
+router.route("/blocks/:block/").put(updateBlockController);
+router.route("/blocks/:block/").delete(deleteBlockController);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
@@ -89,13 +97,6 @@ router.route("/items/:item/").put(updateItemController);
 // note controllers
 router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
-
-// Block controllers
-router.route("/blocks/create/").post(createBlockController);
-router.route("/blocks/overview/").get(getBlocksController);
-router.route("/blocks/:block/").get(getBlockController);
-router.route("/blocks/:block/").put(updateBlockController);
-router.route("/blocks/:block/").delete(deleteBlockController);
 
 // Meeting controllers
 router.route("/meetings/overview/").get(getMeetingsController);
