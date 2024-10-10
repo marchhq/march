@@ -6,37 +6,38 @@ import { createLabels } from '../services/lib/label.service.js';
 
 const processSpaceJob = async (job) => {
     const { user } = job.data;
-    const blocks = [
-        { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
-        { name: "Meetings", data: { type: "meeting" } },
-        { name: "Notes", data: { type: "note" } },
-        { name: "Reading List", data: { type: "reading" } }
+    const spaces = [
+        { name: "This Week", icon: "" },
+        { name: "Meetings", icon: "meeting" },
+        { name: "Notes", icon: "note" },
+        { name: "Reading List", icon: "book" }
     ];
 
     try {
-        const blockIds = [];
-
-        for (const blockData of blocks) {
-            const block = await createBlock(user, blockData);
-            blockIds.push(block._id);
-        }
-
-        const spaces = [
-            { name: "This Week", icon: "", blocks: [blockIds[0]] },
-            { name: "Meetings", icon: "meeting", blocks: [blockIds[1]] },
-            { name: "Notes", icon: "note", blocks: [blockIds[2]] },
-            { name: "Reading List", icon: "book", blocks: [blockIds[3]] }
-        ];
+        const spaceIds = [];
 
         let readingSpace;
 
         for (const spaceData of spaces) {
             const space = await createSpace(user, spaceData);
-
+            spaceIds.push(space._id);
             if (space.name === "Reading List") {
                 readingSpace = space;
             }
         }
+        console.log("spaceIds: ", spaceIds);
+
+        const blocks = [
+            { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
+            { name: "Meetings", data: { type: "meeting" } },
+            { name: "Notes", data: { type: "note" } },
+            { name: "Reading List", data: { type: "reading" } }
+        ];
+
+        await createBlock(user, blocks[0], spaceIds[0]);
+        await createBlock(user, blocks[1], spaceIds[1]);
+        await createBlock(user, blocks[2], spaceIds[2]);
+        await createBlock(user, blocks[3], spaceIds[3]);
 
         if (readingSpace) {
             const labelsData = [
