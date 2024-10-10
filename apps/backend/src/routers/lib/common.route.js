@@ -8,6 +8,7 @@ import {
     moveItemtoDateController,
     getAllitemsController
 } from "../../controllers/core/user.controller.js";
+import { searchItemsByTitleController } from "../../controllers/lib/item.controller.js"
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
@@ -30,6 +31,7 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // get all items
 router.route("/items/").get(getAllitemsController);
+router.route("/items/search/").get(searchItemsByTitleController);
 
 // File Asset controllers
 router

@@ -107,8 +107,9 @@ const getItemFilterByLabelController = async (req, res, next) => {
 
 const searchItemsByTitleController = async (req, res, next) => {
     const { q } = req.query;
+    const user = req.user._id;
     try {
-        const items = await searchItemsByTitle(q);
+        const items = await searchItemsByTitle(q, user);
         res.status(200).json({
             items
         });

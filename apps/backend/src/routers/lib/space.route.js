@@ -13,8 +13,7 @@ import {
     getItemsController,
     updateItemController,
     getItemController,
-    getItemFilterByLabelController,
-    searchItemsByTitleController
+    getItemFilterByLabelController
 } from "../../controllers/lib/item.controller.js";
 import {
     getNotesController,
@@ -57,7 +56,6 @@ router.route("/:space/blocks/:block/").delete(deleteBlockController);
 // item controllers
 router.route("/:space/blocks/:block/items/create/").post(createItemController);
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
-router.route("/items/search/").get(searchItemsByTitleController);
 
 router.route("/items/overview/").get(getItemsController);
 router.route("/items/:item/").get(getItemController);
