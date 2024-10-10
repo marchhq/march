@@ -3,9 +3,10 @@ import { createBlock, getBlocks, deleteBlock, getBlock, updateBlock } from "../.
 const createBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
+        const { space } = req.params;
 
         const requestedData = req.body;
-        const block = await createBlock(user, requestedData);
+        const block = await createBlock(user, requestedData, space);
 
         res.status(200).json({
             block

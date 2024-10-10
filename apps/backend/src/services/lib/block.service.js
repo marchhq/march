@@ -1,7 +1,7 @@
 import { Block } from "../../models/lib/block.model.js";
 import { createNote } from "./note.service.js"
 
-const createBlock = async (user, blockData) => {
+const createBlock = async (user, blockData, space) => {
     const type = blockData.data.type;
     let block;
 
@@ -11,6 +11,7 @@ const createBlock = async (user, blockData) => {
         block = new Block({
             name: "Note",
             user,
+            space,
             data: { ...blockData.data, viewingNoteId: note._id }
         });
         break;
@@ -19,6 +20,7 @@ const createBlock = async (user, blockData) => {
         block = new Block({
             name: "List",
             user,
+            space,
             data: { ...blockData.data }
         });
         break;
@@ -27,6 +29,7 @@ const createBlock = async (user, blockData) => {
         block = new Block({
             name: blockData.name ? blockData.name : type,
             user,
+            space,
             data: { ...blockData.data }
         });
     }
