@@ -160,10 +160,12 @@ const getItems = async (user, filters, sortOptions, space, block) => {
     return await Item.find(query).sort(sort);
 };
 
-const getItem = async (user, id) => {
+const getItem = async (user, id, space, block) => {
     const item = await Item.find({
         _id: id,
         user,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } },
         isArchived: false,
         isDeleted: false
     })
@@ -171,9 +173,11 @@ const getItem = async (user, id) => {
     return item;
 };
 
-const updateItem = async (id, updateData) => {
+const updateItem = async (id, updateData, space, block) => {
     const updatedItem = await Item.findOneAndUpdate({
-        _id: id
+        _id: id,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } }
     },
     { $set: updateData },
     { new: true }
