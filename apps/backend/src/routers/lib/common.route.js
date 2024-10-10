@@ -8,7 +8,7 @@ import {
     moveItemtoDateController,
     getAllitemsController
 } from "../../controllers/core/user.controller.js";
-import { searchItemsByTitleController } from "../../controllers/lib/item.controller.js"
+import { searchItemsByTitleController, createInboxItemController } from "../../controllers/lib/item.controller.js"
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
@@ -18,10 +18,11 @@ const router = Router();
 
 // inbox
 router.route("/inbox/").get(getInboxItemsController);
-router.route("/my/today/").get(getUserTodayItemsController);
-router.route("/my/overdue/").get(getUserOverdueItemsController);
-router.route("/my/:date/").get(getUserItemsByDateControlle);
+router.route("/inbox/create/").get(createInboxItemController);
+router.route("/today/").get(getUserTodayItemsController);
+router.route("/overdue/").get(getUserOverdueItemsController);
 router.route("/setDate/").post(moveItemtoDateController);
+router.route("/:date/").get(getUserItemsByDateControlle);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
