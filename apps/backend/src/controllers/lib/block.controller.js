@@ -33,8 +33,9 @@ const getBlocksController = async (req, res, next) => {
 
 const deleteBlockController = async (req, res, next) => {
     try {
-        const { block: id } = req.params;
-        await deleteBlock(id);
+        const user = req.user._id;
+        const { block: id, space } = req.params;
+        await deleteBlock(id, space, user);
 
         res.status(200).json({
             ok: 'ok'
@@ -47,9 +48,9 @@ const deleteBlockController = async (req, res, next) => {
 const getBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { block: id } = req.params;
+        const { block: id, space } = req.params;
 
-        const block = await getBlock(user, id);
+        const block = await getBlock(user, id, space);
 
         res.status(200).json({
             block
@@ -61,10 +62,11 @@ const getBlockController = async (req, res, next) => {
 
 const updateBlockController = async (req, res, next) => {
     try {
+        const user = req.user._id;
         const updateData = req.body;
-        const { block: id } = req.params;
+        const { block: id, space } = req.params;
 
-        const block = await updateBlock(id, updateData);
+        const block = await updateBlock(id, updateData, space, user);
 
         res.status(200).json({
             block
