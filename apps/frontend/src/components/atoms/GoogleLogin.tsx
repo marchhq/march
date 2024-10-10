@@ -3,8 +3,8 @@
 import React from "react"
 
 import { Icon } from "@iconify-icon/react"
-
 import { useGoogleLogin } from "@react-oauth/google"
+
 import { FRONTEND_URL } from "@/src/lib/constants/urls"
 
 const GoogleLogin = (): JSX.Element => {

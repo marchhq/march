@@ -1,5 +1,6 @@
-import { Icon } from "@iconify-icon/react"
 import React from "react"
+
+import { Icon } from "@iconify-icon/react"
 import Link from "next/link"
 
 import { Integrations } from "@/src/components/atoms/Integrations"
