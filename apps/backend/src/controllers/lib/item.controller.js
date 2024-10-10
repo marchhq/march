@@ -48,9 +48,9 @@ const createItemController = async (req, res, next) => {
 
 const updateItemController = async (req, res, next) => {
     try {
-        const { item: id } = req.params;
+        const { space, block, item: id } = req.params;
         const updateData = req.body;
-        const item = await updateItem(id, updateData);
+        const item = await updateItem(id, updateData, space, block);
 
         res.status(200).json({
             item
@@ -82,9 +82,9 @@ const getItemsController = async (req, res, next) => {
 const getItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { item: id } = req.params;
+        const { space, block, item: id } = req.params;
 
-        const item = await getItem(user, id);
+        const item = await getItem(user, id, space, block);
 
         res.status(200).json({
             item
