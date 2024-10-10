@@ -1,12 +1,5 @@
 import { Router } from "express";
-import {
-    getUserItemsController,
-    getUserTodayItemsController,
-    getUserOverdueItemsController,
-    getUserItemsByDateControlle,
-    moveItemtoDateController,
-    getAllitemsController
-} from "../../controllers/core/user.controller.js";
+
 import {
     createSpaceController,
     getSpacesController,
@@ -14,12 +7,7 @@ import {
     updateSpaceController,
     getSpaceByNameController
 } from "../../controllers/lib/space.controller.js";
-import {
-    createUpdateJournalController,
-    getUserTodayJournalController,
-    getUserAllJournalsController,
-    getUserJournalByDateController
-} from "../../controllers/lib/journal.controller.js";
+
 import {
     createItemController,
     getItemsController,
@@ -49,25 +37,8 @@ import {
     recentUpcomingMeetingController
 } from "../../controllers/page/meeting.controller.js";
 import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController, getLabelsBySpaceController } from "../../controllers/lib/label.controller.js";
-import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
-import { upload } from "../../loaders/s3.loader.js";
-import { feedbackController } from "../../controllers/lib/feedback.controller.js";
-import { linkPreviewGeneratorController } from "../../controllers/lib/linkPreview.controller.js";
 
 const router = Router();
-
-// inbox
-router.route("/my/").get(getUserItemsController);
-router.route("/my/today/").get(getUserTodayItemsController);
-router.route("/my/overdue/").get(getUserOverdueItemsController);
-router.route("/my/:date/").get(getUserItemsByDateControlle);
-router.route("/setDate/").post(moveItemtoDateController);
-
-// journal controllers
-router.route("/journals/create-update/").post(createUpdateJournalController);
-router.route("/journals/today/").get(getUserTodayJournalController);
-router.route("/journals/overview/").get(getUserAllJournalsController);
-router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // space controllers
 router.route("/create/").post(createSpaceController);
@@ -84,7 +55,6 @@ router.route("/:space/blocks/:block/").put(updateBlockController);
 router.route("/:space/blocks/:block/").delete(deleteBlockController);
 
 // item controllers
-router.route("/items/").get(getAllitemsController);
 router.route("/:space/blocks/:block/items/create/").post(createItemController);
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
 router.route("/items/search/").get(searchItemsByTitleController);
@@ -112,16 +82,5 @@ router.route("/labels/:label/").get(getLabelController)
 router.route("/labels/:label/").put(updateLabelController)
 router.route("/labels/:label/").delete(deleteLabelController)
 router.route("/spaces/:space/labels/").get(getLabelsBySpaceController)
-
-// File Asset controllers
-router
-    .route("/file-assets/upload/")
-    .post(upload.single("file"), uploadFileController);
-
-// Feedback controller
-router.route("/feedback/").post(feedbackController);
-
-// Link preview controller
-router.route("/get-link-preview/").post(linkPreviewGeneratorController);
 
 export default router;
