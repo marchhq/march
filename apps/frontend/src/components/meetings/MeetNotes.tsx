@@ -1,10 +1,12 @@
 "use client"
-import TextEditor from "../atoms/Editor"
+
 import { useState, useEffect, useRef, useCallback } from "react"
-import useEditorHook from "@/src/hooks/useEditor.hook"
-import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
+
+import TextEditor from "../atoms/Editor"
 import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
+import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
 
 const formatDate = (date: Date) => {
   const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
