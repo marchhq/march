@@ -27,7 +27,7 @@ const Board = () => {
   }
 
   return (
-    <div className="flex size-full gap-3 overflow-scroll p-12">
+    <div className="flex size-full gap-3 p-12">
       <Column
         title="todo"
         column="todo"
@@ -137,7 +137,12 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
         className={`size-full`}
       >
         {items.map((item) => (
-          <Card key={item._id} {...item} handleDragStart={handleDragStart} />
+          <Card
+            key={item._id}
+            {...item}
+            item={item}
+            handleDragStart={handleDragStart}
+          />
         ))}
         <DropIndicator beforeId={null} column={column} />
         <AddCard column={column} addItem={addItem} />
@@ -146,7 +151,12 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
   )
 }
 
-const Card = ({ title, _id, status, handleDragStart }) => {
+const Card = ({ title, _id, status, handleDragStart, item }) => {
+  const { setSelectedItem } = useItemsStore()
+  const handleExpand = (item: any) => {
+    setSelectedItem(item)
+  }
+
   return (
     <>
       <DropIndicator beforeId={_id} column={status} />
@@ -156,7 +166,8 @@ const Card = ({ title, _id, status, handleDragStart }) => {
         draggable="true"
         onDragStart={(e) => handleDragStart(e, { _id, status })}
         onClick={() => {
-          console.log("test")
+          console.log("item", item)
+          handleExpand(item)
         }}
         className="group flex cursor-grab flex-col gap-1 rounded-lg border border-transparent p-4 text-left hover:border-border active:cursor-grabbing"
       >
@@ -245,6 +256,17 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
     }
   }, [adding, text, handleSubmit])
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      if (text.trim().length) {
+        handleSubmit()
+      } else {
+        handleCancel()
+      }
+    }
+  }
+
   return (
     <div ref={addItemRef}>
       {adding ? (
@@ -255,6 +277,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setText(e.target.value)
             }
+            onKeyDown={handleKeyDown}
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent py-1 text-base font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
