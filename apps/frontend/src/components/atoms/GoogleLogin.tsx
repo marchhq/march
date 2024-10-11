@@ -22,7 +22,7 @@ const GoogleLogin = (): JSX.Element => {
       onClick={LoginWithGoogle}
       className="flex items-center justify-center gap-2 bg-transparent w-fit p-1 font-semibold text-secondary-foreground hover-text"
     >
-      <Icon icon="ri:google-fill" className="text-[20px]" />
+      <Icon icon="flat-color-icons:google" className="text-[20px]" />
       continue with google
     </button>
   )
