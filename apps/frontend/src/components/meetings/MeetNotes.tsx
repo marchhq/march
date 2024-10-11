@@ -30,6 +30,15 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const lastSavedContent = useRef(meetData.description || "<p></p>")
   const updateMeet = useMeetsStore((state: MeetsStoreType) => state.updateMeet)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      textarea.style.height = "auto"
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }, [title])
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newTitle = event.target.value
@@ -95,20 +104,25 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
         <a
           href={meetData.metadata.hangoutLink}
           target="_blank"
-          className="hover-bg flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
+          className="flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
         >
-          <span>
-            <LinkIcon />
-          </span>
-          Google Meet Url
+          {meetData.metadata.hangoutLink && (
+            <>
+              <span>
+                <LinkIcon />
+              </span>
+              {meetData.metadata.hangoutLink}
+            </>
+          )}
         </a>
       </div>
       <div>
         <textarea
+          ref={textareaRef}
           value={title}
           onChange={handleTitleChange}
           placeholder="Untitled"
-          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
           rows={1}
         />
         <div className="text-foreground">

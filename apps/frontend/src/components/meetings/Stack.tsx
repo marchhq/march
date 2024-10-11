@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 
 import Link from "next/link"
 
@@ -18,13 +18,30 @@ export const Stack: React.FC<StackProps> = ({
   currentMeetId,
 }) => {
   const [closeToggle, setCloseToggle] = useState(false)
+  const [maxHeight, setMaxHeight] = useState("auto")
+  const stackRef = useRef<HTMLDivElement>(null)
 
   const handleClose = () => setCloseToggle(!closeToggle)
+
+  useEffect(() => {
+    const updateMaxHeight = () => {
+      if (stackRef.current) {
+        const viewportHeight = window.innerHeight
+        const stackTop = stackRef.current.getBoundingClientRect().top
+        const maxStackHeight = viewportHeight - stackTop - 20 // 20px buffer
+        setMaxHeight(`${maxStackHeight}px`)
+      }
+    }
+
+    updateMaxHeight()
+    window.addEventListener("resize", updateMaxHeight)
+
+    return () => window.removeEventListener("resize", updateMaxHeight)
+  }, [])
 
   const stackItems = currentWeekMeets.map((meet) => {
     const startTime = new Date(meet.metadata.start.dateTime)
     const endTime = new Date(meet.metadata.end.dateTime)
-
     return {
       id: meet._id,
       title: meet.title,
@@ -35,48 +52,53 @@ export const Stack: React.FC<StackProps> = ({
   })
 
   return (
-    <>
+    <div className="flex w-full flex-col">
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <span
         onClick={handleClose}
-        className="cursor-pointer hover:text-foreground"
+        className="mb-4 cursor-pointer hover:text-foreground"
       >
         stack
       </span>
-      {stackItems.map((meet) => (
-        <div
-          key={meet.id}
-          className={classNames(
-            closeToggle ? "hidden" : "visible",
-            meet.id === currentMeetId
-              ? "-mx-3 rounded-md border border-[#262626CC] p-3"
-              : "",
-            "mb-8 mt-4 space-y-2"
-          )}
-        >
-          <Link
-            href={`/space/meetings/${meet.id}`}
-            className="block cursor-pointer text-[16px] font-medium text-primary-foreground"
-          >
-            {meet.title}
-          </Link>
-          <p className="text-[16px]">
-            {meet.time}, {meet.duration} min
-          </p>
-          <a
-            href={meet.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <span className="flex items-center justify-start gap-2 text-[16px] text-primary-foreground">
-              <LinkIcon />
-              Google Meet
-            </span>
-          </a>
+      <div
+        ref={stackRef}
+        className={classNames(
+          closeToggle ? "hidden" : "visible",
+          "overflow-y-auto overflow-x-hidden px-4"
+        )}
+        style={{ maxHeight }}
+      >
+        <div className="w-full">
+          {stackItems.map((meet) => (
+            <div
+              key={meet.id}
+              className="-mx-4 mb-16 mt-8 space-y-3 rounded-md border-[#262626CC] p-4 hover:border"
+            >
+              <Link
+                href={`/space/meetings/${meet.id}`}
+                className="block cursor-pointer break-words text-[16px] font-medium text-primary-foreground"
+              >
+                {meet.title}
+              </Link>
+              <p className="text-[16px]">
+                {meet.time}, {meet.duration} min
+              </p>
+              <a
+                href={meet.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <span className="flex items-center justify-start gap-2 text-[16px] hover:text-primary-foreground">
+                  <LinkIcon />
+                  Google Meet
+                </span>
+              </a>
+            </div>
+          ))}
         </div>
-      ))}
-    </>
+      </div>
+    </div>
   )
 }
 
