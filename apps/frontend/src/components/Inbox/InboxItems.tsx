@@ -93,6 +93,28 @@ export const InboxItems: React.FC = () => {
                 <p className="max-w-full truncate">{item.description}</p>
               </div>
             </div>
+            <div className="flex items-center text-xs text-secondary-foreground">
+              <div className="flex gap-4">
+                <button className="hover-text invisible group-hover:visible">
+                  <Icon
+                    icon="humbleicons:clock"
+                    className="mt-0.5 text-[18px]"
+                  />
+                </button>
+                <button className="hover-text invisible group-hover:visible">
+                  <Icon
+                    icon="mingcute:move-line"
+                    className="mt-0.5 text-[18px]"
+                  />
+                </button>
+                <button className="hover-text invisible group-hover:visible">
+                  <Icon
+                    icon="fluent:archive-24-regular"
+                    className="mt-0.5 text-[18px]"
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         ))
       )}

@@ -44,19 +44,19 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   const { authMethod, email, icon } = getAuthInfo(user)
 
   return (
-    <div className="flex flex-col mb-8">
+    <div className="mb-8 flex flex-col">
       {user.avatar && (
         <img
           src={user.avatar}
           alt={`${user.fullName}'s Avatar`}
-          className="w-8 h-8 rounded-full mb-4 border-2 border-secondary-foreground"
+          className="mb-4 h-8 w-8 rounded-full border-2 border-secondary-foreground"
         />
       )}
-      <h2 className="text-[16px] font-semibold text-foreground mb-1">
+      <h2 className="mb-1 text-[16px] font-semibold text-foreground">
         {user.fullName || "Anonymous User"}
       </h2>
-      <p className="text-xs text-secondary-foreground mb-4">{email}</p>
-      <div className="flex items-center text-md text-secondary-foreground">
+      <p className="mb-4 text-xs text-secondary-foreground">{email}</p>
+      <div className="text-md flex items-center text-secondary-foreground">
         <span className="mr-2 text-[13px]">Logged in with {authMethod}</span>
         {icon}
       </div>
