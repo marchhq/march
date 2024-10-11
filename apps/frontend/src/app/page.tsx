@@ -20,8 +20,8 @@ const Home: React.FC = () => {
   return (
     <main className="grid h-screen w-full place-content-center bg-background text-center text-muted">
       <div className="flex flex-col items-center justify-between h-screen w-full max-w-7xl pb-16 pt-2">
-        <div className="flex flex-col items-center justify-center gap-8 size-full">
-          <div className="flex flex-col items-center justify-center gap-2">
+        <div className="flex flex-col items-center justify-center gap-12 size-full">
+          <div className="flex flex-col items-center justify-center gap-4">
             <div className="flex items-center justify-center p-2">
               <LogoDark />
             </div>
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
               <p className="text-foreground">to get things done.</p>
             </div>
           </div>
-          <div className="flex flex-col items-center w-full gap-2 text-base">
+          <div className="flex flex-col items-center w-full gap-4 text-base">
             <GoogleLogin />
             <GithubLogin />
           </div>
