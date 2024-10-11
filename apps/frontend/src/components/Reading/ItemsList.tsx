@@ -35,7 +35,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
         const url = item.metadata?.url
         const favicon = item.metadata?.favicon
         return (
-          <div key={item._id} className="flex items-start gap-4 group">
+          <div key={item._id} className="group flex items-start gap-4">
             {favicon ? (
               <Image
                 src={favicon}
@@ -47,7 +47,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
             ) : (
               <Icon
                 icon="ph:circle-bold"
-                className="text-secondary-foreground mt-2 text-[16px] flex-shrink-0"
+                className="mt-2 flex-shrink-0 text-[16px] text-secondary-foreground"
               />
             )}
             <div className="flex-grow overflow-hidden">
@@ -57,26 +57,26 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
                 rel="noopener noreferrer"
                 className={`flex items-center gap-2 ${url ? "cursor-pointer" : "cursor-default"}`}
               >
-                <h3 className="text-foreground font-semibold text-lg flex items-center flex-wrap">
+                <h3 className="flex flex-wrap items-center text-lg font-semibold text-foreground">
                   <span className="break-all">{item.title}</span>
                   {url && (
-                    <span className="ml-2 flex items-center flex-shrink-0">
+                    <span className="ml-2 flex flex-shrink-0 items-center">
                       <Icon
                         icon="fluent:link-24-regular"
-                        className="text-secondary-foreground hover:text-foreground text-[20px]"
+                        className="text-[20px] text-secondary-foreground hover:text-foreground"
                       />
                     </span>
                   )}
                 </h3>
               </a>
               {item.description && (
-                <p className="text-secondary-foreground text-base mt-1">
+                <p className="mt-1 text-base text-secondary-foreground">
                   {item.description}
                 </p>
               )}
             </div>
             <button
-              className="invisible group-hover:visible text-secondary-foreground hover:text-foreground text-sm"
+              className="invisible text-sm text-secondary-foreground hover:text-foreground group-hover:visible"
               onClick={() => deleteItem(item._id)}
             >
               delete
