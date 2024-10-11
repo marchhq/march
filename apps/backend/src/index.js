@@ -7,9 +7,9 @@ import { handlePushNotification } from "./controllers/integration/email.controll
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
 import { handleCalendarWebhook } from "./controllers/integration/calendar.controller.js";
 import { handleGithubWebhook } from "./controllers/integration/github.controller.js";
-/*
+
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
-*/
+
 import bodyParser from "body-parser";
 import { linearWorker } from "./jobs/linear.job.js";
 import { calendaWorker } from "./jobs/calendar.job.js";
