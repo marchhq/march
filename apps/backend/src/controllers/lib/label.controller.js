@@ -19,7 +19,8 @@ const createLabelController = async (req, res, next) => {
 const getLabelsController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const labels = await getLabels(user);
+        const { space } = req.params;
+        const labels = await getLabels(user, space);
 
         res.json({
             labels

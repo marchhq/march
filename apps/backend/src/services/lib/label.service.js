@@ -34,9 +34,10 @@ const createLabels = async (labelsData, space, user) => {
     return createdLabels;
 }
 
-const getLabels = async (user) => {
+const getLabels = async (user, space) => {
     const labels = await Label.find({
-        user
+        user,
+        space
     })
         .sort({ name: 1 })
         .exec();

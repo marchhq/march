@@ -49,8 +49,8 @@ router.route("/name/:space").get(getSpaceByNameController);
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
 
 // Labels controller left with this
-router.route("/:space/labels/create/").post(createLabelController)
-router.route("/:space/labels/overview/").get(getLabelsController)
+router.route("/:space/labels/").post(createLabelController)
+router.route("/:space/labels/").get(getLabelsController)
 router.route("/:space/labels/:label/").get(getLabelController)
 router.route("/:space/labels/:label/").put(updateLabelController)
 router.route("/:space/labels/:label/").delete(deleteLabelController)
