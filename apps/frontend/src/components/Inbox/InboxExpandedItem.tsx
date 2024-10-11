@@ -95,7 +95,7 @@ export const InboxExpandedItem: React.FC = () => {
   return (
     <div>
       {selectedItem && (
-        <div className="flex flex-col w-full h-full gap-4 text-foreground border-l border-border p-4">
+        <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
             <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
@@ -133,7 +133,7 @@ export const InboxExpandedItem: React.FC = () => {
               rows={1}
             />
           </div>
-          <div className="h-full w-full"></div>
+          <div className="size-full"></div>
         </div>
       )}
     </div>
