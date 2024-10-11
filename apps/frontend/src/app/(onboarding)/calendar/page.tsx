@@ -7,7 +7,7 @@ import CalendarList from "@/src/components/atoms/CalendarList"
 const CalendarConnect = () => {
   return (
     <main className="flex flex-col items-center justify-between h-full">
-      <div className="flex flex-col items-center justify-center gap-8 size-full">
+      <div className="flex flex-col items-center justify-center gap-12 size-full">
         <div className="flex flex-col items-center justify-center gap-4">
           <div className="flex items-center justify-center p-2">
             <Icon icon="logos:google-calendar" className="text-[50px]" />
