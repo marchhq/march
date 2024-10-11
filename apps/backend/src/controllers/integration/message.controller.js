@@ -1,4 +1,4 @@
-/*
+
 import twilio from 'twilio';
 import { environment } from '../../loaders/environment.loader.js';
 
@@ -27,4 +27,3 @@ const handleSmsItemCreation = async (req, res, next) => {
 export {
     handleSmsItemCreation
 }
-*/
