@@ -89,7 +89,7 @@ export const InboxAddItem: React.FC = () => {
     <div className="flex flex-col">
       {!addingItem ? (
         <button
-          className="p-4 rounded-lg hover-bg"
+          className="hover-bg rounded-lg p-4"
           onClick={() => setAddingItem(true)}
         >
           <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export const InboxAddItem: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="title"
-            className="w-full py-2 text-xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             rows={1}

@@ -95,7 +95,7 @@ export const InboxExpandedItem: React.FC = () => {
   return (
     <div>
       {selectedItem && (
-        <div className="flex flex-col w-full h-full gap-4 text-foreground border-l border-border p-4">
+        <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
             <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
@@ -116,7 +116,7 @@ export const InboxExpandedItem: React.FC = () => {
                 }))
               }
               placeholder="title"
-              className="w-full py-2 text-xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
             />
             <textarea
@@ -129,11 +129,11 @@ export const InboxExpandedItem: React.FC = () => {
                 }))
               }}
               placeholder="description"
-              className="w-full text-sm resize-none overflow-hidden bg-transparent text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
             />
           </div>
-          <div className="w-full h-full"></div>
+          <div className="size-full"></div>
         </div>
       )}
     </div>
