@@ -57,7 +57,9 @@ export const InboxAddItem: React.FC = () => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter") {
       event.preventDefault()
-      handleAddItemToInbox()
+      if (title) {
+        handleAddItemToInbox()
+      }
     }
   }
 
