@@ -1,16 +1,18 @@
 "use client"
 
 import React, { useState } from "react"
-import { ThisWeekArrows } from "./ThisWeekArrows"
+
 import { addWeeks } from "date-fns"
+
+import { CustomKanban } from "./CustomKanban"
+import { ThisWeekArrows } from "./ThisWeekArrows"
+import { Item } from "@/src/lib/@types/Items/Items"
+import useItemsStore from "@/src/lib/store/items.store"
 import {
   getCurrentWeek,
   getFormattedDateRange,
   getWeeksInMonth,
 } from "@/src/utils/datetime"
-import useItemsStore from "@/src/lib/store/items.store"
-import { Item } from "@/src/lib/@types/Items/Items"
-import { CustomKanban } from "./CustomKanban"
 
 export const ThisWeekPage: React.FC = () => {
   const today = new Date()
