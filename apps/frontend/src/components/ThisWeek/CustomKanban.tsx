@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react"
-import { motion } from "framer-motion"
 
 import { Icon } from "@iconify-icon/react"
-import useItemsStore from "@/src/lib/store/items.store"
+import { motion } from "framer-motion"
+
 import { useAuth } from "@/src/contexts/AuthContext"
+import useItemsStore from "@/src/lib/store/items.store"
 
 export const CustomKanban = () => {
   return (
@@ -26,7 +27,7 @@ const Board = () => {
   }
 
   return (
-    <div className="flex h-full w-full gap-3 overflow-scroll p-12">
+    <div className="flex size-full gap-3 overflow-scroll p-12">
       <Column
         title="TODO"
         column="todo"
@@ -133,7 +134,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`h-full w-full transition-colors`}
+        className={`size-full transition-colors`}
       >
         {items.map((item) => (
           <Card key={item._id} {...item} handleDragStart={handleDragStart} />
