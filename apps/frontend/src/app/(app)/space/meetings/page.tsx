@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react"
 
-import { useRouter } from "next/navigation"
 import { AxiosError } from "axios"
+import { useRouter } from "next/navigation"
+
 import { useAuth } from "@/src/contexts/AuthContext"
-
 import { Meet } from "@/src/lib/@types/Items/Meet"
-
 import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
 
 export default function Meetings() {

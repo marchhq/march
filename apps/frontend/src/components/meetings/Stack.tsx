@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 
 import Link from "next/link"
@@ -37,6 +36,7 @@ export const Stack: React.FC<StackProps> = ({
 
   return (
     <>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <span
         onClick={handleClose}
         className="cursor-pointer hover:text-foreground"
