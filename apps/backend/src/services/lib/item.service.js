@@ -1,5 +1,6 @@
 import { Item } from "../../models/lib/item.model.js";
 import moment from 'moment-timezone';
+import { getLabelByName } from "./label.service.js";
 
 const getInboxItems = async (me) => {
     const items = await Item.find({
@@ -225,10 +226,10 @@ const moveItemtoDate = async (date, id) => {
     return item;
 };
 
-const getItemFilterByLabel = async (label, userId, space) => {
-    // find label then item
+const getItemFilterByLabel = async (name, userId, space) => {
+    const label = await getLabelByName(name, userId, space);
     const items = await Item.find({
-        labels: { $in: [labelId] },
+        labels: { $in: [label._id] },
         user: userId
     })
 
