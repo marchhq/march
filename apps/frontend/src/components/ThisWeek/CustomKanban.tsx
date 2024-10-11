@@ -20,7 +20,7 @@ const Board = () => {
 
   useEffect(() => {
     fetchItems(session, "this-week")
-  }, [fetchItems])
+  }, [session, fetchItems])
 
   const handleDragEnd = (itemId: string, newStatus: string) => {
     mutateItem(session, itemId, newStatus)
