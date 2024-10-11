@@ -1,11 +1,12 @@
 "use client"
+import { useState } from "react"
+
+import Link from "next/link"
 
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import classNames from "@/src/utils/classNames"
-import { useState } from "react"
-import Link from "next/link"
-import { calculateMeetDuration, formatMeetTime } from "@/src/utils/meet"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
+import classNames from "@/src/utils/classNames"
+import { calculateMeetDuration, formatMeetTime } from "@/src/utils/meet"
 
 interface StackProps {
   currentWeekMeets: Meet[]
@@ -35,6 +36,7 @@ export const Stack: React.FC<StackProps> = ({
 
   return (
     <>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <span
         onClick={handleClose}
         className="cursor-pointer hover:text-foreground"
