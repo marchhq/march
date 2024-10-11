@@ -1,8 +1,10 @@
 import React, { useMemo } from "react"
+
 import { ChevronDown, ChevronRight } from "lucide-react"
-import { IntegrationType, User } from "@/src/lib/@types/auth/user"
+
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import useLinear from "@/src/hooks/useLinear"
+import { IntegrationType, User } from "@/src/lib/@types/auth/user"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
@@ -19,13 +21,13 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
   connected,
   onConnect,
 }) => (
-  <div className="flex items-center justify-between text-foreground py-4 rounded-lg">
+  <div className="flex items-center justify-between rounded-lg py-4 text-foreground">
     <div className="flex items-center space-x-4">
-      <div className="flex size-5 items-center justify-center">
+      <div className="flex items-center justify-center size-5">
         {integration.icon}
       </div>
       <div className="max-w-md">
-        <h4 className="font-medium text-[13px]">{integration.name}</h4>
+        <h4 className="text-[13px] font-medium">{integration.name}</h4>
         <p className="text-[13px] text-secondary-foreground">
           {integration.description}
         </p>
@@ -33,14 +35,14 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
     </div>
     {connected ? (
       <button className="flex items-center text-secondary-foreground">
-        <div className="mr-2 size-1.5 rounded-full bg-green-500"></div>
+        <div className="mr-2 rounded-full bg-green-500 size-1.5"></div>
         <span className="text-[13px]">Connected</span>
         <ChevronDown size={13} />
       </button>
     ) : (
       <button
         onClick={onConnect}
-        className="flex items-center text-[13px] text-primary-foreground bg-primary px-4 py-2 rounded-md"
+        className="flex items-center rounded-md bg-primary px-4 py-2 text-[13px] text-primary-foreground"
       >
         Connect
         <ChevronRight size={13} className="ml-1" />
@@ -107,10 +109,10 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
 
   return (
     <div className="mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-foreground">
+      <h3 className="mb-4 text-xl font-semibold text-foreground">
         Integrations
       </h3>
-      <div className="space-y-4 -ml-8">
+      <div className="-ml-8 space-y-4">
         {integrations.map((integration) => (
           <IntegrationItem
             key={integration.key}

@@ -1,35 +1,37 @@
 import { useCallback, useState } from "react"
+
 import axios from "axios"
+
 import { useAuth } from "../contexts/AuthContext"
 import { BACKEND_URL } from "../lib/constants/urls"
 
 interface LinearIssue {
-  id: string;
-  title: string;
-  description: string;
+  id: string
+  title: string
+  description: string
   state: {
-    id: string;
-    name: string;
-  };
+    id: string
+    name: string
+  }
   labels: {
     nodes: {
-      id: string;
-      name: string;
-    }[];
-  };
-  dueDate: string;
-  createdAt: string;
-  updatedAt: string;
-  priority: number;
+      id: string
+      name: string
+    }[]
+  }
+  dueDate: string
+  createdAt: string
+  updatedAt: string
+  priority: number
   project: {
-    id: string;
-    name: string;
-  };
+    id: string
+    name: string
+  }
   assignee: {
-    id: string;
-    name: string;
-  };
-  url: string;
+    id: string
+    name: string
+  }
+  url: string
 }
 
 const useLinear = () => {
