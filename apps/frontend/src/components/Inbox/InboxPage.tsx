@@ -11,10 +11,10 @@ import classNames from "@/src/utils/classNames"
 export const InboxPage: React.FC = () => {
   const { selectedItem } = useInboxStore()
   return (
-    <div className="h-full flex gap-8">
+    <div className="flex h-full gap-8">
       <div
         className={classNames(
-          "flex flex-col h-full max-w-[800px] gap-8 text-sm",
+          "flex h-full max-w-[800px] flex-col gap-8 text-sm",
           selectedItem ? "w-1/2" : "w-full"
         )}
       >
@@ -22,7 +22,7 @@ export const InboxPage: React.FC = () => {
           <Icon icon="hugeicons:inbox" className="text-[38px]" />
           <h1 className="text-2xl font-semibold">Inbox</h1>
         </header>
-        <div className="flex flex-col h-full pb-16 gap-4">
+        <div className="flex h-full flex-col gap-4 pb-16">
           <InboxAddItem />
           <InboxItems />
         </div>

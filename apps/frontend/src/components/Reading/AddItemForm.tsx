@@ -107,18 +107,18 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="text-base text-foreground w-full p-5 pr-28 border border-foreground/10 rounded bg-background focus:outline-none focus:border-foreground/50 transition-colors truncate"
+        className="w-full truncate rounded border border-foreground/10 bg-background p-5 pr-28 text-base text-foreground transition-colors focus:border-foreground/50 focus:outline-none"
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         disabled={isSaving}
       />
       {input && !isSaving && (
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-foreground/8 px-1">
+        <span className="text-foreground/8 absolute right-3 top-1/2 -translate-y-1/2 transform px-1 text-sm">
           Press ↵ to save
         </span>
       )}
       {isSaving && (
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 bg-background px-1">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 transform bg-background px-1 text-xs text-gray-500">
           Saving...
         </span>
       )}

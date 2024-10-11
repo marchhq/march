@@ -5,9 +5,9 @@ import { ThisWeekSection } from "@/src/components/ThisWeek/ThisWeekSection"
 
 export const ThisWeekPage: React.FC = () => {
   return (
-    <div className="w-9/12 flex flex-col gap-8">
+    <div className="flex w-9/12 flex-col gap-8">
       <div className="flex items-center gap-8 text-sm">
-        <h1 className="text-foreground text-2xl">Week 1</h1>
+        <h1 className="text-2xl text-foreground">Week 1</h1>
         <div className="flex gap-4">
           <p>0/6 completed</p>
           <p>0%</p>
