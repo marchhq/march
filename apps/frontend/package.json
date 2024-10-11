@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
-    "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
@@ -39,7 +38,6 @@
     "@tiptap/react": "^2.5.8",
     "@tiptap/starter-kit": "^2.5.8",
     "@tiptap/suggestion": "^2.6.6",
-    "@types/react-beautiful-dnd": "^13.1.8",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -49,17 +47,13 @@
     "lucide-react": "^0.439.0",
     "next": "^14.2.5",
     "react": "^18.3.1",
-    "react-beautiful-dnd": "^13.1.1",
     "react-day-picker": "8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
-    "react-intersection-observer": "^9.13.0",
     "react-resizable-panels": "^2.0.20",
-    "sharp": "^0.33.4",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",
-    "use-debounce": "^10.0.3",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
