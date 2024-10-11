@@ -3,10 +3,11 @@
 To get a local copy up and running, please follow these simple steps.
 
 ## Prerequisites
+
 Here is what you need to run march.
 
-* Node.js (Version: >=18.x)
-* pnpm (recommended)
+- Node.js (Version: >=18.x)
+- pnpm (recommended)
 
 ## Development
 
@@ -30,6 +31,7 @@ cd march
 ```
 git checkout -b <feature-branch-name>
 ```
+
 4. Install packages with pnpm
 
 ```
@@ -49,6 +51,7 @@ pnpm dev
 ### Linear integration
 
 To set up the Linear integration:
+
 1. Sign up for a Linear account at https://linear.app if you haven't already.
 2. Create a new Linear OAuth application in your Linear settings.
 3. Fill in the following environment variables in your `.env` file:
