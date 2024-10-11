@@ -53,11 +53,11 @@ router.route("/:space/blocks/:block/").get(getBlockController);
 router.route("/:space/blocks/:block/").put(updateBlockController);
 router.route("/:space/blocks/:block/").delete(deleteBlockController);
 
-// item controllers
-router.route("/:space/blocks/:block/items/").post(createItemController);
 // todo: take a look here
 router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
 
+// item controllers
+router.route("/:space/blocks/:block/items/").post(createItemController);
 router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
 router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
