@@ -1,9 +1,10 @@
 import { Label } from "../../models/lib/label.model.js";
 
-const createLabel = async (labelData, user) => {
+const createLabel = async (labelData, user, space) => {
     const label = new Label({
         ...labelData,
-        user
+        user,
+        space
     });
 
     await label.save();

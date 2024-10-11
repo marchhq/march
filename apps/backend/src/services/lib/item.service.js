@@ -225,7 +225,8 @@ const moveItemtoDate = async (date, id) => {
     return item;
 };
 
-const getItemFilterByLabel = async (labelId, userId) => {
+const getItemFilterByLabel = async (label, userId, space) => {
+    // find label then item
     const items = await Item.find({
         labels: { $in: [labelId] },
         user: userId

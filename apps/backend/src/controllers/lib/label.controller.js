@@ -4,8 +4,9 @@ const createLabelController = async (req, res, next) => {
     try {
         const labelData = req.body;
         const user = req.user._id;
+        const { space } = req.params;
 
-        const label = await createLabel(labelData, user);
+        const label = await createLabel(labelData, user, space);
 
         res.json({
             label

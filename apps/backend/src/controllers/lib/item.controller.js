@@ -122,11 +122,11 @@ const getItemController = async (req, res, next) => {
 };
 
 const getItemFilterByLabelController = async (req, res, next) => {
-    const { label } = req.query;
+    const { space, label } = req.query;
     const user = req.user._id;
 
     try {
-        const items = await getItemFilterByLabel(label, user);
+        const items = await getItemFilterByLabel(label, user, space);
         res.status(200).json(items);
     } catch (err) {
         next(err);
