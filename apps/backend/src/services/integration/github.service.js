@@ -5,6 +5,8 @@ import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
+
+
 const fetchInstallationDetails = async (installationId, user) => {
     try {
         const appId = environment.GITHUB_APP_ID;
@@ -26,6 +28,10 @@ const fetchInstallationDetails = async (installationId, user) => {
         await octokit.apps.listReposAccessibleToInstallation({
             installation_id: installationId
         });
+        // Ensure user integration field exists
+        user.integration = user.integration || {};
+        user.integration.github = user.integration.github || {};
+
         user.integration.github.installationId = installationId
         user.integration.github.connected = true
         user.save();
@@ -46,6 +52,7 @@ const processWebhookEvent = async (event, payload) => {
     }
     const user = await User.findOne({ 'integration.github.installationId': installationId });
     if (!user) {
+        console.log(`User not found for installation ID: ${installationId}`);
         return;
     }
     const userId = user._id;
