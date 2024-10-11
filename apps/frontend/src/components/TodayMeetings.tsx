@@ -46,7 +46,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
   if (isLoading) {
     return (
       <ol>
-        <li className="text-[#DCDCDD]/80 text-lg font-medium">
+        <li className="text-lg font-medium text-[#DCDCDD]/80">
           <SkeletonCard />
         </li>
       </ol>
@@ -56,13 +56,13 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
   return (
     <ol className="text-[16px]">
       {agendaItems.length === 0 ? (
-        <li className="text-[#DCDCDD]/80 text-lg font-medium">
+        <li className="text-lg font-medium text-[#DCDCDD]/80">
           No agenda items
         </li>
       ) : (
         agendaItems.map((item, index) => (
           <React.Fragment key={index}>
-            <li className="text-primary-foreground/80 font-medium">
+            <li className="font-medium text-primary-foreground/80">
               {item.title}
             </li>
             <p className="mt-1">
@@ -71,7 +71,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
             <a
               href={item.link}
               target="_blank"
-              className="text-primary-foreground mt-4 mb-8 flex justify-start items-center gap-2"
+              className="mb-8 mt-4 flex items-center justify-start gap-2 text-primary-foreground"
             >
               Join Meeting
               <span>

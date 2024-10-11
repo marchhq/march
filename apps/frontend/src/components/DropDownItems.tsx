@@ -67,12 +67,12 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-2 relative group">
+    <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
         {item.isCompleted ? <CheckedBox /> : <Box />}
       </button>
       <li
-        className={`${item.isCompleted ? "text-[#6D7077]" : "text-white"} flex items-center gap-2 min-w-0`}
+        className={`${item.isCompleted ? "text-[#6D7077]" : "text-white"} flex min-w-0 items-center gap-2`}
       >
         {item.metadata?.url ? (
           <a
@@ -93,14 +93,14 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span className="size-2 bg-[#E34136]/80 rounded-full inline-block flex-shrink-0"></span>
+                <span className="inline-block size-2 flex-shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
               <TooltipContent>{getOverdueText()}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
       </li>
-      <div className="transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+      <div className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <AddToSpace itemId={item._id} />
       </div>
     </div>

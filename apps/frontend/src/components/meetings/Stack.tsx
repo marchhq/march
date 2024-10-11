@@ -37,7 +37,7 @@ export const Stack: React.FC<StackProps> = ({
     <>
       <span
         onClick={handleClose}
-        className="hover:text-foreground cursor-pointer"
+        className="cursor-pointer hover:text-foreground"
       >
         stack
       </span>
@@ -47,14 +47,14 @@ export const Stack: React.FC<StackProps> = ({
           className={classNames(
             closeToggle ? "hidden" : "visible",
             meet.id === currentMeetId
-              ? "border border-[#262626CC] rounded-md p-3 -mx-3"
+              ? "-mx-3 rounded-md border border-[#262626CC] p-3"
               : "",
-            "space-y-2 mb-8 mt-4"
+            "mb-8 mt-4 space-y-2"
           )}
         >
           <Link
             href={`/space/meetings/${meet.id}`}
-            className=" cursor-pointer text-primary-foreground font-medium text-[16px] block"
+            className="block cursor-pointer text-[16px] font-medium text-primary-foreground"
           >
             {meet.title}
           </Link>
@@ -67,7 +67,7 @@ export const Stack: React.FC<StackProps> = ({
             rel="noopener noreferrer"
             className="block"
           >
-            <span className="flex justify-start items-center gap-2 text-[16px] text-primary-foreground">
+            <span className="flex items-center justify-start gap-2 text-[16px] text-primary-foreground">
               <LinkIcon />
               Google Meet
             </span>
