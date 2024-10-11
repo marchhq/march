@@ -49,7 +49,7 @@ export const InboxItems: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full gap-2 overflow-y-auto pr-1">
+    <div className="flex h-full flex-col gap-2 overflow-y-auto pr-1">
       {inboxItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
@@ -57,41 +57,40 @@ export const InboxItems: React.FC = () => {
           <div
             key={item._id}
             className={
-              "flex justify-between text-left gap-1 p-4 bg-transparent border-transparent border rounded-lg hover:border-border group"
+              "group flex justify-between gap-1 rounded-lg border border-transparent bg-transparent p-4 text-left hover:border-border focus:border-border focus:outline-none"
             }
-            onDoubleClick={() => handleExpand(item)}
+            onClick={() => handleExpand(item)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                handleExpand(item)
+              }
+            }}
+            tabIndex={0}
+            role="button"
           >
-            <div className="flex flex-col w-full truncate">
+            <div className="flex w-full flex-col truncate">
               <div className="flex justify-between text-foreground">
-                <div className="w-full flex items-start gap-2">
+                <div className="flex w-full items-start gap-2">
                   <ItemIcon type={item.source || "march"} />
-                  <p>{item.title}</p>
+                  <p className="mr-1">{item.title}</p>
+                  <div className="flex items-center gap-2 text-xs text-secondary-foreground">
+                    <button className="hover-text invisible group-hover:visible">
+                      <Icon
+                        icon="humbleicons:clock"
+                        className="mt-0.5 text-[18px]"
+                      />
+                    </button>
+                    <button className="hover-text invisible group-hover:visible">
+                      <Icon
+                        icon="mingcute:move-line"
+                        className="mt-0.5 text-[18px]"
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="ml-[18px] pl-2 text-xs">
-                <p className="truncate max-w-full">{item.description}</p>
-              </div>
-            </div>
-            <div className="flex items-center text-secondary-foreground text-xs">
-              <div className="flex gap-4">
-                <button className="invisible group-hover:visible hover-text">
-                  <Icon
-                    icon="humbleicons:clock"
-                    className="mt-0.5 text-[18px]"
-                  />
-                </button>
-                <button className="invisible group-hover:visible hover-text">
-                  <Icon
-                    icon="mingcute:move-line"
-                    className="mt-0.5 text-[18px]"
-                  />
-                </button>
-                <button className="invisible group-hover:visible hover-text">
-                  <Icon
-                    icon="fluent:archive-24-regular"
-                    className="mt-0.5 text-[18px]"
-                  />
-                </button>
+                <p className="max-w-full truncate">{item.description}</p>
               </div>
             </div>
           </div>
