@@ -34,7 +34,7 @@ import {
     getMeetingByIdController,
     recentUpcomingMeetingController
 } from "../../controllers/page/meeting.controller.js";
-import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController, getLabelsBySpaceController } from "../../controllers/lib/label.controller.js";
+import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
 
 const router = Router();
 
@@ -54,7 +54,6 @@ router.route("/:space/labels/").get(getLabelsController)
 router.route("/:space/labels/:label/").get(getLabelController)
 router.route("/:space/labels/:label/").put(updateLabelController)
 router.route("/:space/labels/:label/").delete(deleteLabelController)
-router.route("/:space/labels/").get(getLabelsBySpaceController)
 
 // Block controllers
 router.route("/:space/blocks/").post(createBlockController);

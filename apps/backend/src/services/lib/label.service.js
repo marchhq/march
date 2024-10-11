@@ -56,9 +56,10 @@ const getLabelsBySpace = async (user, space) => {
     return labels;
 }
 
-const getLabel = async (id) => {
+const getLabel = async (id, space) => {
     const label = await Label.findOne({
-        uuid: id
+        _id: id,
+        space
     });
     if (!label) {
         const error = new Error("Label not found")
@@ -68,9 +69,10 @@ const getLabel = async (id) => {
     return label;
 }
 
-const updateLabel = async (id, updatedData) => {
+const updateLabel = async (id, updatedData, space) => {
     const updatedLabel = await Label.findOneAndUpdate({
-        uuid: id
+        _id: id,
+        space
     },
     { $set: updatedData },
     { new: true }
@@ -85,7 +87,8 @@ const updateLabel = async (id, updatedData) => {
 
 const deleteLabel = async (id, space) => {
     await Label.findOneAndDelete({
-        uuid: id
+        _id: id,
+        space
     });
 }
 
