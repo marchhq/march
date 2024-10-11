@@ -7,7 +7,8 @@ const getUserItems = async (me) => {
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
-        spaces: { $exists: true, $eq: [] }
+        spaces: { $exists: true, $eq: [] },
+        status: { $ne: "archive" }
     })
         .sort({ createdAt: -1 });
 
@@ -194,11 +195,21 @@ const moveItemtoDate = async (date, id) => {
 
     return item;
 };
+
 const getItemFilterByLabel = async (labelId, userId) => {
     const items = await Item.find({
         labels: { $in: [labelId] },
         user: userId
     })
+
+    return items;
+};
+
+const searchItemsByTitle = async (title) => {
+    const items = await Item.find({
+        title: { $regex: title, $options: 'i' },
+        isDeleted: false
+    }).exec();
 
     return items;
 };
@@ -214,5 +225,6 @@ export {
     moveItemtoDate,
     getUserTodayItems,
     getAllitems,
-    getItemFilterByLabel
+    getItemFilterByLabel,
+    searchItemsByTitle
 }
