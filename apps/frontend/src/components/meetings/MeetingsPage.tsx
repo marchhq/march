@@ -1,37 +1,41 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react"
 import { MeetNotes } from "./MeetNotes"
 import { Stack } from "./Stack"
-import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store";
-import { useAuth } from "@/src/contexts/AuthContext";
-import { Meet } from '@/src/lib/@types/Items/Meet';
-import { getCurrentWeekMeets } from '@/src/utils/meet';
+import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
+import { useAuth } from "@/src/contexts/AuthContext"
+import { Meet } from "@/src/lib/@types/Items/Meet"
+import { getCurrentWeekMeets } from "@/src/utils/meet"
 
 interface MeetingPageProps {
   meetId: string
 }
 
 const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
-  const { session } = useAuth();
-  const fetchUpcomingMeets = useMeetsStore((state: MeetsStoreType) => state.fetchUpcomingMeets);
-  const upcomingMeets = useMeetsStore((state: MeetsStoreType) => state.upcomingMeetings);
-  const [currentWeekMeets, setCurrentWeekMeets] = useState<Meet[]>([]);
-  const [currentMeet, setCurrentMeet] = useState<Meet | null>(null);
+  const { session } = useAuth()
+  const fetchUpcomingMeets = useMeetsStore(
+    (state: MeetsStoreType) => state.fetchUpcomingMeets
+  )
+  const upcomingMeets = useMeetsStore(
+    (state: MeetsStoreType) => state.upcomingMeetings
+  )
+  const [currentWeekMeets, setCurrentWeekMeets] = useState<Meet[]>([])
+  const [currentMeet, setCurrentMeet] = useState<Meet | null>(null)
 
   useEffect(() => {
     fetchUpcomingMeets(session)
   }, [fetchUpcomingMeets, session])
 
   useEffect(() => {
-    const meets = getCurrentWeekMeets(upcomingMeets);
-    setCurrentWeekMeets(meets);
-    const current = meets.find(meet => meet._id === meetId);
-    setCurrentMeet(current || null);
+    const meets = getCurrentWeekMeets(upcomingMeets)
+    setCurrentWeekMeets(meets)
+    const current = meets.find((meet) => meet._id === meetId)
+    setCurrentMeet(current || null)
   }, [upcomingMeets, meetId])
 
   if (currentWeekMeets.length === 0 || !currentMeet) {
-    return <div>loading...</div>;
+    return <div>loading...</div>
   }
 
   return (
@@ -46,4 +50,4 @@ const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
   )
 }
 
-export default MeetingPage;
+export default MeetingPage
