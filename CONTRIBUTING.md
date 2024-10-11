@@ -10,10 +10,9 @@ Contributions are what makes the open source community such an amazing place to 
 
 — Now wait for someone from core to remove #need approval label so that you don't end up doing something that is not validated yet or march does not need it.
 
-  - **Our Process**:
-    - We genrally respond to a PR within 14 hours.
-    - We greatly value new feature ideas. To ensure consistency in the product's direction, they undergo review and approval.
-
+- **Our Process**:
+  - We genrally respond to a PR within 14 hours.
+  - We greatly value new feature ideas. To ensure consistency in the product's direction, they undergo review and approval.
 
 ## Developing
 
@@ -41,6 +40,7 @@ cd march
 ```
 git checkout -b <feature-branch-name>
 ```
+
 4. Install packages with pnpm
 
 ```
@@ -56,6 +56,7 @@ Go to the `app/backend` and `app/frontend` directories and duplicate the `.env.e
 ```
 pnpm dev
 ```
+
 ## Making a Pull Request
 
 - Be sure to [check the "Allow edits from maintainers" option](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork) while creating your PR.
