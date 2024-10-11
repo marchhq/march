@@ -16,7 +16,6 @@ import {
     getItemFilterByLabelController
 } from "../../controllers/lib/item.controller.js";
 import {
-    getNotesController,
     getMostRecentUpdatedNoteController
 } from "../../controllers/lib/note.controller.js";
 
@@ -46,15 +45,23 @@ router.route("/:space/").get(getSpaceController);
 router.route("/:space/").put(updateSpaceController);
 router.route("/name/:space").get(getSpaceByNameController);
 
+// items filter by label name
+router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
+
+// Labels controller left with this
+router.route("/:space/labels/create/").post(createLabelController)
+router.route("/:space/labels/overview/").get(getLabelsController)
+router.route("/:space/labels/:label/").get(getLabelController)
+router.route("/:space/labels/:label/").put(updateLabelController)
+router.route("/:space/labels/:label/").delete(deleteLabelController)
+router.route("/:space/labels/").get(getLabelsBySpaceController)
+
 // Block controllers
 router.route("/:space/blocks/").post(createBlockController);
 router.route("/:space/blocks/").get(getBlocksController);
 router.route("/:space/blocks/:block/").get(getBlockController);
 router.route("/:space/blocks/:block/").put(updateBlockController);
 router.route("/:space/blocks/:block/").delete(deleteBlockController);
-
-// todo: take a look here
-router.route("/items/filter-by-label/").get(getItemFilterByLabelController)
 
 // item controllers
 router.route("/:space/blocks/:block/items/").post(createItemController);
@@ -63,7 +70,6 @@ router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
 
 // note controllers
-router.route("/notes/overview/").get(getNotesController);
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
 
 // Meeting controllers
@@ -73,13 +79,5 @@ router.route("/meetings/recent-upcoming-meeting/").get(recentUpcomingMeetingCont
 router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
-
-// Labels controller left with this
-router.route("/labels/create/").post(createLabelController)
-router.route("/labels/overview/").get(getLabelsController)
-router.route("/labels/:label/").get(getLabelController)
-router.route("/labels/:label/").put(updateLabelController)
-router.route("/labels/:label/").delete(deleteLabelController)
-router.route("/spaces/:space/labels/").get(getLabelsBySpaceController)
 
 export default router;

@@ -32,6 +32,8 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 
 // get all items
 router.route("/items/").get(getAllitemsController);
+
+// search and filter items
 router.route("/items/search/").get(searchItemsByTitleController);
 router.route("/items/filter/").get(filterItemsController);
 
