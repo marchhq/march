@@ -155,6 +155,9 @@ const Card = ({ title, _id, status, handleDragStart }) => {
         layoutId={_id}
         draggable="true"
         onDragStart={(e) => handleDragStart(e, { _id, status })}
+        onClick={() => {
+          console.log("test")
+        }}
         className="group flex cursor-grab flex-col gap-1 rounded-lg border border-transparent p-4 text-left hover:border-border active:cursor-grabbing"
       >
         <p className="text-sm text-neutral-100">{title}</p>
