@@ -182,7 +182,7 @@ const DropIndicator = ({ beforeId, column }) => {
     <div
       data-before={beforeId || "-1"}
       data-column={column}
-      className="h-px w-full bg-secondary-foreground opacity-0"
+      className="mx-auto h-px w-[95%] bg-secondary-foreground opacity-0"
     />
   )
 }
