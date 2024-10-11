@@ -38,12 +38,7 @@ export const ThisWeekPage: React.FC = () => {
 
   return (
     <div className="flex size-full">
-      <div
-        className={classNames(
-          "flex flex-col gap-8",
-          selectedItem ? "w-1/2" : "w-full lg:w-9/12"
-        )}
-      >
+      <div className={"flex flex-auto flex-col gap-12 pr-4"}>
         <div className="flex items-center gap-8 text-sm">
           <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
           <div className="flex gap-4">

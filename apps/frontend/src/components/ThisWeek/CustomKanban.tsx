@@ -27,27 +27,27 @@ const Board = () => {
   }
 
   return (
-    <div className="flex size-full gap-3 p-12">
+    <div className="flex size-full gap-16">
       <Column
         title="todo"
         column="todo"
         items={items.filter((item) => item.status === "todo")}
         onDragEnd={handleDragEnd}
-        icon="material-symbols:circle-outline"
+        icon="carbon:circle-outline"
       />
       <Column
         title="in progress"
         column="in progress"
         items={items.filter((item) => item.status === "in progress")}
         onDragEnd={handleDragEnd}
-        icon="carbon:circle-dash"
+        icon="carbon:in-progress"
       />
       <Column
         title="done"
         column="done"
         items={items.filter((item) => item.status === "done")}
         onDragEnd={handleDragEnd}
-        icon="material-symbols:circle"
+        icon="carbon:circle-solid"
       />
     </div>
   )
@@ -125,10 +125,10 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
   }
 
   return (
-    <div className="group/section flex flex-1 flex-col gap-4">
+    <div className="group/section flex flex-1 flex-col gap-4 rounded-lg p-4">
       <div className="flex items-center gap-2 text-xl text-foreground">
         <Icon icon={icon} />
-        <h2>{title}</h2>
+        <h2 className="font-semibold">{title}</h2>
       </div>
       <div
         onDrop={handleDragEnd}

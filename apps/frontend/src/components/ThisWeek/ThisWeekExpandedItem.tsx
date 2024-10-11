@@ -93,7 +93,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
   }
 
   return (
-    <div className={classNames(selectedItem ? "w-[200px]" : "")}>
+    <div className="flex-auto">
       {selectedItem && (
         <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
