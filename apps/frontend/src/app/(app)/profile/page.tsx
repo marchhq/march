@@ -21,11 +21,11 @@ const ProfilePage: React.FC = () => {
   if (!user) return <div>User not found</div>
 
   return (
-    <div className="mt-28 bg-background text-foreground w-1/2 ml-[15%]">
+    <div className="ml-[15%] mt-28 w-1/2 bg-background text-foreground">
       <UserInfo user={user} />
       <Integrations user={user} />
-      <footer className="text-[16px] text-muted-foreground mt-24 mb-28">
-        <p className="font-semibold mb-2">march 0.1</p>
+      <footer className="text-muted-foreground mb-28 mt-24 text-[16px]">
+        <p className="mb-2 font-semibold">march 0.1</p>
         <p className="text-xs text-secondary-foreground">
           — crafted for the makers to{" "}
           <span className="text-primary-foreground">get things done</span>;
