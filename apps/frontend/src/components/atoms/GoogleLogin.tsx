@@ -2,10 +2,10 @@
 
 import React from "react"
 
+import { Icon } from "@iconify-icon/react"
 import { useGoogleLogin } from "@react-oauth/google"
 
 import { FRONTEND_URL } from "@/src/lib/constants/urls"
-import { GoogleColored } from "@/src/lib/icons/GoogleColored"
 
 const GoogleLogin = (): JSX.Element => {
   const LoginWithGoogle = useGoogleLogin({
@@ -20,10 +20,10 @@ const GoogleLogin = (): JSX.Element => {
   return (
     <button
       onClick={LoginWithGoogle}
-      className="flex w-96 items-center justify-center gap-x-6 bg-transparent  p-3 font-semibold text-[#464748] hover:text-gray-100"
+      className="flex items-center justify-center gap-2 bg-transparent w-fit p-1 font-semibold text-secondary-foreground hover-text"
     >
-      <GoogleColored />
-      Continue with google
+      <Icon icon="flat-color-icons:google" className="text-[20px]" />
+      continue with google
     </button>
   )
 }

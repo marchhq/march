@@ -53,7 +53,6 @@ export const ThisWeekPage: React.FC = () => {
         <ThisWeekArrows onChangeWeek={handleWeekChange} />
       </div>
       <CustomKanban />
-      <div>test</div>
     </div>
   )
 }
