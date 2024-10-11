@@ -56,6 +56,18 @@ const getLabelsBySpace = async (user, space) => {
     return labels;
 }
 
+const getLabelByName = async (name, user, space) => {
+    const labels = await Label.find({
+        name,
+        user,
+        space
+    })
+        .sort({ name: 1 })
+        .exec();
+
+    return labels;
+}
+
 const getLabel = async (id, space) => {
     const label = await Label.findOne({
         _id: id,
@@ -121,6 +133,7 @@ const getOrCreateLabels = async (labels, userId) => {
 export {
     createLabel,
     createLabels,
+    getLabelByName,
     getLabels,
     getLabel,
     updateLabel,
