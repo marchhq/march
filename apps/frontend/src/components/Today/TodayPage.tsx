@@ -19,12 +19,12 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="h-full overflow-y-auto bg-background ml-[260px]">
+    <main className="ml-[160px] h-full overflow-y-auto bg-background">
       <section className="mt-4 flex max-w-[96%] items-center justify-end gap-4">
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
       </section>
-      <section className="mt-6 flex justify-between">
+      <section className="mt-6 flex justify-between px-16">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
             <DatePicker
@@ -36,7 +36,7 @@ const TodayPage: React.FC = () => {
               onDateChange={setSelectedDate}
             />
           </header>
-          <section className="mt-6 mb-4">
+          <section className="mb-4 mt-6">
             <TodayTextArea selectedDate={selectedDate} />
           </section>
           <section className="space-y-8 text-[16px] text-secondary-foreground">

@@ -39,11 +39,11 @@ const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
   }
 
   return (
-    <main className="p-16 h-full text-gray-color flex justify-between">
+    <main className="flex h-full justify-between p-16 text-gray-color">
       <section>
         <MeetNotes meetData={currentMeet} />
       </section>
-      <section className="max-w-[200px] text-sm w-full text-secondary-foreground">
+      <section className="w-full max-w-[200px] text-sm text-secondary-foreground">
         <Stack currentWeekMeets={currentWeekMeets} currentMeetId={meetId} />
       </section>
     </main>

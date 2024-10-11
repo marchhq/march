@@ -2,7 +2,7 @@ import { InboxPage } from "@/src/components/Inbox/InboxPage"
 
 const Inbox: React.FC = () => {
   return (
-    <section className="h-full overflow-y-auto bg-background ml-[260px] p-16 text-secondary-foreground">
+    <section className="ml-[160px] h-full overflow-y-hidden bg-background p-16 text-secondary-foreground">
       <InboxPage />
     </section>
   )
