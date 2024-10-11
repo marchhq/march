@@ -9,7 +9,6 @@ import { ThisWeekArrows } from "./ThisWeekArrows"
 import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
 import { Item } from "@/src/lib/@types/Items/Items"
 import useItemsStore from "@/src/lib/store/items.store"
-import classNames from "@/src/utils/classNames"
 import {
   getCurrentWeek,
   getFormattedDateRange,
@@ -22,7 +21,7 @@ export const ThisWeekPage: React.FC = () => {
   const weekNumber = getCurrentWeek(currentDate)
   const totalWeeks = getWeeksInMonth(currentDate)
   const formattedDateRange = getFormattedDateRange(currentDate)
-  const { items, selectedItem } = useItemsStore()
+  const { items } = useItemsStore()
 
   const doneItems = items.filter((item: Item) => item.status === "done")
 
