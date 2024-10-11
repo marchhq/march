@@ -1,7 +1,8 @@
 "use client"
 
+import { Icon } from "@iconify-icon/react"
+
 import useGitHubLogin from "@/src/hooks/useGithubLogin"
-import { GithubDark } from "@/src/lib/icons/Github"
 
 export const GithubLogin = (): JSX.Element => {
   const handleLogin = useGitHubLogin()
@@ -9,10 +10,10 @@ export const GithubLogin = (): JSX.Element => {
   return (
     <button
       onClick={handleLogin}
-      className="flex w-96 items-center justify-center gap-x-6 bg-transparent p-3.5 font-semibold text-[#464748] hover:text-gray-100"
+      className="flex items-center justify-center gap-2 bg-transparent w-fit p-1 font-semibold text-secondary-foreground hover-text"
     >
-      <GithubDark />
-      <span className="pr-1">Continue with github</span>
+      <Icon icon="ri:github-fill" className="text-[20px]" />
+      <span className="pr-1">continue with github</span>
     </button>
   )
 }
