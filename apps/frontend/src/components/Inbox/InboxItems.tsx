@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useCallback, useState, useRef } from "react"
+import React, { useEffect, useCallback, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
@@ -18,8 +18,6 @@ import useInboxStore from "@/src/lib/store/inbox.store"
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
-  const clickTimer = useRef<NodeJS.Timeout | null>(null)
-  const clickCount = useRef<number>(0)
 
   const {
     isFetched,
@@ -52,25 +50,12 @@ export const InboxItems: React.FC = () => {
     [setSelectedItem]
   )
 
-  const handleClick = useCallback(
+  const handleRightClick = useCallback(
     (e: React.MouseEvent, item: InboxItem) => {
       e.preventDefault()
-      clickCount.current += 1
-
-      if (clickCount.current === 1) {
-        clickTimer.current = setTimeout(() => {
-          if (clickCount.current === 1) {
-            handleExpand(item)
-          }
-          clickCount.current = 0
-        }, 200)
-      } else if (clickCount.current === 2) {
-        if (clickTimer.current) clearTimeout(clickTimer.current)
-        setOpenDropdownId(item._id)
-        clickCount.current = 0
-      }
+      setOpenDropdownId(item._id)
     },
-    [handleExpand]
+    []
   )
 
   const handleDropdownClose = useCallback(() => {
@@ -102,7 +87,8 @@ export const InboxItems: React.FC = () => {
           <div
             key={item._id}
             className="group relative flex justify-between gap-1 rounded-lg border border-transparent bg-transparent p-4 text-left hover:border-border focus:border-border focus:outline-none"
-            onClick={(e) => handleClick(e, item)}
+            onClick={() => handleExpand(item)}
+            onContextMenu={(e) => handleRightClick(e, item)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 handleExpand(item)
@@ -119,17 +105,17 @@ export const InboxItems: React.FC = () => {
                     className="mt-0.5 text-[18px]"
                   />
                   <p className="mr-1">{item.title}</p>
-                  <ItemIcon type={item.source || "march"} />
+                  {/* <ItemIcon type={item.source || "march"} />*/}
                   <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                    <button className="hover-text group-hover:visible">
+                    <button className="invisible group-hover:visible">
                       <Icon
                         icon="humbleicons:clock"
                         className="mt-0.5 text-[18px]"
                       />
                     </button>
-                    <button className="hover-text group-hover:visible">
+                    <button className="invisible group-hover:visible">
                       <Icon
-                        icon="hugeicons:arrow-move-down-right"
+                        icon="mingcute:move-line"
                         className="mt-0.5 text-[18px]"
                       />
                     </button>
@@ -141,27 +127,29 @@ export const InboxItems: React.FC = () => {
                     <DropdownMenuTrigger asChild>
                       <div className="absolute inset-0" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="border-[#26262699] bg-background p-2 text-foreground"
-                      align="start"
-                      alignOffset={-20}
-                      sideOffset={20}
-                    >
-                      {menuItems.map((menuItem) => (
-                        <DropdownMenuItem
-                          key={menuItem.name}
-                          className="hover-bg"
-                        >
-                          <button className="hover-text hover-bg flex w-full items-center justify-start gap-3.5 text-primary-foreground group-hover:visible">
-                            <Icon
-                              icon={menuItem.icon}
-                              className="text-[15px]"
-                            />
-                            <span>{menuItem.name}</span>
-                          </button>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
+                    {openDropdownId === item._id && (
+                      <DropdownMenuContent
+                        className="border-[#26262699] bg-background p-2 text-foreground"
+                        align="start"
+                        alignOffset={200}
+                        sideOffset={-20}
+                      >
+                        {menuItems.map((menuItem) => (
+                          <DropdownMenuItem
+                            key={menuItem.name}
+                            className="hover-bg"
+                          >
+                            <button className="hover-text hover-bg flex w-full items-center justify-start gap-3.5 text-primary-foreground group-hover:visible">
+                              <Icon
+                                icon={menuItem.icon}
+                                className="text-[15px]"
+                              />
+                              <span>{menuItem.name}</span>
+                            </button>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    )}
                   </DropdownMenu>
                 </div>
               </div>
