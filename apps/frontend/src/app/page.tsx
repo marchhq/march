@@ -19,15 +19,15 @@ export const metadata: Metadata = generateMetadata({
 const Home: React.FC = () => {
   return (
     <main className="grid h-screen w-full place-content-center bg-background text-center text-muted">
-      <div className="flex flex-col items-center justify-between h-screen w-full max-w-7xl pb-16 pt-2">
-        <div className="flex flex-col items-center justify-center gap-12 size-full">
+      <div className="flex h-screen w-full max-w-7xl flex-col items-center justify-between pb-16 pt-2">
+        <div className="flex size-full flex-col items-center justify-center gap-12">
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="flex items-center justify-center p-2">
               <LogoDark />
             </div>
             <h2 className="text-3xl font-bold">Login to March</h2>
           </div>
-          <div className="flex flex-col gap-1 text-base text-secondary-foreground font-medium">
+          <div className="flex flex-col gap-1 text-base font-medium text-secondary-foreground">
             <p>
               engineered for <span className="text-foreground">makers,</span>
             </p>
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
               <p className="text-foreground">to get things done.</p>
             </div>
           </div>
-          <div className="flex flex-col items-center w-full gap-4 text-base">
+          <div className="flex w-full flex-col items-center gap-4 text-base">
             <GoogleLogin />
             <GithubLogin />
           </div>
