@@ -28,6 +28,7 @@ const handleGithubCallbackController = async (req, res, next) => {
         const installationId = req.query.installation_id;
         const user = req.user;
         await fetchInstallationDetails(installationId, user);
+        
         res.status(200).send({
             message: 'GitHub App installed successfully'
         });

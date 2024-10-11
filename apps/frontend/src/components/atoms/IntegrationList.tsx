@@ -7,6 +7,8 @@ import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
+import useGithubLogin from "@/src/hooks/useGithubLogin"
+
 
 const integrations = [
   {
@@ -41,13 +43,25 @@ const integrations = [
 
 export const IntegrationList = (): JSX.Element => {
   const user = useUserInfo()
-  const handleLogin = useGoogleCalendarLogin('/profile')
-
+  const handleLogin = useGoogleCalendarLogin('/profile');
+  const handleGitHubLogin = useGithubLogin();
+ 
+  const handleIntegrationLogin = (integrationKey: string) => {
+    if (integrationKey === "googleCalendar") {
+      return handleLogin;
+    } else if (integrationKey === "github") {
+      return handleGitHubLogin; // Call GitHub login function
+    } else {
+      return () => {};  // No-op for other integrations (you can add more here as needed)
+    }
+  };
+  
   return (
     <div className=" space-y-4">
       {integrations.map((integration) => {
-        const connected =
-          user?.integrations?.[integration.key]?.connected ?? false
+        const connected =user?.integrations?.[integration.key]?.connected ?? false
+        
+          
 
         return (
           <div
@@ -60,7 +74,7 @@ export const IntegrationList = (): JSX.Element => {
               </div>
               <div className="max-w-lg">
                 <h3 className="font-medium">{integration.name}</h3>
-                <p className="text-sm text-gray-color">
+                <p className="text-sm text-gra              return () => {};  // No-op for other integrations (you can add more here as needed)y-color">
                   {integration.description}
                 </p>
               </div>
@@ -73,12 +87,13 @@ export const IntegrationList = (): JSX.Element => {
               </button>
             ) : (
               <button
-                onClick={integration.key == "googleCalendar" ? handleLogin : () => { }}
+                onClick={handleIntegrationLogin(integration.key)}
                 className="flex items-center text-sm">
                 Connect
                 <ChevronRight size={13} />
               </button>
             )}
+            
           </div>
         )
       })}
