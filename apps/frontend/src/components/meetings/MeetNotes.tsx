@@ -77,7 +77,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   return (
     <>
       <div className="flex items-center gap-1 text-sm">
-        <div className="size-4 rounded-sm bg-[#E34136]/80 mr-4"></div>
+        <div className="mr-4 size-4 rounded-sm bg-[#E34136]/80"></div>
         <p>
           {meetData.metadata.start.dateTime
             ? formatDate(new Date(meetData.metadata.start.dateTime))
@@ -93,7 +93,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
         <a
           href={meetData.metadata.hangoutLink}
           target="_blank"
-          className="flex items-center gap-3 px-4 rounded-md text-secondary-foreground hover-bg"
+          className="hover-bg flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
         >
           <span>
             <LinkIcon />
@@ -106,7 +106,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
           value={title}
           onChange={handleTitleChange}
           placeholder="Untitled"
-          className="w-full py-6 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
           rows={1}
         />
         <div className="text-foreground">

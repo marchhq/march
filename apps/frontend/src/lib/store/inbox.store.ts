@@ -14,6 +14,10 @@ const useInboxStore = create<InboxStoreType>((set) => ({
   inboxItems: [],
   todayInboxItems: [],
   overdueInboxItems: [],
+  selectedItem: null,
+  setSelectedItem: (selectedItem: InboxItem | null) => {
+    set({ selectedItem })
+  },
   isLoading: false,
   isFetched: false,
   setIsFetched: (isFetched: boolean) => {
