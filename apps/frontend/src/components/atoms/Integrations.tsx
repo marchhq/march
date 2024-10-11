@@ -55,9 +55,9 @@ export const Integrations = () => {
                 <h3 className="text-lg">{integration.name}</h3>
               </div>
             </div>
-            <p className="text-left text-sm">{integration.description}</p>
+            <p className="text-left text-xs">{integration.description}</p>
             <div className="flex items-center justify-between">
-              <p className="text-sm">{integration.footer}</p>
+              <p className="text-xs">{integration.footer}</p>
               <Icon
                 icon="flowbite:arrow-right-outline"
                 className="text-[18px]"
