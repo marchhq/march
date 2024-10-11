@@ -47,7 +47,7 @@ export const Integrations = () => {
         {integrations.map((integration, index) => (
           <div
             key={index}
-            className="flex flex-col gap-4 p-4 cursor-pointer border border-transparent rounded-lg hover-text hover-bg hover:border-border"
+            className="hover-text hover-bg flex cursor-pointer flex-col gap-4 rounded-lg border border-transparent p-4 hover:border-border"
           >
             <div className="">
               <div className="flex items-center gap-2">

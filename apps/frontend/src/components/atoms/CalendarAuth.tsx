@@ -10,7 +10,7 @@ const CalendarAuth = (): JSX.Element => {
   return (
     <button
       onClick={handleConnect}
-      className="flex items-center justify-center gap-2 bg-transparent w-fit p-1 font-semibold text-secondary-foreground hover-text"
+      className="hover-text flex w-fit items-center justify-center gap-2 bg-transparent p-1 font-semibold text-secondary-foreground"
     >
       <Icon icon="flat-color-icons:google" className="text-[20px]" />
       <span className="pr-1">authorize with google</span>
