@@ -32,9 +32,9 @@ app.post("/linear/webhook", handleWebhook);
 app.post("/calendar/webhook", handleCalendarWebhook);
 app.post("/gmail/webhook", handlePushNotification);
 app.post("/github/webhook", handleGithubWebhook);
-/*
+
 app.post("/sms", handleSmsItemCreation);
-*/
+
 initRoutes(app);
 // Express error handler
 app.use((err, req, res, next) => {
