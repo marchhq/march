@@ -105,7 +105,7 @@ export function AuthProvider({
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white dark:bg-[#313131]">
+      <div className="flex h-screen items-center justify-center dark:bg-[#313131]">
         <Loader />
       </div>
     )
