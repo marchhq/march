@@ -3,7 +3,7 @@ import { handleGithubCallbackController , handleGithubIntegrationController } fr
 
 const router = Router();
 
-router.post('/integrate/github', handleGithubIntegrationController);
+
 router.get('/callback/', handleGithubCallbackController);
 
 export default router;
