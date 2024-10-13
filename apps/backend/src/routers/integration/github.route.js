@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleGithubCallbackController , handleGithubIntegrationController } from "../../controllers/integration/github.controller.js";
+import { handleGithubCallbackController} from "../../controllers/integration/github.controller.js";
 
 const router = Router();
 
