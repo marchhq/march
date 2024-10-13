@@ -74,7 +74,7 @@ export const IntegrationList = (): JSX.Element => {
               </div>
               <div className="max-w-lg">
                 <h3 className="font-medium">{integration.name}</h3>
-                <p className="text-sm text-gra              return () => {};  // No-op for other integrations (you can add more here as needed)y-color">
+                <p className="text-sm text-gray-color">
                   {integration.description}
                 </p>
               </div>
