@@ -7,6 +7,8 @@ export interface InboxStoreType {
   isLoading: boolean
   isFetched: boolean
   setIsFetched: (isFetched: boolean) => void
+  optimisticDoneStatus: string
+  setOptimisticDoneStatus: (optimisticDoneStatus: string) => void
   fetchInboxData: (session: string) => Promise<InboxItem[]>
   fetchTodayInboxData: (session: string) => Promise<TodayInboxItem[]>
   fetchOverdueInboxData: (session: string) => Promise<OverdueInboxItem[]>
