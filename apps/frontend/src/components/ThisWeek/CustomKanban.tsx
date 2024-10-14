@@ -278,8 +278,10 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
               setText(e.target.value)
             }
             onKeyDown={handleKeyDown}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
             placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent py-1 text-base font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent px-4 py-1 text-base font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
           />
           <button type="submit" style={{ display: "none" }}></button>
