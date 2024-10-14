@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
@@ -13,6 +13,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
+  const divRef = useRef<HTMLDivElement>(null)
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
   const [editItemId, setEditItemId] = useState<string | null>(null)
@@ -83,14 +84,27 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }, 1000)
   }, [editedItem, selectedItem, timeoutId])
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsAnimating(true)
     setTimeout(() => {
       setSelectedItem(null)
       handleCancelEditItem()
       setIsAnimating(false)
     }, 100)
-  }
+  }, [setSelectedItem])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (divRef.current && !divRef.current.contains(event.target as Node)) {
+        handleClose()
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [handleClose])
 
   const handleCancelEditItem = () => {
     setEditItemId(null)
@@ -99,6 +113,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
 
   return (
     <div
+      ref={divRef}
       className={classNames(
         `absolute inset-y-0 left-1/2 z-50 size-full border-l border-border bg-background p-4 text-foreground`,
         isAnimating ? "animate-slide-out" : "animate-slide-in"
