@@ -7,6 +7,7 @@ import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
+import useGithubLogin from "@/src/hooks/useGithubLogin"
 
 const integrations = [
   {
@@ -42,13 +43,24 @@ const integrations = [
 export const IntegrationList = (): JSX.Element => {
   const user = useUserInfo()
   const handleLogin = useGoogleCalendarLogin('/profile')
+  const handleGitHubLogin = useGithubLogin()
+
+  const handleIntegrationLogin = (integrationKey: string) => {
+    if (integrationKey === "googleCalendar") {
+      return handleLogin()
+    } else if (integrationKey === "github") {
+      return handleGitHubLogin()
+    } else {
+      return () => {}
+    }
+  }
 
   return (
     <div className=" space-y-4">
       {integrations.map((integration) => {
         const connected =
           user?.integrations?.[integration.key]?.connected ?? false
-
+        console.log(user?.integrations?.[integration.key]?.connected)
         return (
           <div
             key={integration.name}
@@ -73,7 +85,7 @@ export const IntegrationList = (): JSX.Element => {
               </button>
             ) : (
               <button
-                onClick={integration.key == "googleCalendar" ? handleLogin : () => { }}
+                onClick={() => handleIntegrationLogin(integration.key)}
                 className="flex items-center text-sm">
                 Connect
                 <ChevronRight size={13} />
