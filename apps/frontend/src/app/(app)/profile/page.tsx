@@ -63,6 +63,10 @@ const ProfilePage: React.FC = () => {
           <IntegrationList />
         </div>
       </div>
+        <div className="ml-[15%] mt-28 w-1/2 bg-background text-foreground">
+        <UserInfo user={user} />
+        <Integrations user={user} />
+        </div>
        <footer className="text-muted-foreground mb-28 mt-24 text-[16px]">
         <p className="mb-2 font-semibold">march 0.1</p>
         <p className="text-xs text-secondary-foreground">
