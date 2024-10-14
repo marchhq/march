@@ -6,6 +6,7 @@ import { addWeeks } from "date-fns"
 
 import { CustomKanban } from "./CustomKanban"
 import { ThisWeekArrows } from "./ThisWeekArrows"
+import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
 import { Item } from "@/src/lib/@types/Items/Items"
 import useItemsStore from "@/src/lib/store/items.store"
 import {
@@ -35,24 +36,27 @@ export const ThisWeekPage: React.FC = () => {
   }
 
   return (
-    <div className="flex w-9/12 flex-col gap-8">
-      <div className="flex items-center gap-8 text-sm">
-        <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
-        <div className="flex gap-4">
-          <p>
-            {doneItems.length}/{items.length} completed
-          </p>
-          <p>
-            {items.length > 0
-              ? ((doneItems.length / items.length) * 100).toFixed(0)
-              : 0}
-            %
-          </p>
-          <p>{formattedDateRange}</p>
+    <div className="flex size-full">
+      <div className={"flex flex-auto flex-col gap-12 pr-4"}>
+        <div className="flex items-center gap-8 text-sm">
+          <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
+          <div className="flex gap-4">
+            <p>
+              {doneItems.length}/{items.length} completed
+            </p>
+            <p>
+              {items.length > 0
+                ? ((doneItems.length / items.length) * 100).toFixed(0)
+                : 0}
+              %
+            </p>
+            <p>{formattedDateRange}</p>
+          </div>
+          <ThisWeekArrows onChangeWeek={handleWeekChange} />
         </div>
-        <ThisWeekArrows onChangeWeek={handleWeekChange} />
+        <CustomKanban />
       </div>
-      <CustomKanban />
+      <ThisWeekExpandedItem />
     </div>
   )
 }

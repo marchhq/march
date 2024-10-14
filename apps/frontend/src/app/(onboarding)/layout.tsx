@@ -6,11 +6,11 @@ const OnboardingLayout = ({
   children: React.ReactNode
 }): JSX.Element => {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <main className="grow overflow-y-auto">{children}</main>
-      <footer className="w-full p-4">
+    <div className="grid h-full w-full place-content-center bg-background text-center text-muted">
+      <div className="flex flex-col gap-8 h-screen w-full max-w-7xl pb-16 pt-8">
+        {children}
         <ProgressBar />
-      </footer>
+      </div>
     </div>
   )
 }

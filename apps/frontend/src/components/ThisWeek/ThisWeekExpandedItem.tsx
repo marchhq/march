@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from "react"
 import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useInboxStore from "@/src/lib/store/inbox.store"
+import useItemsStore from "@/src/lib/store/items.store"
+import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
-export const InboxExpandedItem: React.FC = () => {
+export const ThisWeekExpandedItem: React.FC = () => {
   const { session } = useAuth()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
@@ -22,7 +23,7 @@ export const InboxExpandedItem: React.FC = () => {
     description: "",
   })
 
-  const { selectedItem, setSelectedItem, updateItem } = useInboxStore()
+  const { selectedItem, setSelectedItem, updateItem } = useItemsStore()
 
   useEffect(() => {
     if (selectedItem) {
@@ -32,7 +33,6 @@ export const InboxExpandedItem: React.FC = () => {
         description: selectedItem.description || "",
       })
     }
-    console.log(editedItem)
   }, [selectedItem, setEditItemId, setEditedItem])
 
   useEffect(() => {
@@ -50,6 +50,25 @@ export const InboxExpandedItem: React.FC = () => {
       textarea.style.height = `${textarea.scrollHeight}px`
     }
   }, [editedItem.description])
+
+  const handleSaveEditedItem = async (item: any) => {
+    try {
+      console.log("editedItem", editedItem)
+      if (editItemId && editedItem) {
+        updateItem(
+          session,
+          {
+            ...item,
+            title: editedItem.title,
+            description: editedItem.description,
+          },
+          item._id
+        )
+      }
+    } catch (error) {
+      console.error("error updating item:", error)
+    }
+  }
 
   useEffect(() => {
     if (timeoutId.current) {
@@ -73,27 +92,8 @@ export const InboxExpandedItem: React.FC = () => {
     setEditedItem({ title: "", description: "" })
   }
 
-  const handleSaveEditedItem = async (item: any) => {
-    try {
-      console.log("item", item)
-      if (editItemId && editedItem) {
-        updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-            description: editedItem.description,
-          },
-          item._id
-        )
-      }
-    } catch (error) {
-      console.error("error updating item:", error)
-    }
-  }
-
   return (
-    <div>
+    <div className="flex-auto">
       {selectedItem && (
         <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
