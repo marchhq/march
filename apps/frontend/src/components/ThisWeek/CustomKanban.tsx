@@ -83,7 +83,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
 
   const clearHighlights = () => {
     const indicators = Array.from(
-      document.querySelectorAll(`[data-column="${column}"]`)
+      document.querySelectorAll<HTMLElement>(`[data-column="${column}"]`)
     )
     indicators.forEach((i) => {
       i.style.opacity = "0"
