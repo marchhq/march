@@ -95,7 +95,7 @@ const Sidebar: React.FC = () => {
     <div
       className={classNames(
         "mx-4 my-auto flex select-none flex-col rounded-[30px] border border-border px-2 transition-all",
-        isExpanded ? "py-8" : "pt-8 pb-2"
+        isExpanded ? "py-8" : "pb-2 pt-8"
       )}
       onMouseLeave={() => setIsExpanded(false)}
     >
@@ -114,7 +114,7 @@ const Sidebar: React.FC = () => {
                 pathname.includes("/today/")
                   ? "border-foreground"
                   : "border-secondary-foreground",
-                "flex justify-center items-center w-[26px] h-[26px] border-2 rounded-md text-xs font-bold"
+                "flex h-[26px] w-[26px] items-center justify-center rounded-md border-2 text-xs font-bold"
               )}
             >
               {day}
@@ -178,7 +178,7 @@ const Sidebar: React.FC = () => {
           </div>
         ) : (
           <div
-            className="flex items-center justify-center gap-2 p-1 pb-7 rounded-lg text-secondary-foreground"
+            className="flex items-center justify-center gap-2 rounded-lg p-1 pb-7 text-secondary-foreground"
             onMouseEnter={() => setIsExpanded(true)}
           >
             ...

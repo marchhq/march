@@ -44,21 +44,21 @@ const ReadingListComponent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="text-secondary-foreground p-16">
+      <div className="p-16 text-secondary-foreground">
         Loading reading list...
       </div>
     )
   }
 
   if (error) {
-    return <div className="text-red-500 p-16">{error}</div>
+    return <div className="p-16 text-red-500">{error}</div>
   }
 
   return (
     <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
         {blockId && (
-          <div className="flex flex-col gap-8 text-base w-3/5 ml-[10%] mt-32">
+          <div className="ml-[10%] mt-32 flex w-3/5 flex-col gap-8 text-base">
             <AddItemForm blockId={blockId} />
             <ItemsList blockId={blockId} />
           </div>

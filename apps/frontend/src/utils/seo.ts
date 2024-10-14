@@ -45,7 +45,7 @@ const generateMetadata = ({
       shortcut: "/icons/icon-512x512.png",
       apple: "/icons/icon-512x512.png",
     },
-    manifest: `${BASE_URL}/manifest.json`,
+    // manifest: `${BASE_URL}/manifest.json`,
 
     openGraph: {
       type: "website",
