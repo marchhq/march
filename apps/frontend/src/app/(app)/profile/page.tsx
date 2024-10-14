@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useEffect } from "react"
+
 import Integrations from "@/src/components/profile/Integrations"
 import UserInfo from "@/src/components/profile/UserInfo"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useUserStore from "@/src/lib/store/user.store"
-
 
 
 const ProfilePage: React.FC = () => {
@@ -21,6 +21,8 @@ const ProfilePage: React.FC = () => {
   if (isLoading) return <div>Loading...</div>
   if (error) return <div className="text-red-500">{error}</div>
   if (!user) return <div>User not found</div>
+
+  
    return (
     <div className="ml-[15%] mt-28 w-1/2 bg-background text-foreground">
       <UserInfo user={user} />
