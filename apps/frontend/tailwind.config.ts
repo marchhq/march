@@ -13,6 +13,14 @@ const config: Config = {
         min: "0.005",
       },
       keyframes: {
+        "slide-in": {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" },
+        },
+        "slide-out": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(100%)" },
+        },
         fadeIn: {
           from: {
             opacity: "0",
@@ -156,6 +164,8 @@ const config: Config = {
         },
       },
       animation: {
+        "slide-in": "slide-in 0.1s ease-out",
+        "slide-out": "slide-out 0.1s ease-in",
         fadeIn: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)",
         slideDownAndFade:
           "slideDownAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)",

@@ -14,6 +14,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
+  const [isAnimating, setIsAnimating] = useState(false)
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<{
     title: string
@@ -83,8 +84,12 @@ export const ThisWeekExpandedItem: React.FC = () => {
   }, [editedItem, selectedItem, timeoutId])
 
   const handleClose = () => {
-    setSelectedItem(null)
-    handleCancelEditItem()
+    setIsAnimating(true)
+    setTimeout(() => {
+      setSelectedItem(null)
+      handleCancelEditItem()
+      setIsAnimating(false)
+    }, 100)
   }
 
   const handleCancelEditItem = () => {
@@ -93,49 +98,51 @@ export const ThisWeekExpandedItem: React.FC = () => {
   }
 
   return (
-    <div className="flex-auto">
-      {selectedItem && (
-        <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
-          <div className="flex items-center gap-4 text-xs text-secondary-foreground">
-            <button className="flex items-center" onClick={handleClose}>
-              <Icon icon="ep:back" className="text-[18px]" />
-            </button>
-            <p className="flex items-center">
-              {formatDateYear(selectedItem.createdAt || "")}
-            </p>
-            <p>edited {fromNow(selectedItem.updatedAt || "")}</p>
-          </div>
-          <div>
-            <textarea
-              ref={textareaRefTitle}
-              value={editedItem.title}
-              onChange={(e) =>
-                setEditedItem((prev) => ({
-                  ...prev,
-                  title: e.target.value,
-                }))
-              }
-              placeholder="title"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-              rows={1}
-            />
-            <textarea
-              ref={textareaRefDescription}
-              value={editedItem.description}
-              onChange={(e) => {
-                setEditedItem((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }}
-              placeholder="description"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-              rows={1}
-            />
-          </div>
-          <div className="size-full"></div>
-        </div>
+    <div
+      className={classNames(
+        `absolute inset-y-0 left-1/2 z-50 size-full border-l border-border bg-background p-4 text-foreground`,
+        isAnimating ? "animate-slide-out" : "animate-slide-in"
       )}
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4 text-xs text-secondary-foreground">
+          <button className="flex items-center" onClick={handleClose}>
+            <Icon icon="ep:back" className="text-[18px]" />
+          </button>
+          <p className="flex items-center">
+            {formatDateYear(selectedItem?.createdAt || "")}
+          </p>
+          <p>edited {fromNow(selectedItem?.updatedAt || "")}</p>
+        </div>
+        <div>
+          <textarea
+            ref={textareaRefTitle}
+            value={editedItem.title}
+            onChange={(e) =>
+              setEditedItem((prev) => ({
+                ...prev,
+                title: e.target.value,
+              }))
+            }
+            placeholder="title"
+            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+            rows={1}
+          />
+          <textarea
+            ref={textareaRefDescription}
+            value={editedItem.description}
+            onChange={(e) => {
+              setEditedItem((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }))
+            }}
+            placeholder="description"
+            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+            rows={1}
+          />
+        </div>
+      </div>
     </div>
   )
 }

@@ -8,7 +8,7 @@ import useItemsStore from "@/src/lib/store/items.store"
 
 export const CustomKanban = () => {
   return (
-    <div className="w-full">
+    <div className="w-10/12">
       <Board />
     </div>
   )
@@ -27,7 +27,7 @@ const Board = () => {
   }
 
   return (
-    <div className="flex size-full gap-16">
+    <div className="flex size-full gap-8">
       <Column
         title="todo"
         column="todo"
@@ -125,7 +125,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
   }
 
   return (
-    <div className="group/section flex flex-1 flex-col gap-4 rounded-lg p-4">
+    <div className="group/section flex flex-1 flex-col gap-4 rounded-lg">
       <div className="flex items-center gap-2 text-xl text-foreground">
         <Icon icon={icon} />
         <h2 className="font-semibold">{title}</h2>
