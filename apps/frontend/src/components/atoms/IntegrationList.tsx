@@ -6,8 +6,8 @@ import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
-import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
-import useGithubLogin from "@/src/hooks/useGithubLogin"
+import { useGoogleCalendarLogin } from "@/src/hooks/useCalendar"
+import { useGithubLogin } from "@/src/hooks/useGithubLogin"
 
 
 const integrations = [
@@ -59,10 +59,7 @@ export const IntegrationList = (): JSX.Element => {
   return (
     <div className=" space-y-4">
       {integrations.map((integration) => {
-        const connected =user?.integrations?.[integration.key]?.connected ?? false
-        
-          
-
+        const connected =user?.integrations?.[integration.key]?.connected ?? false ;
         return (
           <div
             key={integration.name}
