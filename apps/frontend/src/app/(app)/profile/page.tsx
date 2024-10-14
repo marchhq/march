@@ -1,6 +1,9 @@
 "use client"
 
 import React, { useEffect } from "react"
+import ProfilePicture from "@/src/components/profile/ProfilePicture"
+import InfoBox from "@/src/components/profile/InfoBox"
+import IntegrationList from "@/src/components/profile/IntegrationList"
 import Integrations from "@/src/components/profile/Integrations"
 import UserInfo from "@/src/components/profile/UserInfo"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -60,6 +63,13 @@ const ProfilePage: React.FC = () => {
           <IntegrationList />
         </div>
       </div>
+       <footer className="text-muted-foreground mb-28 mt-24 text-[16px]">
+        <p className="mb-2 font-semibold">march 0.1</p>
+        <p className="text-xs text-secondary-foreground">
+          — crafted for the makers to{" "}
+          <span className="text-primary-foreground">get things done</span>;
+        </p>
+      </footer>
     </section>
   )
 }
