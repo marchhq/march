@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useEffect } from "react"
+
+import Integrations from "@/src/components/profile/Integrations"
+import UserInfo from "@/src/components/profile/UserInfo"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useUserStore from "@/src/lib/store/user.store"
-import UserInfo from "@/src/components/profile/UserInfo"
-import Integrations from "@/src/components/profile/Integrations"
 
 const ProfilePage: React.FC = () => {
   const { session } = useAuth()
