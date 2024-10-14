@@ -7,7 +7,6 @@ import { createLabels } from '../services/lib/label.service.js';
 const processSpaceJob = async (job) => {
     const { user } = job.data;
     const spaces = [
-        { name: "This Week", icon: "" },
         { name: "Meetings", icon: "meeting" },
         { name: "Notes", icon: "note" },
         { name: "Reading List", icon: "book" }
@@ -27,7 +26,6 @@ const processSpaceJob = async (job) => {
         }
 
         const blocks = [
-            { name: "This Week", data: { type: "board", filter: { date: ["this-week"] } } },
             { name: "Meetings", data: { type: "meeting" } },
             { name: "Notes", data: { type: "note" } },
             { name: "Reading List", data: { type: "reading" } }
@@ -36,7 +34,6 @@ const processSpaceJob = async (job) => {
         await createBlock(user, blocks[0], spaceIds[0]);
         await createBlock(user, blocks[1], spaceIds[1]);
         await createBlock(user, blocks[2], spaceIds[2]);
-        await createBlock(user, blocks[3], spaceIds[3]);
 
         if (readingSpace) {
             const labelsData = [
