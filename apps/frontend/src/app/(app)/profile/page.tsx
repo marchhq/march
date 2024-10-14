@@ -1,9 +1,11 @@
 "use client"
 
 import React, { useEffect } from "react"
-import { InfoBox } from "@/src/components/atoms/InfoBox"
-import { IntegrationList } from "@/src/components/atoms/IntegrationList"
-import { ProfilePicture } from "@/src/components/atoms/ProfilePicture"
+import Integrations from "@/src/components/profile/Integrations"
+import UserInfo from "@/src/components/profile/UserInfo"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useUserStore from "@/src/lib/store/user.store"
+
 
 const ProfilePage: React.FC = () => {
   const { session } = useAuth()
