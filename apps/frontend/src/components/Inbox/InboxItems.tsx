@@ -82,7 +82,7 @@ export const InboxItems: React.FC = () => {
           }
           return newSet
         })
-
+        setSelectedItem(null)
         setTimeout(() => {
           updateItem(session, { status: newStatus }, id)
           setAnimatingItems((prev) => {
@@ -90,10 +90,10 @@ export const InboxItems: React.FC = () => {
             newSet.delete(id)
             return newSet
           })
-        }, 500)
+        }, 400)
       }
     },
-    [session, updateItem]
+    [session, updateItem, setSelectedItem]
   )
 
   if (isLoading) {
@@ -129,7 +129,7 @@ export const InboxItems: React.FC = () => {
   const filteredItems = inboxItems.filter((item) => item.status !== "done")
 
   return (
-    <div className="flex h-full flex-col gap-2 overflow-y-auto overflow-x-hidden pr-1">
+    <div className="flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
       {filteredItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
@@ -137,9 +137,9 @@ export const InboxItems: React.FC = () => {
           <ContextMenu key={item._id}>
             <ContextMenuTrigger asChild>
               <div
-                className={`group relative flex justify-between gap-1 rounded-lg border p-4 text-left transition-all duration-700 hover:border-border focus:outline-none focus:ring-0 ${
+                className={`group relative flex justify-between gap-1 rounded-lg border p-4 text-left transition-all duration-300 hover:border-border focus:outline-none focus:ring-0 ${
                   animatingItems.has(item._id!)
-                    ? "translate-x-full opacity-0 blur-lg"
+                    ? "transform-none opacity-100 sm:translate-x-full sm:opacity-0 sm:blur-lg"
                     : ""
                 } ${
                   selectedItem && selectedItem._id === item._id
