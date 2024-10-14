@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Check } from "lucide-react"
+import { Icon } from "@iconify-icon/react"
 
 const messages = [
   {
@@ -19,9 +19,10 @@ const CalendarList = (): JSX.Element => {
     <ul className="max-w-[340px] space-y-4">
       {messages.map((message, index) => (
         <li key={index} className="ml-6 flex items-start space-x-3">
-          <span className="mt-0.5 shrink-0">
-            <Check size={18} color="#464748" />
-          </span>
+          <Icon
+            icon="material-symbols-light:check"
+            className="mt-0.5 text-[20px]"
+          />
           <span className="text-left font-semibold text-gray-color">
             {message.description}
           </span>

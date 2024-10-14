@@ -120,14 +120,14 @@ const FeedbackModal = () => {
         <div className="px-4">
           <input
             placeholder="Title"
-            className="w-full mt-2 px-2 py-4 text-xl border-none bg-transparent placeholder-secondary-foreground focus:outline-none"
+            className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder-secondary-foreground focus:outline-none"
             {...register("title", { required: true })}
           />
           {errors.title && (
             <span className="px-3 text-xs text-red-500">Title is required</span>
           )}
           <Textarea
-            className="min-h-40 text-sm border-none placeholder-secondary-foreground"
+            className="min-h-40 border-none text-sm placeholder-secondary-foreground"
             placeholder="add description..."
             {...register("feedback", { required: true })}
           />
@@ -139,7 +139,7 @@ const FeedbackModal = () => {
           <div className="my-3 cursor-pointer rounded-lg">
             <label
               htmlFor="attachment"
-              className="relative flex items-center gap-2 px-2 py-1 "
+              className="relative flex items-center gap-2 px-2 py-1"
             >
               <input
                 className="absolute size-full rounded-lg border-primary-foreground opacity-0"
@@ -185,7 +185,7 @@ const FeedbackModal = () => {
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground hover-bg disabled:cursor-not-allowed"
+              className="hover-bg cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground disabled:cursor-not-allowed"
               disabled={isLoading}
               type="submit"
             >
