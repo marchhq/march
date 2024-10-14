@@ -47,13 +47,11 @@ const checkAccessTokenValidity = async (accessToken) => {
             }
         });
         if (response.status === 200) {
-            console.log("Access token is valid.");
             return true;
         }
     } catch (error) {
         console.error("Error checking access token validity:", error);
     }
-    console.log("Access token is invalid.");
     return false;
 };
 
