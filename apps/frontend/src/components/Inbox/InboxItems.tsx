@@ -1,23 +1,21 @@
 "use client"
 
-import React, { useEffect, useCallback, useState } from "react"
+import React, { useEffect, useCallback } from "react"
 
 import { Icon } from "@iconify-icon/react"
-
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown"
-import { ItemIcon } from "@/src/components/atoms/ItemIcon"
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+} from "@radix-ui/react-context-menu"
+
 import { useAuth } from "@/src/contexts/AuthContext"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
 
   const {
     isFetched,
@@ -25,6 +23,8 @@ export const InboxItems: React.FC = () => {
     fetchInboxData,
     inboxItems,
     isLoading,
+    deleteItem,
+    updateItem,
     setSelectedItem,
   } = useInboxStore()
 
@@ -50,17 +50,29 @@ export const InboxItems: React.FC = () => {
     [setSelectedItem]
   )
 
-  const handleRightClick = useCallback(
-    (e: React.MouseEvent, item: InboxItem) => {
-      e.preventDefault()
-      setOpenDropdownId(item._id)
+  const handleDelete = useCallback(
+    (id: string) => {
+      if (id) {
+        deleteItem(session, id)
+      }
     },
-    []
+    [deleteItem, session]
   )
 
-  const handleDropdownClose = useCallback(() => {
-    setOpenDropdownId(null)
-  }, [])
+  const handleDone = useCallback(
+    (
+      event: React.MouseEvent,
+      id: string,
+      currentStatus: string | undefined
+    ) => {
+      event.stopPropagation()
+      if (id) {
+        const newStatus = currentStatus === "done" ? "null" : "done"
+        updateItem(session, { status: newStatus }, id)
+      }
+    },
+    [session, updateItem]
+  )
 
   if (isLoading) {
     return (
@@ -70,94 +82,112 @@ export const InboxItems: React.FC = () => {
     )
   }
 
-  const menuItems = [
-    { name: "Expand", icon: "ri:expand-diagonal-s-line" },
-    { name: "Mark as done", icon: "weui:done-outlined" },
-    { name: "Plan", icon: "humbleicons:clock" },
-    { name: "Move", icon: "hugeicons:arrow-move-down-right" },
-    { name: "Delete", icon: "weui:delete-outlined" },
+  const menuItems = (item: InboxItem) => [
+    {
+      name: "Expand",
+      icon: "ri:expand-diagonal-s-line",
+      onClick: () => handleExpand(item),
+    },
+    {
+      name: "Mark as done",
+      icon: "weui:done-outlined",
+      onClick: (event: React.MouseEvent) =>
+        handleDone(event, item._id!, item.status),
+    },
+    { name: "Plan", icon: "humbleicons:clock", onClick: () => {} },
+    { name: "Move", icon: "mingcute:move-line", onClick: () => {} },
+    {
+      name: "Delete",
+      icon: "weui:delete-outlined",
+      color: "#C45205",
+      onClick: () => handleDelete(item._id!),
+    },
   ]
+
+  const filteredItems = inboxItems.filter((item) => item.status !== "done")
 
   return (
     <div className="flex h-full flex-col gap-2 overflow-y-auto pr-1">
-      {inboxItems.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
-        inboxItems.map((item) => (
-          <div
-            key={item._id}
-            className="group relative flex justify-between gap-1 rounded-lg border border-transparent bg-transparent p-4 text-left hover:border-border focus:border-border focus:outline-none"
-            onClick={() => handleExpand(item)}
-            onContextMenu={(e) => handleRightClick(e, item)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                handleExpand(item)
-              }
-            }}
-            tabIndex={0}
-            role="button"
-          >
-            <div className="flex w-full flex-col truncate">
-              <div className="flex justify-between text-foreground">
-                <div className="flex w-full items-start gap-2">
-                  <Icon
-                    icon="material-symbols:circle-outline"
-                    className="mt-0.5 text-[18px]"
-                  />
-                  <p className="mr-1">{item.title}</p>
-                  {/* <ItemIcon type={item.source || "march"} />*/}
-                  <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                    <button className="invisible group-hover:visible">
-                      <Icon
-                        icon="humbleicons:clock"
-                        className="mt-0.5 text-[18px]"
-                      />
-                    </button>
-                    <button className="invisible group-hover:visible">
-                      <Icon
-                        icon="mingcute:move-line"
-                        className="mt-0.5 text-[18px]"
-                      />
-                    </button>
-                  </div>
-                  <DropdownMenu
-                    open={openDropdownId === item._id}
-                    onOpenChange={handleDropdownClose}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <div className="absolute inset-0" />
-                    </DropdownMenuTrigger>
-                    {openDropdownId === item._id && (
-                      <DropdownMenuContent
-                        className="border-[#26262699] bg-background p-2 text-foreground"
-                        align="start"
-                        alignOffset={200}
-                        sideOffset={-20}
+        filteredItems.map((item) => (
+          <ContextMenu key={item._id}>
+            <ContextMenuTrigger asChild>
+              <div
+                className="group relative flex justify-between gap-1 rounded-lg border border-transparent bg-transparent p-4 text-left hover:border-border focus:border-border focus:outline-none"
+                onClick={() => handleExpand(item)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleExpand(item)
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+              >
+                <div className="flex w-full flex-col truncate">
+                  <div className="flex justify-between text-foreground">
+                    <div className="flex w-full items-start gap-2">
+                      <button
+                        onClick={(e) => handleDone(e, item._id!, item.status)}
+                        aria-label={
+                          item.status === "done"
+                            ? "Mark as not done"
+                            : "Mark as done"
+                        }
                       >
-                        {menuItems.map((menuItem) => (
-                          <DropdownMenuItem
-                            key={menuItem.name}
-                            className="hover-bg"
-                          >
-                            <button className="hover-text hover-bg flex w-full items-center justify-start gap-3.5 text-primary-foreground group-hover:visible">
-                              <Icon
-                                icon={menuItem.icon}
-                                className="text-[15px]"
-                              />
-                              <span>{menuItem.name}</span>
-                            </button>
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    )}
-                  </DropdownMenu>
+                        <Icon
+                          icon={
+                            item.status === "done"
+                              ? "weui:done2-filled"
+                              : "material-symbols:circle-outline"
+                          }
+                          className="mt-0.5 text-[18px]"
+                        />
+                      </button>
+                      <p className="mr-1">{item.title}</p>
+                      <div className="flex items-center gap-2 text-xs text-secondary-foreground">
+                        <button className="invisible group-hover:visible">
+                          <Icon
+                            icon="humbleicons:clock"
+                            className="mt-0.5 text-[18px]"
+                          />
+                        </button>
+                        <button className="invisible group-hover:visible">
+                          <Icon
+                            icon="mingcute:move-line"
+                            className="mt-0.5 text-[18px]"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-[18px] pl-2 text-xs">
+                    <p className="max-w-full truncate">{item.description}</p>
+                  </div>
                 </div>
               </div>
-              <div className="ml-[18px] pl-2 text-xs">
-                <p className="max-w-full truncate">{item.description}</p>
-              </div>
-            </div>
-          </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="rounded-md border border-border">
+              {menuItems(item).map((menuItem) => (
+                <ContextMenuItem
+                  key={menuItem.name}
+                  className="hover-bg rounded-md px-2 py-0.5"
+                >
+                  <button
+                    className="my-1 flex w-full items-center gap-3 text-primary-foreground"
+                    style={{ color: menuItem.color }}
+                    onClick={menuItem.onClick}
+                  >
+                    <Icon icon={menuItem.icon} className="text-[18px]" />
+                    <span className="flex-1 text-left text-[15px]">
+                      {menuItem.name}
+                    </span>
+                  </button>
+                </ContextMenuItem>
+              ))}
+            </ContextMenuContent>
+          </ContextMenu>
         ))
       )}
     </div>

@@ -115,18 +115,22 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       return null
     }
   },
-  updateItem: async (session: string, editedItem: InboxItem, id: string) => {
+  updateItem: async (
+    session: string,
+    editedItem: Partial<InboxItem>,
+    id: string
+  ) => {
     set((state) => ({
       inboxItems: state.inboxItems.map((item) =>
         item._id === id
           ? {
               ...item,
-              title: editedItem.title,
-              description: editedItem.description,
+              ...editedItem,
             }
           : item
       ),
     }))
+
     try {
       await axios.put(`${BACKEND_URL}/api/items/${id}`, editedItem, {
         headers: {
@@ -135,7 +139,7 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       })
     } catch (error) {
       const e = error as AxiosError
-      console.error("error updating inbox item: ", e)
+      console.error("Error updating inbox item: ", e)
     }
   },
   addItem: async (session: string, title: string, description: string) => {
