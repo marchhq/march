@@ -1,10 +1,13 @@
-import { create } from "zustand"
-import { type Item } from "../@types/Items/Items"
 import axios, { AxiosError } from "axios"
+import { create } from "zustand"
+
+import { type Item } from "../@types/Items/Items"
 import { BACKEND_URL } from "../constants/urls"
 
 export interface ItemStoreType {
   items: Item[]
+  selectedItem: Item | null
+  setSelectedItem: (selectedItem: Item | null) => void
   isFetched: boolean
   setIsFetched: (isFetched: boolean) => void
   fetchItems: (session: string, filter: string) => Promise<void>
@@ -25,10 +28,15 @@ export interface ItemStoreType {
     description?: string,
     isDeleted?: boolean
   ) => Promise<void>
+  updateItem: (session: string, editedItem: Item, id: string) => void
 }
 
 const useItemsStore = create<ItemStoreType>((set) => ({
   items: [],
+  selectedItem: null,
+  setSelectedItem: (selectedItem: Item | null) => {
+    set({ selectedItem })
+  },
   isFetched: false,
   setIsFetched: (isFetched: boolean) => set({ isFetched }),
   fetchItems: async (session: string, filter: string) => {
@@ -127,6 +135,29 @@ const useItemsStore = create<ItemStoreType>((set) => ({
       if (error instanceof AxiosError) {
         console.error(error.response?.data)
       }
+    }
+  },
+  updateItem: async (session: string, editedItem: Item, id: string) => {
+    set((state) => ({
+      items: state.items.map((item) =>
+        item._id === id
+          ? {
+              ...item,
+              title: editedItem.title,
+              description: editedItem.description,
+            }
+          : item
+      ),
+    }))
+    try {
+      await axios.put(`${BACKEND_URL}/api/items/${id}`, editedItem, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+    } catch (error) {
+      const e = error as AxiosError
+      console.error("error updating inbox item: ", e)
     }
   },
 }))
