@@ -1,14 +1,12 @@
 "use client"
 import { ChevronDown, ChevronRight } from "lucide-react"
 
+import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
-import { useGoogleCalendarLogin } from "@/src/hooks/useCalendar"
-import { useGithubLogin } from "@/src/hooks/useGithubLogin"
-
 
 const integrations = [
   {
@@ -43,23 +41,14 @@ const integrations = [
 
 export const IntegrationList = (): JSX.Element => {
   const user = useUserInfo()
-  const handleLogin = useGoogleCalendarLogin('/profile');
-  const handleGitHubLogin = useGithubLogin();
- 
-  const handleIntegrationLogin = (integrationKey: string) => {
-    if (integrationKey === "googleCalendar") {
-      return handleLogin;
-    } else if (integrationKey === "github") {
-      return handleGitHubLogin; // Call GitHub login function
-    } else {
-      return () => {};  // No-op for other integrations (you can add more here as needed)
-    }
-  };
-  
+  const handleLogin = useGoogleCalendarLogin("/profile")
+
   return (
     <div className=" space-y-4">
       {integrations.map((integration) => {
-        const connected =user?.integrations?.[integration.key]?.connected ?? false ;
+        const connected =
+          user?.integrations?.[integration.key]?.connected ?? false
+
         return (
           <div
             key={integration.name}
@@ -84,16 +73,17 @@ export const IntegrationList = (): JSX.Element => {
               </button>
             ) : (
               <button
-                onClick={handleIntegrationLogin(integration.key)}
-                className="flex items-center text-sm">
+                onClick={
+                  integration.key == "googleCalendar" ? handleLogin : () => {}
+                }
+                className="flex items-center text-sm"
+              >
                 Connect
                 <ChevronRight size={13} />
               </button>
             )}
-            
           </div>
         )
       })}
     </div>
   )
-}
