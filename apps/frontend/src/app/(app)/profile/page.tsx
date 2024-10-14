@@ -1,10 +1,23 @@
-import * as React from "react"
+"use client"
 
+import React, { useEffect } from "react"
 import { InfoBox } from "@/src/components/atoms/InfoBox"
 import { IntegrationList } from "@/src/components/atoms/IntegrationList"
 import { ProfilePicture } from "@/src/components/atoms/ProfilePicture"
 
 const ProfilePage: React.FC = () => {
+  const { session } = useAuth()
+  const { user, isLoading, error, fetchUser } = useUserStore()
+
+  useEffect(() => {
+    if (session) {
+      fetchUser(session)
+    }
+  }, [session, fetchUser])
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div className="text-red-500">{error}</div>
+  if (!user) return <div>User not found</div>
    return (
     <section className="ml-48 mt-20 bg-background text-gray-color">
       <div className="flex flex-col items-start">
