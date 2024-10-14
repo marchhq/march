@@ -6,6 +6,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -162,6 +163,16 @@ const config: Config = {
             transform: "translate(1px, -2px) rotate(-1deg)",
           },
         },
+        pulsate: {
+          "0%": {
+            transform: "scale(1)",
+            opacity: "0.1",
+          },
+          "100%": {
+            transform: "scale(1.2)",
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "slide-in": "slide-in 0.1s ease-out",
@@ -182,6 +193,7 @@ const config: Config = {
         scale: "scale 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         rise: "rise 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         shake: "shake 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        pulsate: "pulsate 2000ms ease-in-out infinite",
       },
       colors: {
         foreground: "rgba(var(--foreground))",
