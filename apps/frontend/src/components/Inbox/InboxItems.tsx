@@ -34,7 +34,7 @@ export const InboxItems: React.FC = () => {
     if (!isFetched) {
       fetchInbox()
     }
-  }, [session, fetchInboxData, setIsFetched])
+  }, [session, fetchInbox, isFetched])
 
   const handleExpand = (item: InboxItem) => {
     setSelectedItem(item)
