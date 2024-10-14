@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 import {
@@ -16,7 +16,10 @@ import useInboxStore from "@/src/lib/store/inbox.store"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
-
+  const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set())
+  const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
+    new Set()
+  )
   const {
     isFetched,
     setIsFetched,
@@ -25,6 +28,7 @@ export const InboxItems: React.FC = () => {
     isLoading,
     deleteItem,
     updateItem,
+    selectedItem,
     setSelectedItem,
   } = useInboxStore()
 
@@ -68,7 +72,25 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        updateItem(session, { status: newStatus }, id)
+        setAnimatingItems((prev) => new Set(prev).add(id))
+        setOptimisticDoneItems((prev) => {
+          const newSet = new Set(prev)
+          if (newStatus === "done") {
+            newSet.add(id)
+          } else {
+            newSet.delete(id)
+          }
+          return newSet
+        })
+
+        setTimeout(() => {
+          updateItem(session, { status: newStatus }, id)
+          setAnimatingItems((prev) => {
+            const newSet = new Set(prev)
+            newSet.delete(id)
+            return newSet
+          })
+        }, 500)
       }
     },
     [session, updateItem]
@@ -107,7 +129,7 @@ export const InboxItems: React.FC = () => {
   const filteredItems = inboxItems.filter((item) => item.status !== "done")
 
   return (
-    <div className="flex h-full flex-col gap-2 overflow-y-auto pr-1">
+    <div className="flex h-full flex-col gap-2 overflow-y-auto overflow-x-hidden pr-1">
       {filteredItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
@@ -115,7 +137,15 @@ export const InboxItems: React.FC = () => {
           <ContextMenu key={item._id}>
             <ContextMenuTrigger asChild>
               <div
-                className="group relative flex justify-between gap-1 rounded-lg border border-transparent bg-transparent p-4 text-left hover:border-border focus:border-border focus:outline-none"
+                className={`group relative flex justify-between gap-1 rounded-lg border p-4 text-left transition-all duration-700 hover:border-border focus:outline-none focus:ring-0 ${
+                  animatingItems.has(item._id!)
+                    ? "translate-x-full opacity-0 blur-lg"
+                    : ""
+                } ${
+                  selectedItem && selectedItem._id === item._id
+                    ? "border-border"
+                    : "border-transparent"
+                }`}
                 onClick={() => handleExpand(item)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -124,6 +154,10 @@ export const InboxItems: React.FC = () => {
                 }}
                 tabIndex={0}
                 role="button"
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  outline: "none",
+                }}
               >
                 <div className="flex w-full flex-col truncate">
                   <div className="flex justify-between text-foreground">
@@ -131,14 +165,15 @@ export const InboxItems: React.FC = () => {
                       <button
                         onClick={(e) => handleDone(e, item._id!, item.status)}
                         aria-label={
-                          item.status === "done"
+                          optimisticDoneItems.has(item._id!)
                             ? "Mark as not done"
                             : "Mark as done"
                         }
+                        className="focus:outline-none focus:ring-0"
                       >
                         <Icon
                           icon={
-                            item.status === "done"
+                            optimisticDoneItems.has(item._id!)
                               ? "weui:done2-filled"
                               : "material-symbols:circle-outline"
                           }
@@ -147,13 +182,13 @@ export const InboxItems: React.FC = () => {
                       </button>
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                        <button className="invisible group-hover:visible">
+                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="humbleicons:clock"
                             className="mt-0.5 text-[18px]"
                           />
                         </button>
-                        <button className="invisible group-hover:visible">
+                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="mingcute:move-line"
                             className="mt-0.5 text-[18px]"
