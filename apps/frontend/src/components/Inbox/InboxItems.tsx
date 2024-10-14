@@ -45,7 +45,7 @@ export const InboxItems: React.FC = () => {
     if (!isFetched) {
       fetchInbox()
     }
-  }, [isFetched, fetchInbox])
+  }, [session, fetchInbox, isFetched])
 
   const handleExpand = useCallback(
     (item: InboxItem) => {
