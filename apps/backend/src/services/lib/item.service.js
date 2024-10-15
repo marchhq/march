@@ -17,6 +17,35 @@ const getInboxItems = async (me) => {
     return items;
 }
 
+const getThisWeekItems = async (me) => {
+    const startOfWeek = new Date();
+    startOfWeek.setHours(0, 0, 0, 0);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const items = await Item.find({
+        user: me,
+        isArchived: false,
+        isDeleted: false,
+        spaces: { $exists: true, $eq: [] },
+        $or: [
+            { status: { $nin: ["done"] } },
+            {
+                status: "done",
+                cycleDate: { $gte: startOfWeek, $lte: endOfWeek }
+            }
+        ],
+        cycleDate: { $ne: null }
+    })
+
+    return items;
+}
+
 const getAllitems = async (me) => {
     const items = await Item.find({
         user: me,
@@ -260,5 +289,6 @@ export {
     getItemFilterByLabel,
     getAllItemsByBloack,
     searchItemsByTitle,
-    createInboxItem
+    createInboxItem,
+    getThisWeekItems
 }
