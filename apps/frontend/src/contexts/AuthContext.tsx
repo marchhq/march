@@ -5,10 +5,12 @@ import React, { createContext, useState, useEffect, useContext } from "react"
 import axios, { type AxiosError } from "axios"
 
 import { BACKEND_URL } from "../lib/constants/urls"
+import Loader from "../lib/icons/Loader"
 import { getSession, clearSession } from "../lib/server/actions/sessions"
 
 interface AuthContextType {
   session: string
+  loading: boolean
   googleLogin: (code: string) => Promise<void>
   githubLogin: (code: string) => Promise<void> // Added GitHub login function
   logout: () => Promise<void>
@@ -22,14 +24,18 @@ export function AuthProvider({
   children: React.ReactNode
 }): JSX.Element {
   const [session, setSession] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     async function loadSessionFromCookie(): Promise<void> {
       try {
+        setLoading(true)
         const session = await getSession()
         setSession(session)
       } catch (error) {
         console.error("Failed to load session", error)
+      } finally {
+        setLoading(false)
       }
     }
     void loadSessionFromCookie()
@@ -96,7 +102,11 @@ export function AuthProvider({
     }
   }
 
-  const value = { session, googleLogin, githubLogin, logout }
+  const value = { session, loading, googleLogin, githubLogin, logout }
+
+  if (loading) {
+    return <>...loading</>
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
