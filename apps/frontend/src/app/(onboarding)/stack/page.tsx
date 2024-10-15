@@ -27,7 +27,7 @@ const StackConnect: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-full  z-10 items-center justify-center">
+      <div className="z-10 flex  h-full items-center justify-center">
         <Loader />
       </div>
     )

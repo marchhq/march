@@ -22,7 +22,8 @@ const ProfilePage: React.FC = () => {
   if (!user) return <div>User not found</div>
 
   return (
-    <div className="ml-[15%] mt-28 w-1/2 bg-background text-foreground">
+    // TODO:: Can have a better way to adjust the layout(left margin) using flex
+    <div className="ml-[160px] w-1/2  bg-background p-16 text-foreground">
       <UserInfo user={user} />
       <Integrations user={user} />
       <footer className="text-muted-foreground mb-28 mt-24 text-[16px]">

@@ -3,10 +3,10 @@ import React from "react"
 const Loader = (): JSX.Element => {
   return (
     <div className="flex h-screen items-center justify-center bg-[#101010]">
-      <div className="flex flex-col justify-center items-center gap-12">
+      <div className="flex flex-col items-center justify-center gap-12">
         <div className="relative">
-          <div className="absolute inset-0 rounded-full border-2 border-[#464748] animate-pulsate"></div>
-          <div className="rounded-full p-3 relative z-10">
+          <div className="absolute inset-0 animate-pulsate rounded-full border-2 border-[#464748]"></div>
+          <div className="relative z-10 rounded-full p-3">
             <svg
               width={64}
               height={66}
@@ -26,7 +26,7 @@ const Loader = (): JSX.Element => {
             </svg>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center gap-5">
+        <div className="flex flex-col items-center justify-center gap-5">
           <p className="text-[#EDEDED]">sit tight, loading some javascripts</p>
           <p className="dark:text-neutral-600">— written by our interns;</p>
         </div>

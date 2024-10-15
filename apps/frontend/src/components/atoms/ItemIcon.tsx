@@ -14,5 +14,5 @@ const iconsMap = {
 export const ItemIcon = ({ type }: { type: string }) => {
   const icon = iconsMap[type] || iconsMap["default"]
 
-  return <Icon icon={icon} className="mt-0.5 text-[18px]" />
+  return <Icon icon={icon} className="mt-1 text-[14px]" />
 }

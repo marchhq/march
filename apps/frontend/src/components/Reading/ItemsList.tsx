@@ -42,15 +42,15 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
                 alt="Favicon"
                 width={16}
                 height={16}
-                className="mt-2 flex-shrink-0"
+                className="mt-2 shrink-0"
               />
             ) : (
               <Icon
                 icon="ph:circle-bold"
-                className="mt-2 flex-shrink-0 text-[16px] text-secondary-foreground"
+                className="mt-2 shrink-0 text-[16px] text-secondary-foreground"
               />
             )}
-            <div className="flex-grow overflow-hidden">
+            <div className="grow overflow-hidden">
               <a
                 href={url}
                 target="_blank"
@@ -60,7 +60,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
                 <h3 className="flex flex-wrap items-center text-lg font-semibold text-foreground">
                   <span className="break-all">{item.title}</span>
                   {url && (
-                    <span className="ml-2 flex flex-shrink-0 items-center">
+                    <span className="ml-2 flex shrink-0 items-center">
                       <Icon
                         icon="fluent:link-24-regular"
                         className="text-[20px] text-secondary-foreground hover:text-foreground"
