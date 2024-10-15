@@ -23,7 +23,7 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
 }) => (
   <div className="flex items-center justify-between rounded-lg py-4 text-foreground">
     <div className="flex items-center space-x-4">
-      <div className="flex items-center justify-center size-5">
+      <div className="flex size-5 items-center justify-center">
         {integration.icon}
       </div>
       <div className="max-w-md">
@@ -35,7 +35,7 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
     </div>
     {connected ? (
       <button className="flex items-center text-secondary-foreground">
-        <div className="mr-2 rounded-full bg-green-500 size-1.5"></div>
+        <div className="mr-2 size-1.5 rounded-full bg-green-500"></div>
         <span className="text-[13px]">Connected</span>
         <ChevronDown size={13} />
       </button>
@@ -74,7 +74,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         icon: <Cal />,
         name: "Google Calendar",
         description:
-          "Link your Google Calendar to manage, create, and view events without leaving the app.",
+          "Sync with google calendar to bring daily agenda to march today.",
         handleConnect: handleGoogleCalendarLogin,
       },
       {
@@ -82,7 +82,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         icon: <GithubDark />,
         name: "Github",
         description:
-          "Connect your GitHub account to access repositories and manage issues.",
+          "Link your github account to pull assigned issues, PR to your workflow.",
         handleConnect: () =>
           console.log("GitHub connection not implemented yet"),
       },
@@ -90,8 +90,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         key: "linear",
         icon: <LinearDark />,
         name: "Linear",
-        description:
-          "Integrate Linear to track and manage your project tasks and issues.",
+        description: "Bring all your assigned linear issues to march inbox.",
         handleConnect: handleLinearLogin,
       },
       {
@@ -99,7 +98,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         icon: <NotionDark />,
         name: "Notion",
         description:
-          "Link your Notion workspace to access and edit your documents seamlessly.",
+          " Pull notion database items into march to actually add in your daily action plan.",
         handleConnect: () =>
           console.log("Notion connection not implemented yet"),
       },
