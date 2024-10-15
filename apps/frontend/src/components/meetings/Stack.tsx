@@ -72,7 +72,7 @@ export const Stack: React.FC<StackProps> = ({
           {stackItems.map((meet) => (
             <div
               key={meet.id}
-              className="-mx-4 mb-16 mt-8 space-y-3 rounded-md border-[#262626CC] p-4 hover:border"
+              className="-mx-4 mb-16 mt-8 space-y-3 rounded-md border border-transparent p-4 hover:border-border"
             >
               <Link
                 href={`/space/meetings/${meet.id}`}
