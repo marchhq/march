@@ -36,29 +36,27 @@ export const ThisWeekPage: React.FC = () => {
   }
 
   return (
-    <div className="relative size-full">
-      <div className="flex size-full p-16">
-        <div className={"flex flex-auto flex-col gap-12 pr-4"}>
-          <div className="flex items-center gap-8 text-sm">
-            <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
-            <div className="flex gap-4">
-              <p>
-                {doneItems.length}/{items.length} completed
-              </p>
-              <p>
-                {items.length > 0
-                  ? ((doneItems.length / items.length) * 100).toFixed(0)
-                  : 0}
-                %
-              </p>
-              <p>{formattedDateRange}</p>
-            </div>
-            <ThisWeekArrows onChangeWeek={handleWeekChange} />
+    <div className="flex size-full p-16">
+      <div className={"relative flex flex-auto flex-col gap-12 pr-4"}>
+        <div className="flex items-center gap-8 text-sm">
+          <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
+          <div className="flex gap-4">
+            <p>
+              {doneItems.length}/{items.length} completed
+            </p>
+            <p>
+              {items.length > 0
+                ? ((doneItems.length / items.length) * 100).toFixed(0)
+                : 0}
+              %
+            </p>
+            <p>{formattedDateRange}</p>
           </div>
-          <CustomKanban />
+          <ThisWeekArrows onChangeWeek={handleWeekChange} />
         </div>
+        <CustomKanban />
+        {selectedItem && <ThisWeekExpandedItem />}
       </div>
-      {selectedItem && <ThisWeekExpandedItem />}
     </div>
   )
 }
