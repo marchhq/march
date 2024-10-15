@@ -76,8 +76,8 @@ export const GoogleCalendar = (): JSX.Element => {
 export const Cal = (): JSX.Element => {
   return (
     <svg
-      width="30"
-      height="30"
+      width="100%"
+      height="100%"
       viewBox="0 0 30 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +118,7 @@ export const Cal = (): JSX.Element => {
       </g>
       <defs>
         <clipPath id="clip0_815_22">
-          <rect width="30" height="30" fill="white" />
+          <rect width="100%" height="100%" fill="white" />
         </clipPath>
       </defs>
     </svg>

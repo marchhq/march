@@ -14,9 +14,39 @@ const createLabel = async (labelData, user) => {
     }
     return label;
 }
+
+const createLabels = async (labelsData, space, user) => {
+    const labels = labelsData.map(labelData => ({
+        ...labelData,
+        space,
+        user
+    }));
+
+    const createdLabels = await Label.insertMany(labels);
+
+    if (!createdLabels) {
+        const error = new Error("Failed to create the labels")
+        error.statusCode = 500
+        throw error
+    }
+
+    return createdLabels;
+}
+
 const getLabels = async (user) => {
     const labels = await Label.find({
         user
+    })
+        .sort({ name: 1 })
+        .exec();
+
+    return labels;
+}
+
+const getLabelsBySpace = async (user, space) => {
+    const labels = await Label.find({
+        user,
+        space
     })
         .sort({ name: 1 })
         .exec();
@@ -85,9 +115,11 @@ const getOrCreateLabels = async (labels, userId) => {
 
 export {
     createLabel,
+    createLabels,
     getLabels,
     getLabel,
     updateLabel,
     deleteLabel,
-    getOrCreateLabels
+    getOrCreateLabels,
+    getLabelsBySpace
 }

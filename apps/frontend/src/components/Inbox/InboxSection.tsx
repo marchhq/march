@@ -5,8 +5,8 @@ import { Check, Plus, X } from "@phosphor-icons/react"
 import axios from "axios"
 
 import { useAuth } from "../../contexts/AuthContext"
-import useEditorHook from "../../hooks/useEditor.hook"
 import { useToast } from "../../hooks/use-toast"
+import useEditorHook from "../../hooks/useEditor.hook"
 import { BACKEND_URL } from "../../lib/constants/urls"
 import useInboxStore from "../../lib/store/inbox.store"
 import useSpaceStore from "../../lib/store/space.store"
@@ -75,14 +75,14 @@ const InboxSection: React.FC = () => {
 
   return (
     <section>
-      <h1 className=" mb-4 flex items-center gap-4 text-4xl font-semibold text-black dark:text-zinc-300">
+      <h1 className="mb-4 flex items-center gap-4 text-4xl font-semibold text-black dark:text-zinc-300">
         Inbox
       </h1>
       {!isAddItem && (
         <Button
           onClick={() => setIsAddItem(true)}
           variant={"invisible"}
-          className="my-6 flex items-center gap-4 py-2 text-zinc-700 hover:text-white dark:text-zinc-300 "
+          className="my-6 flex items-center gap-4 py-2 text-zinc-700 hover:text-white dark:text-zinc-300"
         >
           <Plus size={21} />
           <h1 className="text-lg">Click to add an item</h1>
@@ -102,13 +102,13 @@ const InboxSection: React.FC = () => {
                 <div>inbox actions</div>
                 <div className="group">inbox actions</div>
                 <button
-                  className="rounded-lg p-1 hover:bg-secondary-foreground text-primary-foreground"
+                  className="rounded-lg p-1 text-primary-foreground hover:bg-secondary-foreground"
                   onClick={addItemToInbox}
                 >
                   <Check size={20} />
                 </button>
                 <button
-                  className="rounded-lg p-1 hover:bg-secondary-foreground text-primary-foreground"
+                  className="rounded-lg p-1 text-primary-foreground hover:bg-secondary-foreground"
                   onClick={() => {
                     setIsAddItem(false)
                     setDescription("")

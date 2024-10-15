@@ -1,12 +1,12 @@
 "use client"
 import { ChevronDown, ChevronRight } from "lucide-react"
 
+import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
-import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import useGithubLogin from "@/src/hooks/useGithubLogin"
 
 const integrations = [
@@ -85,7 +85,7 @@ export const IntegrationList = (): JSX.Element => {
               </button>
             ) : (
               <button
-                onClick={() => handleIntegrationLogin(integration.key)}
+              onClick={() => handleIntegrationLogin(integration.key)}
                 className="flex items-center text-sm">
                 Connect
                 <ChevronRight size={13} />

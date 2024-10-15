@@ -1,8 +1,12 @@
 import { useCallback } from "react"
+
 import { useRouter } from "next/navigation"
+
 import { FRONTEND_URL } from "../lib/constants/urls"
 
-const useGoogleCalendarLogin = (redirectAfterAuth: string): (() => Promise<void>) => {
+const useGoogleCalendarLogin = (
+  redirectAfterAuth: string
+): (() => Promise<void>) => {
   const router = useRouter()
 
   const handleLogin = useCallback(async () => {
@@ -15,7 +19,9 @@ const useGoogleCalendarLogin = (redirectAfterAuth: string): (() => Promise<void>
         throw new Error("Google Client ID or Redirect URI is not set")
       }
 
-      const state = encodeURIComponent(JSON.stringify({ redirect: redirectAfterAuth }))
+      const state = encodeURIComponent(
+        JSON.stringify({ redirect: redirectAfterAuth })
+      )
 
       const calAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=${GOOGLE_SCOPE}&access_type=offline&state=${state}`
 

@@ -16,7 +16,7 @@ import { Space } from "../lib/@types/Items/Space"
 import { BACKEND_URL } from "../lib/constants/urls"
 import { Space as SpaceIcon } from "@/src/lib/icons/Space"
 
-export function AddToSpace({ itemUuid }) {
+export function AddToSpace({ itemId }) {
   const [selectedSpaces, setSelectedSpaces] = React.useState<string[]>([])
   const { spaces: spaces } = useSpace() || { spaces: [] }
   const { session } = useAuth()
@@ -27,8 +27,9 @@ export function AddToSpace({ itemUuid }) {
         ? selectedSpaces.filter((id) => id !== spaces._id)
         : [...selectedSpaces, spaces._id]
       setSelectedSpaces(newSelectedSpaces)
+
       await axios.put(
-        `${BACKEND_URL}/api/items/${itemUuid}`,
+        `${BACKEND_URL}/api/items/${itemId}/`,
         {
           spaces: newSelectedSpaces,
         },

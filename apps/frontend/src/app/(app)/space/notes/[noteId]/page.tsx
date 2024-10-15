@@ -174,9 +174,9 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   }, [isSaved])
 
   return (
-    <div className="flex size-full gap-16 p-16 bg-background">
+    <div className="flex size-full gap-16 bg-background p-16">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
-        <div className="flex items-center justify-between w-full gap-4 text-sm text-secondary-foreground">
+        <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
           <div className="flex gap-8">
             <div className="flex gap-4">
               {note !== null && (
@@ -187,7 +187,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               {!loading ? (
                 <button
                   onClick={addNewNote}
-                  className="flex items-center gap-1 px-1 rounded-md truncate text-secondary-foreground hover-bg"
+                  className="hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground"
                 >
                   <PlusIcon />
                   <span>Add A New Note</span>
@@ -199,7 +199,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               )}
             </div>
             <button
-              className="flex items-center hover-text"
+              className="hover-text flex items-center"
               onClick={handleClose}
             >
               <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
@@ -220,10 +220,10 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Untitled"
-              className="w-full py-2 text-2xl font-bold resize-none overflow-hidden bg-background text-foreground placeholder:text-secondary-foreground truncate whitespace-pre-wrap break-words outline-none focus:outline-none"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
             />
-            <div className="text-primary-foreground">
+            <div className="text-foreground">
               <TextEditor editor={editor} />
             </div>
           </div>
@@ -240,7 +240,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       <div
         className={classNames(
           closeToggle ? "hidden" : "visible",
-          "flex flex-col gap-8 w-full max-w-[200px] max-h-screen text-sm text-secondary-foreground overflow-y-auto"
+          "flex max-h-screen w-full max-w-[200px] flex-col gap-8 overflow-y-auto text-sm text-secondary-foreground"
         )}
       >
         <span className="text-foreground">notes</span>
@@ -248,7 +248,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
           {notes?.map((n) => (
             <div
               key={n.uuid}
-              className="flex items-center justify-between gap-1 py-1 px-2 rounded-md hover-bg truncate group"
+              className="hover-bg group flex items-center justify-between gap-1 truncate rounded-md px-2 py-1"
               role="button"
               tabIndex={0}
               onClick={() => {
@@ -275,7 +275,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
                 )}
               </Link>
               <button
-                className="opacity-0 hover-text group-hover:opacity-100"
+                className="hover-text opacity-0 group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteNote(n)
