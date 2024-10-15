@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react"
+
 import axios from "axios"
+
 import { useAuth } from "../contexts/AuthContext"
 
 const LINEAR_CLIENT_ID = process.env.NEXT_PUBLIC_LINEAR_CLIENT_ID
@@ -73,18 +75,18 @@ const useLinear = () => {
         setError("Missing Linear OAuth configuration.")
         throw new Error("Missing Linear OAuth configuration.")
       }
-  
+
       try {
         const params = new URLSearchParams()
-        params.append('client_id', LINEAR_CLIENT_ID)
-        params.append('redirect_uri', LINEAR_REDIRECT_URL)
-        params.append('code', code)
-        params.append('grant_type', 'authorization_code')
-  
+        params.append("client_id", LINEAR_CLIENT_ID)
+        params.append("redirect_uri", LINEAR_REDIRECT_URL)
+        params.append("code", code)
+        params.append("grant_type", "authorization_code")
+
         const data = await makeRequest(`https://linear.app/oauth/token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          data: params 
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          data: params,
         })
         return data.access_token
       } catch (error) {
@@ -94,7 +96,6 @@ const useLinear = () => {
     },
     [makeRequest]
   )
-  
 
   const fetchIssues = useCallback(
     async (endpoint: string) => {
