@@ -2,6 +2,7 @@ import { Router } from "express";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController, getUserJournalByDateController } from "../../controllers/lib/journal.controller.js";
 import {
     getInboxItemsController,
+    getThisWeekItemsController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
     getUserItemsByDateControlle,
@@ -18,6 +19,7 @@ const router = Router();
 
 // inbox
 router.route("/inbox/").get(getInboxItemsController);
+router.route("/this-week/").get(getThisWeekItemsController);
 router.route("/inbox/create/").get(createInboxItemController);
 router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
