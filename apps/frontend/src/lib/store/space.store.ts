@@ -12,21 +12,21 @@ const getConfig = (session: string) => ({
 })
 
 const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
-  pages: [],
-  page: null,
+  spaces: [],
+  space: null,
   loading: false,
   error: null,
 
   // Fetch all pages
-  fetchPages: async (session: string) => {
+  fetchSpaces: async (session: string) => {
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      const response = await axios.get<{ pages: Space[] }>(
-        `${BACKEND_URL}/api/spaces/overview/`,
+      const response = await axios.get<{ spaces: Space[] }>(
+        `${BACKEND_URL}/spaces/`,
         config
       )
-      set({ pages: response.data.pages, loading: false })
+      set({ spaces: response.data.spaces, loading: false })
     } catch (error: any) {
       set({
         error: error?.response?.data?.message || "Failed to fetch pages",
@@ -36,15 +36,15 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   },
 
   // Fetch a specific page by ID
-  fetchPageById: async (id: string, session: string) => {
+  fetchSpaceById: async (id: string, session: string) => {
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      const response = await axios.get<{ page: Space }>(
-        `${BACKEND_URL}/api/spaces/${id}`,
+      const response = await axios.get<{ space: Space }>(
+        `${BACKEND_URL}/spaces/${id}`,
         config
       )
-      set({ page: response.data.page, loading: false })
+      set({ space: response.data.space, loading: false })
     } catch (error: any) {
       set({
         error: error?.response?.data?.message || "Error while fetching page",
@@ -54,18 +54,18 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   },
 
   // Create a page
-  createPage: async (data: Space, session: string) => {
+  createSpace: async (data: Space, session: string) => {
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
       // Post request, sending `CreatePage`, receiving `Page`
-      const response = await axios.post<{ page: Space }>(
-        `${BACKEND_URL}/api/spaces/create/`,
+      const response = await axios.post<{ space: Space }>(
+        `${BACKEND_URL}/spaces/`,
         data,
         config
       )
       set((state) => ({
-        pages: [response.data.page, ...state.pages], // Response contains the full `Page` object
+        spaces: [response.data.space, ...state.spaces], // Response contains the full `Space` object
         loading: false,
       }))
     } catch (error: any) {
@@ -76,20 +76,20 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
     }
   },
 
-  // Update an existing page
-  updatePage: async (_id: string, data: Space, session: string) => {
+  // Update & delete an existing page
+  updateSpace: async (_id: string, data: Space, session: string) => {
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      const response = await axios.put<{ page: Space }>(
-        `${BACKEND_URL}/api/spaces/${_id}`,
+      const response = await axios.put<{ space: Space }>(
+        `${BACKEND_URL}/spaces/${_id}`,
         data,
         config
       )
-      const updatedPage = response.data.page
+      const updatedSpace = response.data.space
       set({
-        pages: get().pages.map((page) =>
-          page._id === _id ? updatedPage : page
+        spaces: get().spaces.map((space) =>
+          space._id === _id ? updatedSpace : space
         ),
         loading: false,
       })
@@ -101,9 +101,9 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
     }
   },
 
-  // Set selected page in state
-  setSelectedPage: (page: Space | null) => {
-    set({ page })
+  // Set selected space in state
+  setSelectedSpace: (space: Space | null) => {
+    set({ space })
   },
 }))
 
