@@ -15,7 +15,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
-  const [isAnimating, setIsAnimating] = useState(false)
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<{
     title: string
@@ -85,12 +84,8 @@ export const ThisWeekExpandedItem: React.FC = () => {
   }, [editedItem, selectedItem, timeoutId])
 
   const handleClose = useCallback(() => {
-    setIsAnimating(true)
-    setTimeout(() => {
-      setSelectedItem(null)
-      handleCancelEditItem()
-      setIsAnimating(false)
-    }, 100)
+    setSelectedItem(null)
+    handleCancelEditItem()
   }, [setSelectedItem])
 
   useEffect(() => {
@@ -115,8 +110,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     <div
       ref={divRef}
       className={classNames(
-        `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`,
-        isAnimating ? "animate-slide-out" : "animate-slide-in"
+        `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`
       )}
     >
       <div className="flex w-full flex-col gap-4 p-4">
@@ -135,7 +129,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
           </div>
           <div className="flex gap-4">
             <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>reschedule</span>
+              <Icon icon="humbleicons:clock" className="text-[18px]" />
             </button>
             <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
               <span>del</span>
