@@ -90,7 +90,14 @@ export const ThisWeekExpandedItem: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (divRef.current && !divRef.current.contains(event.target as Node)) {
+      const isClickOnItem =
+        (event.target as HTMLElement).closest("[data-item-id]") !== null
+
+      if (
+        divRef.current &&
+        !divRef.current.contains(event.target as Node) &&
+        !isClickOnItem
+      ) {
         handleClose()
       }
     }
