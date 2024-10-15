@@ -31,9 +31,7 @@ const getAccessTokenController = async (req, res, next) => {
     const user = req.user;
     try {
         const accessToken = await getAccessToken(code, user);
-        console.log("accessToken", accessToken)
         const userInfo = await fetchUserInfo(accessToken, user);
-        console.log("userInfo", userInfo)
         await linearQueue.add('linearQueue', {
             accessToken,
             linearUserId: userInfo.id,
