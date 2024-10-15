@@ -1,6 +1,6 @@
 export interface Journal {
   journal: {
-    date: string;
-    content: string;
-  };
+    date: string
+    content: string
+  }
 }

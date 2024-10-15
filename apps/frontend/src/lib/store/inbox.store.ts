@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios"
 import { create } from "zustand"
 
+import { BACKEND_URL } from "../constants/urls"
 import {
   InboxItem,
   InboxItemCreateResponse,
@@ -9,18 +10,26 @@ import {
   TodayInboxItem,
 } from "@/src/lib/@types/Items/Inbox"
 
-import { BACKEND_URL } from "../constants/urls"
-
 const useInboxStore = create<InboxStoreType>((set) => ({
   inboxItems: [],
   todayInboxItems: [],
   overdueInboxItems: [],
+  selectedItem: null,
+  setSelectedItem: (selectedItem: InboxItem | null) => {
+    set({ selectedItem })
+  },
+  isLoading: false,
   isFetched: false,
   setIsFetched: (isFetched: boolean) => {
     set({ isFetched })
   },
+  optimisticDoneStatus: "null",
+  setOptimisticDoneStatus: (optimisticDoneStatus: string) => {
+    set({ optimisticDoneStatus })
+  },
   fetchInboxData: async (session: string) => {
     let inboxItems_: InboxItem[] = []
+    set({ isLoading: true })
     try {
       const config = {
         headers: {
@@ -31,9 +40,10 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       inboxItems_ = data.response as InboxItem[]
     } catch (error) {
       const e = error as AxiosError
-      console.error("Error while fetching my::", e.message)
+      console.error("error fetching my: ", e)
     }
     set({ inboxItems: inboxItems_ })
+    set({ isLoading: false })
     return inboxItems_
   },
   setInboxItems: (inboxItems: InboxItem[]) => {
@@ -52,7 +62,7 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       todayItems_ = data.response.items as TodayInboxItem[]
     } catch (error) {
       const e = error as AxiosError
-      console.error("Error while fetching my-today::", e.message)
+      console.error("error fetching my-today: ", e)
     }
     set({ todayInboxItems: todayItems_ })
     return todayItems_
@@ -73,7 +83,7 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       overdueItems_ = data.response.items as OverdueInboxItem[]
     } catch (error) {
       const e = error as AxiosError
-      console.error("Error while fetching my-overdue::", e.message)
+      console.error("error fetching my-overdue: ", e)
     }
     set({ overdueInboxItems: overdueItems_ })
     return overdueItems_
@@ -105,22 +115,35 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       return updatedItem
     } catch (error) {
       const e = error as AxiosError
-      console.error("Error while moving item to new date::", e.message)
+      console.error("error moving item to new date: ", e)
       return null
     }
   },
-  updateItem: (editedItem: InboxItem, id: string) => {
-    set((state) => ({
-      inboxItems: state.inboxItems.map((item) =>
-        item.uuid === id
-          ? {
-              ...item,
-              title: editedItem.title,
-              description: editedItem.description,
-            }
-          : item
-      ),
-    }))
+  updateItem: async (
+    session: string,
+    editedItem: Partial<InboxItem>,
+    id: string
+  ) => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/items/${id}`, editedItem, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+      set((state) => ({
+        inboxItems: state.inboxItems.map((item) =>
+          item._id === id
+            ? {
+                ...item,
+                ...editedItem,
+              }
+            : item
+        ),
+      }))
+    } catch (error) {
+      const e = error as AxiosError
+      console.error("Error updating inbox item: ", e)
+    }
   },
   addItem: async (session: string, title: string, description: string) => {
     let res: InboxItemCreateResponse
@@ -144,8 +167,35 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       return res.item
     } catch (error) {
       const e = error as AxiosError
-      console.error("error adding item to inbox:", e)
+      console.error("error adding item to inbox: ", e)
       return null
+    }
+  },
+  deleteItem: async (session: string, id: string) => {
+    try {
+      set((state: InboxStoreType) => {
+        const index = state.inboxItems.findIndex((i) => i._id === id)
+        if (index !== -1) {
+          state.inboxItems.splice(index, 1)
+        }
+        return {
+          inboxItems: state.inboxItems,
+        }
+      })
+      await axios.put(
+        `${BACKEND_URL}/api/items/${id}`,
+        {
+          isDeleted: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+    } catch (error) {
+      const e = error as AxiosError
+      console.error("error deleting inbox item: ", e)
     }
   },
 }))

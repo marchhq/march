@@ -2,75 +2,92 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 import { db } from "../../loaders/db.loader.js";
 
-const statusChoices = ["inbox", "todo", "in progress", "done"];
+const statusChoices = ["null", "todo", "in progress", "done", "archive"];
 
-const ItemSchema = new Schema({
-    uuid: {
-        type: String,
-        default: () => uuid()
+const ItemSchema = new Schema(
+    {
+        uuid: {
+            type: String,
+            default: () => uuid()
+        },
+        title: {
+            type: String
+        },
+        type: {
+            type: String,
+            default: "Issue"
+        },
+        source: {
+            type: String,
+            default: "march"
+        },
+        description: {
+            type: String,
+            default: ""
+        },
+        dueDate: {
+            type: Date,
+            default: null
+        },
+        status: {
+            type: String,
+            enum: statusChoices,
+            default: "null"
+        },
+        id: {
+            type: String
+        },
+        metadata: {
+            type: Schema.Types.Mixed
+        },
+        createdAt: {
+            type: Date
+        },
+        updatedAt: {
+            type: Date
+        },
+        spaces: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Space"
+            }
+        ],
+        blocks: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Block"
+            }
+        ],
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        },
+        labels: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Label"
+            }
+        ],
+        isCompleted: {
+            type: Boolean,
+            default: false
+        },
+        isArchived: {
+            type: Boolean,
+            default: false
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
+        }
     },
-    title: {
-        type: String
-    },
-    source: {
-        type: String,
-        default: "march"
-    },
-    description: {
-        type: String,
-        default: ''
-    },
-    dueDate: {
-        type: Date,
-        default: null
-    },
-    status: {
-        type: String,
-        enum: statusChoices,
-        default: "todo"
-    },
-    id: {
-        type: String
-    },
-    metadata: {
-        type: Schema.Types.Mixed
-    },
-    createdAt: {
-        type: Date
-    },
-    updatedAt: {
-        type: Date
-    },
-    spaces: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Space'
-    }],
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    labels: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Label'
-    }],
-    isCompleted: {
-        type: Boolean,
-        default: false
-    },
-    isArchived: {
-        type: Boolean,
-        default: false
-    },
-    isDeleted: {
-        type: Boolean,
-        default: false
+    {
+        timestamps: true
     }
-}, {
-    timestamps: true
-});
+);
 
-ItemSchema.pre('save', function (next) {
-    if (this.status === 'done') {
+ItemSchema.pre("save", function (next) {
+    if (this.status === "done") {
         this.isCompleted = true;
     } else {
         this.isCompleted = false;
@@ -78,11 +95,9 @@ ItemSchema.pre('save', function (next) {
     next();
 });
 
-const Item = db.model('Item', ItemSchema, 'items')
+const Item = db.model("Item", ItemSchema, "items");
 
-export {
-    Item
-}
+export { Item };
 
 // old code
 // import { Schema } from "mongoose";

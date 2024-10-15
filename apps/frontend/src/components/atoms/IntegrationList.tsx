@@ -7,7 +7,9 @@ import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
+
 import useGithubLogin from "@/src/hooks/useGithubLogin"
+
 
 const integrations = [
   {
@@ -54,6 +56,8 @@ export const IntegrationList = (): JSX.Element => {
       return () => {}
     }
   }
+  
+
 
   return (
     <div className=" space-y-4">
@@ -83,8 +87,7 @@ export const IntegrationList = (): JSX.Element => {
                 <span className="text-sm">Connected</span>
                 <ChevronDown size={13} />
               </button>
-            ) : (
-              <button
+       
                 onClick={handleIntegrationLogin(integration.key)}
                 className="flex items-center text-sm"
               >

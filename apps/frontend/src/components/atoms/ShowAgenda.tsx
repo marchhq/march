@@ -1,3 +1,5 @@
+import React from "react"
+
 import { Switch } from "./Switch"
 
 interface ShowAgendaProps {
@@ -5,9 +7,6 @@ interface ShowAgendaProps {
   onToggle: () => void
 }
 
-export const ShowAgenda = ({
-  toggle,
-  onToggle,
-}: ShowAgendaProps): JSX.Element => {
+export const ShowAgenda: React.FC<ShowAgendaProps> = ({ toggle, onToggle }) => {
   return <Switch checked={toggle} onCheckedChange={onToggle} />
 }

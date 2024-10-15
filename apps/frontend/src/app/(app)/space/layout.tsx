@@ -1,7 +1,9 @@
 "use client"
 
 import React, { useEffect, useState, useCallback } from "react"
+
 import { usePathname } from "next/navigation"
+
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -12,9 +14,6 @@ import useNotesStore from "@/src/lib/store/notes.store"
 interface Props {
   children: React.ReactNode
 }
-
-const navLinkClassName =
-  "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
 
 const SpaceLayout: React.FC<Props> = ({ children }) => {
   const pathname = usePathname()
@@ -60,7 +59,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   }
 
   const constructPath = (spaceName: string) => {
-    return `space/${spaceName.toLowerCase().replace(/\s+/g, '-')}`
+    return `space/${spaceName.toLowerCase().replace(/\s+/g, "-")}`
   }
 
   const items = spaces.map((space) => {
