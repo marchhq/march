@@ -1,4 +1,12 @@
-import { format, formatDistanceToNow } from "date-fns"
+import {
+  differenceInWeeks,
+  endOfWeek,
+  format,
+  formatDistanceToNow,
+  startOfMonth,
+  startOfWeek,
+  getWeeksInMonth,
+} from "date-fns"
 
 export const getOrdinalSuffix = (day) => {
   if (day > 3 && day < 21) return "th"
@@ -45,4 +53,24 @@ export const fromNow = (date: Date | string): string => {
   return formatDistanceToNow(date, {
     addSuffix: true,
   })
+}
+
+export function getCurrentWeek(date: Date): number {
+  const startOfCurrentMonth = startOfMonth(date)
+  const weekDiff = differenceInWeeks(date, startOfCurrentMonth)
+  return weekDiff + 1
+}
+
+export function getFormattedDateRange(date: Date): string {
+  const startOfCurrentWeek = startOfWeek(date, { weekStartsOn: 0 })
+  const endOfCurrentWeek = endOfWeek(date, { weekStartsOn: 0 })
+  return `${format(startOfCurrentWeek, "MMM d")} - ${format(endOfCurrentWeek, "MMM d")}`
+}
+
+export { getWeeksInMonth }
+
+export function getTodayISODate(): string {
+  const today = new Date()
+  today.setUTCHours(0, 0, 0, 0)
+  return today.toISOString()
 }

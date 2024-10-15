@@ -23,6 +23,10 @@ const useInboxStore = create<InboxStoreType>((set) => ({
   setIsFetched: (isFetched: boolean) => {
     set({ isFetched })
   },
+  optimisticDoneStatus: "null",
+  setOptimisticDoneStatus: (optimisticDoneStatus: string) => {
+    set({ optimisticDoneStatus })
+  },
   fetchInboxData: async (session: string) => {
     let inboxItems_: InboxItem[] = []
     set({ isLoading: true })
@@ -115,27 +119,30 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       return null
     }
   },
-  updateItem: async (session: string, editedItem: InboxItem, id: string) => {
-    set((state) => ({
-      inboxItems: state.inboxItems.map((item) =>
-        item._id === id
-          ? {
-              ...item,
-              title: editedItem.title,
-              description: editedItem.description,
-            }
-          : item
-      ),
-    }))
+  updateItem: async (
+    session: string,
+    editedItem: Partial<InboxItem>,
+    id: string
+  ) => {
     try {
       await axios.put(`${BACKEND_URL}/api/items/${id}`, editedItem, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
       })
+      set((state) => ({
+        inboxItems: state.inboxItems.map((item) =>
+          item._id === id
+            ? {
+                ...item,
+                ...editedItem,
+              }
+            : item
+        ),
+      }))
     } catch (error) {
       const e = error as AxiosError
-      console.error("error updating inbox item: ", e)
+      console.error("Error updating inbox item: ", e)
     }
   },
   addItem: async (session: string, title: string, description: string) => {
