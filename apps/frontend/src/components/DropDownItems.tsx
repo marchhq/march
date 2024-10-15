@@ -82,7 +82,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
             className="flex items-center gap-3 truncate"
           >
             <span className="truncate">{item.title}</span>
-            <span className="flex-shrink-0">
+            <span className="shrink-0">
               {getSourceIcon(item.source) || <Link />}
             </span>
           </a>
@@ -93,7 +93,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span className="inline-block size-2 flex-shrink-0 rounded-full bg-[#E34136]/80"></span>
+                <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
               <TooltipContent>{getOverdueText()}</TooltipContent>
             </Tooltip>
