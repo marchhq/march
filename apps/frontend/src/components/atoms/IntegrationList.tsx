@@ -15,28 +15,28 @@ const integrations = [
     icon: <Cal />,
     name: "Google Calendar",
     description:
-      "Link your Slack account to your Linear account and receive personal notification",
+      "Link your Slack account to your Linear account and receive personal notifications",
   },
   {
     key: "github",
     icon: <GithubDark />,
     name: "Github",
     description:
-      "Link your Slack account to your Linear account and receive personal notification",
+      "Link your GitHub account and manage repositories directly from your dashboard",
   },
   {
     key: "linear",
     icon: <LinearDark />,
     name: "Linear",
     description:
-      "Link your Slack account to your Linear account and receive personal notification",
+      "Link your Linear account to manage tasks and issues",
   },
   {
     key: "notion",
     icon: <NotionDark />,
     name: "Notion",
     description:
-      "Link your Slack account to your Linear account and receive personal notification",
+      "Link your Notion account to manage workspaces",
   },
 ]
 
@@ -47,19 +47,20 @@ export const IntegrationList = (): JSX.Element => {
 
   const handleIntegrationLogin = (integrationKey: string) => {
     if (integrationKey === "googleCalendar") {
-      return handleLogin()
+      return handleLogin
     } else if (integrationKey === "github") {
-      return handleGitHubLogin()
+      return handleGitHubLogin
     } else {
       return () => {}
     }
   }
+
   return (
     <div className=" space-y-4">
       {integrations.map((integration) => {
         const connected =
           user?.integrations?.[integration.key]?.connected ?? false
-        console.log(user?.integrations?.[integration.key]?.connected)
+
         return (
           <div
             key={integration.name}
@@ -84,8 +85,9 @@ export const IntegrationList = (): JSX.Element => {
               </button>
             ) : (
               <button
-                onClick={() => handleIntegrationLogin(integration.key)}
-                className="flex items-center text-sm">
+                onClick={handleIntegrationLogin(integration.key)}
+                className="flex items-center text-sm"
+              >
                 Connect
                 <ChevronRight size={13} />
               </button>
