@@ -8,8 +8,10 @@ import {
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSubContent,
 } from "@radix-ui/react-context-menu"
 
+import { ContextMenuSub, ContextMenuSubTrigger } from "../ui/context-menu"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
@@ -35,6 +37,7 @@ export const InboxItems: React.FC = () => {
   const fetchInbox = useCallback(async () => {
     try {
       await fetchInboxData(session)
+      console.log("is fetched")
       setIsFetched(true)
     } catch (error) {
       setIsFetched(false)
@@ -117,12 +120,17 @@ export const InboxItems: React.FC = () => {
         handleDone(event, item._id!, item.status),
     },
     { name: "Plan", icon: "humbleicons:clock", onClick: () => {} },
-    { name: "Move", icon: "mingcute:move-line", onClick: () => {} },
+  ]
+
+  const subMenuItems = [
     {
-      name: "Delete",
-      icon: "weui:delete-outlined",
-      color: "#C45205",
-      onClick: () => handleDelete(item._id!),
+      name: "Notes",
+    },
+    {
+      name: "Meetings",
+    },
+    {
+      name: "Reading List",
     },
   ]
 
@@ -211,7 +219,6 @@ export const InboxItems: React.FC = () => {
                 >
                   <button
                     className="my-1 flex w-full items-center gap-3 text-primary-foreground"
-                    style={{ color: menuItem.color }}
                     onClick={menuItem.onClick}
                   >
                     <Icon icon={menuItem.icon} className="text-[18px]" />
@@ -221,6 +228,36 @@ export const InboxItems: React.FC = () => {
                   </button>
                 </ContextMenuItem>
               ))}
+              <ContextMenuSub>
+                <ContextMenuSubTrigger className="hover-bg rounded-md px-2 py-0.5">
+                  <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
+                    <Icon icon="mingcute:move-line" className="text-[18px]" />
+                    <span className="flex-1 text-left text-[15px]">Move</span>
+                  </div>
+                </ContextMenuSubTrigger>
+                <ContextMenuSubContent className="w-48 rounded-md border border-border">
+                  {subMenuItems.map((subItem) => (
+                    <ContextMenuItem
+                      key={subItem.name}
+                      className="hover-bg rounded-md px-2 py-0.5"
+                    >
+                      <span className="flex-1 text-left text-[15px]">
+                        {subItem.name}
+                      </span>
+                    </ContextMenuItem>
+                  ))}
+                </ContextMenuSubContent>
+              </ContextMenuSub>
+              <ContextMenuItem className="hover-bg rounded-md px-2 py-0.5">
+                <button
+                  className="my-1 flex w-full items-center gap-3 text-primary-foreground"
+                  style={{ color: "#C45205" }}
+                  onClick={() => handleDelete(item._id!)}
+                >
+                  <Icon icon="weui:delete-outlined" className="text-[18px]" />
+                  <span className="flex-1 text-left text-[15px]">Delete</span>
+                </button>
+              </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
         ))
