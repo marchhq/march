@@ -115,19 +115,32 @@ export const ThisWeekExpandedItem: React.FC = () => {
     <div
       ref={divRef}
       className={classNames(
-        `absolute inset-y-0 left-1/2 z-50 size-full border-l border-border bg-background p-4 text-foreground`,
+        `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`,
         isAnimating ? "animate-slide-out" : "animate-slide-in"
       )}
     >
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4 text-xs text-secondary-foreground">
-          <button className="flex items-center" onClick={handleClose}>
-            <Icon icon="ep:back" className="text-[18px]" />
-          </button>
-          <p className="flex items-center">
-            {formatDateYear(selectedItem?.createdAt || "")}
-          </p>
-          <p>edited {fromNow(selectedItem?.updatedAt || "")}</p>
+      <div className="flex w-full flex-col gap-4 p-4">
+        <div className="flex items-center justify-between text-xs text-secondary-foreground">
+          <div className="flex gap-4">
+            <button
+              className="hover-text flex items-center"
+              onClick={handleClose}
+            >
+              <Icon icon="ep:back" className="text-[18px]" />
+            </button>
+            <p className="flex items-center">
+              {formatDateYear(selectedItem?.createdAt || "")}
+            </p>
+            <p>edited {fromNow(selectedItem?.updatedAt || "")}</p>
+          </div>
+          <div className="flex gap-4">
+            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
+              <span>reschedule</span>
+            </button>
+            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
+              <span>del</span>
+            </button>
+          </div>
         </div>
         <div>
           <textarea

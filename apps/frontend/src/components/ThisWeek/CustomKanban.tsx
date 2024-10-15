@@ -237,6 +237,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      /*
       if (
         adding &&
         addItemRef.current &&
@@ -246,7 +247,15 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
           handleSubmit()
         } else {
           handleCancel()
-        }
+      }
+      */
+
+      if (
+        adding &&
+        addItemRef.current &&
+        !addItemRef.current.contains(event.target as Node)
+      ) {
+        handleCancel()
       }
     }
 
@@ -268,7 +277,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
   }
 
   return (
-    <div ref={addItemRef}>
+    <div ref={addItemRef} className="">
       {adding ? (
         <motion.form layout onSubmit={handleSubmit}>
           <textarea
@@ -281,7 +290,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent px-4 py-1 text-base font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent p-4 text-sm font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
           />
           <button type="submit" style={{ display: "none" }}></button>
@@ -290,7 +299,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
         <motion.button
           layout
           onClick={() => setAdding(true)}
-          className="hover-bg flex w-full items-center gap-2 rounded-lg p-4 text-sm"
+          className="hover-bg invisible flex w-full items-center gap-2 rounded-lg p-4 text-sm group-hover/section:visible"
         >
           <Icon icon="ic:round-plus" className="text-[18px]" />
           <p>New item</p>
