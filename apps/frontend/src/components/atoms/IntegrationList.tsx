@@ -60,7 +60,7 @@ export const IntegrationList = (): JSX.Element => {
       {integrations.map((integration) => {
         const connected =
           user?.integrations?.[integration.key]?.connected ?? false
-        console.log(user?.integrations?.[integration.key]?.connected)
+        
         return (
           <div
             key={integration.name}

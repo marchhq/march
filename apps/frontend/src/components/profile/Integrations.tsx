@@ -9,6 +9,7 @@ import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
+import useGithubLogin from "@/src/hooks/useGithubLogin"
 
 interface IntegrationItemProps {
   integration: Integration
@@ -66,7 +67,7 @@ export interface Integration {
 const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   const handleGoogleCalendarLogin = useGoogleCalendarLogin("/profile")
   const { handleLogin: handleLinearLogin } = useLinear()
-
+  const handleGitHubLogin = useGithubLogin()
   const integrations: Integration[] = useMemo(
     () => [
       {
@@ -83,8 +84,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         name: "Github",
         description:
           "Connect your GitHub account to access repositories and manage issues.",
-        handleConnect: () =>
-          console.log("GitHub connection not implemented yet"),
+        handleConnect:handleGitHubLogin
       },
       {
         key: "linear",
@@ -104,7 +104,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
           console.log("Notion connection not implemented yet"),
       },
     ],
-    [handleGoogleCalendarLogin, handleLinearLogin]
+    [handleGoogleCalendarLogin, handleLinearLogin,handleGitHubLogin]
   )
 
   return (

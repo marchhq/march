@@ -20,7 +20,7 @@ export const useUserInfo = () => {
           },
         })
         setUser(response.data)
-        console.log(response.data)
+      
       } catch (error) {
         console.error("Failed to fetch user info:", error)
       }

@@ -97,7 +97,37 @@ const processWebhookEvent = async (event, payload) => {
     }
 };
 
+const getGithubAccessToken = async (code, user) => {
+    const tokenUrl = 'https://github.com/login/oauth/access_token';
+    const params = {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code,
+    };
+
+    try {
+        const response = await axios.post(tokenUrl, params, {
+            headers: { Accept: 'application/json' },
+        });
+
+        const tokens = response.data;
+        if (!tokens.access_token) {
+            throw new Error('Failed to obtain GitHub access token.');
+        }
+
+        // Update user's integration data with tokens and connection status
+        user.integration.github.accessToken = tokens.access_token;
+        user.integration.github.refreshToken = tokens.refresh_token || null;  // GitHub may not provide a refresh token
+        user.integration.github.connected = true;
+        await user.save();
+
+        return tokens;
+    } catch (error) {
+        throw new Error(`GitHub OAuth Error: ${error.message}`);
+    }
+};
 export {
     fetchInstallationDetails,
-    processWebhookEvent
+    processWebhookEvent,
+    getGithubAccessToken
 };

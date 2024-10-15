@@ -13,7 +13,8 @@ const useGitHubLogin = (): (() => Promise<void>) => {
       if (!GITHUB_CLIENT_ID) {
         throw new Error("GitHub Client ID is not set")
       }
-
+      
+       
       // const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI)}&scope=${encodeURIComponent(GITHUB_SCOPE)}`
       const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=${GITHUB_SCOPE}`
 
