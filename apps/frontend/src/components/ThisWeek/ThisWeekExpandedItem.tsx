@@ -129,7 +129,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
           </div>
           <div className="flex gap-4">
             <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <Icon icon="humbleicons:clock" className="text-[18px]" />
+              <span>reschedule</span>
             </button>
             <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
               <span>del</span>
