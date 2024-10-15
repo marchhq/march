@@ -2,12 +2,13 @@
 
 import React, { useEffect } from "react"
 
+import { LogOutIcon } from "lucide-react"
+
 import Integrations from "@/src/components/profile/Integrations"
 import UserInfo from "@/src/components/profile/UserInfo"
+import Spinner from "@/src/components/ui/spinner"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useUserStore from "@/src/lib/store/user.store"
-import { LogOutIcon } from "lucide-react"
-import Spinner from "@/src/components/ui/spinner"
 
 const ProfilePage: React.FC = () => {
   const { session } = useAuth()
@@ -45,7 +46,7 @@ const ProfilePage: React.FC = () => {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className="px-2 py-1 mt-12 flex gap-2 items-center rounded-lg text-base font-semibold text-[#EF6258CC] bg-[#382826E5]"
+          className="mt-12 flex items-center gap-2 rounded-lg bg-[#382826E5] px-2 py-1 text-base font-semibold text-[#EF6258CC]"
         >
           {isLoggingOut ? (
             <Spinner color="blue" size={5} />
