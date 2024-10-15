@@ -9,7 +9,7 @@ const getInboxItems = async (me) => {
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        status: { $ne: "archive" },
+        status: { $nin: ["archive", "done"] },
         dueDate: null
     })
         .sort({ createdAt: -1 });

@@ -3,7 +3,9 @@ import { useCallback, useState } from "react"
 import axios from "axios"
 
 import { useAuth } from "../contexts/AuthContext"
-import { BACKEND_URL } from "../lib/constants/urls"
+
+const LINEAR_CLIENT_ID = process.env.NEXT_PUBLIC_LINEAR_CLIENT_ID
+const LINEAR_REDIRECT_URL = process.env.NEXT_PUBLIC_LINEAR_REDIRECT_URL
 
 interface LinearIssue {
   id: string
@@ -55,28 +57,38 @@ const useLinear = () => {
     }
   }, [])
 
-  const handleLogin = useCallback(async () => {
+  const handleLogin = useCallback(() => {
     try {
-      const data = await makeRequest(`${BACKEND_URL}/linear/connect`, {
-        headers: { Authorization: `Bearer ${session}` },
-      })
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl
-      } else {
-        throw new Error("No redirect URL received from the server")
-      }
+      const scopes = "read write"
+      const authUrl = `https://linear.app/oauth/authorize?client_id=${LINEAR_CLIENT_ID}&redirect_uri=${LINEAR_REDIRECT_URL}&response_type=code&scope=${encodeURIComponent(scopes)}`
+      console.log("Redirecting to Linear OAuth URL:")
+      window.location.href = authUrl
     } catch (error) {
+      console.error("Error in initiating Linear OAuth login:", error)
       setError("Failed to initiate Linear login")
     }
-  }, [session, makeRequest])
+  }, [])
 
   const getAccessToken = useCallback(
     async (code: string) => {
+      if (!LINEAR_CLIENT_ID || !LINEAR_REDIRECT_URL) {
+        setError("Missing Linear OAuth configuration.")
+        throw new Error("Missing Linear OAuth configuration.")
+      }
+
       try {
-        const data = await makeRequest(`${BACKEND_URL}/linear/getAccessToken`, {
-          params: { code },
+        const params = new URLSearchParams()
+        params.append("client_id", LINEAR_CLIENT_ID)
+        params.append("redirect_uri", LINEAR_REDIRECT_URL)
+        params.append("code", code)
+        params.append("grant_type", "authorization_code")
+
+        const data = await makeRequest(`https://linear.app/oauth/token`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          data: params,
         })
-        return data.accessToken
+        return data.access_token
       } catch (error) {
         setError("Failed to get Linear access token")
         throw error
@@ -89,7 +101,7 @@ const useLinear = () => {
     async (endpoint: string) => {
       try {
         const data = await makeRequest(
-          `${BACKEND_URL}/linear/issues/${endpoint}`,
+          `https://api.linear.app/issues/${endpoint}`,
           {
             headers: { Authorization: `Bearer ${session}` },
           }
