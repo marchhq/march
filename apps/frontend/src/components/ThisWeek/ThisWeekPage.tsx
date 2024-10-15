@@ -37,7 +37,7 @@ export const ThisWeekPage: React.FC = () => {
 
   return (
     <div className="flex size-full p-16">
-      <div className={"relative flex flex-auto flex-col gap-12 pr-4"}>
+      <div className="relative flex flex-auto flex-col gap-12">
         <div className="flex items-center gap-8 text-sm">
           <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
           <div className="flex gap-4">
