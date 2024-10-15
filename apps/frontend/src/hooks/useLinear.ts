@@ -61,7 +61,7 @@ const useLinear = () => {
     try {
       const scopes = "read write"
       const authUrl = `https://linear.app/oauth/authorize?client_id=${LINEAR_CLIENT_ID}&redirect_uri=${LINEAR_REDIRECT_URL}&response_type=code&scope=${encodeURIComponent(scopes)}`
-      console.log("Redirecting to Linear OAuth URL:", authUrl)
+      console.log("Redirecting to Linear OAuth URL:")
       window.location.href = authUrl
     } catch (error) {
       console.error("Error in initiating Linear OAuth login:", error)
