@@ -120,14 +120,14 @@ const FeedbackModal = () => {
         <div className="px-4">
           <input
             placeholder="Title"
-            className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder-secondary-foreground focus:outline-none"
+            className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder:text-secondary-foreground focus:outline-none"
             {...register("title", { required: true })}
           />
           {errors.title && (
             <span className="px-3 text-xs text-red-500">Title is required</span>
           )}
           <Textarea
-            className="min-h-40 border-none text-sm placeholder-secondary-foreground"
+            className="min-h-40 border-none text-sm placeholder:text-secondary-foreground"
             placeholder="add description..."
             {...register("feedback", { required: true })}
           />

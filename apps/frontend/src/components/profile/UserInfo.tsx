@@ -49,7 +49,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
         <img
           src={user.avatar}
           alt={`${user.fullName}'s Avatar`}
-          className="mb-4 h-8 w-8 rounded-full border-2 border-secondary-foreground"
+          className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
         />
       )}
       <h2 className="mb-1 text-[16px] font-semibold text-foreground">
