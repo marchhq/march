@@ -5,7 +5,7 @@ export const DynamicDate = ({
 }): JSX.Element => {
   const day = selectedDate.getDate()
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#272727] text-sm font-bold text-foreground">
+    <div className="flex size-8 items-center justify-center rounded-md bg-[#272727] text-sm font-bold text-foreground">
       {day}
     </div>
   )
