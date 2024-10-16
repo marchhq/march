@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 import useReadingStore from "@/src/lib/store/reading.store"
+import { Trash2Icon } from "lucide-react"
 
 interface ItemsListProps {
   blockId: string | null
@@ -31,24 +32,24 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4 w-3/4">
       {[...readingItems].reverse().map((item: ReadingItem) => {
         const url = item.metadata?.url
         const favicon = item.metadata?.favicon
         return (
-          <div key={item._id} className="group flex items-start gap-4">
+          <div key={item._id} className="group flex items-center gap-4 hover:bg-background-hover rounded-lg p-3">
             {favicon ? (
               <Image
                 src={favicon}
                 alt="Favicon"
                 width={16}
                 height={16}
-                className="mt-2 shrink-0"
+                className="shrink-0"
               />
             ) : (
               <Icon
                 icon="ph:circle-bold"
-                className="mt-2 shrink-0 text-[16px] text-secondary-foreground"
+                className=" shrink-0 text-[16px] text-secondary-foreground"
               />
             )}
             <div className="grow overflow-hidden">
@@ -60,18 +61,10 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
               >
                 <h3 className="flex flex-wrap items-center text-lg font-semibold text-foreground">
                   <span className="break-all">{item.title}</span>
-                  {url && (
-                    <span className="ml-2 flex shrink-0 items-center">
-                      <Icon
-                        icon="fluent:link-24-regular"
-                        className="text-[20px] text-secondary-foreground hover:text-foreground"
-                      />
-                    </span>
-                  )}
                 </h3>
               </a>
               {item.description && (
-                <p className="mt-1 text-base text-secondary-foreground">
+                <p className=" text-base text-secondary-foreground">
                   {item.description}
                 </p>
               )}
@@ -80,7 +73,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
               className="invisible text-sm text-secondary-foreground hover:text-foreground group-hover:visible"
               onClick={() => deleteItem(item._id)}
             >
-              delete
+              <Trash2Icon color="red" size={18}/>
             </button>
           </div>
         )

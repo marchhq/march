@@ -59,11 +59,15 @@ const ReadingListComponent: React.FC = () => {
 
   return (
     <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
-      <div className="px-4 py-16 sm:px-6 lg:px-8">
+      <div className="px-4 pb-16 sm:px-6 lg:px-8">
         {blockId && (
-          <div className="ml-[10%] mt-32 flex w-3/5 flex-col gap-8 text-base">
-            <AddItemForm blockId={blockId} spaceId={readingListSpaceId} />
-            <ItemsList blockId={blockId}  spaceId={readingListSpaceId}/>
+          <div className="ml-[10%] flex flex-col w-3/4 gap-8 text-base">
+            <div className="sticky top-0 z-10  h-48 grid items-end bg-background">
+              <AddItemForm blockId={blockId} spaceId={readingListSpaceId} />
+            </div>
+            <div className="flex-1 ">
+              <ItemsList blockId={blockId} spaceId={readingListSpaceId} />
+            </div>
           </div>
         )}
       </div>
