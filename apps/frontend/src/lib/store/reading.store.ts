@@ -89,25 +89,23 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     }
   },
 
-  deleteItem: async (session: string, spaceId: string, blockId: string, itemId: string ) => {
+  deleteItem: async (session: string, spaceId: string, blockId: string, itemId: string) => {
     const { readingItems } = get();
     try {
-      const updatedItems = readingItems
-        .filter((item) => item._id !== itemId)
-        .map((item) => item._id);
-      await axios.put(
-        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/`,
-        { data: { items: updatedItems } },
+      // Perform the delete operation on the server
+      await axios.delete(
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}/`,
         { headers: { Authorization: `Bearer ${session}` } }
       );
-
+  
+      // After successful deletion, update the local state
       set((state) => ({
         readingItems: state.readingItems.filter((item) => item._id !== itemId),
       }));
     } catch (error) {
       console.error("Error deleting item:", error);
     }
-  },
+  },  
 }));
 
 export default useReadingStore;
