@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef } from "react"
 import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useInboxStore from "@/src/lib/store/inbox.store"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 
 export const InboxAddItem: React.FC = () => {
   const { session } = useAuth()
@@ -17,7 +18,7 @@ export const InboxAddItem: React.FC = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [selectedPages, setSelectedPages] = React.useState<string[]>([])
 
-  const { addItem } = useInboxStore()
+  const { createItem } = useCycleItemStore()
 
   /* todo: fix texarea */
 
@@ -42,13 +43,15 @@ export const InboxAddItem: React.FC = () => {
     }
 
     try {
-      const newItem = await addItem(session, title, description)
-
-      if (newItem) {
-        setAddingItem(false)
-        setTitle("")
-        setDescription("")
+      const data: Partial<CycleItem> = {
+        title,
       }
+
+      await createItem(data, session)
+
+      setAddingItem(false)
+      setTitle("")
+      setDescription("")
     } catch (error) {
       console.error("error adding item to inbox:", error)
     }
