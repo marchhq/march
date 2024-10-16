@@ -158,8 +158,6 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
     setSelectedItem(item)
   }
 
-  console.log("selectedItem", selectedItem)
-
   return (
     <>
       <DropIndicator beforeId={_id} column={status} />
@@ -174,7 +172,9 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
         }}
         className={classNames(
           "group flex cursor-grab flex-col gap-1 rounded-lg border p-4 text-left hover:border-border active:cursor-grabbing",
-          selectedItem?._id == item._id ? "border-border" : "border-transparent"
+          selectedItem?._id == item._id
+            ? "border-border bg-background-hover"
+            : "border-transparent"
         )}
         data-item-id={_id}
       >
