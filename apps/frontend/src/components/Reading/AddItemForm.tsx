@@ -18,6 +18,15 @@ interface AddItemFormProps {
   spaceId: string;
 }
 
+interface ItemData {
+  title: string;
+  type: string;
+  description?: string;
+  metadata?: {
+      url: string; 
+  };
+}
+
 const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   const { session } = useAuth()
   const { addItem: addItemToStore, fetchReadingList } = useReadingStore()
@@ -25,33 +34,55 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   const [input, setInput] = useState("")
   const [isPasting, setIsPasting] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [showWarning, setShowWarning] = useState(false) // State for warning
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async (value: string) => {
     const trimmedValue = value.trim();
     
     if (trimmedValue) {
-      const linkDetected = isLink(trimmedValue); // Check whether the entered value is a link or not
-      
-      // If it's a link and doesn't start with https://, prepend https://
-      const finalValue = linkDetected && !/^https:\/\//i.test(trimmedValue) 
-        ? `https://${trimmedValue}` 
-        : trimmedValue;
-  
-      try {
-        setIsSaving(true);
-        await addItemToStore(session, spaceId, blockId, finalValue, linkDetected ? "link" : "text");
-        setInput("");
-        setIsPasting(false);
-        await fetchReadingList(session, blockId, spaceId);
-      } catch (error) {
-        console.error("Error adding item:", error);
-      } finally {
-        setIsSaving(false);
-      }
+        const linkDetected = isLink(trimmedValue); // Check whether the entered value is a link or not
+        
+        // If it's a link and starts with http://, show a warning
+        if (linkDetected && /^http:\/\//i.test(trimmedValue)) {
+            setShowWarning(true);
+            return; // Prevent submission
+        }
+        
+        // If it's a link and doesn't start with https://, prepend https://
+        const finalValue = linkDetected && !/^https:\/\//i.test(trimmedValue) 
+            ? `https://${trimmedValue}` 
+            : trimmedValue;
+
+        try {
+            setIsSaving(true);
+            // Prepare the item object
+            const itemData: ItemData = {
+                title: finalValue,
+                type: linkDetected ? "link" : "text",
+                description: "", // You can set this to a specific description if needed
+            };
+
+            // Add metadata only if linkDetected is true
+            if (linkDetected) {
+              itemData.metadata={
+                url: finalValue
+              }
+          }
+
+            await addItemToStore(session, spaceId, blockId, itemData);
+            setInput("");
+            setIsPasting(false);
+            await fetchReadingList(session, blockId, spaceId);
+            setShowWarning(false); // Reset warning on successful submission
+        } catch (error) {
+            console.error("Error adding item:", error);
+        } finally {
+            setIsSaving(false);
+        }
     }
-  }
-  
+};
+
     
   const handleInputChange = useCallback(
     (value: string) => {
@@ -109,6 +140,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
 
   return (
     <div className="relative flex items-center gap-2 w-3/4">
+      <div className="w-full flex flex-col gap-1">
+
       <input
         ref={inputRef}
         value={input}
@@ -116,13 +149,19 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="w-3/4 truncate bg-background p-4 text-base text-foreground transition-colors outline-none"
+        className="truncate bg-background p-4 text-base text-foreground transition-colors outline-none"
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         disabled={isSaving}
-      />
+        />
+   {showWarning && (
+        <span className="text-red-500 text-sm animate-shake">
+          Warning: Using http is dangerous! Please use https.
+        </span>
+      )}
+        </div>
       {input && !isSaving && (
-        <span className="text-foreground/8 text-sm">
+        <span className="text-foreground/8 w-36 text-sm">
           Press ↵ to save
         </span>
       )}

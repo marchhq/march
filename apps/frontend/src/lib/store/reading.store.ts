@@ -13,11 +13,18 @@ export interface ReadingStoreType {
     session: string,
     blockId: string,
     spaceId: string,
-    title: string,
-    type: string,
-    description?: string
+    itemData:ItemData
   ) => Promise<void>;
   deleteItem: (session: string,spaceId:string, blockId: string, itemId: string) => Promise<void>;
+}
+
+interface ItemData {
+  title: string;
+  type: string;
+  description?: string;
+  metadata?: {
+      url: string;
+  };
 }
 
 const useReadingStore = create<ReadingStoreType>((set, get) => ({
@@ -53,13 +60,10 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     session: string,
     spaceId: string,
     blockId: string,
-    title: string,
-    type: string,
-    description?: string
+    itemData: ItemData
   ) => {
     const { readingItems } = get();
     try {
-      const itemData = { title, description: description || "", type };
 
       // Create the new item under the specific space and block
       const createResponse = await axios.post(
