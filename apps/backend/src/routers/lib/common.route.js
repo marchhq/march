@@ -3,6 +3,7 @@ import { createUpdateJournalController, getUserTodayJournalController, getUserAl
 import {
     getInboxItemsController,
     getThisWeekItemsController,
+    updateInboxItemController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
     getUserItemsByDateControlle,
@@ -20,6 +21,7 @@ const router = Router();
 // inbox
 router.route("/inbox/").get(getInboxItemsController);
 router.route("/inbox/").post(createInboxItemController);
+router.route("/inbox/:item/").put(updateInboxItemController);
 router.route("/this-week/").get(getThisWeekItemsController);
 router.route("/inbox/create/").get(createInboxItemController);
 router.route("/today/").get(getUserTodayItemsController);
