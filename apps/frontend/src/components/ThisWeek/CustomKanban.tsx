@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import useItemsStore from "@/src/lib/store/items.store"
+import classNames from "@/src/utils/classNames"
 
 export const CustomKanban = () => {
   return (
@@ -152,10 +153,12 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
 }
 
 const Card = ({ title, _id, status, handleDragStart, item }) => {
-  const { setSelectedItem } = useItemsStore()
+  const { setSelectedItem, selectedItem } = useItemsStore()
   const handleExpand = (item: any) => {
     setSelectedItem(item)
   }
+
+  console.log("selectedItem", selectedItem)
 
   return (
     <>
@@ -169,7 +172,10 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
           console.log("item", item)
           handleExpand(item)
         }}
-        className="group flex cursor-grab flex-col gap-1 rounded-lg border border-transparent p-4 text-left hover:border-border active:cursor-grabbing"
+        className={classNames(
+          "group flex cursor-grab flex-col gap-1 rounded-lg border p-4 text-left hover:border-border active:cursor-grabbing",
+          selectedItem?._id == item._id ? "border-border" : "border-transparent"
+        )}
         data-item-id={_id}
       >
         <p className="text-sm text-neutral-100">{title}</p>
