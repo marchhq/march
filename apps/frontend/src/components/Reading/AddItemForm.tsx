@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import useReadingStore from "@/src/lib/store/reading.store"
+import { isLink } from "@/src/utils/helpers"
 
 function isValidUrl(url: string): boolean {
   try {
@@ -13,37 +14,42 @@ function isValidUrl(url: string): boolean {
 }
 
 interface AddItemFormProps {
-  blockId: string
+  blockId: string;
+  spaceId: string;
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
+const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   const { session } = useAuth()
-  const { addItem: addItemToStore } = useReadingStore()
+  const { addItem: addItemToStore, fetchReadingList } = useReadingStore()
 
   const [input, setInput] = useState("")
   const [isPasting, setIsPasting] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [type, setType] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit = useCallback(
-    async (value: string) => {
-      const trimmedValue = value.trim()
+  const handleSubmit =  async (value: string) => {
+    const trimmedValue = value.trim()
+     const linkDetected = isLink(trimmedValue)
+     console.log(linkDetected)
+     linkDetected ? setType("link") : setType("text")
+    console.log(type)
       if (trimmedValue) {
         try {
           setIsSaving(true)
-          await addItemToStore(session, blockId, trimmedValue)
+          await addItemToStore(session, spaceId, blockId, trimmedValue, linkDetected ? "link" : "text")
           setInput("")
           setIsPasting(false)
+        await fetchReadingList(session, blockId, spaceId)
         } catch (error) {
           console.error("Error adding item:", error)
         } finally {
           setIsSaving(false)
         }
       }
-    },
-    [session, blockId, addItemToStore]
-  )
-
+    }
+    
+  
   const handleInputChange = useCallback(
     (value: string) => {
       setInput(value)
@@ -107,7 +113,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="w-full truncate rounded border border-foreground/10 bg-background p-5 pr-28 text-base text-foreground transition-colors focus:border-foreground/50 focus:outline-none"
+        className="w-3/4 truncate rounded-lg border border-foreground/50 bg-background p-5 pr-28 text-base text-foreground transition-colors focus:border-foreground/50 focus:outline-none"
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         disabled={isSaving}
