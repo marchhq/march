@@ -69,7 +69,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       editor?.setEditable(false)
       return
     }
-    const noteByParams = notes.filter((n) => n.uuid === params.noteId)
+    const noteByParams = notes.filter((n) => n._id === params.noteId)
     if (noteByParams.length !== 0) {
       editor?.setEditable(true)
       editor?.commands.setContent(noteByParams[0].description)
@@ -132,7 +132,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
-        redirectNote(newNote.uuid)
+        redirectNote(newNote._id)
       }
     } catch (error) {
       console.error(error)
@@ -145,13 +145,13 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     if (session && n) {
       try {
         deleteNote(session, n)
-        const remainingNotes = notes.filter((n_) => n_.uuid !== n.uuid)
-        if (n.uuid === note?.uuid) {
+        const remainingNotes = notes.filter((n_) => n_._id !== n._id)
+        if (n._id === note?._id) {
           if (remainingNotes.length <= 0) {
             addNewNote()
             return
           }
-          redirectNote(remainingNotes[0].uuid)
+          redirectNote(remainingNotes[0]._id)
         }
       } catch (error) {
         console.error(error)
@@ -247,8 +247,8 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
         <div className="flex flex-col gap-2 px-2">
           {notes?.map((n) => (
             <div
-              key={n.uuid}
-              className="hover-bg group flex items-center justify-between gap-1 truncate rounded-md px-2 py-1"
+              key={n._id}
+              className="hover-bg group flex items-center justify-between gap-1 truncate rounded-md"
               role="button"
               tabIndex={0}
               onClick={() => {
@@ -263,8 +263,11 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
                 }
               }}
             >
-              <Link href={`/space/notes/${n.uuid}`} className="flex-1 truncate">
-                {n.uuid === note?.uuid ? (
+              <Link
+                href={`/space/notes/${n._id}`}
+                className="flex-1 truncate px-2 py-1"
+              >
+                {n._id === note?._id ? (
                   <p className="truncate text-foreground">
                     {title || "Untitled"}
                   </p>
@@ -275,7 +278,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
                 )}
               </Link>
               <button
-                className="hover-text opacity-0 group-hover:opacity-100"
+                className="hover-text px-2 opacity-0 group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteNote(n)

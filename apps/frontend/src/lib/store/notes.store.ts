@@ -3,74 +3,17 @@ import { create } from "zustand"
 
 import { BACKEND_URL } from "../constants/urls"
 import {
-  type NotesResponse,
-  type Note,
-  type NoteCreateResponse,
+  NotesResponse,
+  Note,
+  NoteCreateResponse,
+  NotesStoreType,
 } from "@/src/lib/@types/Items/Note"
-
-export interface NotesStoreType {
-  /**
-   * The notes in the store.
-   */
-  notes: Note[]
-  /**
-   * Whether the notes have been fetched.
-   */
-  isFetched: boolean
-  /**
-   * Sets whether the notes have been fetched.
-   */
-  setIsFetched: (isFetched: boolean) => void
-  /**
-   * Fetches the notes from the backend server.
-   * @param session The session of the user.
-   */
-  fetchNotes: (session: string) => Promise<Note[]>
-  /**
-   * Sets the notes in the store.
-   * @param notes The notes to set.
-   */
-  setNotes: (notes: Note[]) => void
-  /**
-   * Get note by uuid.
-   * @param session and note uuid.
-   */
-  getNoteByuuid: (session: string, uuid: string) => Promise<Note | null>
-  /**
-   * Get latest note.
-   * @param session.
-   */
-  getLatestNote: (session: string) => Promise<Note | null>
-  /**
-   * Adds a note to the store.
-   * @param session The session of the user.
-   * @param title The title of the note.
-   * @param content The content of the note.
-   */
-  addNote: (
-    session: string,
-    title: string,
-    content: string
-  ) => Promise<Note | null>
-  /**
-   * Updates a note in the store and the backend server.
-   * @param note The note to update.
-   */
-  updateNote: (note: Note) => void
-  /**
-   * Saves a note in the store and the backend server.
-   * @param note The note to save.
-   */
-  saveNote: (session: string, note: Note) => Promise<void>
-  /**
-   * Deletes a note from the store.
-   * @param note The note to delete.
-   */
-  deleteNote: (session: string, note: Note) => void
-}
 
 const useNotesStore = create<NotesStoreType>((set) => ({
   notes: [],
+  spaceId: null,
+  blockId: null,
+  latestNote: null,
   isFetched: false,
   setIsFetched: (isFetched: boolean) => {
     set((state: NotesStoreType) => ({
@@ -80,22 +23,57 @@ const useNotesStore = create<NotesStoreType>((set) => ({
   fetchNotes: async (session: string) => {
     let notes_: Note[] = []
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/notes/overview`, {
+      const spaces = await axios.get(`${BACKEND_URL}/spaces`, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
       })
+      console.log("spaces", spaces.data)
+      const notesSpace = spaces.data.spaces.find(
+        (space) => space.name == "Notes"
+      )
+      set({ spaceId: notesSpace._id })
+      console.log("notesSpace", notesSpace)
+      const blocks = await axios.get(
+        `${BACKEND_URL}/spaces/${notesSpace._id}/blocks`,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      console.log("blocks", blocks)
+      const notesBlock = blocks.data.blocks[0]
+      set({ blockId: notesBlock._id })
+      console.log("notesBlock", notesBlock)
+      const { data } = await axios.get(
+        `${BACKEND_URL}/spaces/${notesSpace._id}/blocks/${notesBlock._id}/items`,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      console.log("data", data)
       const res = data as NotesResponse
-      notes_ = res.notes.sort(
+      notes_ = res.items.sort(
         (a, b) => Number(new Date(a.createdAt)) - Number(new Date(b.createdAt))
       )
+
+      const latestNote = notes_.reduce((latest, current) => {
+        return new Date(latest.updatedAt) > new Date(current.updatedAt)
+          ? latest
+          : current
+      }, notes_[0])
+
+      set((state: NotesStoreType) => ({
+        notes: notes_,
+        latestNote, // Update the state with the latest note
+      }))
     } catch (error) {
       const e = error as AxiosError
-      console.error(e.cause)
+      console.error(e)
     }
-    set((state: NotesStoreType) => ({
-      notes: notes_,
-    }))
     return notes_
   },
   setNotes: (notes: Note[]) => {
@@ -103,44 +81,12 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       notes,
     }))
   },
-  getNoteByuuid: async (session: string, uuid: string) => {
-    let note: Note | null = null
-    try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/items/${uuid}`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
-      note = data.note[0]
-    } catch (error) {
-      const e = error as AxiosError
-      console.error(e.cause)
-    }
-    return note
-  },
-  getLatestNote: async (session: string) => {
-    let note: Note | null = null
-    try {
-      const { data } = await axios.get(
-        `${BACKEND_URL}/api/notes/recent-updated/`,
-        {
-          headers: {
-            Authorization: `Bearer ${session}`,
-          },
-        }
-      )
-      note = data.note
-    } catch (error) {
-      const e = error as AxiosError
-      console.error(e.cause)
-    }
-    return note
-  },
   addNote: async (session: string, title: string, content: string) => {
     let res: NoteCreateResponse
+    const { spaceId, blockId } = useNotesStore.getState()
     try {
       const { data } = await axios.post(
-        `${BACKEND_URL}/api/items/create`,
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items`,
         {
           title,
           description: content,
@@ -165,7 +111,7 @@ const useNotesStore = create<NotesStoreType>((set) => ({
   },
   updateNote: (note: Note) => {
     set((state: NotesStoreType) => {
-      const index = state.notes.findIndex((n) => n.uuid === note.uuid)
+      const index = state.notes.findIndex((n) => n._id === note._id)
       if (index !== -1) {
         state.notes[index] = note
       }
@@ -176,8 +122,9 @@ const useNotesStore = create<NotesStoreType>((set) => ({
   },
   saveNote: async (session: string, note: Note) => {
     try {
+      const { spaceId, blockId } = useNotesStore.getState()
       const { data } = await axios.put(
-        `${BACKEND_URL}/api/items/${note.uuid}`,
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${note._id}`,
         {
           title: note.title,
           description: note.description,
@@ -190,7 +137,7 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       )
       const res = data as NoteCreateResponse
       set((state: NotesStoreType) => {
-        const index = state.notes.findIndex((n) => n.uuid === res.item.uuid)
+        const index = state.notes.findIndex((n) => n._id === res.item._id)
         if (index !== -1) {
           state.notes[index] = res.item
         }
@@ -204,9 +151,10 @@ const useNotesStore = create<NotesStoreType>((set) => ({
     }
   },
   deleteNote: async (session: string, note: Note) => {
+    const { spaceId, blockId } = useNotesStore.getState()
     try {
       set((state: NotesStoreType) => {
-        const index = state.notes.findIndex((n) => n.uuid === note.uuid)
+        const index = state.notes.findIndex((n) => n._id === note._id)
         if (index !== -1) {
           state.notes.splice(index, 1)
         }
@@ -215,7 +163,7 @@ const useNotesStore = create<NotesStoreType>((set) => ({
         }
       })
       await axios.put(
-        `${BACKEND_URL}/api/items/${note.uuid}`,
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${note._id}`,
         {
           isDeleted: true,
         },
