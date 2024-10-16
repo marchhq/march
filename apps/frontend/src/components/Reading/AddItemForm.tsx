@@ -25,31 +25,34 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   const [input, setInput] = useState("")
   const [isPasting, setIsPasting] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [type, setType] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit =  async (value: string) => {
-    const trimmedValue = value.trim()
-     const linkDetected = isLink(trimmedValue)
-     console.log(linkDetected)
-     linkDetected ? setType("link") : setType("text")
-    console.log(type)
-      if (trimmedValue) {
-        try {
-          setIsSaving(true)
-          await addItemToStore(session, spaceId, blockId, trimmedValue, linkDetected ? "link" : "text")
-          setInput("")
-          setIsPasting(false)
-        await fetchReadingList(session, blockId, spaceId)
-        } catch (error) {
-          console.error("Error adding item:", error)
-        } finally {
-          setIsSaving(false)
-        }
+  const handleSubmit = async (value: string) => {
+    const trimmedValue = value.trim();
+    
+    if (trimmedValue) {
+      const linkDetected = isLink(trimmedValue); // Check whether the entered value is a link or not
+      
+      // If it's a link and doesn't start with https://, prepend https://
+      const finalValue = linkDetected && !/^https:\/\//i.test(trimmedValue) 
+        ? `https://${trimmedValue}` 
+        : trimmedValue;
+  
+      try {
+        setIsSaving(true);
+        await addItemToStore(session, spaceId, blockId, finalValue, linkDetected ? "link" : "text");
+        setInput("");
+        setIsPasting(false);
+        await fetchReadingList(session, blockId, spaceId);
+      } catch (error) {
+        console.error("Error adding item:", error);
+      } finally {
+        setIsSaving(false);
       }
     }
-    
+  }
   
+    
   const handleInputChange = useCallback(
     (value: string) => {
       setInput(value)
@@ -105,7 +108,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   }, [input])
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-2 w-3/4">
       <input
         ref={inputRef}
         value={input}
@@ -113,18 +116,18 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         placeholder="Insert a link or just plain text.."
-        className="w-3/4 truncate rounded-lg border border-foreground/50 bg-background p-5 pr-28 text-base text-foreground transition-colors focus:border-foreground/50 focus:outline-none"
+        className="w-3/4 truncate bg-background p-4 text-base text-foreground transition-colors outline-none"
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         disabled={isSaving}
       />
       {input && !isSaving && (
-        <span className="text-foreground/8 absolute right-3 top-1/2 -translate-y-1/2 px-1 text-sm">
+        <span className="text-foreground/8 text-sm">
           Press ↵ to save
         </span>
       )}
       {isSaving && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 bg-background px-1 text-xs text-gray-500">
+        <span className="bg-background text-xs text-gray-500">
           Saving...
         </span>
       )}

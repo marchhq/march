@@ -256,8 +256,6 @@ const deleteItem = async (id, space, block, user) => {
     return deletedItem;
   };
   
-  
-
 const moveItemtoDate = async (date, id) => {
     const formattedDate = date ? new Date(date) : null;
 
