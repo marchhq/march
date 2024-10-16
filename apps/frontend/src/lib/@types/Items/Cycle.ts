@@ -14,6 +14,8 @@ export interface CycleItem {
   isArchived: boolean
   isDeleted: boolean
   uuid: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface CycleItems {
@@ -21,13 +23,18 @@ export interface CycleItems {
 }
 
 export interface CycleItemStoreTypes {
-  item: CycleItem | null
-  items: CycleItem[]
+  cycleItem: CycleItem | null
+  cycleItems: CycleItem[]
   isLoading: boolean
   isFetched: boolean
-  fetchItems: (session: string) => Promise<void>
-  createItem: (data: CycleItem, session: string) => Promise<void>
-  setItem: (item: CycleItem | null) => void
+  fetchItems: (session: string) => Promise<CycleItem[]>
+  createItem: (data: Partial<CycleItem>, session: string) => Promise<void>
+  mutateItem: (
+    data: Partial<CycleItem>,
+    session: string,
+    id: string
+  ) => Promise<void>
+  setCycleItem: (item: CycleItem | null) => void
   setIsFetched: (isFetched: boolean) => void
 }
 

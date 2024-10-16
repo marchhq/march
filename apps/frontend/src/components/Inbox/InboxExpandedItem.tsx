@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useInboxStore from "@/src/lib/store/inbox.store"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const InboxExpandedItem: React.FC = () => {
@@ -22,18 +22,18 @@ export const InboxExpandedItem: React.FC = () => {
     description: "",
   })
 
-  const { selectedItem, setSelectedItem, updateItem } = useInboxStore()
+  const { item, setItem, mutateItem } = useCycleItemStore()
 
   useEffect(() => {
-    if (selectedItem) {
-      setEditItemId(selectedItem._id || "")
+    if (item) {
+      setEditItemId(item._id || "")
       setEditedItem({
-        title: selectedItem.title || "",
-        description: selectedItem.description || "",
+        title: item.title || "",
+        description: item.description || "",
       })
     }
     console.log(editedItem)
-  }, [selectedItem, setEditItemId, setEditedItem])
+  }, [item, setEditItemId, setEditedItem, editedItem])
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -57,14 +57,14 @@ export const InboxExpandedItem: React.FC = () => {
     }
 
     timeoutId.current = setTimeout(() => {
-      if (selectedItem) {
-        handleSaveEditedItem(selectedItem)
+      if (item) {
+        handleSaveEditedItem(item)
       }
     }, 1000)
-  }, [editedItem, selectedItem, timeoutId])
+  }, [editedItem, item, timeoutId])
 
   const handleClose = () => {
-    setSelectedItem(null)
+    setItem(null)
     handleCancelEditItem()
   }
 
@@ -77,13 +77,13 @@ export const InboxExpandedItem: React.FC = () => {
     try {
       console.log("item", item)
       if (editItemId && editedItem) {
-        updateItem(
-          session,
+        mutateItem(
           {
             ...item,
             title: editedItem.title,
             description: editedItem.description,
           },
+          session,
           item._id
         )
       }
@@ -94,16 +94,16 @@ export const InboxExpandedItem: React.FC = () => {
 
   return (
     <div>
-      {selectedItem && (
+      {item && (
         <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
             <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
             </button>
             <p className="flex items-center">
-              {formatDateYear(selectedItem.createdAt || "")}
+              {formatDateYear(item.createdAt || "")}
             </p>
-            <p>edited {fromNow(selectedItem.updatedAt || "")}</p>
+            <p>edited {fromNow(item.updatedAt || "")}</p>
           </div>
           <div>
             <textarea
