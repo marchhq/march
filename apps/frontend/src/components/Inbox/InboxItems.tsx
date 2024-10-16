@@ -3,15 +3,16 @@
 import React, { useEffect, useCallback, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
+
 import {
   ContextMenu,
-  ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSub,
   ContextMenuSubContent,
-} from "@radix-ui/react-context-menu"
-
-import { ContextMenuSub, ContextMenuSubTrigger } from "../ui/context-menu"
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "../ui/context-menu"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
@@ -211,11 +212,11 @@ export const InboxItems: React.FC = () => {
                 </div>
               </div>
             </ContextMenuTrigger>
-            <ContextMenuContent className="rounded-md border border-border">
+            <ContextMenuContent className="rounded-md border border-border ">
               {menuItems(item).map((menuItem) => (
                 <ContextMenuItem
                   key={menuItem.name}
-                  className="hover-bg rounded-md px-2 py-0.5"
+                  className="rounded-md px-2 py-0.5"
                 >
                   <button
                     className="my-1 flex w-full items-center gap-3 text-primary-foreground"
@@ -229,26 +230,32 @@ export const InboxItems: React.FC = () => {
                 </ContextMenuItem>
               ))}
               <ContextMenuSub>
-                <ContextMenuSubTrigger className="hover-bg rounded-md px-2 py-0.5">
+                <ContextMenuSubTrigger className="rounded-md px-2 py-0.5">
                   <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
                     <Icon icon="mingcute:move-line" className="text-[18px]" />
                     <span className="flex-1 text-left text-[15px]">Move</span>
                   </div>
                 </ContextMenuSubTrigger>
-                <ContextMenuSubContent className="w-48 rounded-md border border-border">
+                <ContextMenuSubContent className="ml-1 w-52 rounded-md border border-border">
+                  <ContextMenuItem className="pointer-events-none flex flex-col items-start text-[#626367]">
+                    <p className="text-[8px] text-primary-foreground">
+                      This is a selected items
+                    </p>
+                    <span className="ml-2 text-[15px]">to</span>
+                  </ContextMenuItem>
                   {subMenuItems.map((subItem) => (
                     <ContextMenuItem
                       key={subItem.name}
                       className="hover-bg rounded-md px-2 py-0.5"
                     >
-                      <span className="flex-1 text-left text-[15px]">
+                      <span className="my-1 ml-2 flex w-full gap-3 text-left text-[15px] text-[#626367]">
                         {subItem.name}
                       </span>
                     </ContextMenuItem>
                   ))}
                 </ContextMenuSubContent>
               </ContextMenuSub>
-              <ContextMenuItem className="hover-bg rounded-md px-2 py-0.5">
+              <ContextMenuItem className="rounded-md px-2 py-0.5">
                 <button
                   className="my-1 flex w-full items-center gap-3 text-primary-foreground"
                   style={{ color: "#C45205" }}
