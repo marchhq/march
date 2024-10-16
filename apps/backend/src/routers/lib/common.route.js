@@ -19,6 +19,7 @@ const router = Router();
 
 // inbox
 router.route("/inbox/").get(getInboxItemsController);
+router.route("/inbox/").post(createInboxItemController);
 router.route("/this-week/").get(getThisWeekItemsController);
 router.route("/inbox/create/").get(createInboxItemController);
 router.route("/today/").get(getUserTodayItemsController);
