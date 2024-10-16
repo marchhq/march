@@ -61,7 +61,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
         const itemData: ItemData = {
           title: finalValue,
           type: linkDetected ? "link" : "text",
-          description: "", // You can set this to a specific description if needed
+          description: "",
         }
 
         // Add metadata only if linkDetected is true
@@ -75,7 +75,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
         setInput("")
         setIsPasting(false)
         await fetchReadingList(session, blockId, spaceId)
-        setShowWarning(false) // Reset warning on successful submission
+        setShowWarning(false)
       } catch (error) {
         console.error("Error adding item:", error)
       } finally {
