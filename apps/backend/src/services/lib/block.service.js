@@ -1,7 +1,7 @@
 import { Block } from "../../models/lib/block.model.js";
 import { createNote } from "./note.service.js"
 
-const createBlock = async (user, blockData) => {
+const createBlock = async (user, blockData, space) => {
     const type = blockData.data.type;
     let block;
 
@@ -11,6 +11,7 @@ const createBlock = async (user, blockData) => {
         block = new Block({
             name: "Note",
             user,
+            space,
             data: { ...blockData.data, viewingNoteId: note._id }
         });
         break;
@@ -19,6 +20,7 @@ const createBlock = async (user, blockData) => {
         block = new Block({
             name: "List",
             user,
+            space,
             data: { ...blockData.data }
         });
         break;
@@ -27,6 +29,7 @@ const createBlock = async (user, blockData) => {
         block = new Block({
             name: blockData.name ? blockData.name : type,
             user,
+            space,
             data: { ...blockData.data }
         });
     }
@@ -35,18 +38,19 @@ const createBlock = async (user, blockData) => {
     return block;
 };
 
-const getBlocks = async (user) => {
+const getBlocks = async (user, space) => {
     const blocks = await Block.find({
-        user
+        user,
+        space
     })
     if (!blocks) {
-        throw new Error('Block not found');
+        throw new Error('Blocks not found');
     }
     return blocks;
 };
 
-const deleteBlock = async (id) => {
-    const block = await Block.findOneAndDelete({ _id: id });
+const deleteBlock = async (id, space, user) => {
+    const block = await Block.findOneAndDelete({ _id: id, user, space });
 
     if (!block) {
         throw new Error('Block not found');
@@ -54,10 +58,11 @@ const deleteBlock = async (id) => {
     return block;
 };
 
-const getBlock = async (user, id) => {
+const getBlock = async (user, id, space) => {
     const block = await Block.findOne({
         _id: id,
-        user
+        user,
+        space
     }).populate({
         path: 'data.item',
         model: 'Item'
@@ -68,9 +73,11 @@ const getBlock = async (user, id) => {
     return block;
 };
 
-const updateBlock = async (id, updateData) => {
+const updateBlock = async (id, updateData, space, user) => {
     const updatedBlock = await Block.findOneAndUpdate({
-        _id: id
+        _id: id,
+        user,
+        space
     },
     { $set: updateData },
     { new: true }

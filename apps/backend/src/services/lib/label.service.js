@@ -1,9 +1,10 @@
 import { Label } from "../../models/lib/label.model.js";
 
-const createLabel = async (labelData, user) => {
+const createLabel = async (labelData, user, space) => {
     const label = new Label({
         ...labelData,
-        user
+        user,
+        space
     });
 
     await label.save();
@@ -33,9 +34,10 @@ const createLabels = async (labelsData, space, user) => {
     return createdLabels;
 }
 
-const getLabels = async (user) => {
+const getLabels = async (user, space) => {
     const labels = await Label.find({
-        user
+        user,
+        space
     })
         .sort({ name: 1 })
         .exec();
@@ -54,9 +56,22 @@ const getLabelsBySpace = async (user, space) => {
     return labels;
 }
 
-const getLabel = async (id) => {
+const getLabelByName = async (name, user, space) => {
+    const labels = await Label.find({
+        name,
+        user,
+        space
+    })
+        .sort({ name: 1 })
+        .exec();
+
+    return labels;
+}
+
+const getLabel = async (id, space) => {
     const label = await Label.findOne({
-        uuid: id
+        _id: id,
+        space
     });
     if (!label) {
         const error = new Error("Label not found")
@@ -66,9 +81,10 @@ const getLabel = async (id) => {
     return label;
 }
 
-const updateLabel = async (id, updatedData) => {
+const updateLabel = async (id, updatedData, space) => {
     const updatedLabel = await Label.findOneAndUpdate({
-        uuid: id
+        _id: id,
+        space
     },
     { $set: updatedData },
     { new: true }
@@ -83,7 +99,8 @@ const updateLabel = async (id, updatedData) => {
 
 const deleteLabel = async (id, space) => {
     await Label.findOneAndDelete({
-        uuid: id
+        _id: id,
+        space
     });
 }
 
@@ -116,6 +133,7 @@ const getOrCreateLabels = async (labels, userId) => {
 export {
     createLabel,
     createLabels,
+    getLabelByName,
     getLabels,
     getLabel,
     updateLabel,

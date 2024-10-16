@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation"
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useSpace } from "@/src/hooks/useSpace"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
+import useSpaceStore from "@/src/lib/store/space.store"
 
 interface Props {
   children: React.ReactNode
@@ -21,7 +21,7 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(false)
   const [latestNoteId, setLatestNoteId] = useState<string>("")
   const { getLatestNote, addNote } = useNotesStore()
-  const { spaces } = useSpace() || { spaces: [] }
+  const { spaces, fetchSpaces } = useSpaceStore()
 
   const getNoteId = useCallback(async (): Promise<string | null> => {
     try {
@@ -61,6 +61,10 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   const constructPath = (spaceName: string) => {
     return `space/${spaceName.toLowerCase().replace(/\s+/g, "-")}`
   }
+
+  useEffect(() => {
+    fetchSpaces(session)
+  }, [session, fetchSpaces])
 
   const items = spaces.map((space) => {
     const path = constructPath(space.name)
