@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   html,
   body {
     @apply bg-background;
@@ -147,7 +146,6 @@ button {
 
 */
 
-
 :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
@@ -199,22 +197,28 @@ button {
 
 /* width */
 ::-webkit-scrollbar {
-  @apply w-1 rounded-sm;
+  /* @apply w-1 rounded-sm; */
+  width: 0.25rem;
+  border-radius: 0.125rem;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  @apply rounded-sm;
+  /* @apply rounded-sm; */
+  border-radius: 0.125rem;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-background rounded-sm;
+  /* @apply bg-background rounded-sm; */
+  background-color: rgba(253, 253, 253, 0);
+  border-radius: 0.125rem;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-800;
+  /* @apply bg-zinc-800; */
+  background-color: #27272a;
 }
 
 [data-theme="slash-command"] {
