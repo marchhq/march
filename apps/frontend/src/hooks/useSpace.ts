@@ -14,7 +14,7 @@ export const useSpace = () => {
     const fetchSpaces = async () => {
       try {
         const response = await axios.get<Spaces>(
-          `${BACKEND_URL}/api/spaces/overview/`,
+          `${BACKEND_URL}/spaces/`,
           {
             headers: {
               Authorization: `Bearer ${session}`,
