@@ -29,6 +29,10 @@ const ItemSchema = new Schema(
             type: Date,
             default: null
         },
+        cycleDate: {
+            type: Date,
+            default: null
+        },
         status: {
             type: String,
             enum: statusChoices,
