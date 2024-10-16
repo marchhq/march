@@ -54,7 +54,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
 
   const handleSaveEditedItem = async (item: any) => {
     try {
-      console.log("editedItem", editedItem)
       if (editItemId && editedItem) {
         updateItem(
           session,
