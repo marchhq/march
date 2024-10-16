@@ -2,34 +2,26 @@
 import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, deleteItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
-const extractUrl = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const urls = text.match(urlRegex);
-    return urls ? urls[0] : null;
-};
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const { space, block } = req.params;
 
         const requestedData = req.body;
-        const { title } = requestedData;
-
-        const urlInTitle = extractUrl(title);
+        const { title, type } = requestedData;
         let item;
 
-        if (urlInTitle) {
+        if (type === "link") {
             // await itemQueue.add("itemQueue", {
             //     url: urlInTitle,
             //     itemId: item._id
             // });
-            const { title, favicon } = await linkPreviewGenerator(urlInTitle);
-            console.log("title: ", title);
-            console.log("favicon: ", favicon);
+            const { title: previewTitle, favicon } = await linkPreviewGenerator(title);
+
             const requestedData = {
-                title,
+                title: previewTitle,
                 metadata: {
-                    url: urlInTitle,
+                    url: title,
                     favicon
                 }
             }

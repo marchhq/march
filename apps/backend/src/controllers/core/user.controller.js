@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getUserOverdueItems, getUserItemsByDate, getInboxItems, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems } from "../../services/lib/item.service.js";
+import { getUserOverdueItems, getUserItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
@@ -76,6 +76,21 @@ const getInboxItemsController = async (req, res, next) => {
     }
 };
 
+const getInboxItemController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { item: id } = req.params;
+        const items = await getInboxItem(me, id);
+
+        res.status(200).json({
+            statusCode: 200,
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 const getThisWeekItemsController = async (req, res, next) => {
     try {
         const me = req.user._id;
@@ -84,6 +99,21 @@ const getThisWeekItemsController = async (req, res, next) => {
         res.status(200).json({
             statusCode: 200,
             response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const updateInboxItemController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { item: id } = req.params;
+        const updateData = req.body;
+        const space = await updateInboxItem(id, me, updateData);
+
+        res.status(200).json({
+            space
         });
     } catch (err) {
         next(err);
@@ -157,6 +187,8 @@ const moveItemtoDateController = async (req, res, next) => {
 export {
     userProfileController,
     updateUserController,
+    updateInboxItemController,
+    getInboxItemController,
     getInboxItemsController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
