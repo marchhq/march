@@ -2,6 +2,7 @@ import axios from "axios"
 import { create } from "zustand"
 
 import {
+  CreateItemResponse,
   CycleItem,
   CycleItems,
   CycleItemStoreTypes,
@@ -33,14 +34,14 @@ export const useCycleItemStore = create<CycleItemStoreTypes>((set) => ({
   },
   createItem: async (data: Partial<CycleItem>, session: string) => {
     try {
-      const response = await axios.post<{ response: CycleItem }>(
-        `${BACKEND_URL}/api/inbox/create/`,
+      const response = await axios.post<CreateItemResponse>(
+        `${BACKEND_URL}/api/inbox/`,
         data,
         {
           headers: { Authorization: `Bearer ${session}` },
         }
       )
-      const newItem = response.data.response
+      const newItem = response.data.item
       set((state) => ({ items: [newItem, ...state.items] }))
     } catch (error) {
       console.error("Error adding item: ", error)

@@ -30,3 +30,7 @@ export interface CycleItemStoreTypes {
   setItem: (item: CycleItem | null) => void
   setIsFetched: (isFetched: boolean) => void
 }
+
+export interface CreateItemResponse {
+  item: CycleItem
+}
