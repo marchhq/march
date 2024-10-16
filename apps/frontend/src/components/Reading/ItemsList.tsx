@@ -1,14 +1,14 @@
 import React from "react"
 
 import { Icon } from "@iconify-icon/react"
+import { Trash2Icon } from "lucide-react"
 import Image from "next/image"
 
+import fallbackImage from "../../../public/icons/logo.svg"
+import ImageWithFallback from "../ui/ImageWithFallback"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 import useReadingStore from "@/src/lib/store/reading.store"
-import { Trash2Icon } from "lucide-react"
-import ImageWithFallback from "../ui/ImageWithFallback"
-import fallbackImage from "../../../public/icons/logo.svg"
 
 interface ItemsListProps {
   blockId: string | null
@@ -34,14 +34,14 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-3/4">
+    <div className="flex w-3/4 flex-col gap-4">
       {[...readingItems].reverse().map((item: ReadingItem) => {
         const url = item.metadata?.url
         const favicon = item.metadata?.favicon
         return (
           <div
             key={item._id}
-            className="group flex items-center gap-4 hover:bg-background-hover rounded-lg p-3"
+            className="group flex items-center gap-4 rounded-lg p-3 hover:bg-background-hover"
           >
             {favicon ? (
               <ImageWithFallback
