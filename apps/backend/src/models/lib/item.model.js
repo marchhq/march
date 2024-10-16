@@ -72,6 +72,11 @@ const ItemSchema = new Schema(
                 ref: "Label"
             }
         ],
+        lastVisitedSpace: {
+            type: Schema.Types.ObjectId,
+            ref: 'Space',
+            default: null
+        },
         isCompleted: {
             type: Boolean,
             default: false
