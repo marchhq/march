@@ -197,28 +197,33 @@ button {
 
 /* width */
 ::-webkit-scrollbar {
-  /* @apply w-1 rounded-sm; */
-  width: 0.25rem;
-  border-radius: 0.125rem;
+  @apply w-1 rounded-sm;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  /* @apply rounded-sm; */
-  border-radius: 0.125rem;
+  @apply rounded-sm;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  /* @apply bg-background rounded-sm; */
-  background-color: rgba(253, 253, 253, 0);
-  border-radius: 0.125rem;
+  @apply bg-background rounded-sm;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  /* @apply bg-zinc-800; */
-  background-color: #27272a;
+  @apply bg-zinc-800;
+}
+
+/* for firefox */
+
+html {
+  scrollbar-width: thin; /* auto, thin or none */
+  scrollbar-color: #f0f0f0 #ffffff; /* thumb, track */
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  scrollbar-color: #4b5563 #ffffff;
 }
 
 [data-theme="slash-command"] {
