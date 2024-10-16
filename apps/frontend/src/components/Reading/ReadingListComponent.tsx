@@ -15,6 +15,7 @@ const ReadingListComponent: React.FC = () => {
 
   const [loading, setLoading] = useState(true)
   const [blockId, setBlockId] = useState<string | null>(null)
+  const [readingListSpaceId, setReadingListSpaceId] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
 
   const loadReadingList = useCallback(async () => {
@@ -25,9 +26,11 @@ const ReadingListComponent: React.FC = () => {
         (space) => space.name.toLowerCase() === "reading list"
       )
       if (readingListSpace) {
+        setReadingListSpaceId(readingListSpace._id)
         const fetchedBlockId = readingListSpace.blocks[0]
+        console.log(readingListSpace._id)
         setBlockId(fetchedBlockId)
-        await fetchReadingList(session, fetchedBlockId)
+        await fetchReadingList(session, fetchedBlockId, readingListSpace._id)
       }
     } catch (err) {
       setError("Failed to load reading list. Please try again.")
@@ -59,8 +62,8 @@ const ReadingListComponent: React.FC = () => {
       <div className="px-4 py-16 sm:px-6 lg:px-8">
         {blockId && (
           <div className="ml-[10%] mt-32 flex w-3/5 flex-col gap-8 text-base">
-            <AddItemForm blockId={blockId} />
-            <ItemsList blockId={blockId} />
+            <AddItemForm blockId={blockId} spaceId={readingListSpaceId} />
+            <ItemsList blockId={blockId}  spaceId={readingListSpaceId}/>
           </div>
         )}
       </div>

@@ -9,9 +9,10 @@ import useReadingStore from "@/src/lib/store/reading.store"
 
 interface ItemsListProps {
   blockId: string | null
+  spaceId: string
 }
 
-const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
+const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
   const { session } = useAuth()
   const { readingItems, deleteItem: deleteItemFromStore } = useReadingStore()
 
@@ -19,7 +20,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId }) => {
     if (!blockId) return
 
     try {
-      await deleteItemFromStore(session, blockId, itemId)
+      await deleteItemFromStore(session,spaceId, blockId, itemId)
     } catch (error) {
       console.error("Error deleting item:", error)
     }
