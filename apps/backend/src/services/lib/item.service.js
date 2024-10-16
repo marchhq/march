@@ -1,7 +1,8 @@
 import { Item } from "../../models/lib/item.model.js";
 import moment from 'moment-timezone';
+import { getLabelByName } from "./label.service.js";
 
-const getUserItems = async (me) => {
+const getInboxItems = async (me) => {
     const items = await Item.find({
         user: me,
         isCompleted: false,
@@ -12,6 +13,35 @@ const getUserItems = async (me) => {
         dueDate: null
     })
         .sort({ createdAt: -1 });
+
+    return items;
+}
+
+const getThisWeekItems = async (me) => {
+    const startOfWeek = new Date();
+    startOfWeek.setHours(0, 0, 0, 0);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const items = await Item.find({
+        user: me,
+        isArchived: false,
+        isDeleted: false,
+        spaces: { $exists: true, $eq: [] },
+        $or: [
+            { status: { $nin: ["done"] } },
+            {
+                status: "done",
+                cycleDate: { $gte: startOfWeek, $lte: endOfWeek }
+            }
+        ],
+        cycleDate: { $ne: null }
+    })
 
     return items;
 }
@@ -63,7 +93,25 @@ const getUserItemsByDate = async (me, date) => {
     return items;
 }
 
-const createItem = async (user, itemData) => {
+const createItem = async (user, itemData, space, block) => {
+    const newItem = new Item({
+        ...itemData,
+        user,
+        spaces: [space],
+        blocks: [block]
+    });
+    if (!newItem) {
+        const error = new Error("Failed to create the item")
+        error.statusCode = 500
+        throw error
+    }
+
+    const item = await newItem.save()
+
+    return item;
+};
+
+const createInboxItem = async (user, itemData) => {
     const newItem = new Item({
         ...itemData,
         user
@@ -79,9 +127,9 @@ const createItem = async (user, itemData) => {
     return item;
 };
 
-const getItems = async (user, filters, sortOptions) => {
+const filterItems = async (user, filters, sortOptions) => {
     const query = {
-        user: user,
+        user,
         isArchived: false,
         isDeleted: false
     };
@@ -141,12 +189,6 @@ const getItems = async (user, filters, sortOptions) => {
         }
     }
 
-    // effort filter
-    if (filters.effort) {
-        const effortFilters = filters.effort.split(',');
-        query.effort = { $in: effortFilters };
-    }
-
     // sorting
     if (sortOptions) {
         const sortParams = sortOptions.split(',');
@@ -163,10 +205,12 @@ const getItems = async (user, filters, sortOptions) => {
     return await Item.find(query).sort(sort);
 };
 
-const getItem = async (user, id) => {
+const getItem = async (user, id, space, block) => {
     const item = await Item.find({
         _id: id,
         user,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } },
         isArchived: false,
         isDeleted: false
     })
@@ -174,9 +218,23 @@ const getItem = async (user, id) => {
     return item;
 };
 
-const updateItem = async (id, updateData) => {
+const getAllItemsByBloack = async (user, space, block) => {
+    const item = await Item.find({
+        user,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } },
+        isArchived: false,
+        isDeleted: false
+    })
+
+    return item;
+};
+
+const updateItem = async (id, updateData, space, block) => {
     const updatedItem = await Item.findOneAndUpdate({
-        _id: id
+        _id: id,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } }
     },
     { $set: updateData },
     { new: true }
@@ -197,28 +255,30 @@ const moveItemtoDate = async (date, id) => {
     return item;
 };
 
-const getItemFilterByLabel = async (labelId, userId) => {
+const getItemFilterByLabel = async (name, userId, space) => {
+    const label = await getLabelByName(name, userId, space);
     const items = await Item.find({
-        labels: { $in: [labelId] },
+        labels: { $in: [label._id] },
         user: userId
     })
 
     return items;
 };
 
-const searchItemsByTitle = async (title) => {
+const searchItemsByTitle = async (title, user) => {
     const items = await Item.find({
         title: { $regex: title, $options: 'i' },
-        isDeleted: false
+        isDeleted: false,
+        user
     }).exec();
 
     return items;
 };
 
 export {
-    getUserItems,
+    getInboxItems,
     createItem,
-    getItems,
+    filterItems,
     updateItem,
     getItem,
     getUserOverdueItems,
@@ -227,5 +287,8 @@ export {
     getUserTodayItems,
     getAllitems,
     getItemFilterByLabel,
-    searchItemsByTitle
+    getAllItemsByBloack,
+    searchItemsByTitle,
+    createInboxItem,
+    getThisWeekItems
 }

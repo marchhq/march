@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, getItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -10,6 +10,7 @@ const extractUrl = (text) => {
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
+        const { space, block } = req.params;
 
         const requestedData = req.body;
         const { title } = requestedData;
@@ -26,16 +27,30 @@ const createItemController = async (req, res, next) => {
             console.log("title: ", title);
             console.log("favicon: ", favicon);
             const requestedData = {
-                title: title,
+                title,
                 metadata: {
                     url: urlInTitle,
-                    favicon: favicon
+                    favicon
                 }
             }
-            item = await createItem(user, requestedData);
+            item = await createItem(user, requestedData, space, block);
         } else {
-            item = await createItem(user, requestedData);
+            item = await createItem(user, requestedData, space, block);
         }
+
+        res.status(200).json({
+            item
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+const createInboxItemController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+
+        const requestedData = req.body;
+        const item = await createInboxItem(user, requestedData);
 
         res.status(200).json({
             item
@@ -47,9 +62,9 @@ const createItemController = async (req, res, next) => {
 
 const updateItemController = async (req, res, next) => {
     try {
-        const { item: id } = req.params;
+        const { space, block, item: id } = req.params;
         const updateData = req.body;
-        const item = await updateItem(id, updateData);
+        const item = await updateItem(id, updateData, space, block);
 
         res.status(200).json({
             item
@@ -59,16 +74,29 @@ const updateItemController = async (req, res, next) => {
     }
 };
 
-const getItemsController = async (req, res, next) => {
+const filterItemsController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const filters = {
-            dueDate: req.query.dueDate,
-            effort: req.query.effort
+            dueDate: req.query.dueDate
         };
         const sortOptions = req.query.sort;
 
-        const items = await getItems(user, filters, sortOptions);
+        const items = await filterItems(user, filters, sortOptions);
+
+        res.status(200).json({
+            items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getAllItemsByBloackController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { space, block } = req.params;
+        const items = await getAllItemsByBloack(user, space, block);
 
         res.status(200).json({
             items
@@ -81,9 +109,9 @@ const getItemsController = async (req, res, next) => {
 const getItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { item: id } = req.params;
+        const { space, block, item: id } = req.params;
 
-        const item = await getItem(user, id);
+        const item = await getItem(user, id, space, block);
 
         res.status(200).json({
             item
@@ -94,11 +122,11 @@ const getItemController = async (req, res, next) => {
 };
 
 const getItemFilterByLabelController = async (req, res, next) => {
-    const { label } = req.query;
+    const { space, name } = req.query;
     const user = req.user._id;
 
     try {
-        const items = await getItemFilterByLabel(label, user);
+        const items = await getItemFilterByLabel(name, user, space);
         res.status(200).json(items);
     } catch (err) {
         next(err);
@@ -107,8 +135,9 @@ const getItemFilterByLabelController = async (req, res, next) => {
 
 const searchItemsByTitleController = async (req, res, next) => {
     const { q } = req.query;
+    const user = req.user._id;
     try {
-        const items = await searchItemsByTitle(q);
+        const items = await searchItemsByTitle(q, user);
         res.status(200).json({
             items
         });
@@ -119,9 +148,11 @@ const searchItemsByTitleController = async (req, res, next) => {
 
 export {
     createItemController,
-    getItemsController,
+    filterItemsController,
     updateItemController,
     getItemController,
     getItemFilterByLabelController,
-    searchItemsByTitleController
+    searchItemsByTitleController,
+    getAllItemsByBloackController,
+    createInboxItemController
 }
