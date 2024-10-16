@@ -14,17 +14,17 @@ function isValidUrl(url: string): boolean {
 }
 
 interface AddItemFormProps {
-  blockId: string;
-  spaceId: string;
+  blockId: string
+  spaceId: string
 }
 
 interface ItemData {
-  title: string;
-  type: string;
-  description?: string;
+  title: string
+  type: string
+  description?: string
   metadata?: {
-      url: string; 
-  };
+    url: string
+  }
 }
 
 const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
@@ -38,52 +38,52 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async (value: string) => {
-    const trimmedValue = value.trim();
-    
+    const trimmedValue = value.trim()
+
     if (trimmedValue) {
-        const linkDetected = isLink(trimmedValue); // Check whether the entered value is a link or not
-        
-        // If it's a link and starts with http://, show a warning
-        if (linkDetected && /^http:\/\//i.test(trimmedValue)) {
-            setShowWarning(true);
-            return; // Prevent submission
+      const linkDetected = isLink(trimmedValue) // Check whether the entered value is a link or not
+
+      // If it's a link and starts with http://, show a warning
+      if (linkDetected && /^http:\/\//i.test(trimmedValue)) {
+        setShowWarning(true)
+        return // Prevent submission
+      }
+
+      // If it's a link and doesn't start with https://, prepend https://
+      const finalValue =
+        linkDetected && !/^https:\/\//i.test(trimmedValue)
+          ? `https://${trimmedValue}`
+          : trimmedValue
+
+      try {
+        setIsSaving(true)
+        // Prepare the item object
+        const itemData: ItemData = {
+          title: finalValue,
+          type: linkDetected ? "link" : "text",
+          description: "", // You can set this to a specific description if needed
         }
-        
-        // If it's a link and doesn't start with https://, prepend https://
-        const finalValue = linkDetected && !/^https:\/\//i.test(trimmedValue) 
-            ? `https://${trimmedValue}` 
-            : trimmedValue;
 
-        try {
-            setIsSaving(true);
-            // Prepare the item object
-            const itemData: ItemData = {
-                title: finalValue,
-                type: linkDetected ? "link" : "text",
-                description: "", // You can set this to a specific description if needed
-            };
-
-            // Add metadata only if linkDetected is true
-            if (linkDetected) {
-              itemData.metadata={
-                url: finalValue
-              }
+        // Add metadata only if linkDetected is true
+        if (linkDetected) {
+          itemData.metadata = {
+            url: finalValue,
           }
-
-            await addItemToStore(session, spaceId, blockId, itemData);
-            setInput("");
-            setIsPasting(false);
-            await fetchReadingList(session, blockId, spaceId);
-            setShowWarning(false); // Reset warning on successful submission
-        } catch (error) {
-            console.error("Error adding item:", error);
-        } finally {
-            setIsSaving(false);
         }
-    }
-};
 
-    
+        await addItemToStore(session, spaceId, blockId, itemData)
+        setInput("")
+        setIsPasting(false)
+        await fetchReadingList(session, blockId, spaceId)
+        setShowWarning(false) // Reset warning on successful submission
+      } catch (error) {
+        console.error("Error adding item:", error)
+      } finally {
+        setIsSaving(false)
+      }
+    }
+  }
+
   const handleInputChange = useCallback(
     (value: string) => {
       setInput(value)
@@ -139,36 +139,31 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   }, [input])
 
   return (
-    <div className="relative flex items-center gap-2 w-3/4">
-      <div className="w-full flex flex-col gap-1">
-
-      <input
-        ref={inputRef}
-        value={input}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onPaste={handlePaste}
-        placeholder="Insert a link or just plain text.."
-        className="truncate bg-background p-4 text-base text-foreground transition-colors outline-none"
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus
-        disabled={isSaving}
+    <div className="relative flex w-3/4 items-center gap-2">
+      <div className="flex w-full flex-col gap-1">
+        <input
+          ref={inputRef}
+          value={input}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
+          placeholder="Insert a link or just plain text.."
+          className="truncate bg-background p-4 text-base text-foreground outline-none transition-colors"
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+          disabled={isSaving}
         />
-   {showWarning && (
-        <span className="text-red-500 text-sm animate-shake">
-          Warning: Using http is dangerous! Please use https.
-        </span>
-      )}
-        </div>
+        {showWarning && (
+          <span className="animate-shake text-sm text-red-500">
+            Warning: Using http is dangerous! Please use https.
+          </span>
+        )}
+      </div>
       {input && !isSaving && (
-        <span className="text-foreground/8 w-36 text-sm">
-          Press ↵ to save
-        </span>
+        <span className="text-foreground/8 w-36 text-sm">Press ↵ to save</span>
       )}
       {isSaving && (
-        <span className="bg-background text-xs text-gray-500">
-          Saving...
-        </span>
+        <span className="bg-background text-xs text-gray-500">Saving...</span>
       )}
     </div>
   )
