@@ -18,7 +18,7 @@ const router = Router();
 
 // inbox
 router.route("/inbox/").get(getInboxItemsController);
-router.route("/inbox/create/").get(createInboxItemController);
+router.route("/inbox/").post(createInboxItemController);
 router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
 router.route("/setDate/").post(moveItemtoDateController);
