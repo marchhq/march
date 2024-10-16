@@ -32,7 +32,7 @@ const InboxSection: React.FC = () => {
   })
 
   const { toast } = useToast()
-  const { fetchPages, pages } = useSpaceStore()
+  const { fetchSpaces, spaces } = useSpaceStore()
 
   const config = {
     headers: {
@@ -41,7 +41,7 @@ const InboxSection: React.FC = () => {
   }
 
   React.useEffect(() => {
-    void fetchPages(session)
+    void fetchSpaces(session)
   }, [])
 
   const addItemToInbox = async () => {
