@@ -13,7 +13,8 @@ import {
     getAllItemsByBloackController,
     updateItemController,
     getItemController,
-    getItemFilterByLabelController
+    getItemFilterByLabelController,
+    deleteItemController
 } from "../../controllers/lib/item.controller.js";
 import {
     getMostRecentUpdatedNoteController
@@ -67,6 +68,7 @@ router.route("/:space/blocks/:block/items/").post(createItemController);
 router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
 router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
+router.route("/:space/blocks/:block/items/:item/").delete(deleteItemController);
 
 // note controllers
 router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);

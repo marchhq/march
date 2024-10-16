@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, deleteItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -74,6 +74,21 @@ const updateItemController = async (req, res, next) => {
     }
 };
 
+const deleteItemController = async (req, res, next) => {
+    try {
+      const user = req.user._id;
+      const { item, space, block } = req.params;
+
+      const deletedItem = await deleteItem(item, space, block, user);
+      res.status(200).json({
+        success: true,
+        data: deletedItem,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
 const filterItemsController = async (req, res, next) => {
     try {
         const user = req.user._id;
@@ -123,7 +138,7 @@ const getItemController = async (req, res, next) => {
 
 const getItemFilterByLabelController = async (req, res, next) => {
     const { space, name } = req.query;
-    const user = req.user._id;
+    const user = req.udeleteItemControllerser._id;
 
     try {
         const items = await getItemFilterByLabel(name, user, space);
@@ -154,5 +169,6 @@ export {
     getItemFilterByLabelController,
     searchItemsByTitleController,
     getAllItemsByBloackController,
-    createInboxItemController
+    createInboxItemController,
+    deleteItemController
 }
