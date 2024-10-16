@@ -17,6 +17,17 @@ const getInboxItems = async (me) => {
     return items;
 }
 
+const getInboxItem = async (me, id) => {
+    const items = await Item.find({
+        user: me,
+        _id: id,
+        isArchived: false,
+        isDeleted: false
+    })
+
+    return items;
+}
+
 const getThisWeekItems = async (me) => {
     const startOfWeek = new Date();
     startOfWeek.setHours(0, 0, 0, 0);
@@ -125,6 +136,17 @@ const createInboxItem = async (user, itemData) => {
     const item = await newItem.save()
 
     return item;
+};
+
+const updateInboxItem = async (item, user, itemData) => {
+    const updatedItem = await Item.findOneAndUpdate({
+        _id: item,
+        user
+    },
+    { $set: itemData },
+    { new: true }
+    )
+    return updatedItem;
 };
 
 const filterItems = async (user, filters, sortOptions) => {
@@ -290,6 +312,7 @@ const searchItemsByTitle = async (title, user) => {
 
 export {
     getInboxItems,
+    getInboxItem,
     createItem,
     filterItems,
     deleteItem,
@@ -302,6 +325,7 @@ export {
     getAllitems,
     getItemFilterByLabel,
     getAllItemsByBloack,
+    updateInboxItem,
     searchItemsByTitle,
     createInboxItem,
     getThisWeekItems
