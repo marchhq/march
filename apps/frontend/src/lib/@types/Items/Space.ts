@@ -22,5 +22,5 @@ export interface SpaceStoreTypes {
   fetchSpaceById: (id: string, session: string) => Promise<void>
   createSpace: (data: Space, session: string) => Promise<void>
   updateSpace: (_id: string, data: Space, session: string) => Promise<void>
-  setSelectedSpace: (page: Space | null) => void
+  setSelectedSpace: (space: Space | null) => void
 }
