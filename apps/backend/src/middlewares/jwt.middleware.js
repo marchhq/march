@@ -67,8 +67,7 @@ const checkUserVerificationController = async (req, res, next) => {
         }
 
         const payload = await verifyJWTToken(token);
-        const user = await getUserById(payload.id)
-        if (!user) {
+        if (!payload) {
             return res.status(401).json({ isValidUser: false });
         }
 
