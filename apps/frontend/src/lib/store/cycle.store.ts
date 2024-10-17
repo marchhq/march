@@ -21,7 +21,7 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       const { data } = await api.get(endpoint, {
         headers: { Authorization: `Bearer ${session}` },
       })
-      set({ items: data.response || [], isLoading: false })
+      set({ items: data.items || [], isLoading: false })
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
@@ -37,7 +37,8 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       const { data } = await api.get(`/api/inbox/${id}`, {
         headers: { Authorization: `Bearer ${session}` },
       })
-      set({ currentItem: data.item, isLoading: false })
+      console.log("api response for item: ", data.response)
+      set({ currentItem: data.response, isLoading: false })
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
@@ -76,8 +77,8 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
         headers: { Authorization: `Bearer ${session}` },
       })
       set((state) => ({
-        items: [data.item, ...state.items],
-        currentItem: data.item,
+        items: [data.response, ...state.items],
+        currentItem: data.response,
         isLoading: false,
       }))
     } catch (error) {
@@ -101,12 +102,12 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       })
       set((state) => {
         const updatedItems = state.items.map((item) =>
-          item._id === id ? { ...item, ...data.item } : item
+          item._id === id ? { ...item, ...data.response } : item
         )
         return {
           items: updatedItems,
           currentItem:
-            state.currentItem?._id === id ? data.item : state.currentItem,
+            state.currentItem?._id === id ? data.response : state.currentItem,
           isLoading: false,
         }
       })
