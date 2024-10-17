@@ -9,6 +9,7 @@ const getUserItems = async (me) => {
     isDeleted: false,
     spaces: { $exists: true, $eq: [] },
     status: { $nin: ['archive', 'done'] },
+    dueDate: null,
   }).sort({ createdAt: -1 });
 
   return items;
