@@ -12,7 +12,7 @@ export const isLink = (value: string): boolean => {
 // Function to truncate a string to a given lengtht and add ... if string is bigger then givven length
 export function truncateString(input: string, maxLength: number): string {
   if (input.length > maxLength) {
-    return input.slice(0, maxLength) + "...";
+    return input.slice(0, maxLength) + "..."
   }
-  return input;
+  return input
 }
