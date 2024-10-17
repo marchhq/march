@@ -68,7 +68,6 @@ const getInboxItemsController = async (req, res, next) => {
         const items = await getInboxItems(me);
 
         res.status(200).json({
-            statusCode: 200,
             response: items
         });
     } catch (err) {
@@ -83,7 +82,6 @@ const getInboxItemController = async (req, res, next) => {
         const items = await getInboxItem(me, id);
 
         res.status(200).json({
-            statusCode: 200,
             response: items
         });
     } catch (err) {
@@ -97,7 +95,6 @@ const getThisWeekItemsController = async (req, res, next) => {
         const items = await getThisWeekItems(me);
 
         res.status(200).json({
-            statusCode: 200,
             response: items
         });
     } catch (err) {
@@ -110,10 +107,10 @@ const updateInboxItemController = async (req, res, next) => {
         const me = req.user._id;
         const { item: id } = req.params;
         const updateData = req.body;
-        const space = await updateInboxItem(id, me, updateData);
+        const items = await updateInboxItem(id, me, updateData);
 
         res.status(200).json({
-            space
+            response: items
         });
     } catch (err) {
         next(err);
@@ -126,7 +123,7 @@ const getAllitemsController = async (req, res, next) => {
         const items = await getAllitems(me);
 
         res.status(200).json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
@@ -139,8 +136,10 @@ const getUserTodayItemsController = async (req, res, next) => {
         const todayItems = await getUserTodayItems(me);
         const overdueItems = await getUserOverdueItems(me);
         res.json({
-            todayItems,
-            overdueItems
+            response: {
+                todayItems,
+                overdueItems
+            }
         });
     } catch (err) {
         next(err);
@@ -152,7 +151,7 @@ const getUserOverdueItemsController = async (req, res, next) => {
         const me = req.user.id;
         const items = await getUserOverdueItems(me);
         res.json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
@@ -177,7 +176,7 @@ const moveItemtoDateController = async (req, res, next) => {
         const { id, dueDate } = req.body;
         const items = await moveItemtoDate(dueDate, id);
         res.json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
