@@ -2,6 +2,7 @@ import { Router } from "express";
 import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController, getUserJournalByDateController } from "../../controllers/lib/journal.controller.js";
 import {
     getInboxItemsController,
+    getInboxItemController,
     getThisWeekItemsController,
     updateInboxItemController,
     getUserTodayItemsController,
@@ -22,6 +23,7 @@ const router = Router();
 router.route("/inbox/").get(getInboxItemsController);
 router.route("/inbox/").post(createInboxItemController);
 router.route("/inbox/:item/").put(updateInboxItemController);
+router.route("/inbox/:item/").get(getInboxItemController);
 router.route("/this-week/").get(getThisWeekItemsController);
 router.route("/inbox/create/").get(createInboxItemController);
 router.route("/today/").get(getUserTodayItemsController);
