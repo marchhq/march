@@ -7,7 +7,7 @@ import { SkeletonCard } from "./atoms/SkeletonCard"
 import { DropdownItem } from "./DropDownItems"
 import { useAuth } from "../contexts/AuthContext"
 import { useItems } from "../hooks/useEvents"
-import { Item } from "../lib/@types/Items/TodayItems"
+import { Item } from "../lib/@types/Items/Today"
 import { BACKEND_URL } from "../lib/constants/urls"
 
 interface TodayEventsProps {
