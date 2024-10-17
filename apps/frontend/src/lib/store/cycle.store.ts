@@ -1,94 +1,121 @@
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { create } from "zustand"
 
-import {
-  CreateItemResponse,
-  CycleItem,
-  CycleItems,
-  CycleItemStoreTypes,
-} from "../@types/Items/Cycle"
+import { CycleItem, CycleItemStore } from "../@types/Items/Cycle"
 import { BACKEND_URL } from "../constants/urls"
 
-export const useCycleItemStore = create<CycleItemStoreTypes>((set, get) => ({
-  cycleItem: null,
-  cycleItems: [],
+const api = axios.create({
+  baseURL: BACKEND_URL,
+})
+
+export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
+  items: [],
+  currentItem: null,
   isLoading: false,
-  isFetched: false,
-  setCycleItem: (cycleItem: CycleItem | null) => set({ cycleItem }),
-  setIsFetched: (isFetched: boolean) => set({ isFetched }),
-  fetchInboxItems: async (session: string) => {
-    let cycleItems_: CycleItem[] = []
-    set({ isLoading: true })
+  error: null,
+
+  fetchItems: async (session: string, date?: string) => {
+    set({ isLoading: true, error: null })
     try {
-      const { data } = await axios.get<CycleItems>(
-        `${BACKEND_URL}/api/inbox/`,
-        {
-          headers: { Authorization: `Bearer ${session}` },
-        }
-      )
-      cycleItems_ = data.response
-      set({ cycleItems: cycleItems_, isFetched: true })
-    } catch (error) {
-      console.error("Error fetching cycle items: ", error)
-    } finally {
-      set({ isLoading: false })
-    }
-    return cycleItems_
-  },
-  setCycleItems: (cycleItems: CycleItem[]) => {
-    set({ cycleItems })
-  },
-  fetchTodayItems: async (session: string, date: string) => {
-    let cycleItems_: CycleItem[] = []
-    set({ isLoading: true })
-    try {
-      const res = await axios.get(`${BACKEND_URL}/api/${date}`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
+      const endpoint = date ? `/api/${date}` : "/api/inbox"
+      const { data } = await api.get(endpoint, {
+        headers: { Authorization: `Bearer ${session}` },
       })
-      cycleItems_ = res.data.response
-      console.log("api today items: ", cycleItems_)
-      set({ cycleItems: cycleItems_, isFetched: true })
+      set({ items: data.response || [], isLoading: false })
     } catch (error) {
-      console.error("error fetching today items: ", error)
-    } finally {
-      set({ isLoading: false })
-    }
-    return cycleItems_
-  },
-  createItem: async (data: Partial<CycleItem>, session: string) => {
-    try {
-      const response = await axios.post<CreateItemResponse>(
-        `${BACKEND_URL}/api/inbox/`,
-        data,
-        {
-          headers: { Authorization: `Bearer ${session}` },
-        }
-      )
-      const newItem = response.data.item
-      set((state) => ({ cycleItems: [newItem, ...state.cycleItems] }))
-    } catch (error) {
-      console.error("Error adding item: ", error)
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
     }
   },
-  mutateItem: async (data: Partial<CycleItem>, session: string, id: string) => {
+
+  fetchItem: async (session: string, id: string) => {
+    set({ isLoading: true, error: null })
     try {
-      const response = await axios.put<CreateItemResponse>(
-        `${BACKEND_URL}/api/inbox/${id}`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${session}`,
-          },
-        }
-      )
-      const mutatedItem = response.data.item
+      const { data } = await api.get(`/api/inbox/${id}`, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+      set({ currentItem: data.item, isLoading: false })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
+    }
+  },
+
+  fetchItemByDate: async (session: string, date: string) => {
+    set({ isLoading: true, error: null })
+    try {
+      const { data } = await api.get(`/api/${date}`, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+      const item =
+        data.response && data.response.length > 0 ? data.response[0] : null
+      set({ currentItem: item, isLoading: false })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
+    }
+  },
+
+  setCurrentItem: (item: CycleItem | null) => {
+    set({ currentItem: item })
+  },
+
+  createItem: async (session: string, item: Partial<CycleItem>) => {
+    set({ isLoading: true, error: null })
+    try {
+      const { data } = await api.post("/api/inbox", item, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
       set((state) => ({
-        cycleItems: [mutatedItem, ...state.cycleItems],
+        items: [data.item, ...state.items],
+        currentItem: data.item,
+        isLoading: false,
       }))
     } catch (error) {
-      console.error("error updating item: ", error)
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
+    }
+  },
+
+  updateItem: async (
+    session: string,
+    updates: Partial<CycleItem>,
+    id: string
+  ) => {
+    set({ isLoading: true, error: null })
+    try {
+      const { data } = await api.put(`/api/inbox/${id}`, updates, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+      set((state) => {
+        const updatedItems = state.items.map((item) =>
+          item._id === id ? { ...item, ...data.item } : item
+        )
+        return {
+          items: updatedItems,
+          currentItem:
+            state.currentItem?._id === id ? data.item : state.currentItem,
+          isLoading: false,
+        }
+      })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
     }
   },
 }))
