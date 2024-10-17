@@ -20,35 +20,31 @@ type DueDate = {
   dateObj: Date
 }
 
+const monthMap: { [key: string]: number } = {
+  jan: 0,
+  feb: 1,
+  mar: 2,
+  apr: 3,
+  may: 4,
+  jun: 5,
+  jul: 6,
+  aug: 7,
+  sep: 8,
+  oct: 9,
+  nov: 10,
+  dec: 11,
+}
+
 const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
   const [inputDate, setInputDate] = useState<string>("")
   const [dueDates, setDueDates] = useState<DueDate[]>([])
   const { session } = useAuth()
   const { moveItemToDate } = useInboxStore()
 
-  const monthMap: { [key: string]: number } = {
-    jan: 0,
-    feb: 1,
-    mar: 2,
-    apr: 3,
-    may: 4,
-    jun: 5,
-    jul: 6,
-    aug: 7,
-    sep: 8,
-    oct: 9,
-    nov: 10,
-    dec: 11,
-  }
-
   const allMonths = Object.keys(monthMap)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let dateInput = e.target.value.toLowerCase()
-
-    if (dateInput.startsWith("on ")) {
-      dateInput = dateInput.slice(3)
-    }
 
     setInputDate(dateInput)
   }
@@ -75,6 +71,19 @@ const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
       generateDueDates(inputDate)
     }
   }, [inputDate])
+
+  const generateDateForMonth = (
+    month: string,
+    day: number,
+    year: number
+  ): Date | null => {
+    const monthIndex = monthMap[month]
+    const dueDate = new Date(year, monthIndex, day)
+    if (dueDate < new Date() || dueDate.getMonth() !== monthIndex) {
+      return null
+    }
+    return dueDate
+  }
 
   const generateDefaultDates = (): DueDate[] => {
     const now = new Date()
@@ -103,41 +112,26 @@ const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
     )
 
     if (matchingMonths.length === 0) {
-      setDueDates(generateDefaultDates()) // Fallback to default dates
-      return
+      return setDueDates(generateDefaultDates())
     }
 
-    const generatedDates: DueDate[] = []
+    const day = dayPart ? parseInt(dayPart, 10) : 1
+    if (day < 1 || day > 31) {
+      return setDueDates(generateDefaultDates())
+    }
+
     const now = new Date()
+    const generatedDates: DueDate[] = []
 
-    if (dayPart) {
-      const day = parseInt(dayPart, 10)
-
-      if (Number.isNaN(day) || day < 1 || day > 31) {
-        setDueDates(generateDefaultDates()) // Fallback to default dates
-        return
-      }
-
+    for (let year = now.getFullYear(); year < now.getFullYear() + 4; year++) {
       matchingMonths.forEach((month) => {
-        const monthIndex = monthMap[month]
-        for (let i = 0; i < 4; i++) {
-          const dueDate = new Date(now.getFullYear() + i, monthIndex, day)
-          if (dueDate < now) continue // Skip past dates
-          if (dueDate.getMonth() !== monthIndex) continue // Skip invalid dates (e.g. Feb 30)
+        const dueDate = generateDateForMonth(month, day, year)
+        if (dueDate) {
           generatedDates.push({
             formatted: `${formatDate(dueDate)}: ${formatDayOfWeek(dueDate)}`,
             dateObj: dueDate,
           })
         }
-      })
-    } else {
-      matchingMonths.forEach((month) => {
-        const monthIndex = monthMap[month]
-        const dueDate = new Date(now.getFullYear(), monthIndex, 1)
-        generatedDates.push({
-          formatted: `${formatDate(dueDate)}: ${formatDayOfWeek(dueDate)}`,
-          dateObj: dueDate,
-        })
       })
     }
 
@@ -172,6 +166,7 @@ const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
             className="w-full cursor-pointer hover:bg-neutral-800 p-2 rounded flex justify-between text-foreground"
             key={index}
             onClick={() => handleDueDate(date.dateObj)}
+            aria-label={`Select due date: ${date.formatted}`}
           >
             <p className="pointer-events-none">
               {date.formatted.split(":")[0]}
