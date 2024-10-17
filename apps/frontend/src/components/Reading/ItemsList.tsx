@@ -41,8 +41,10 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
         return (
           <div
             key={item._id}
-            className="group flex items-center gap-4 rounded-lg p-3 hover:bg-background-hover"
+            className="group flex flex-col justify-center  gap-2 rounded-lg px-3 py-1 hover:bg-background-hover"
           >
+            <div className="flex items-center gap-2">
+
             {favicon ? (
               <ImageWithFallback
                 src={favicon}
@@ -50,7 +52,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
                 alt="Favicon"
                 width={16}
                 height={16}
-                className="shrink-0"
+                className="shrink-0 size-5"
               />
             ) : (
               <Icon
@@ -69,18 +71,27 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
                   <span className="break-all">{item.title}</span>
                 </h3>
               </a>
+              </div>
+              
+                </div>
+              <>
               {item.description && (
                 <p className=" text-base text-secondary-foreground">
                   {item.description}
                 </p>
               )}
-            </div>
-            <button
+                {item?.type === "link" && (
+                <p className=" text-sm text-secondary-foreground ml-7">
+                  {item?.metadata?.url}
+                </p>
+              )}
+              </>
+            {/* <button
               className="invisible text-sm text-secondary-foreground hover:text-foreground group-hover:visible"
               onClick={() => deleteItem(item._id)}
             >
               <Trash2Icon color="red" size={18} />
-            </button>
+            </button> */}
           </div>
         )
       })}
