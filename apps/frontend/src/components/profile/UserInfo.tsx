@@ -4,6 +4,7 @@ import { Icon } from "@/src/components/Icon"
 import { User } from "@/src/lib/@types/auth/user"
 import { GithubDark } from "@/src/lib/icons/Github"
 import Google from "@/src/lib/icons/Google"
+import Image from "next/image"
 
 export const getAuthInfo = (
   user: User
@@ -46,9 +47,11 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   return (
     <div className="mb-8 flex flex-col">
       {user.avatar && (
-        <img
-          src={user.avatar}
-          alt={`${user.fullName}'s Avatar`}
+        <Image
+        src={user.avatar}
+        alt={`${user.fullName}'s Avatar`}
+        width={24}
+        height={24}
           className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
         />
       )}
