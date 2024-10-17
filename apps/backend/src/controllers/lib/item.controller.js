@@ -2,38 +2,29 @@
 import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
-const extractUrl = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const urls = text.match(urlRegex);
-    return urls ? urls[0] : null;
-};
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const { space, block } = req.params;
 
         const requestedData = req.body;
-        const { title } = requestedData;
-
-        const urlInTitle = extractUrl(title);
         let item;
 
-        if (urlInTitle) {
-            // await itemQueue.add("itemQueue", {
-            //     url: urlInTitle,
-            //     itemId: item._id
-            // });
-            const { title, favicon } = await linkPreviewGenerator(urlInTitle);
-            console.log("title: ", title);
-            console.log("favicon: ", favicon);
-            const requestedData = {
-                title,
+        const url = requestedData.metadata?.url;
+        if (url) {
+            const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
+
+            const updatedData = {
+                ...requestedData,
+                title: previewTitle,
                 metadata: {
-                    url: urlInTitle,
+                    ...requestedData.metadata,
+                    url,
                     favicon
                 }
-            }
-            item = await createItem(user, requestedData, space, block);
+            };
+
+            item = await createItem(user, updatedData, space, block);
         } else {
             item = await createItem(user, requestedData, space, block);
         }
@@ -45,15 +36,16 @@ const createItemController = async (req, res, next) => {
         next(err);
     }
 };
+
 const createInboxItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
 
         const requestedData = req.body;
-        const item = await createInboxItem(user, requestedData);
+        const items = await createInboxItem(user, requestedData);
 
         res.status(200).json({
-            item
+            response: items
         });
     } catch (err) {
         next(err);
@@ -85,7 +77,7 @@ const filterItemsController = async (req, res, next) => {
         const items = await filterItems(user, filters, sortOptions);
 
         res.status(200).json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
@@ -122,7 +114,8 @@ const getItemController = async (req, res, next) => {
 };
 
 const getItemFilterByLabelController = async (req, res, next) => {
-    const { space, name } = req.query;
+    const { name } = req.query;
+    const { space } = req.params;
     const user = req.user._id;
 
     try {
@@ -139,7 +132,7 @@ const searchItemsByTitleController = async (req, res, next) => {
     try {
         const items = await searchItemsByTitle(q, user);
         res.status(200).json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
