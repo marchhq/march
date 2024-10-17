@@ -31,6 +31,7 @@ export interface CycleItemStore {
   isLoading: boolean
   error: string | null
   fetchItems: (session: string, date?: string) => Promise<void>
+  fetchThisWeek: (session: string) => Promise<void>
   fetchItem: (session: string, id: string) => Promise<void>
   fetchItemByDate: (session: string, date: string) => Promise<void>
   setCurrentItem: (item: CycleItem | null) => void

@@ -67,6 +67,11 @@ export function getFormattedDateRange(date: Date): string {
   return `${format(startOfCurrentWeek, "MMM d")} - ${format(endOfCurrentWeek, "MMM d")}`
 }
 
+export function getEndOfCurrentWeek(date: Date): string {
+  const endDate = endOfWeek(date, { weekStartsOn: 0 })
+  return endDate.toISOString()
+}
+
 export { getWeeksInMonth }
 
 export function getTodayISODate(date: Date): string {
