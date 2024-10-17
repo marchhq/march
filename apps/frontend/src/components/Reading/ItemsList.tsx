@@ -41,7 +41,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
         return (
           <div
             key={item._id}
-            className="group flex flex-col justify-center  gap-2 rounded-lg px-3 py-1 hover:bg-background-hover"
+            className="group flex flex-col justify-center  gap-2 rounded-lg py-1 hover:bg-background-hover"
           >
             <div className="flex items-center gap-2">
 
