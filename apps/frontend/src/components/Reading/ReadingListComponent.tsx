@@ -1,51 +1,53 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useCallback } from "react"
 
 import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSpace } from "@/src/hooks/useSpace"
-import useReadingStore from "@/src/lib/store/reading.store"
+import useBlockStore from "@/src/lib/store/block.store"  // The Zustand store for blocks
 
 const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
   const { spaces } = useSpace() || { spaces: [] }
-  const { fetchReadingList } = useReadingStore()
 
-  const [loading, setLoading] = useState(true)
-  const [blockId, setBlockId] = useState<string | null>(null)
-  const [readingListSpaceId, setReadingListSpaceId] = useState<string>("")
-  const [error, setError] = useState<string | null>(null)
+  const {
+    blocks,
+    blockId,
+    isLoading,
+    error,
+    fetchBlocks,
+  } = useBlockStore()
 
+  // Load the reading list space and block
   const loadReadingList = useCallback(async () => {
-    setLoading(true)
-    setError(null)
     try {
       const readingListSpace = spaces.find(
         (space) => space.name.toLowerCase() === "reading list"
       )
+      
       if (readingListSpace) {
-        setReadingListSpaceId(readingListSpace._id)
-        const fetchedBlockId = readingListSpace.blocks[0]
-        console.log(readingListSpace._id)
-        setBlockId(fetchedBlockId)
-        await fetchReadingList(session, fetchedBlockId, readingListSpace._id)
+        const spaceId = readingListSpace._id
+
+        // Fetch blocks directly for the reading list space
+        await fetchBlocks(session, spaceId);
+      } else {
+        throw new Error("Reading list space not found.")
       }
     } catch (err) {
-      setError("Failed to load reading list. Please try again.")
-    } finally {
-      setLoading(false)
+      console.error(err)
     }
-  }, [spaces, session, fetchReadingList])
+  }, [spaces, session, fetchBlocks])
 
+  // Automatically load the reading list once spaces are available
   useEffect(() => {
     if (spaces.length > 0 && !blockId) {
       loadReadingList()
     }
   }, [spaces, blockId, loadReadingList])
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="p-16 text-secondary-foreground">
         Loading reading list...
@@ -62,11 +64,11 @@ const ReadingListComponent: React.FC = () => {
       <div className="px-4 pb-16 sm:px-6 lg:px-8">
         {blockId && (
           <div className="ml-[10%] flex w-3/4 flex-col gap-8 text-base">
-            <div className="sticky top-0 z-10  grid h-48 items-end bg-background">
-              <AddItemForm blockId={blockId} spaceId={readingListSpaceId} />
+            <div className="sticky top-0 z-10 grid h-48 items-end bg-background">
+              <AddItemForm blockId={blockId} spaceId={blocks.find(block => block._id === blockId)?.space || ""}/>
             </div>
-            <div className="flex-1 ">
-              <ItemsList blockId={blockId} spaceId={readingListSpaceId} />
+            <div className="flex-1">
+              <ItemsList blockId={blockId} spaceId={blocks.find(block => block._id === blockId)?.space || ""} />
             </div>
           </div>
         )}
