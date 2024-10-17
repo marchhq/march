@@ -25,15 +25,22 @@ export const InboxExpandedItem: React.FC = () => {
   const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
 
   useEffect(() => {
-    if (currentItem) {
+    if (
+      currentItem &&
+      (currentItem._id !== editItemId ||
+        JSON.stringify(editedItem) !==
+          JSON.stringify({
+            title: currentItem.title || "",
+            description: currentItem.description || "",
+          }))
+    ) {
       setEditItemId(currentItem._id || "")
       setEditedItem({
         title: currentItem.title || "",
         description: currentItem.description || "",
       })
     }
-    console.log(editedItem)
-  }, [currentItem, setEditItemId, setEditedItem, editedItem])
+  }, [currentItem])
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
