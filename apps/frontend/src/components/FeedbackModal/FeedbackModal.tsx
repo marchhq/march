@@ -138,6 +138,7 @@ const FeedbackModal = () => {
           )}
           <input
             placeholder="Email"
+            type="email"
             className="w-full border-none bg-transparent px-2 py-3 text-xl placeholder:text-secondary-foreground focus:outline-none"
             {...register("email", { required: true })}
           />
@@ -198,12 +199,12 @@ const FeedbackModal = () => {
             <Link
               href={"https://x.com/_marchhq"}
               target="_blank"
-              className="flex items-center gap-2 text-sm text-secondary-foreground"
+              className="flex items-center gap-2 text-sm text-secondary-foreground hover:bg-background-active p-1 rounded-lg"
             >
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="hover-bg cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground disabled:cursor-not-allowed"
+              className="hover:bg-background-active cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground disabled:cursor-not-allowed"
               disabled={isLoading}
               type="submit"
             >
