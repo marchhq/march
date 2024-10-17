@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   html,
   body {
     @apply bg-background;
@@ -35,7 +34,11 @@
 
     --border: 219, 215, 216;
     /* DBD7D8 */
+
     --radius: 0.5rem;
+
+    --danger: ;
+    --danger-foreground: 239, 68, 68;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -62,6 +65,11 @@
 
       --border: 34, 34, 34;
       /* 222 */
+
+      --radius: 0.5rem;
+
+      --danger: ;
+      --danger-foreground: 239, 68, 68;
     }
   }
 }
@@ -146,7 +154,6 @@ button {
 }
 
 */
-
 
 :root {
   --fc-small-font-size: 13px;

@@ -219,7 +219,7 @@ export const InboxItems: React.FC = () => {
                   className="rounded-md px-2 py-0.5"
                 >
                   <button
-                    className="my-1 flex w-full items-center gap-3 text-primary-foreground"
+                    className="my-1 flex w-full items-center gap-3"
                     onClick={menuItem.onClick}
                   >
                     <Icon icon={menuItem.icon} className="text-[18px]" />
@@ -236,19 +236,16 @@ export const InboxItems: React.FC = () => {
                     <span className="flex-1 text-left text-[15px]">Move</span>
                   </div>
                 </ContextMenuSubTrigger>
-                <ContextMenuSubContent className="ml-1 w-52 rounded-md border border-border">
-                  <ContextMenuItem className="pointer-events-none flex flex-col items-start text-[#626367]">
-                    <p className="text-[8px] text-primary-foreground">
-                      This is a selected items
-                    </p>
-                    <span className="ml-2 text-[15px]">to</span>
+                <ContextMenuSubContent className="ml-2">
+                  <ContextMenuItem className="pointer-events-none text-xs text-secondary-foreground">
+                    <p>move to</p>
                   </ContextMenuItem>
                   {subMenuItems.map((subItem) => (
                     <ContextMenuItem
                       key={subItem.name}
-                      className="hover-bg rounded-md px-2 py-0.5"
+                      className="hover-bg cursor-pointer rounded-md px-2 py-0.5"
                     >
-                      <span className="my-1 ml-2 flex w-full gap-3 text-left text-[15px] text-[#626367]">
+                      <span className="my-1 flex w-full text-xs">
                         {subItem.name}
                       </span>
                     </ContextMenuItem>
@@ -257,8 +254,7 @@ export const InboxItems: React.FC = () => {
               </ContextMenuSub>
               <ContextMenuItem className="rounded-md px-2 py-0.5">
                 <button
-                  className="my-1 flex w-full items-center gap-3 text-primary-foreground"
-                  style={{ color: "#C45205" }}
+                  className="my-1 flex w-full items-center gap-3 text-danger-foreground"
                   onClick={() => handleDelete(item._id!)}
                 >
                   <Icon icon="weui:delete-outlined" className="text-[18px]" />
