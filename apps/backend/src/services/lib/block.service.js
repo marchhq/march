@@ -1,5 +1,5 @@
 import { Block } from "../../models/lib/block.model.js";
-import { createNote } from "./note.service.js"
+import { createItem } from "./item.service.js";
 
 const createBlock = async (user, blockData, space) => {
     const type = blockData.data.type;
@@ -7,13 +7,18 @@ const createBlock = async (user, blockData, space) => {
 
     switch (type) {
     case 'note': {
-        const note = await createNote(user, {});
         block = new Block({
             name: "Note",
             user,
             space,
-            data: { ...blockData.data, viewingNoteId: note._id }
+            data: { ...blockData.data }
         });
+        await block.save();
+
+        const item = await createItem(user, { type: 'note' }, space, block._id);
+
+        block.data.viewingNoteId = item._id;
+        await block.save();
         break;
     }
     case 'list': {
