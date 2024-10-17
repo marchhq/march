@@ -2,36 +2,50 @@
 import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
+const extractUrl = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = text.match(urlRegex);
+    return urls ? urls[0] : null;
+};
+
+const generateLinkPreview = async (requestedData) => {
+    const url = requestedData.metadata?.url || extractUrl(requestedData.title);
+
+    if (!url) return null;
+
+    const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
+
+    return {
+        ...requestedData,
+        title: previewTitle || requestedData.title,
+        type: 'link',
+        metadata: {
+            ...requestedData.metadata,
+            url,
+            favicon
+        }
+    };
+};
+
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const { space, block } = req.params;
-
         const requestedData = req.body;
-        let item;
+        const { type } = requestedData;
 
-        const url = requestedData.metadata?.url;
-        if (url) {
-            const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
+        let itemData = requestedData;
 
-            const updatedData = {
-                ...requestedData,
-                title: previewTitle,
-                metadata: {
-                    ...requestedData.metadata,
-                    url,
-                    favicon
-                }
-            };
-
-            item = await createItem(user, updatedData, space, block);
-        } else {
-            item = await createItem(user, requestedData, space, block);
+        if (type === 'link' || type === 'text') {
+            const updatedData = await generateLinkPreview(requestedData);
+            if (updatedData) {
+                itemData = updatedData;
+            }
         }
 
-        res.status(200).json({
-            item
-        });
+        const item = await createItem(user, itemData, space, block);
+
+        return res.status(200).json({ item });
     } catch (err) {
         next(err);
     }

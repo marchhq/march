@@ -265,7 +265,6 @@ const updateItem = async (id, updateData, space, block) => {
     return updatedItem;
 };
 
-
 const moveItemtoDate = async (date, id) => {
     const formattedDate = date ? new Date(date) : null;
 
