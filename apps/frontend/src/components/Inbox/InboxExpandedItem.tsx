@@ -22,18 +22,18 @@ export const InboxExpandedItem: React.FC = () => {
     description: "",
   })
 
-  const { item, setItem, mutateItem } = useCycleItemStore()
+  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
 
   useEffect(() => {
-    if (item) {
-      setEditItemId(item._id || "")
+    if (currentItem) {
+      setEditItemId(currentItem._id || "")
       setEditedItem({
-        title: item.title || "",
-        description: item.description || "",
+        title: currentItem.title || "",
+        description: currentItem.description || "",
       })
     }
     console.log(editedItem)
-  }, [item, setEditItemId, setEditedItem, editedItem])
+  }, [currentItem, setEditItemId, setEditedItem, editedItem])
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -57,14 +57,14 @@ export const InboxExpandedItem: React.FC = () => {
     }
 
     timeoutId.current = setTimeout(() => {
-      if (item) {
-        handleSaveEditedItem(item)
+      if (currentItem) {
+        handleSaveEditedItem(currentItem)
       }
     }, 1000)
-  }, [editedItem, item, timeoutId])
+  }, [editedItem, currentItem, timeoutId])
 
   const handleClose = () => {
-    setItem(null)
+    setCurrentItem(null)
     handleCancelEditItem()
   }
 
@@ -77,13 +77,13 @@ export const InboxExpandedItem: React.FC = () => {
     try {
       console.log("item", item)
       if (editItemId && editedItem) {
-        mutateItem(
+        updateItem(
+          session,
           {
             ...item,
             title: editedItem.title,
             description: editedItem.description,
           },
-          session,
           item._id
         )
       }
@@ -94,16 +94,16 @@ export const InboxExpandedItem: React.FC = () => {
 
   return (
     <div>
-      {item && (
+      {currentItem && (
         <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
             <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
             </button>
             <p className="flex items-center">
-              {formatDateYear(item.createdAt || "")}
+              {formatDateYear(currentItem.createdAt || "")}
             </p>
-            <p>edited {fromNow(item.updatedAt || "")}</p>
+            <p>edited {fromNow(currentItem.updatedAt || "")}</p>
           </div>
           <div>
             <textarea
