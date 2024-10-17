@@ -8,7 +8,8 @@ import useNotesStore from "@/src/lib/store/notes.store"
 
 const NotesPage: React.FC = () => {
   const { session } = useAuth()
-  const { latestNote, fetchNotes, setIsFetched, isFetched } = useNotesStore()
+  const { notes, addNote, latestNote, fetchNotes, setIsFetched, isFetched } =
+    useNotesStore()
 
   const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
@@ -30,6 +31,23 @@ const NotesPage: React.FC = () => {
       redirectNote(latestNote._id)
     }
   }, [latestNote])
+
+  const addNewNote = useCallback(async (): Promise<void> => {
+    try {
+      const newNote = await addNote(session, "", "<p></p>")
+      if (newNote !== null) {
+        redirectNote(newNote._id)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, [session, addNote])
+
+  useEffect(() => {
+    if (notes.length === 0) {
+      addNewNote()
+    }
+  }, [notes, addNewNote])
 
   return (
     <div className="size-full overflow-auto bg-background p-16">
