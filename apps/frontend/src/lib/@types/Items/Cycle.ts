@@ -10,6 +10,9 @@ export interface CycleItem {
   spaces: string[]
   blocks: string[]
   labels: string[]
+  metadata: {
+    url: string
+  }
   isCompleted: boolean
   isArchived: boolean
   isDeleted: boolean
@@ -22,21 +25,21 @@ export interface CycleItems {
   response: CycleItem[]
 }
 
-export interface CycleItemStoreTypes {
-  cycleItem: CycleItem | null
-  cycleItems: CycleItem[]
+export interface CycleItemStore {
+  items: CycleItem[]
+  currentItem: CycleItem | null
   isLoading: boolean
-  isFetched: boolean
-  fetchInboxItems: (session: string) => Promise<CycleItem[]>
-  fetchTodayItems: (session: string, date: string) => Promise<CycleItem[]>
-  createItem: (data: Partial<CycleItem>, session: string) => Promise<void>
-  mutateItem: (
-    data: Partial<CycleItem>,
+  error: string | null
+  fetchItems: (session: string, date?: string) => Promise<void>
+  fetchItem: (session: string, id: string) => Promise<void>
+  fetchItemByDate: (session: string, date: string) => Promise<void>
+  setCurrentItem: (item: CycleItem | null) => void
+  createItem: (session: string, item: Partial<CycleItem>) => Promise<void>
+  updateItem: (
     session: string,
+    updates: Partial<CycleItem>,
     id: string
   ) => Promise<void>
-  setCycleItem: (item: CycleItem | null) => void
-  setIsFetched: (isFetched: boolean) => void
 }
 
 export interface CreateItemResponse {
