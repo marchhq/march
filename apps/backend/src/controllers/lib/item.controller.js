@@ -42,10 +42,10 @@ const createInboxItemController = async (req, res, next) => {
         const user = req.user._id;
 
         const requestedData = req.body;
-        const item = await createInboxItem(user, requestedData);
+        const items = await createInboxItem(user, requestedData);
 
         res.status(200).json({
-            item
+            response: items
         });
     } catch (err) {
         next(err);
@@ -77,7 +77,7 @@ const filterItemsController = async (req, res, next) => {
         const items = await filterItems(user, filters, sortOptions);
 
         res.status(200).json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
@@ -132,7 +132,7 @@ const searchItemsByTitleController = async (req, res, next) => {
     try {
         const items = await searchItemsByTitle(q, user);
         res.status(200).json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
