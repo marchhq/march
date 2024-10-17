@@ -1,12 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useItemsStore from "@/src/lib/store/items.store"
-import classNames from "@/src/utils/classNames"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const ThisWeekExpandedItem: React.FC = () => {
@@ -14,6 +13,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
+
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<{
     title: string
@@ -23,17 +23,50 @@ export const ThisWeekExpandedItem: React.FC = () => {
     description: "",
   })
 
-  const { selectedItem, setSelectedItem, updateItem } = useItemsStore()
+  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
+
+  const memoizedEditedItem = useMemo(
+    () => ({
+      title: currentItem?.title || "",
+      description: currentItem?.description || "",
+    }),
+    [currentItem?.title, currentItem?.description]
+  )
+
+  const handleSetEditedItem = useCallback(
+    (updates: Partial<typeof editedItem>) => {
+      setEditedItem((prev) => ({ ...prev, ...updates }))
+    },
+    []
+  )
 
   useEffect(() => {
-    if (selectedItem) {
-      setEditItemId(selectedItem._id || "")
-      setEditedItem({
-        title: selectedItem.title || "",
-        description: selectedItem.description || "",
-      })
+    if (currentItem) {
+      setEditItemId(currentItem._id || "")
+      setEditedItem(memoizedEditedItem)
     }
-  }, [selectedItem, setEditItemId, setEditedItem])
+  }, [currentItem, memoizedEditedItem])
+
+  const handleSaveEditedItem = useCallback(
+    async (item: any) => {
+      try {
+        if (editItemId && editedItem) {
+          updateItem(
+            session,
+            {
+              ...item,
+              title: editedItem.title,
+              description: editedItem.description,
+            },
+            item._id
+          )
+        }
+      } catch (error) {
+        console.error("error updating item:", error)
+      }
+    },
+    [session, editItemId, editedItem, updateItem]
+  )
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -51,59 +84,41 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.description])
 
-  const handleSaveEditedItem = async (item: any) => {
-    try {
-      console.log("editedItem", editedItem)
-      if (editItemId && editedItem) {
-        updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-            description: editedItem.description,
-          },
-          item._id
-        )
-      }
-    } catch (error) {
-      console.error("error updating item:", error)
-    }
-  }
-
   useEffect(() => {
     if (timeoutId.current) {
       clearTimeout(timeoutId.current)
     }
-
     timeoutId.current = setTimeout(() => {
-      if (selectedItem) {
-        handleSaveEditedItem(selectedItem)
+      if (currentItem) {
+        handleSaveEditedItem(currentItem)
       }
     }, 1000)
-  }, [editedItem, selectedItem, timeoutId])
 
-  const handleClose = () => {
-    setSelectedItem(null)
-    handleCancelEditItem()
-  }
+    return () => {
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current)
+      }
+    }
+  }, [editedItem, currentItem, handleSaveEditedItem])
 
-  const handleCancelEditItem = () => {
+  const handleClose = useCallback(() => {
+    setCurrentItem(null)
     setEditItemId(null)
     setEditedItem({ title: "", description: "" })
-  }
+  }, [setCurrentItem])
 
   return (
     <div className="flex-auto">
-      {selectedItem && (
+      {currentItem && (
         <div className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground">
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
             <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
             </button>
             <p className="flex items-center">
-              {formatDateYear(selectedItem.createdAt || "")}
+              {formatDateYear(currentItem.createdAt || "")}
             </p>
-            <p>edited {fromNow(selectedItem.updatedAt || "")}</p>
+            <p>edited {fromNow(currentItem.updatedAt || "")}</p>
           </div>
           <div>
             <textarea
