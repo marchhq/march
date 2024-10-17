@@ -40,10 +40,8 @@ export const InboxItems: React.FC = () => {
   }, [session, fetchItems])
 
   useEffect(() => {
-    if (items) {
-      fetchInbox()
-    }
-  }, [session, fetchInbox])
+    fetchInbox()
+  }, [fetchInbox])
 
   useEffect(() => {
     console.log("Current Items:", items)
@@ -51,9 +49,12 @@ export const InboxItems: React.FC = () => {
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
-      setCurrentItem(item)
+      // Only update the current item if it's not already the selected item
+      if (!currentItem || currentItem._id !== item._id) {
+        setCurrentItem(item)
+      }
     },
-    [setCurrentItem]
+    [currentItem, setCurrentItem]
   )
 
   /* const handleDelete = useCallback(
@@ -84,7 +85,8 @@ export const InboxItems: React.FC = () => {
           }
           return newSet
         })
-        setCurrentItem(null)
+
+        // Don't reset the current item if we are marking done/undone
         setTimeout(() => {
           updateItem(session, { status: newStatus }, id)
           setAnimatingItems((prev) => {
@@ -95,7 +97,7 @@ export const InboxItems: React.FC = () => {
         }, 400)
       }
     },
-    [session, updateItem]
+    [updateItem, session]
   )
 
   if (isLoading) {
