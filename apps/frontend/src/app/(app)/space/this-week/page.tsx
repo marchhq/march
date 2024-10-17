@@ -4,7 +4,7 @@ import { ThisWeekPage } from "@/src/components/ThisWeek/ThisWeekPage"
 
 const ThisWeek: React.FC = () => {
   return (
-    <div className="size-full overflow-auto bg-background p-16 text-secondary-foreground">
+    <div className="size-full bg-background text-secondary-foreground">
       <ThisWeekPage />
     </div>
   )

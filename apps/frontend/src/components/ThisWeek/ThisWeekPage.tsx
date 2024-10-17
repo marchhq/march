@@ -21,7 +21,7 @@ export const ThisWeekPage: React.FC = () => {
   const weekNumber = getCurrentWeek(currentDate)
   const totalWeeks = getWeeksInMonth(currentDate)
   const formattedDateRange = getFormattedDateRange(currentDate)
-  const { items } = useItemsStore()
+  const { items, selectedItem } = useItemsStore()
 
   const doneItems = items.filter((item: Item) => item.status === "done")
 
@@ -36,8 +36,8 @@ export const ThisWeekPage: React.FC = () => {
   }
 
   return (
-    <div className="flex size-full">
-      <div className={"flex flex-auto flex-col gap-12 pr-4"}>
+    <div className="flex size-full p-16">
+      <div className="relative flex flex-auto flex-col gap-12">
         <div className="flex items-center gap-8 text-sm">
           <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
           <div className="flex gap-4">
@@ -55,8 +55,8 @@ export const ThisWeekPage: React.FC = () => {
           <ThisWeekArrows onChangeWeek={handleWeekChange} />
         </div>
         <CustomKanban />
+        {selectedItem && <ThisWeekExpandedItem />}
       </div>
-      <ThisWeekExpandedItem />
     </div>
   )
 }
