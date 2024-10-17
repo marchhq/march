@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/src/components/atoms/Tooltip"
 import classNames from "@/src/utils/classNames"
+import useUserStore from "../lib/store/user.store"
 
 const navLinkClassName =
   "flex items-center justify-center gap-2 p-3 rounded-lg cursor-pointer hover-bg"
@@ -62,6 +63,7 @@ const Sidebar: React.FC = () => {
   const { showModal } = useModal()
 
   const [isExpanded, setIsExpanded] = useState(false)
+  const { setUser } = useUserStore()
 
   if (pathname.includes("auth")) {
     return null
@@ -73,6 +75,7 @@ const Sidebar: React.FC = () => {
   const today = new Date()
   const day = today.getDate()
 
+  // Todo: can be replaced with fetchUser of userStore for more cleaner code
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data } = useQuery<User>({
     queryKey: ["user"],
@@ -83,6 +86,7 @@ const Sidebar: React.FC = () => {
             Authorization: `Bearer ${session}`,
           },
         })
+        setUser(data)
         return data as User
       } catch (error) {
         return error

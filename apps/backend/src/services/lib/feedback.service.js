@@ -7,7 +7,7 @@ const sendFeedbackEmail = async (req, res) => {
     // Handle file uploads using Multer
         await handleFileUpload(req, res);
 
-        const { title, feedback } = req.body;
+        const { title, feedback, email } = req.body;
         const attachments = req.files; // The uploaded files
 
         // Create Nodemailer transporter
@@ -25,6 +25,7 @@ const sendFeedbackEmail = async (req, res) => {
         const mailOptions = {
             from: `"Feedback Form" <${environment.SMTP_USER}>`,
             to: environment.FEEDBACK_RECEIVER_EMAIL, // Feedback receiver email
+            cc: email,
             subject: `New Feedback Submission: ${title}`,
             text: feedback,
             attachments: attachments.map((file) => ({

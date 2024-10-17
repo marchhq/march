@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 import { Link as LinkIcon, Trash } from "@phosphor-icons/react"
@@ -16,8 +16,10 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { useToast } from "@/src/hooks/use-toast"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { TwitterIcon } from "@/src/lib/icons/TwitterIcon"
+import useUserStore from "@/src/lib/store/user.store"
 
 type Inputs = {
+  email: string
   title: string
   feedback: string
   attachment?: FileList
@@ -28,6 +30,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const FeedbackModal = () => {
   const {
     register,
+    setValue,
     handleSubmit,
     reset,
     formState: { errors },
@@ -37,6 +40,7 @@ const FeedbackModal = () => {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const { user } = useUserStore()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -75,6 +79,7 @@ const FeedbackModal = () => {
       const formData = new FormData()
       formData.append("title", data.title)
       formData.append("feedback", data.feedback)
+      formData.append("email", data.email)
 
       selectedFiles.forEach((file) => formData.append("attachment", file))
 
@@ -109,6 +114,11 @@ const FeedbackModal = () => {
     }
   }
 
+  useEffect(() => {
+    // Pre-fill user email
+    setValue("email", user?.accounts.google?.email || "")
+  }, [])
+
   return (
     <div className="rounded-lg border border-border">
       <DialogHeader className="text-secondary-foreground">
@@ -120,11 +130,20 @@ const FeedbackModal = () => {
         <div className="px-4">
           <input
             placeholder="Title"
-            className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder:text-secondary-foreground focus:outline-none"
+            className="mt-2 w-full border-none bg-transparent px-2 py-3 text-xl placeholder:text-secondary-foreground focus:outline-none"
             {...register("title", { required: true })}
           />
           {errors.title && (
             <span className="px-3 text-xs text-red-500">Title is required</span>
+          )}
+          <input
+            placeholder="Email"
+            type="email"
+            className="w-full border-none bg-transparent px-2 py-3 text-xl placeholder:text-secondary-foreground focus:outline-none"
+            {...register("email", { required: true })}
+          />
+          {errors.title && (
+            <span className="px-3 text-xs text-red-500">Email is required</span>
           )}
           <Textarea
             className="min-h-40 border-none text-sm placeholder:text-secondary-foreground"
@@ -180,12 +199,12 @@ const FeedbackModal = () => {
             <Link
               href={"https://x.com/_marchhq"}
               target="_blank"
-              className="flex items-center gap-2 text-sm text-secondary-foreground"
+              className="flex items-center gap-2 text-sm text-secondary-foreground hover:bg-background-active p-1 rounded-lg"
             >
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="hover-bg cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground disabled:cursor-not-allowed"
+              className="hover:bg-background-active cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground disabled:cursor-not-allowed"
               disabled={isLoading}
               type="submit"
             >

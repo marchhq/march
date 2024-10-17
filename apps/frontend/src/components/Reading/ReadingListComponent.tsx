@@ -15,6 +15,7 @@ const ReadingListComponent: React.FC = () => {
 
   const [loading, setLoading] = useState(true)
   const [blockId, setBlockId] = useState<string | null>(null)
+  const [readingListSpaceId, setReadingListSpaceId] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
 
   const loadReadingList = useCallback(async () => {
@@ -25,9 +26,11 @@ const ReadingListComponent: React.FC = () => {
         (space) => space.name.toLowerCase() === "reading list"
       )
       if (readingListSpace) {
+        setReadingListSpaceId(readingListSpace._id)
         const fetchedBlockId = readingListSpace.blocks[0]
+        console.log(readingListSpace._id)
         setBlockId(fetchedBlockId)
-        await fetchReadingList(session, fetchedBlockId)
+        await fetchReadingList(session, fetchedBlockId, readingListSpace._id)
       }
     } catch (err) {
       setError("Failed to load reading list. Please try again.")
@@ -56,11 +59,15 @@ const ReadingListComponent: React.FC = () => {
 
   return (
     <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
-      <div className="px-4 py-16 sm:px-6 lg:px-8">
+      <div className="px-4 pb-16 sm:px-6 lg:px-8">
         {blockId && (
-          <div className="ml-[10%] mt-32 flex w-3/5 flex-col gap-8 text-base">
-            <AddItemForm blockId={blockId} />
-            <ItemsList blockId={blockId} />
+          <div className="ml-[10%] flex w-3/4 flex-col gap-8 text-base">
+            <div className="sticky top-0 z-10  grid h-48 items-end bg-background">
+              <AddItemForm blockId={blockId} spaceId={readingListSpaceId} />
+            </div>
+            <div className="flex-1 ">
+              <ItemsList blockId={blockId} spaceId={readingListSpaceId} />
+            </div>
           </div>
         )}
       </div>

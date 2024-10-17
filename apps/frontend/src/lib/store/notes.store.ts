@@ -122,7 +122,7 @@ const useNotesStore = create<NotesStoreType>((set) => ({
     let note: Note | null = null
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/api/notes/recent-updated/`,
+        `${BACKEND_URL}/spaces/notes/recent-updated/`,
         {
           headers: {
             Authorization: `Bearer ${session}`,
