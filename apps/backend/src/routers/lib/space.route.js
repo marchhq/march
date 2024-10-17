@@ -15,9 +15,6 @@ import {
     getItemController,
     getItemFilterByLabelController
 } from "../../controllers/lib/item.controller.js";
-import {
-    getMostRecentUpdatedNoteController
-} from "../../controllers/lib/note.controller.js";
 
 import {
     createBlockController,
@@ -67,9 +64,6 @@ router.route("/:space/blocks/:block/items/").post(createItemController);
 router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
 router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
-
-// note controllers
-router.route("/notes/recent-updated/").get(getMostRecentUpdatedNoteController);
 
 // Meeting controllers
 router.route("/meetings/overview/").get(getMeetingsController);
