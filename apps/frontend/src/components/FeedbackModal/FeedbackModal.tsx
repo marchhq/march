@@ -18,6 +18,7 @@ import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { TwitterIcon } from "@/src/lib/icons/TwitterIcon"
 
 type Inputs = {
+  email: string
   title: string
   feedback: string
   attachment?: FileList
@@ -75,6 +76,7 @@ const FeedbackModal = () => {
       const formData = new FormData()
       formData.append("title", data.title)
       formData.append("feedback", data.feedback)
+      formData.append('email', data.email)
 
       selectedFiles.forEach((file) => formData.append("attachment", file))
 
@@ -117,7 +119,15 @@ const FeedbackModal = () => {
         </DialogTitle>
       </DialogHeader>
       <form className="text-foreground" onSubmit={handleSubmit(onSubmit)}>
-        <div className="px-4">
+        <div className="px-4"><input
+            placeholder="Email"
+            className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder:text-secondary-foreground focus:outline-none"
+            {...register("email", { required: true })}
+          />
+          {errors.title && (
+            <span className="px-3 text-xs text-red-500">Email is required</span>
+          )}
+
           <input
             placeholder="Title"
             className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder:text-secondary-foreground focus:outline-none"
