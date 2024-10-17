@@ -53,14 +53,14 @@ const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
   }
 
   const formatDate = (date: Date): string => {
-    const month = date.toLocaleString("en-US", { month: "short" })
+    const month = date.toLocaleString(undefined, { month: "short" })
     const day = date.getDate()
     const year = date.getFullYear()
     return `${month} ${day}${getOrdinalSuffix(day)}, ${year}`
   }
 
   const formatDayOfWeek = (date: Date): string => {
-    return date.toLocaleString("en-US", {
+    return date.toLocaleString(undefined, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -126,7 +126,7 @@ const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
     if (dayPart) {
       const day = parseInt(dayPart, 10)
 
-      if (isNaN(day) || day < 1 || day > 31) {
+      if (Number.isNaN(day) || day < 1 || day > 31) {
         setDueDates(generateDefaultDates()) // Fallback to default dates
         return
       }
