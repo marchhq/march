@@ -1,54 +1,72 @@
-"use client"
+"use client";
 
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect, useCallback } from "react";
 
-import AddItemForm from "@/src/components/Reading/AddItemForm"
-import ItemsList from "@/src/components/Reading/ItemsList"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { useSpace } from "@/src/hooks/useSpace"
-import useBlockStore from "@/src/lib/store/block.store"
+import AddItemForm from "@/src/components/Reading/AddItemForm";
+import ItemsList from "@/src/components/Reading/ItemsList";
+import { useAuth } from "@/src/contexts/AuthContext";
+import { useSpace } from "@/src/hooks/useSpace";
+import useBlockStore from "@/src/lib/store/block.store";
+import useReadingStore from "@/src/lib/store/reading.store";
 
 const ReadingListComponent: React.FC = () => {
-  const { session } = useAuth()
-  const { spaces } = useSpace() || { spaces: [] }
+  const { session } = useAuth();
+  const { spaces } = useSpace() || { spaces: [] };
 
-  const { blocks, blockId, isLoading, error, fetchBlocks } = useBlockStore()
+  const { blocks, blockId, isLoading, error, fetchBlocks, createBlock } = useBlockStore();
+  const { fetchReadingList } = useReadingStore();
 
   // Load the reading list space and block
   const loadReadingList = useCallback(async () => {
     try {
       const readingListSpace = spaces.find(
         (space) => space.name.toLowerCase() === "reading list"
-      )
+      );
 
       if (readingListSpace) {
-        const spaceId = readingListSpace._id
+        const spaceId = readingListSpace._id;
 
-        await fetchBlocks(session, spaceId)
+        const result = await fetchBlocks(session, spaceId);
+        // Check if no blocks were returned
+        if (result?.noBlocks) {
+          await createBlock(session, spaceId); // Create a new block
+        }
       } else {
-        throw new Error("Reading list space not found.")
+        throw new Error("Reading list space not found.");
       }
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
-  }, [spaces, session, fetchBlocks])
+  }, [spaces, session, fetchBlocks, createBlock]);
+
+  // Load reading list items if blockId is available
+  const loadReadingListItems = useCallback(async () => {
+    if (blockId) {
+      const spaceId = blocks.find((block) => block._id === blockId)?.space; // Get spaceId from the block
+      if (spaceId) {
+        await fetchReadingList(session, blockId, spaceId); // Send session, blockId, and spaceId
+      }
+    }
+  }, [blockId, blocks, fetchReadingList, session]);
 
   useEffect(() => {
     if (spaces.length > 0 && !blockId) {
-      loadReadingList()
+      loadReadingList();
+    } else if (spaces.length > 0 && blockId) {
+      loadReadingListItems();
     }
-  }, [spaces, blockId, loadReadingList])
+  }, [spaces, blockId, loadReadingList, loadReadingListItems]);
 
   if (isLoading) {
     return (
       <div className="p-16 text-secondary-foreground">
         Loading reading list...
       </div>
-    )
+    );
   }
 
   if (error) {
-    return <div className="p-16 text-red-500">{error}</div>
+    return <div className="p-16 text-red-500">{error}</div>;
   }
 
   return (
@@ -76,7 +94,7 @@ const ReadingListComponent: React.FC = () => {
         )}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default ReadingListComponent
+export default ReadingListComponent;

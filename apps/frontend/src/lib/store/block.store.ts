@@ -10,12 +10,17 @@ interface Block {
   space: string
 }
 
+interface FetchBlocksResult {
+    blocks?: Block[]; 
+    noBlocks?: true;
+  }
+
 interface BlockState {
   blocks: Block[]
   blockId: string | null
   isLoading: boolean
   error: string | null
-  fetchBlocks: (session: string, spaceId: string) => Promise<void>
+  fetchBlocks: (session: string, spaceId: string) => Promise<FetchBlocksResult | void>
   createBlock: (session: string, spaceId: string) => Promise<void>
 }
 
@@ -35,18 +40,19 @@ const useBlockStore = create<BlockState>((set, get) => ({
           Authorization: `Bearer ${session}`,
         },
       })
-
+  
       if (response.ok) {
         const data = await response.json()
         const blocks = data.blocks
         set({ blocks })
-
+  
         if (blocks.length > 0) {
-          set({ blockId: blocks[0]._id })
+          set({ blockId: blocks[0]._id }) // Set the first block ID if it exists
         } else {
-          // No block exists, create one
-          await get().createBlock(session, spaceId)
+          // No block exists; return a specific value or message if necessary
+          return { noBlocks: true };
         }
+        return data;
       } else {
         set({ error: "Failed to fetch blocks." })
       }
@@ -56,7 +62,7 @@ const useBlockStore = create<BlockState>((set, get) => ({
       set({ isLoading: false })
     }
   },
-
+  
   // Create a new block if none exists
   createBlock: async (session: string, spaceId: string) => {
     set({ isLoading: true, error: null })
@@ -69,7 +75,7 @@ const useBlockStore = create<BlockState>((set, get) => ({
         },
         body: JSON.stringify({
           name: "New Block",
-          data: {}, // Add any necessary default data here
+          data: {}, 
         }),
       })
 
