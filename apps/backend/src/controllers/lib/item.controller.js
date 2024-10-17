@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, deleteItem } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const createItemController = async (req, res, next) => {
@@ -60,21 +60,6 @@ const updateItemController = async (req, res, next) => {
 
         res.status(200).json({
             item
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-const deleteItemController = async (req, res, next) => {
-    try {
-        const user = req.user._id;
-        const { item, space, block } = req.params;
-
-        const deletedItem = await deleteItem(item, space, block, user);
-        res.status(200).json({
-            success: true,
-            data: deletedItem
         });
     } catch (err) {
         next(err);
@@ -162,6 +147,5 @@ export {
     getItemFilterByLabelController,
     searchItemsByTitleController,
     getAllItemsByBloackController,
-    createInboxItemController,
-    deleteItemController
+    createInboxItemController
 }
