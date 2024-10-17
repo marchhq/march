@@ -8,20 +8,20 @@ const createItemController = async (req, res, next) => {
         const { space, block } = req.params;
 
         const requestedData = req.body;
-        const { title, type } = requestedData;
+        const { metadata } = requestedData
         let item;
-
-        if (type === "link") {
+        const url = metadata.url
+        if (url) {
             // await itemQueue.add("itemQueue", {
             //     url: urlInTitle,
             //     itemId: item._id
             // });
-            const { title: previewTitle, favicon } = await linkPreviewGenerator(title);
+            const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
 
             const requestedData = {
                 title: previewTitle,
                 metadata: {
-                    url: title,
+                    url,
                     favicon
                 }
             }
@@ -37,6 +37,7 @@ const createItemController = async (req, res, next) => {
         next(err);
     }
 };
+
 const createInboxItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
