@@ -80,7 +80,6 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
   ) => {
     const { readingItems } = get();
     try {
-      // Create the new item under the specific space and block
       const createResponse = await axios.post(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/`,
         itemData,
@@ -88,21 +87,16 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       );
   
       const createdItem = createResponse.data.item;
-  
-      // **Fix: Ensure you're sending ObjectIds instead of UUIDs**
-      // Assuming the readingItems and createdItem are UUIDs or the correct format:
       const updatedItems = readingItems.map((item) => item._id);
       
-      updatedItems.push(createdItem._id); // Push new item ID to the array
+      updatedItems.push(createdItem._id); 
   
-      // Put updated array back to the block
       await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/`,
-        { data: { items: updatedItems } }, // Only pass object IDs (not UUID strings)
+        { data: { items: updatedItems } }, 
         { headers: { Authorization: `Bearer ${session}` } }
       );
-  
-      // Update local state
+
       set((state) => ({
         readingItems: [...state.readingItems, createdItem],
       }));
@@ -120,8 +114,9 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     const { readingItems } = get()
     try {
       // Perform the delete operation on the server
-      await axios.delete(
+      await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}/`,
+        {isDeleted: true},
         { headers: { Authorization: `Bearer ${session}` } }
       )
 

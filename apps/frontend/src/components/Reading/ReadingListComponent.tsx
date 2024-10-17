@@ -6,7 +6,7 @@ import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSpace } from "@/src/hooks/useSpace"
-import useBlockStore from "@/src/lib/store/block.store"  // The Zustand store for blocks
+import useBlockStore from "@/src/lib/store/block.store"
 
 const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
@@ -30,7 +30,6 @@ const ReadingListComponent: React.FC = () => {
       if (readingListSpace) {
         const spaceId = readingListSpace._id
 
-        // Fetch blocks directly for the reading list space
         await fetchBlocks(session, spaceId);
       } else {
         throw new Error("Reading list space not found.")
@@ -40,7 +39,6 @@ const ReadingListComponent: React.FC = () => {
     }
   }, [spaces, session, fetchBlocks])
 
-  // Automatically load the reading list once spaces are available
   useEffect(() => {
     if (spaces.length > 0 && !blockId) {
       loadReadingList()
