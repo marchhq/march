@@ -24,7 +24,7 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       const { data } = await api.get(endpoint, {
         headers: { Authorization: `Bearer ${session}` },
       })
-      set({ items: data.items || [], isLoading: false })
+      set({ items: data.response || [], isLoading: false })
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError

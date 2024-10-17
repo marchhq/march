@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
@@ -24,23 +24,48 @@ export const InboxExpandedItem: React.FC = () => {
 
   const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
 
+  const memoizedEditedItem = useMemo(
+    () => ({
+      title: currentItem?.title || "",
+      description: currentItem?.description || "",
+    }),
+    [currentItem?.title, currentItem?.description]
+  )
+
+  const handleSetEditedItem = useCallback(
+    (updates: Partial<typeof editedItem>) => {
+      setEditedItem((prev) => ({ ...prev, ...updates }))
+    },
+    []
+  )
+
   useEffect(() => {
-    if (
-      currentItem &&
-      (currentItem._id !== editItemId ||
-        JSON.stringify(editedItem) !==
-          JSON.stringify({
-            title: currentItem.title || "",
-            description: currentItem.description || "",
-          }))
-    ) {
+    if (currentItem) {
       setEditItemId(currentItem._id || "")
-      setEditedItem({
-        title: currentItem.title || "",
-        description: currentItem.description || "",
-      })
+      setEditedItem(memoizedEditedItem)
     }
-  }, [currentItem])
+  }, [currentItem, memoizedEditedItem])
+
+  const handleSaveEditedItem = useCallback(
+    async (item: any) => {
+      try {
+        if (editItemId && editedItem) {
+          updateItem(
+            session,
+            {
+              ...item,
+              title: editedItem.title,
+              description: editedItem.description,
+            },
+            item._id
+          )
+        }
+      } catch (error) {
+        console.error("error updating item:", error)
+      }
+    },
+    [session, editItemId, editedItem, updateItem]
+  )
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -62,42 +87,24 @@ export const InboxExpandedItem: React.FC = () => {
     if (timeoutId.current) {
       clearTimeout(timeoutId.current)
     }
-
     timeoutId.current = setTimeout(() => {
       if (currentItem) {
         handleSaveEditedItem(currentItem)
       }
     }, 1000)
-  }, [editedItem, currentItem, timeoutId])
 
-  const handleClose = () => {
+    return () => {
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current)
+      }
+    }
+  }, [editedItem, currentItem, handleSaveEditedItem])
+
+  const handleClose = useCallback(() => {
     setCurrentItem(null)
-    handleCancelEditItem()
-  }
-
-  const handleCancelEditItem = () => {
     setEditItemId(null)
     setEditedItem({ title: "", description: "" })
-  }
-
-  const handleSaveEditedItem = async (item: any) => {
-    try {
-      console.log("item", item)
-      if (editItemId && editedItem) {
-        updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-            description: editedItem.description,
-          },
-          item._id
-        )
-      }
-    } catch (error) {
-      console.error("error updating item:", error)
-    }
-  }
+  }, [setCurrentItem])
 
   return (
     <div>
