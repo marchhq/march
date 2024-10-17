@@ -7,6 +7,7 @@ import { addDays, format } from "date-fns"
 import { Input } from "../ui/input"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useInboxStore from "@/src/lib/store/inbox.store"
+import { getOrdinalSuffix } from "@/src/utils/datetime"
 
 interface ScheduleItemProps {
   title: string
@@ -74,20 +75,6 @@ const ScheduleItem = ({ title, _id, onDateSelect }: ScheduleItemProps) => {
       generateDueDates(inputDate)
     }
   }, [inputDate])
-
-  const getOrdinalSuffix = (day: number): string => {
-    if (day > 3 && day < 21) return "th"
-    switch (day % 10) {
-      case 1:
-        return "st"
-      case 2:
-        return "nd"
-      case 3:
-        return "rd"
-      default:
-        return "th"
-    }
-  }
 
   const generateDefaultDates = (): DueDate[] => {
     const now = new Date()
