@@ -28,12 +28,10 @@ const useNotesStore = create<NotesStoreType>((set) => ({
           Authorization: `Bearer ${session}`,
         },
       })
-      console.log("spaces", spaces.data)
       const notesSpace = spaces.data.spaces.find(
         (space) => space.name == "Notes"
       )
       set({ spaceId: notesSpace._id })
-      console.log("notesSpace", notesSpace)
       const blocks = await axios.get(
         `${BACKEND_URL}/spaces/${notesSpace._id}/blocks`,
         {
@@ -42,10 +40,8 @@ const useNotesStore = create<NotesStoreType>((set) => ({
           },
         }
       )
-      console.log("blocks", blocks)
       const notesBlock = blocks.data.blocks[0]
       set({ blockId: notesBlock._id })
-      console.log("notesBlock", notesBlock)
       const { data } = await axios.get(
         `${BACKEND_URL}/spaces/${notesSpace._id}/blocks/${notesBlock._id}/items`,
         {
@@ -54,7 +50,6 @@ const useNotesStore = create<NotesStoreType>((set) => ({
           },
         }
       )
-      console.log("data", data)
       const res = data as NotesResponse
       notes_ = res.items.sort(
         (a, b) => Number(new Date(a.createdAt)) - Number(new Date(b.createdAt))
@@ -85,24 +80,28 @@ const useNotesStore = create<NotesStoreType>((set) => ({
     let res: NoteCreateResponse
     const { spaceId, blockId } = useNotesStore.getState()
     try {
-      const { data } = await axios.post(
-        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items`,
-        {
-          title,
-          description: content,
-          type: "note",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${session}`,
+      if (spaceId && blockId) {
+        const { data } = await axios.post(
+          `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items`,
+          {
+            title,
+            description: content,
+            type: "note",
           },
-        }
-      )
-      res = data as NoteCreateResponse
-      set((state: NotesStoreType) => ({
-        notes: [...state.notes, res.item],
-      }))
-      return res.item
+          {
+            headers: {
+              Authorization: `Bearer ${session}`,
+            },
+          }
+        )
+        res = data as NoteCreateResponse
+        set((state: NotesStoreType) => ({
+          notes: [...state.notes, res.item],
+        }))
+        return res.item
+      } else {
+        return null
+      }
     } catch (error) {
       const e = error as AxiosError
       console.error(e.cause)
