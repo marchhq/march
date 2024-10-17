@@ -12,6 +12,7 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
+  ContextMenuSeparator,
 } from "../ui/context-menu"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
@@ -38,7 +39,6 @@ export const InboxItems: React.FC = () => {
   const fetchInbox = useCallback(async () => {
     try {
       await fetchInboxData(session)
-      console.log("is fetched")
       setIsFetched(true)
     } catch (error) {
       setIsFetched(false)
@@ -111,12 +111,12 @@ export const InboxItems: React.FC = () => {
   const menuItems = (item: InboxItem) => [
     {
       name: "Expand",
-      icon: "ri:expand-diagonal-s-line",
+      icon: "ci:expand",
       onClick: () => handleExpand(item),
     },
     {
-      name: "Mark as done",
-      icon: "weui:done-outlined",
+      name: "Done",
+      icon: "material-symbols:done",
       onClick: (event: React.MouseEvent) =>
         handleDone(event, item._id!, item.status),
     },
@@ -214,26 +214,32 @@ export const InboxItems: React.FC = () => {
             </ContextMenuTrigger>
             <ContextMenuContent className="rounded-md border border-border ">
               {menuItems(item).map((menuItem) => (
-                <ContextMenuItem
-                  key={menuItem.name}
-                  className="rounded-md px-2 py-0.5"
-                >
-                  <button
-                    className="my-1 flex w-full items-center gap-3"
-                    onClick={menuItem.onClick}
-                  >
-                    <Icon icon={menuItem.icon} className="text-[18px]" />
-                    <span className="flex-1 text-left text-[15px]">
-                      {menuItem.name}
-                    </span>
-                  </button>
-                </ContextMenuItem>
+                <>
+                  <ContextMenuItem key={menuItem.name}>
+                    <button
+                      className="my-1 flex w-full items-center gap-3"
+                      onClick={menuItem.onClick}
+                    >
+                      <Icon
+                        icon={menuItem.icon}
+                        className="text-[18px] text-secondary-foreground"
+                      />
+                      <span className="flex-1 text-left text-[15px]">
+                        {menuItem.name}
+                      </span>
+                    </button>
+                  </ContextMenuItem>
+                  {menuItem.name === "Expand" && <ContextMenuSeparator />}
+                </>
               ))}
               <ContextMenuSub>
-                <ContextMenuSubTrigger className="rounded-md px-2 py-0.5">
+                <ContextMenuSubTrigger>
                   <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
-                    <Icon icon="mingcute:move-line" className="text-[18px]" />
-                    <span className="flex-1 text-left text-[15px]">Move</span>
+                    <Icon
+                      icon="hugeicons:move"
+                      className="text-[18px] text-secondary-foreground"
+                    />
+                    <span className="text-[15px]">Move</span>
                   </div>
                 </ContextMenuSubTrigger>
                 <ContextMenuSubContent className="ml-2">
@@ -243,7 +249,7 @@ export const InboxItems: React.FC = () => {
                   {subMenuItems.map((subItem) => (
                     <ContextMenuItem
                       key={subItem.name}
-                      className="hover-bg cursor-pointer rounded-md px-2 py-0.5"
+                      className="hover-bg cursor-pointer"
                     >
                       <span className="my-1 flex w-full text-xs">
                         {subItem.name}
@@ -252,13 +258,16 @@ export const InboxItems: React.FC = () => {
                   ))}
                 </ContextMenuSubContent>
               </ContextMenuSub>
-              <ContextMenuItem className="rounded-md px-2 py-0.5">
+              <ContextMenuItem>
                 <button
-                  className="my-1 flex w-full items-center gap-3 text-danger-foreground"
+                  className="my-1 flex w-full items-center gap-3 text-primary-foreground"
                   onClick={() => handleDelete(item._id!)}
                 >
-                  <Icon icon="weui:delete-outlined" className="text-[18px]" />
-                  <span className="flex-1 text-left text-[15px]">Delete</span>
+                  <Icon
+                    icon="typcn:delete-outline"
+                    className="text-[18px] text-secondary-foreground"
+                  />
+                  <span className="text-[15px]">Delete</span>
                 </button>
               </ContextMenuItem>
             </ContextMenuContent>
