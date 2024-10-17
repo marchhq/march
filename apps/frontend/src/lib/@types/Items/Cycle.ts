@@ -27,7 +27,8 @@ export interface CycleItemStoreTypes {
   cycleItems: CycleItem[]
   isLoading: boolean
   isFetched: boolean
-  fetchItems: (session: string) => Promise<CycleItem[]>
+  fetchInboxItems: (session: string) => Promise<CycleItem[]>
+  fetchTodayItems: (session: string, date: string) => Promise<CycleItem[]>
   createItem: (data: Partial<CycleItem>, session: string) => Promise<void>
   mutateItem: (
     data: Partial<CycleItem>,

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 import { useAuth } from "../contexts/AuthContext"
-import { Items } from "../lib/@types/Items/TodayItems"
+import { Items } from "../lib/@types/Items/Today"
 import { BACKEND_URL } from "../lib/constants/urls"
 
 export const useItems = () => {
@@ -15,14 +15,11 @@ export const useItems = () => {
     const fetchItems = async () => {
       setIsLoading(true)
       try {
-        const response = await axios.get<Items>(
-          `${BACKEND_URL}/api/my/today/`,
-          {
-            headers: {
-              Authorization: `Bearer ${session}`,
-            },
-          }
-        )
+        const response = await axios.get<Items>(`${BACKEND_URL}/api/today`, {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        })
         setItems(response.data)
       } catch (error) {
         console.error(error)

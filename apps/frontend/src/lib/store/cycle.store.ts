@@ -16,22 +16,18 @@ export const useCycleItemStore = create<CycleItemStoreTypes>((set, get) => ({
   isFetched: false,
   setCycleItem: (cycleItem: CycleItem | null) => set({ cycleItem }),
   setIsFetched: (isFetched: boolean) => set({ isFetched }),
-  fetchItems: async (session: string) => {
+  fetchInboxItems: async (session: string) => {
     let cycleItems_: CycleItem[] = []
     set({ isLoading: true })
     try {
-      console.log("Fetching items from API...")
       const { data } = await axios.get<CycleItems>(
         `${BACKEND_URL}/api/inbox/`,
         {
           headers: { Authorization: `Bearer ${session}` },
         }
       )
-      console.log("API response:", data)
       cycleItems_ = data.response
-      console.log("Setting cycleItems in store:", cycleItems_)
       set({ cycleItems: cycleItems_, isFetched: true })
-      console.log("Store state after update:", get())
     } catch (error) {
       console.error("Error fetching cycle items: ", error)
     } finally {
@@ -41,6 +37,25 @@ export const useCycleItemStore = create<CycleItemStoreTypes>((set, get) => ({
   },
   setCycleItems: (cycleItems: CycleItem[]) => {
     set({ cycleItems })
+  },
+  fetchTodayItems: async (session: string, date: string) => {
+    let cycleItems_: CycleItem[] = []
+    set({ isLoading: true })
+    try {
+      const res = await axios.get(`${BACKEND_URL}/api/${date}`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+      cycleItems_ = res.data.response
+      console.log("api today items: ", cycleItems_)
+      set({ cycleItems: cycleItems_, isFetched: true })
+    } catch (error) {
+      console.error("error fetching today items: ", error)
+    } finally {
+      set({ isLoading: false })
+    }
+    return cycleItems_
   },
   createItem: async (data: Partial<CycleItem>, session: string) => {
     try {
