@@ -8,24 +8,23 @@ const createItemController = async (req, res, next) => {
         const { space, block } = req.params;
 
         const requestedData = req.body;
-        const { metadata } = requestedData
         let item;
-        const url = metadata.url
+
+        const url = requestedData.metadata?.url;
         if (url) {
-            // await itemQueue.add("itemQueue", {
-            //     url: urlInTitle,
-            //     itemId: item._id
-            // });
             const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
 
-            const requestedData = {
+            const updatedData = {
+                ...requestedData,
                 title: previewTitle,
                 metadata: {
+                    ...requestedData.metadata,
                     url,
                     favicon
                 }
-            }
-            item = await createItem(user, requestedData, space, block);
+            };
+
+            item = await createItem(user, updatedData, space, block);
         } else {
             item = await createItem(user, requestedData, space, block);
         }
@@ -115,7 +114,8 @@ const getItemController = async (req, res, next) => {
 };
 
 const getItemFilterByLabelController = async (req, res, next) => {
-    const { space, name } = req.query;
+    const { name } = req.query;
+    const { space } = req.params;
     const user = req.user._id;
 
     try {
