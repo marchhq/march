@@ -101,10 +101,11 @@ const useInboxStore = create<InboxStoreType>((set) => ({
       }
       const response = await axios.post(
         `${BACKEND_URL}/api/setDate/`,
-        { id, date: date ? date : null },
+        { id, dueDate: date ? date : null },
         config
       )
-      const updatedItem = response.data.response.items
+
+      const updatedItem = response.data.items
 
       // Update the inboxItems with the updated item
       set((state) => ({

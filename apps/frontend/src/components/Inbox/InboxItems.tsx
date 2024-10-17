@@ -10,6 +10,7 @@ import {
   ContextMenuItem,
 } from "@radix-ui/react-context-menu"
 
+import ScheduleInboxPopover from "./ScheduleInboxPopover"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { InboxItem } from "@/src/lib/@types/Items/Inbox"
 import useInboxStore from "@/src/lib/store/inbox.store"
@@ -182,12 +183,10 @@ export const InboxItems: React.FC = () => {
                       </button>
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
-                          <Icon
-                            icon="humbleicons:clock"
-                            className="mt-0.5 text-[18px]"
-                          />
-                        </button>
+                        <ScheduleInboxPopover
+                          title={item.title ?? ""}
+                          _id={item._id ?? ""}
+                        />
                         <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="mingcute:move-line"
