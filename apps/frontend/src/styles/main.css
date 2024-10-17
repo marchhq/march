@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   html,
   body {
     @apply bg-background;
@@ -147,7 +146,6 @@ button {
 
 */
 
-
 :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
@@ -193,6 +191,14 @@ button {
 
 .fc-toolbar-chunk button {
   @apply capitalize;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  @apply text-secondary-foreground;
 }
 
 /* Scrollbar */
