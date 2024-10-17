@@ -78,33 +78,33 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     blockId: string,
     itemData: ItemData
   ) => {
-    const { readingItems } = get();
+    const { readingItems } = get()
     try {
       const createResponse = await axios.post(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/`,
         itemData,
         { headers: { Authorization: `Bearer ${session}` } }
-      );
-  
-      const createdItem = createResponse.data.item;
-      const updatedItems = readingItems.map((item) => item._id);
-      
-      updatedItems.push(createdItem._id); 
-  
+      )
+
+      const createdItem = createResponse.data.item
+      const updatedItems = readingItems.map((item) => item._id)
+
+      updatedItems.push(createdItem._id)
+
       await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/`,
-        { data: { items: updatedItems } }, 
+        { data: { items: updatedItems } },
         { headers: { Authorization: `Bearer ${session}` } }
-      );
+      )
 
       set((state) => ({
         readingItems: [...state.readingItems, createdItem],
-      }));
+      }))
     } catch (error) {
-      console.error("Error adding item:", error);
+      console.error("Error adding item:", error)
     }
   },
-  
+
   deleteItem: async (
     session: string,
     spaceId: string,
@@ -116,7 +116,7 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       // Perform the delete operation on the server
       await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}/`,
-        {isDeleted: true},
+        { isDeleted: true },
         { headers: { Authorization: `Bearer ${session}` } }
       )
 
