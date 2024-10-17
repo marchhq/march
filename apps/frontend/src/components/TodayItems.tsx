@@ -26,10 +26,8 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }, [session, fetchItems, selectedDate])
 
   useEffect(() => {
-    if (items.length > 0 && optimisticItems.length === 0) {
-      setOptimisticItems(items)
-    }
-  }, [items, optimisticItems])
+    setOptimisticItems(items) // Always update optimisticItems with items
+  }, [items])
 
   const handleToggleComplete = async (item: CycleItem) => {
     const updatedItems = optimisticItems.map((i) =>

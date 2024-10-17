@@ -1,14 +1,21 @@
 "use client"
 import { useEffect, useState, useCallback, useRef } from "react"
 
+import axios from "axios"
+
 import TextEditor from "./atoms/Editor"
 import { useAuth } from "../contexts/AuthContext"
 import useEditorHook from "../hooks/useEditor.hook"
-import { useCycleItemStore } from "../lib/store/cycle.store"
-import { getTodayISODate } from "../utils/datetime"
+import { useJournal } from "../hooks/useJournal"
+import { BACKEND_URL } from "../lib/constants/urls"
 
 interface JournalProps {
   selectedDate: Date
+}
+
+const formatDate = (date: Date) => {
+  const isoDate = date.toISOString()
+  return isoDate.split("T")[0]
 }
 
 export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
@@ -17,11 +24,10 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const date = getTodayISODate(selectedDate)
+  const formattedDate = formatDate(selectedDate)
+  const { journal, fetchJournal } = useJournal(formattedDate)
   const { session } = useAuth()
   const lastSavedContent = useRef(content)
-  const { currentItem, fetchItemByDate, updateItem, createItem } =
-    useCycleItemStore()
 
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
@@ -36,18 +42,14 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   })
 
   useEffect(() => {
-    if (session) {
-      fetchItemByDate(session, date)
-    }
-  }, [session, date, fetchItemByDate])
+    fetchJournal()
+  }, [formattedDate, fetchJournal])
 
   useEffect(() => {
-    if (editor && currentItem) {
-      console.log("Current Item:", currentItem)
-      const content = currentItem.description || "<p></p>"
-      setContent(content)
-      editor.commands.setContent(content)
-      lastSavedContent.current = content
+    if (journal?.journal?.content) {
+      setContent(journal.journal.content)
+      editor?.commands.setContent(journal.journal.content)
+      lastSavedContent.current = journal.journal.content
     } else {
       setContent("<p></p>")
       editor?.commands.setContent("<p></p>")
@@ -55,28 +57,25 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
     }
     setHasUnsavedChanges(false)
     setIsSaved(true)
-  }, [currentItem, editor])
+  }, [journal, editor])
 
   const saveJournal = async () => {
     if (content === lastSavedContent.current) return
     setIsLoading(true)
     setError(null)
     try {
-      if (currentItem) {
-        await updateItem(
-          session,
-          {
-            dueDate: date,
-            description: content,
+      await axios.post(
+        `${BACKEND_URL}/api/journals/create-update/`,
+        {
+          date: formattedDate,
+          content: content,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
           },
-          currentItem._id
-        )
-      } else {
-        await createItem(session, {
-          dueDate: date,
-          description: content,
-        })
-      }
+        }
+      )
       setIsSaved(true)
       setHasUnsavedChanges(false)
       lastSavedContent.current = content
@@ -97,7 +96,6 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   return (
     <div className="text-foreground">
       <TextEditor editor={editor} minH="30vh" />
-      {error && <p className="text-red-500">{error}</p>}
     </div>
   )
 }

@@ -13,14 +13,11 @@ export const useSpace = () => {
   useEffect(() => {
     const fetchSpaces = async () => {
       try {
-        const response = await axios.get<Spaces>(
-          `${BACKEND_URL}/api/spaces/overview/`,
-          {
-            headers: {
-              Authorization: `Bearer ${session}`,
-            },
-          }
-        )
+        const response = await axios.get<Spaces>(`${BACKEND_URL}/spaces/`, {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        })
 
         setSpace(response.data)
       } catch (error) {
