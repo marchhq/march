@@ -47,7 +47,7 @@ export const InboxAddItem: React.FC = () => {
         title,
       }
 
-      await createItem(data, session)
+      await createItem(session, data)
 
       setAddingItem(false)
       setTitle("")

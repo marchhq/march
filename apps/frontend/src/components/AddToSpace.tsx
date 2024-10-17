@@ -27,7 +27,7 @@ export function AddToSpace({ itemId }) {
     if (session) {
       fetchSpaces(session)
     }
-  })
+  }, [session])
 
   const handleToggleSpace = async (spaces: Space) => {
     try {
@@ -37,7 +37,7 @@ export function AddToSpace({ itemId }) {
       setSelectedSpaces(newSelectedSpaces)
 
       await axios.put(
-        `${BACKEND_URL}/api/items/${itemId}/`,
+        `${BACKEND_URL}/api/inbox/${itemId}/`,
         {
           spaces: newSelectedSpaces,
         },
