@@ -11,6 +11,9 @@ const api = axios.create({
 export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
   items: [],
   currentItem: null,
+  setCurrentItem: (item: CycleItem | null) => {
+    set({ currentItem: item })
+  },
   isLoading: false,
   error: null,
 
@@ -22,6 +25,24 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
         headers: { Authorization: `Bearer ${session}` },
       })
       set({ items: data.items || [], isLoading: false })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
+    }
+  },
+
+  fetchThisWeek: async (session: string) => {
+    set({ isLoading: true, error: null })
+    try {
+      const { data } = await api.get(`/api/this-week/`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+      set({ items: data.response || [], isLoading: false })
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
@@ -66,10 +87,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
     }
   },
 
-  setCurrentItem: (item: CycleItem | null) => {
-    set({ currentItem: item })
-  },
-
   createItem: async (session: string, item: Partial<CycleItem>) => {
     set({ isLoading: true, error: null })
     try {
@@ -78,9 +95,9 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       })
       set((state) => ({
         items: [data.response, ...state.items],
-        currentItem: data.response,
         isLoading: false,
       }))
+      return data.response
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
