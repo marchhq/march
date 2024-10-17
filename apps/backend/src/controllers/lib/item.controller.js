@@ -68,18 +68,18 @@ const updateItemController = async (req, res, next) => {
 
 const deleteItemController = async (req, res, next) => {
     try {
-      const user = req.user._id;
-      const { item, space, block } = req.params;
+        const user = req.user._id;
+        const { item, space, block } = req.params;
 
-      const deletedItem = await deleteItem(item, space, block, user);
-      res.status(200).json({
-        success: true,
-        data: deletedItem,
-      });
+        const deletedItem = await deleteItem(item, space, block, user);
+        res.status(200).json({
+            success: true,
+            data: deletedItem
+        });
     } catch (err) {
-      next(err);
+        next(err);
     }
-  };
+};
 
 const filterItemsController = async (req, res, next) => {
     try {

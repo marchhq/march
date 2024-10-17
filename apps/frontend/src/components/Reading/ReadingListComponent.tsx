@@ -12,13 +12,7 @@ const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
   const { spaces } = useSpace() || { spaces: [] }
 
-  const {
-    blocks,
-    blockId,
-    isLoading,
-    error,
-    fetchBlocks,
-  } = useBlockStore()
+  const { blocks, blockId, isLoading, error, fetchBlocks } = useBlockStore()
 
   // Load the reading list space and block
   const loadReadingList = useCallback(async () => {
@@ -26,11 +20,11 @@ const ReadingListComponent: React.FC = () => {
       const readingListSpace = spaces.find(
         (space) => space.name.toLowerCase() === "reading list"
       )
-      
+
       if (readingListSpace) {
         const spaceId = readingListSpace._id
 
-        await fetchBlocks(session, spaceId);
+        await fetchBlocks(session, spaceId)
       } else {
         throw new Error("Reading list space not found.")
       }
@@ -63,10 +57,20 @@ const ReadingListComponent: React.FC = () => {
         {blockId && (
           <div className="ml-[10%] flex w-3/4 flex-col gap-8 text-base">
             <div className="sticky top-0 z-10 grid h-48 items-end bg-background">
-              <AddItemForm blockId={blockId} spaceId={blocks.find(block => block._id === blockId)?.space || ""}/>
+              <AddItemForm
+                blockId={blockId}
+                spaceId={
+                  blocks.find((block) => block._id === blockId)?.space || ""
+                }
+              />
             </div>
             <div className="flex-1">
-              <ItemsList blockId={blockId} spaceId={blocks.find(block => block._id === blockId)?.space || ""} />
+              <ItemsList
+                blockId={blockId}
+                spaceId={
+                  blocks.find((block) => block._id === blockId)?.space || ""
+                }
+              />
             </div>
           </div>
         )}

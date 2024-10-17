@@ -1,22 +1,22 @@
-import { create } from 'zustand';
-import { BACKEND_URL } from '../constants/urls';
+import { create } from "zustand"
 
+import { BACKEND_URL } from "../constants/urls"
 
 interface Block {
-  _id: string;
-  name: string;
-  data: any;
-  user: string;
-  space: string;
+  _id: string
+  name: string
+  data: any
+  user: string
+  space: string
 }
 
 interface BlockState {
-  blocks: Block[];
-  blockId: string | null;
-  isLoading: boolean;
-  error: string | null;
-  fetchBlocks: (session: string, spaceId: string) => Promise<void>;
-  createBlock: (session: string, spaceId: string) => Promise<void>;
+  blocks: Block[]
+  blockId: string | null
+  isLoading: boolean
+  error: string | null
+  fetchBlocks: (session: string, spaceId: string) => Promise<void>
+  createBlock: (session: string, spaceId: string) => Promise<void>
 }
 
 const useBlockStore = create<BlockState>((set, get) => ({
@@ -27,67 +27,67 @@ const useBlockStore = create<BlockState>((set, get) => ({
 
   // Fetch existing blocks for the given space
   fetchBlocks: async (session: string, spaceId: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null })
     try {
       const response = await fetch(`${BACKEND_URL}/spaces/${spaceId}/blocks/`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${session}`,
         },
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
-        const blocks = data.blocks;
-        set({ blocks });
+        const data = await response.json()
+        const blocks = data.blocks
+        set({ blocks })
 
         if (blocks.length > 0) {
-          set({ blockId: blocks[0]._id });
+          set({ blockId: blocks[0]._id })
         } else {
           // No block exists, create one
-          await get().createBlock(session, spaceId);
+          await get().createBlock(session, spaceId)
         }
       } else {
-        set({ error: 'Failed to fetch blocks.' });
+        set({ error: "Failed to fetch blocks." })
       }
     } catch (err) {
-      set({ error: 'An error occurred while fetching blocks.' });
+      set({ error: "An error occurred while fetching blocks." })
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false })
     }
   },
 
   // Create a new block if none exists
   createBlock: async (session: string, spaceId: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null })
     try {
       const response = await fetch(`${BACKEND_URL}/spaces/${spaceId}/blocks/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${session}`,
         },
         body: JSON.stringify({
-          name: 'New Block',
+          name: "New Block",
           data: {}, // Add any necessary default data here
         }),
-      });
+      })
 
       if (response.ok) {
-        const { block } = await response.json();
+        const { block } = await response.json()
         set((state) => ({
           blocks: [...state.blocks, block],
           blockId: block._id,
-        }));
+        }))
       } else {
-        set({ error: 'Failed to create a new block.' });
+        set({ error: "Failed to create a new block." })
       }
     } catch (err) {
-      set({ error: 'An error occurred while creating a block.' });
+      set({ error: "An error occurred while creating a block." })
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false })
     }
   },
-}));
+}))
 
-export default useBlockStore;
+export default useBlockStore

@@ -267,17 +267,17 @@ const updateItem = async (id, updateData, space, block) => {
 
 const deleteItem = async (id, space, block, user) => {
     const deletedItem = await Item.findOneAndDelete({
-      _id: id,
-      spaces: { $elemMatch: { $eq: space } },
-      blocks: { $elemMatch: { $eq: block } },
-      user: user,
+        _id: id,
+        spaces: { $elemMatch: { $eq: space } },
+        blocks: { $elemMatch: { $eq: block } },
+        user
     });
     if (!deletedItem) {
-      throw new Error("Item not found");
+        throw new Error("Item not found");
     }
     return deletedItem;
-  };
-  
+};
+
 const moveItemtoDate = async (date, id) => {
     const formattedDate = date ? new Date(date) : null;
 
