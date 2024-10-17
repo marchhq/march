@@ -8,3 +8,11 @@ export const isLink = (value: string): boolean => {
   // Match the pattern
   return urlPattern.test(trimmedValue)
 }
+
+// Function to truncate a string to a given lengtht and add ... if string is bigger then givven length
+export function truncateString(input: string, maxLength: number): string {
+  if (input.length > maxLength) {
+    return input.slice(0, maxLength) + "...";
+  }
+  return input;
+}

@@ -9,6 +9,7 @@ import ImageWithFallback from "../ui/ImageWithFallback"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 import useReadingStore from "@/src/lib/store/reading.store"
+import { truncateString } from "@/src/utils/helpers"
 
 interface ItemsListProps {
   blockId: string | null
@@ -67,7 +68,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
                 className={`flex items-center gap-2 ${url ? "cursor-pointer" : "cursor-default"}`}
               >
                 <h3 className="flex flex-wrap items-center text-lg font-semibold text-foreground">
-                  <span className="break-all">{item.title}</span>
+                  <span className="break-all">{truncateString(item.title, 50)}</span>
                 </h3>
               </a>
               </div>
@@ -80,7 +81,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
                 </p>
               )}
                 {item?.type === "link" && (
-                <p className=" text-sm text-secondary-foreground ml-7">
+                  <p className=" text-sm text-secondary-foreground ml-7">
                   {item?.metadata?.url}
                 </p>
               )}
