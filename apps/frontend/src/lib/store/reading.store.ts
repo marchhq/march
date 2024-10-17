@@ -72,43 +72,45 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
   },
 
   setReadingItems: (items: ReadingItem[]) => set({ readingItems: items }),
-
   addItem: async (
     session: string,
     spaceId: string,
     blockId: string,
     itemData: ItemData
   ) => {
-    const { readingItems } = get()
+    const { readingItems } = get();
     try {
       // Create the new item under the specific space and block
       const createResponse = await axios.post(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/`,
         itemData,
         { headers: { Authorization: `Bearer ${session}` } }
-      )
-
-      const createdItem = createResponse.data.item
-
-      // Update the block with the new list of items
-      const updatedItems = [
-        ...readingItems.map((item) => item._id),
-        createdItem._id,
-      ]
+      );
+  
+      const createdItem = createResponse.data.item;
+  
+      // **Fix: Ensure you're sending ObjectIds instead of UUIDs**
+      // Assuming the readingItems and createdItem are UUIDs or the correct format:
+      const updatedItems = readingItems.map((item) => item._id);
+      
+      updatedItems.push(createdItem._id); // Push new item ID to the array
+  
+      // Put updated array back to the block
       await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/`,
-        { data: { items: updatedItems } },
+        { data: { items: updatedItems } }, // Only pass object IDs (not UUID strings)
         { headers: { Authorization: `Bearer ${session}` } }
-      )
-
+      );
+  
+      // Update local state
       set((state) => ({
         readingItems: [...state.readingItems, createdItem],
-      }))
+      }));
     } catch (error) {
-      console.error("Error adding item:", error)
+      console.error("Error adding item:", error);
     }
   },
-
+  
   deleteItem: async (
     session: string,
     spaceId: string,
