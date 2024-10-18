@@ -14,6 +14,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { useModal } from "../contexts/ModalProvider"
 import { type User } from "../lib/@types/auth/user"
 import { BACKEND_URL } from "../lib/constants/urls"
+import useUserStore from "../lib/store/user.store"
 import {
   Tooltip,
   TooltipContent,
@@ -21,7 +22,6 @@ import {
   TooltipTrigger,
 } from "@/src/components/atoms/Tooltip"
 import classNames from "@/src/utils/classNames"
-import useUserStore from "../lib/store/user.store"
 
 const navLinkClassName =
   "flex items-center justify-center gap-2 p-3 rounded-lg cursor-pointer hover-bg"
