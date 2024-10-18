@@ -86,7 +86,6 @@ export const InboxItems: React.FC = () => {
           return newSet
         })
 
-        // Don't reset the current item if we are marking done/undone
         setTimeout(() => {
           updateItem(session, { status: newStatus }, id)
           setAnimatingItems((prev) => {

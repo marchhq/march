@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
@@ -10,63 +10,56 @@ import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const ThisWeekExpandedItem: React.FC = () => {
   const { session } = useAuth()
+  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
-  const timeoutId = useRef<NodeJS.Timeout | null>(null)
 
-  const [editItemId, setEditItemId] = useState<string | null>(null)
-  const [editedItem, setEditedItem] = useState<{
-    title: string
-    description: string
-  }>({
+  const [editedItem, setEditedItem] = useState({
     title: "",
     description: "",
   })
-
-  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
-
-  const memoizedEditedItem = useMemo(
-    () => ({
-      title: currentItem?.title || "",
-      description: currentItem?.description || "",
-    }),
-    [currentItem?.title, currentItem?.description]
-  )
-
-  const handleSetEditedItem = useCallback(
-    (updates: Partial<typeof editedItem>) => {
-      setEditedItem((prev) => ({ ...prev, ...updates }))
-    },
-    []
-  )
+  const [hasChanges, setHasChanges] = useState(false)
 
   useEffect(() => {
     if (currentItem) {
-      setEditItemId(currentItem._id || "")
-      setEditedItem(memoizedEditedItem)
+      setEditedItem({
+        title: currentItem.title || "",
+        description: currentItem.description || "",
+      })
+      setHasChanges(false)
     }
-  }, [currentItem, memoizedEditedItem])
+  }, [currentItem])
 
-  const handleSaveEditedItem = useCallback(
-    async (item: any) => {
-      try {
-        if (editItemId && editedItem) {
-          updateItem(
-            session,
-            {
-              ...item,
-              title: editedItem.title,
-              description: editedItem.description,
-            },
-            item._id
-          )
-        }
-      } catch (error) {
-        console.error("error updating item:", error)
+  const handleSaveEditedItem = useCallback(async () => {
+    if (!currentItem || !currentItem._id || !hasChanges) return
+    try {
+      await updateItem(
+        session,
+        {
+          title: editedItem.title,
+          description: editedItem.description,
+        },
+        currentItem._id
+      )
+      setHasChanges(false)
+    } catch (error) {
+      console.error("Error updating item:", error)
+    }
+  }, [session, currentItem, editedItem, updateItem, hasChanges])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (hasChanges) {
+        handleSaveEditedItem()
       }
-    },
-    [session, editItemId, editedItem, updateItem]
-  )
+    }, 1000)
+    return () => clearTimeout(timeoutId)
+  }, [editedItem, hasChanges, handleSaveEditedItem])
+
+  const handleInputChange = (field: "title" | "description", value: string) => {
+    setEditedItem((prev) => ({ ...prev, [field]: value }))
+    setHasChanges(true)
+  }
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -84,27 +77,8 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.description])
 
-  useEffect(() => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current)
-    }
-    timeoutId.current = setTimeout(() => {
-      if (currentItem) {
-        handleSaveEditedItem(currentItem)
-      }
-    }, 1000)
-
-    return () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current)
-      }
-    }
-  }, [editedItem, currentItem, handleSaveEditedItem])
-
   const handleClose = useCallback(() => {
     setCurrentItem(null)
-    setEditItemId(null)
-    setEditedItem({ title: "", description: "" })
   }, [setCurrentItem])
 
   return (
@@ -124,12 +98,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
             <textarea
               ref={textareaRefTitle}
               value={editedItem.title}
-              onChange={(e) =>
-                setEditedItem((prev) => ({
-                  ...prev,
-                  title: e.target.value,
-                }))
-              }
+              onChange={(e) => handleInputChange("title", e.target.value)}
               placeholder="title"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
@@ -137,12 +106,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
             <textarea
               ref={textareaRefDescription}
               value={editedItem.description}
-              onChange={(e) => {
-                setEditedItem((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }}
+              onChange={(e) => handleInputChange("description", e.target.value)}
               placeholder="description"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
