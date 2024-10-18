@@ -15,7 +15,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
-  const [editItemId, setEditItemId] = useState<string | null>(null)
+  const [hasChanges, setHasChanges] = useState(false)
   const [editedItem, setEditedItem] = useState<{
     title: string
     description: string
@@ -28,13 +28,13 @@ export const ThisWeekExpandedItem: React.FC = () => {
 
   useEffect(() => {
     if (currentItem) {
-      setEditItemId(currentItem._id || "")
       setEditedItem({
         title: currentItem.title || "",
         description: currentItem.description || "",
       })
+      setHasChanges(false)
     }
-  }, [currentItem, setEditItemId, setEditedItem])
+  }, [currentItem])
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -52,23 +52,22 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.description])
 
-  const handleSaveEditedItem = async (item: any) => {
+  const handleSaveEditedItem = useCallback(async () => {
+    if (!currentItem || !currentItem._id || !hasChanges) return
     try {
-      if (editItemId && editedItem) {
-        updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-            description: editedItem.description,
-          },
-          item._id
-        )
-      }
+      await updateItem(
+        session,
+        {
+          title: editedItem.title,
+          description: editedItem.description,
+        },
+        currentItem._id
+      )
+      setHasChanges(false)
     } catch (error) {
       console.error("error updating item:", error)
     }
-  }
+  }, [session, currentItem, editedItem, updateItem, hasChanges])
 
   useEffect(() => {
     if (timeoutId.current) {
@@ -76,15 +75,19 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
 
     timeoutId.current = setTimeout(() => {
-      if (currentItem) {
-        handleSaveEditedItem(currentItem)
+      if (hasChanges) {
+        handleSaveEditedItem()
       }
     }, 1000)
   }, [editedItem, currentItem, timeoutId])
 
+  const handleInputChange = (field: "title" | "description", value: string) => {
+    setEditedItem((prev) => ({ ...prev, [field]: value }))
+    setHasChanges(true)
+  }
+
   const handleClose = useCallback(() => {
     setCurrentItem(null)
-    handleCancelEditItem()
   }, [setCurrentItem])
 
   useEffect(() => {
@@ -106,11 +109,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [handleClose])
-
-  const handleCancelEditItem = () => {
-    setEditItemId(null)
-    setEditedItem({ title: "", description: "" })
-  }
 
   return (
     <div
@@ -146,12 +144,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
           <textarea
             ref={textareaRefTitle}
             value={editedItem.title}
-            onChange={(e) =>
-              setEditedItem((prev) => ({
-                ...prev,
-                title: e.target.value,
-              }))
-            }
+            onChange={(e) => handleInputChange("title", e.target.value)}
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
@@ -159,12 +152,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
           <textarea
             ref={textareaRefDescription}
             value={editedItem.description}
-            onChange={(e) => {
-              setEditedItem((prev) => ({
-                ...prev,
-                description: e.target.value,
-              }))
-            }}
+            onChange={(e) => handleInputChange("description", e.target.value)}
             placeholder="description"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}

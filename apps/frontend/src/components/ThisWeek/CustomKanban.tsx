@@ -11,7 +11,7 @@ import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
 export const CustomKanban = () => {
   return (
-    <div className="size-full ">
+    <div className="size-full">
       <Board />
     </div>
   )
@@ -25,7 +25,7 @@ const Board = () => {
     fetchThisWeek(session)
   }, [session, fetchThisWeek])
 
-  const handleDragEnd = (itemId: string, newStatus) => {
+  const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
     updateItem(session, newStatus, itemId)
   }
 
