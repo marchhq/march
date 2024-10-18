@@ -18,6 +18,7 @@ export const InboxExpandedItem: React.FC = () => {
     title: "",
     description: "",
   })
+
   const [hasChanges, setHasChanges] = useState(false)
 
   useEffect(() => {

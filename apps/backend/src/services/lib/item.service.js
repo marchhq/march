@@ -106,6 +106,11 @@ const getUserItemsByDate = async (me, date) => {
 }
 
 const createItem = async (user, itemData, space, block) => {
+    if (!space || !block) {
+        const error = new Error("Space and block must be provided");
+        error.statusCode = 400;
+        throw error;
+    }
     const newItem = new Item({
         ...itemData,
         user,
@@ -147,6 +152,11 @@ const updateInboxItem = async (item, user, itemData) => {
     { $set: itemData },
     { new: true }
     )
+    if (!updatedItem) {
+        const error = new Error("Item not found or you do not have permission to update it");
+        error.statusCode = 404;
+        throw error;
+    }
     return updatedItem;
 };
 

@@ -1,71 +1,57 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useCallback } from "react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
 
-const navLinkClassName =
-  "flex items-center gap-2 text-secondary-foreground cursor-pointer hover-text"
-
 const NotesPage: React.FC = () => {
   const { session } = useAuth()
+  const { notes, addNote, latestNote, fetchNotes, setIsFetched, isFetched } =
+    useNotesStore()
 
-  const [loading, setLoading] = useState(false)
-  const [latestNoteId, setLatestNoteId] = useState<string>("")
-  const [isFetched, setIsFetched] = useState(false)
-
-  const { getLatestNote, addNote } = useNotesStore()
-
-  const getNoteId = async (): Promise<string | null> => {
+  const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
-      const note = await getLatestNote(session)
-      if (note) {
-        setLatestNoteId(note.uuid)
-      }
+      await fetchNotes(session)
       setIsFetched(true)
-      return note?.uuid || ""
     } catch (error) {
-      console.error(error)
       setIsFetched(false)
-      return null
     }
-  }
+  }, [session, fetchNotes, setIsFetched])
 
   useEffect(() => {
-    const test = getNoteId()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (!isFetched) {
+      fetchTheNotes()
+    }
+  }, [fetchTheNotes, isFetched])
 
   useEffect(() => {
-    if (isFetched) {
-      if (latestNoteId) {
-        redirectNote(latestNoteId)
-      } else {
-        addFirstNote()
-      }
+    if (latestNote) {
+      redirectNote(latestNote._id)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetched, latestNoteId])
+  }, [latestNote])
 
-  const addFirstNote = async (): Promise<void> => {
+  const addNewNote = useCallback(async (): Promise<void> => {
     try {
-      setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
-        redirectNote(newNote.uuid)
+        redirectNote(newNote._id)
       }
     } catch (error) {
       console.error(error)
-    } finally {
-      setLoading(false)
     }
-  }
+  }, [session, addNote])
+
+  useEffect(() => {
+    if (notes.length === 0) {
+      addNewNote()
+    }
+  }, [notes, addNewNote])
 
   return (
     <div className="size-full overflow-auto bg-background p-16">
-      {loading && <p className="text-secondary-foreground">loading...</p>}
+      <p className="text-secondary-foreground">loading...</p>
     </div>
   )
 }
