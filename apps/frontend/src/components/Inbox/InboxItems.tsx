@@ -20,15 +20,14 @@ export const InboxItems: React.FC = () => {
   const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
     new Set()
   )
+
   const {
-    isFetched,
-    setIsFetched,
+    items,
+    currentItem,
+    setCurrentItem,
     fetchItems,
-    cycleItems,
+    updateItem,
     isLoading,
-    mutateItem,
-    cycleItem,
-    setCycleItem,
   } = useCycleItemStore()
 
   const fetchInbox = useCallback(async () => {
@@ -41,20 +40,21 @@ export const InboxItems: React.FC = () => {
   }, [session, fetchItems])
 
   useEffect(() => {
-    if (!isFetched) {
-      fetchInbox()
-    }
-  }, [session, fetchInbox, isFetched])
+    fetchInbox()
+  }, [fetchInbox])
 
   useEffect(() => {
-    console.log("Current cycleItems:", cycleItems)
-  }, [cycleItems])
+    console.log("Current Items:", items)
+  }, [items])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
-      setCycleItem(item)
+      // Only update the current item if it's not already the selected item
+      if (!currentItem || currentItem._id !== item._id) {
+        setCurrentItem(item)
+      }
     },
-    [setCycleItem]
+    [currentItem, setCurrentItem]
   )
 
   /* const handleDelete = useCallback(
@@ -85,9 +85,9 @@ export const InboxItems: React.FC = () => {
           }
           return newSet
         })
-        setCycleItem(null)
+
         setTimeout(() => {
-          mutateItem({ status: newStatus }, session, id)
+          updateItem(session, { status: newStatus }, id)
           setAnimatingItems((prev) => {
             const newSet = new Set(prev)
             newSet.delete(id)
@@ -96,7 +96,7 @@ export const InboxItems: React.FC = () => {
         }, 400)
       }
     },
-    [session, mutateItem, setCycleItem]
+    [updateItem, session]
   )
 
   if (isLoading) {
@@ -129,10 +129,7 @@ export const InboxItems: React.FC = () => {
     },
   ]
 
-  //FIX: done items
-  const filteredItems = cycleItems.filter(
-    (item) => item && item.status !== "done"
-  )
+  const filteredItems = items.filter((item) => item.status !== "done")
   console.log("Filtered items:", filteredItems)
 
   return (
@@ -149,7 +146,7 @@ export const InboxItems: React.FC = () => {
                     ? "transform-none opacity-100 sm:translate-x-full sm:opacity-0 sm:blur-lg"
                     : ""
                 } ${
-                  cycleItem && cycleItem._id === item._id
+                  currentItem && currentItem._id === item._id
                     ? "border-border"
                     : "border-transparent"
                 }`}

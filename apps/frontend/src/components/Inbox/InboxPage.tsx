@@ -9,13 +9,13 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 
 export const InboxPage: React.FC = () => {
-  const { item } = useCycleItemStore()
+  const { items } = useCycleItemStore()
   return (
     <div className="flex h-full gap-8">
       <div
         className={classNames(
           "flex h-full max-w-[800px] flex-col gap-8 text-sm",
-          item ? "w-1/2" : "w-full"
+          items ? "w-1/2" : "w-full"
         )}
       >
         <header className="flex items-center gap-4 text-foreground">
