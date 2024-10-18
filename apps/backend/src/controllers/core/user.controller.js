@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getUserOverdueItems, getUserItemsByDate, getUserItems, moveItemtoDate, getUserTodayItems, getAllitems } from "../../services/lib/item.service.js";
+import { getUserOverdueItems, getUserItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
@@ -62,34 +62,67 @@ const updateUserController = async (req, res, next) => {
     }
 };
 
-const getUserItemsController = async (req, res, next) => {
+const getInboxItemsController = async (req, res, next) => {
     try {
         const me = req.user._id;
-        const items = await getUserItems(me);
+        const items = await getInboxItems(me);
 
-        // const IntegratedAppIssues = await getIntegration(me);
-        // res.json({
-        //     items
-        // });
         res.status(200).json({
-            statusCode: 200,
             response: items
         });
     } catch (err) {
         next(err);
     }
 };
+
+const getInboxItemController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { item: id } = req.params;
+        const items = await getInboxItem(me, id);
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getThisWeekItemsController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const items = await getThisWeekItems(me);
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const updateInboxItemController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { item: id } = req.params;
+        const updateData = req.body;
+        const items = await updateInboxItem(id, me, updateData);
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 const getAllitemsController = async (req, res, next) => {
     try {
         const me = req.user._id;
         const items = await getAllitems(me);
 
-        // const IntegratedAppIssues = await getIntegration(me);
-        // res.json({
-        //     items
-        // });
         res.status(200).json({
-            statusCode: 200,
             response: items
         });
     } catch (err) {
@@ -103,8 +136,10 @@ const getUserTodayItemsController = async (req, res, next) => {
         const todayItems = await getUserTodayItems(me);
         const overdueItems = await getUserOverdueItems(me);
         res.json({
-            todayItems,
-            overdueItems
+            response: {
+                todayItems,
+                overdueItems
+            }
         });
     } catch (err) {
         next(err);
@@ -116,14 +151,14 @@ const getUserOverdueItemsController = async (req, res, next) => {
         const me = req.user.id;
         const items = await getUserOverdueItems(me);
         res.json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
     }
 };
 
-const getUserItemsByDateControlle = async (req, res, next) => {
+const getUserItemsByDateController = async (req, res, next) => {
     try {
         const me = req.user.id;
         const { date } = req.params;
@@ -141,7 +176,7 @@ const moveItemtoDateController = async (req, res, next) => {
         const { id, dueDate } = req.body;
         const items = await moveItemtoDate(dueDate, id);
         res.json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
@@ -151,10 +186,13 @@ const moveItemtoDateController = async (req, res, next) => {
 export {
     userProfileController,
     updateUserController,
-    getUserItemsController,
+    updateInboxItemController,
+    getInboxItemController,
+    getInboxItemsController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
-    getUserItemsByDateControlle,
+    getUserItemsByDateController,
     moveItemtoDateController,
-    getAllitemsController
+    getAllitemsController,
+    getThisWeekItemsController
 }

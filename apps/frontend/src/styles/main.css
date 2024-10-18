@@ -202,6 +202,14 @@ button {
   @apply capitalize;
 }
 
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  @apply text-secondary-foreground;
+}
+
 /* Scrollbar */
 
 /* width */

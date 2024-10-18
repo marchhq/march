@@ -15,8 +15,8 @@ import {
   ContextMenuSeparator,
 } from "../ui/context-menu"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { InboxItem } from "@/src/lib/@types/Items/Inbox"
-import useInboxStore from "@/src/lib/store/inbox.store"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -24,48 +24,51 @@ export const InboxItems: React.FC = () => {
   const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
     new Set()
   )
+
   const {
-    isFetched,
-    setIsFetched,
-    fetchInboxData,
-    inboxItems,
-    isLoading,
-    deleteItem,
+    items,
+    currentItem,
+    setCurrentItem,
+    fetchItems,
     updateItem,
-    selectedItem,
-    setSelectedItem,
-  } = useInboxStore()
+    isLoading,
+  } = useCycleItemStore()
 
   const fetchInbox = useCallback(async () => {
+    console.log("Fetching inbox...")
     try {
-      await fetchInboxData(session)
-      setIsFetched(true)
+      await fetchItems(session)
     } catch (error) {
-      setIsFetched(false)
+      console.error("Error fetching inbox:", error)
     }
-  }, [session, fetchInboxData, setIsFetched])
+  }, [session, fetchItems])
 
   useEffect(() => {
-    if (!isFetched) {
-      fetchInbox()
-    }
-  }, [session, fetchInbox, isFetched])
+    fetchInbox()
+  }, [fetchInbox])
+
+  useEffect(() => {
+    console.log("Current Items:", items)
+  }, [items])
 
   const handleExpand = useCallback(
-    (item: InboxItem) => {
-      setSelectedItem(item)
+    (item: CycleItem) => {
+      // Only update the current item if it's not already the selected item
+      if (!currentItem || currentItem._id !== item._id) {
+        setCurrentItem(item)
+      }
     },
-    [setSelectedItem]
+    [currentItem, setCurrentItem]
   )
 
-  const handleDelete = useCallback(
+  /* const handleDelete = useCallback(
     (id: string) => {
       if (id) {
         deleteItem(session, id)
       }
     },
     [deleteItem, session]
-  )
+  ) */
 
   const handleDone = useCallback(
     (
@@ -86,7 +89,7 @@ export const InboxItems: React.FC = () => {
           }
           return newSet
         })
-        setSelectedItem(null)
+
         setTimeout(() => {
           updateItem(session, { status: newStatus }, id)
           setAnimatingItems((prev) => {
@@ -97,7 +100,7 @@ export const InboxItems: React.FC = () => {
         }, 400)
       }
     },
-    [session, updateItem, setSelectedItem]
+    [updateItem, session]
   )
 
   if (isLoading) {
@@ -108,7 +111,7 @@ export const InboxItems: React.FC = () => {
     )
   }
 
-  const menuItems = (item: InboxItem) => [
+  const menuItems = (item: CycleItem) => [
     {
       name: "Expand",
       icon: "ci:expand",
@@ -135,7 +138,8 @@ export const InboxItems: React.FC = () => {
     },
   ]
 
-  const filteredItems = inboxItems.filter((item) => item.status !== "done")
+  const filteredItems = items.filter((item) => item.status !== "done")
+  console.log("Filtered items:", filteredItems)
 
   return (
     <div className="flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
@@ -151,7 +155,7 @@ export const InboxItems: React.FC = () => {
                     ? "transform-none opacity-100 sm:translate-x-full sm:opacity-0 sm:blur-lg"
                     : ""
                 } ${
-                  selectedItem && selectedItem._id === item._id
+                  currentItem && currentItem._id === item._id
                     ? "border-border"
                     : "border-transparent"
                 }`}
