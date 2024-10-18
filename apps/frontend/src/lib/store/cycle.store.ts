@@ -121,12 +121,23 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
         const updatedItems = state.items.map((item) =>
           item._id === id ? { ...item, ...data.response } : item
         )
-        return {
-          items: updatedItems,
-          currentItem:
-            state.currentItem?._id === id ? data.response : state.currentItem,
-          isLoading: false,
+        const updatedCurrentItem =
+          state.currentItem?._id === id
+            ? { ...state.currentItem, ...data.response }
+            : state.currentItem
+
+        if (
+          JSON.stringify(updatedItems) !== JSON.stringify(state.items) ||
+          JSON.stringify(updatedCurrentItem) !==
+            JSON.stringify(state.currentItem)
+        ) {
+          return {
+            items: updatedItems,
+            currentItem: updatedCurrentItem,
+            isLoading: false,
+          }
         }
+        return { ...state, isLoading: false }
       })
     } catch (error) {
       const errorMessage =
