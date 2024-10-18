@@ -7,7 +7,7 @@ import { environment } from "./environment.loader.js";
  * TODO: Add certificate based authentication
  **/
 
-const db = createConnection(`mongodb+srv://${environment.DB_USER}:${environment.DB_PASS}@${environment.DB_HOST}/${environment.DB_NAME}`, {
+const db = createConnection(environment.MONGO_URL, {
     autoIndex: false
 })
 

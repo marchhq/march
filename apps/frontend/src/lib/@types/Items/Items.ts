@@ -21,3 +21,30 @@ export interface Item {
 export interface ItemResponse {
   items: Item[]
 }
+
+export interface ItemStoreType {
+  items: Item[]
+  selectedItem: Item | null
+  setSelectedItem: (selectedItem: Item | null) => void
+  isFetched: boolean
+  setIsFetched: (isFetched: boolean) => void
+  fetchItems: (session: string, filter: string) => Promise<void>
+  setItems: (items: Item[]) => void
+  addItem: (
+    session: string,
+    dueDate: string,
+    title: string,
+    status: string,
+    description?: string
+  ) => Promise<void>
+  updateItemStatus: (itemId: string, newStatus: string) => void
+  mutateItem: (
+    session: string,
+    itemId: string,
+    status: string,
+    title?: string,
+    description?: string,
+    isDeleted?: boolean
+  ) => Promise<void>
+  updateItem: (session: string, editedItem: Item, id: string) => void
+}

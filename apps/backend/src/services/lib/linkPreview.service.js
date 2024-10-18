@@ -14,8 +14,11 @@ const linkPreviewGenerator = async (url) => {
             favicon: favicon || ''
         };
     } catch (error) {
-        console.error('Error fetching metadata:', error);
-        throw new Error('Failed to fetch metadata');
+        console.error('Error fetching preview:', error);
+        return {
+            title: '',
+            favicon: ''
+        };
     }
 };
 

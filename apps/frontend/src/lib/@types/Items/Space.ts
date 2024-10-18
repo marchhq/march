@@ -1,7 +1,12 @@
 export interface Space {
   _id: string
   name: string
+  icon: string
+  users: string[]
   blocks: string[]
+  isArchived: boolean
+  isDeleted: boolean
+  uuid: string
 }
 
 export interface Spaces {
@@ -9,13 +14,13 @@ export interface Spaces {
 }
 
 export interface SpaceStoreTypes {
-  pages: Space[]
-  page: Space | null
+  spaces: Space[]
+  space: Space | null
   loading: boolean
   error: string | null
-  fetchPages: (session: string) => Promise<void>
-  fetchPageById: (id: string, session: string) => Promise<void>
-  createPage: (data: Space, session: string) => Promise<void>
-  updatePage: (_id: string, data: Space, session: string) => Promise<void>
-  setSelectedPage: (page: Space | null) => void
+  fetchSpaces: (session: string) => Promise<void>
+  fetchSpaceById: (id: string, session: string) => Promise<void>
+  createSpace: (data: Space, session: string) => Promise<void>
+  updateSpace: (_id: string, data: Space, session: string) => Promise<void>
+  setSelectedSpace: (space: Space | null) => void
 }

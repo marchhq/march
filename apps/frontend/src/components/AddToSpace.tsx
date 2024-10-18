@@ -14,12 +14,20 @@ import { useAuth } from "../contexts/AuthContext"
 import { useSpace } from "../hooks/useSpace"
 import { Space } from "../lib/@types/Items/Space"
 import { BACKEND_URL } from "../lib/constants/urls"
+import useSpaceStore from "../lib/store/space.store"
 import { Space as SpaceIcon } from "@/src/lib/icons/Space"
 
 export function AddToSpace({ itemId }) {
   const [selectedSpaces, setSelectedSpaces] = React.useState<string[]>([])
-  const { spaces: spaces } = useSpace() || { spaces: [] }
+  // const { spaces: spaces } = useSpace() || { spaces: [] }
   const { session } = useAuth()
+  const { spaces, fetchSpaces } = useSpaceStore()
+
+  React.useEffect(() => {
+    if (session) {
+      fetchSpaces(session)
+    }
+  }, [session])
 
   const handleToggleSpace = async (spaces: Space) => {
     try {
@@ -29,7 +37,7 @@ export function AddToSpace({ itemId }) {
       setSelectedSpaces(newSelectedSpaces)
 
       await axios.put(
-        `${BACKEND_URL}/api/items/${itemId}/`,
+        `${BACKEND_URL}/api/inbox/${itemId}/`,
         {
           spaces: newSelectedSpaces,
         },

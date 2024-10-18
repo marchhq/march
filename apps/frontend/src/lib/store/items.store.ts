@@ -1,35 +1,8 @@
 import axios, { AxiosError } from "axios"
 import { create } from "zustand"
 
-import { type Item } from "../@types/Items/Items"
+import { ItemStoreType, type Item } from "../@types/Items/Items"
 import { BACKEND_URL } from "../constants/urls"
-
-export interface ItemStoreType {
-  items: Item[]
-  selectedItem: Item | null
-  setSelectedItem: (selectedItem: Item | null) => void
-  isFetched: boolean
-  setIsFetched: (isFetched: boolean) => void
-  fetchItems: (session: string, filter: string) => Promise<void>
-  setItems: (items: Item[]) => void
-  addItem: (
-    session: string,
-    dueDate: string,
-    title: string,
-    status: string,
-    description?: string
-  ) => Promise<void>
-  updateItemStatus: (itemId: string, newStatus: string) => void
-  mutateItem: (
-    session: string,
-    itemId: string,
-    status: string,
-    title?: string,
-    description?: string,
-    isDeleted?: boolean
-  ) => Promise<void>
-  updateItem: (session: string, editedItem: Item, id: string) => void
-}
 
 const useItemsStore = create<ItemStoreType>((set) => ({
   items: [],

@@ -7,9 +7,7 @@ import { usePathname } from "next/navigation"
 import SecondSidebar from "@/src/components/SecondSidebar"
 import SidebarItem from "@/src/components/SidebarItem"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useSpace } from "@/src/hooks/useSpace"
-import { redirectNote } from "@/src/lib/server/actions/redirectNote"
-import useNotesStore from "@/src/lib/store/notes.store"
+import useSpaceStore from "@/src/lib/store/space.store"
 
 interface Props {
   children: React.ReactNode
@@ -19,48 +17,15 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
   const pathname = usePathname()
   const { session } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [latestNoteId, setLatestNoteId] = useState<string>("")
-  const { getLatestNote, addNote } = useNotesStore()
-  const { spaces } = useSpace() || { spaces: [] }
-
-  const getNoteId = useCallback(async (): Promise<string | null> => {
-    try {
-      const note = await getLatestNote(session)
-      if (note) {
-        setLatestNoteId(note.uuid)
-      }
-      return note?.uuid || ""
-    } catch (error) {
-      console.error(error)
-      return null
-    }
-  }, [session, getLatestNote])
-
-  useEffect(() => {
-    if (!latestNoteId) {
-      getNoteId()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getNoteId])
-
-  const addFirstNote = async (): Promise<void> => {
-    try {
-      setLoading(true)
-      const newNote = await addNote(session, "", "<p></p>")
-      if (newNote !== null) {
-        setLatestNoteId(newNote.uuid)
-        redirectNote(newNote.uuid)
-      }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { spaces, fetchSpaces } = useSpaceStore()
 
   const constructPath = (spaceName: string) => {
     return `space/${spaceName.toLowerCase().replace(/\s+/g, "-")}`
   }
+
+  useEffect(() => {
+    fetchSpaces(session)
+  }, [session, fetchSpaces])
 
   const items = spaces.map((space) => {
     const path = constructPath(space.name)

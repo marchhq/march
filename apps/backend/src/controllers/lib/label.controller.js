@@ -4,8 +4,9 @@ const createLabelController = async (req, res, next) => {
     try {
         const labelData = req.body;
         const user = req.user._id;
+        const { space } = req.params;
 
-        const label = await createLabel(labelData, user);
+        const label = await createLabel(labelData, user, space);
 
         res.json({
             label
@@ -18,7 +19,8 @@ const createLabelController = async (req, res, next) => {
 const getLabelsController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const labels = await getLabels(user);
+        const { space } = req.params;
+        const labels = await getLabels(user, space);
 
         res.json({
             labels
@@ -44,8 +46,8 @@ const getLabelsBySpaceController = async (req, res, next) => {
 
 const getLabelController = async (req, res, next) => {
     try {
-        const { label: id } = req.params;
-        const label = await getLabel(id);
+        const { label: id, space } = req.params;
+        const label = await getLabel(id, space);
 
         res.json({
             label
@@ -57,10 +59,10 @@ const getLabelController = async (req, res, next) => {
 
 const updateLabelController = async (req, res, next) => {
     try {
-        const { label: id } = req.params;
+        const { label: id, space } = req.params;
         const updatedData = req.body;
 
-        const updatedLabel = await updateLabel(id, updatedData);
+        const updatedLabel = await updateLabel(id, updatedData, space);
         res.json({
             updatedLabel
         });
@@ -71,8 +73,8 @@ const updateLabelController = async (req, res, next) => {
 
 const deleteLabelController = async (req, res, next) => {
     try {
-        const { label: id } = req.params;
-        await deleteLabel(id);
+        const { label: id, space } = req.params;
+        await deleteLabel(id, space);
         res.json({
             message: "Label deleted successfully"
         });

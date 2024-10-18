@@ -124,6 +124,12 @@ const Sidebar: React.FC = () => {
           isActive={pathname.includes("/today/")}
         />
         <SidebarLink
+          href={"/this-week"}
+          icon={<Icon icon="quill:snooze-week" className="text-[32px]" />}
+          label="this week"
+          isActive={pathname.includes("/this-week/")}
+        />
+        <SidebarLink
           href={"/space"}
           icon={
             <Icon icon="fluent:collections-20-filled" className="text-[28px]" />

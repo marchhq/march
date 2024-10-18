@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   html,
   body {
     @apply bg-background;
@@ -147,7 +146,6 @@ button {
 
 */
 
-
 :root {
   --fc-small-font-size: 13px;
   --fc-page-bg-color: #fff;
@@ -195,6 +193,14 @@ button {
   @apply capitalize;
 }
 
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  @apply text-secondary-foreground;
+}
+
 /* Scrollbar */
 
 /* width */
@@ -215,6 +221,20 @@ button {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-zinc-800;
+}
+
+/* for firefox */
+
+html {
+  scrollbar-width: thin; /* auto, thin or none */
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  scrollbar-color: #27272a rgba(253, 253, 253, 0);
+}
+
+html::-webkit-scrollbar-track:hover {
+  scrollbar-color: #27272a rgba(253, 253, 253, 0);
 }
 
 [data-theme="slash-command"] {
