@@ -58,14 +58,13 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const config = getConfig(session)
-      // Post request, sending `CreatePage`, receiving `Page`
       const response = await axios.post<{ space: Space }>(
         `${BACKEND_URL}/spaces/`,
         data,
         config
       )
       set((state) => ({
-        spaces: [response.data.space, ...state.spaces], // Response contains the full `Space` object
+        spaces: [response.data.space, ...state.spaces],
         loading: false,
       }))
     } catch (error: any) {
