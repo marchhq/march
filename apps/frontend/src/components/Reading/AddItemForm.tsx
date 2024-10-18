@@ -141,29 +141,31 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   return (
     <div className="relative flex w-3/4 items-center gap-2">
       <div className="flex w-full flex-col gap-1">
-        <input
-          ref={inputRef}
-          value={input}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          placeholder="Insert a link or just plain text.."
-          className="truncate rounded-lg border border-transparent bg-background p-4 pl-6 font-semibold text-primary-foreground outline-none transition-colors placeholder:text-secondary-foreground focus:border-border focus:ring-0"
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-          disabled={isSaving}
-        />
+        <div className="relative">
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
+            placeholder="Insert a link or just plain text.."
+            className="w-full truncate rounded-lg border border-transparent bg-background p-4 pl-6 pr-32 font-semibold text-primary-foreground outline-none transition-colors placeholder:text-secondary-foreground focus:border-border focus:ring-0"
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
+            disabled={isSaving}
+          />
+          {input && !isSaving && (
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-secondary-foreground">
+              press ↵ to save
+            </span>
+          )}
+        </div>
         {showWarning && (
           <span className="animate-shake text-sm text-red-500">
             Warning: Using http is dangerous! Please use https.
           </span>
         )}
       </div>
-      {input && !isSaving && (
-        <span className="w-36 text-sm text-secondary-foreground">
-          press ↵ to save
-        </span>
-      )}
       {isSaving && (
         <span className="bg-background text-xs text-secondary-foreground">
           Saving...
