@@ -26,8 +26,8 @@ const sendFeedbackEmail = async (req, res) => {
             from: `"Feedback Form" <${environment.SMTP_USER}>`,
             to: environment.FEEDBACK_RECEIVER_EMAIL, // Feedback receiver email
             cc: email,
-            subject: `New Feedback Submission: ${title}`,
-            text: feedback,
+            subject: `Feedback sent to march`,
+            text: `Title: ${title}\n\nFeedback: ${feedback}`,
             attachments: attachments.map((file) => ({
                 filename: file.originalname,
                 path: file.location // File location from S3
