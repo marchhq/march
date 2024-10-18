@@ -148,7 +148,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder="Insert a link or just plain text.."
-          className="truncate bg-background p-4 pl-0 text-base text-foreground outline-none transition-colors"
+          className="truncate rounded-lg border border-transparent bg-background p-4 pl-6 font-semibold text-primary-foreground outline-none transition-colors placeholder:text-secondary-foreground focus:border-border focus:ring-0"
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           disabled={isSaving}
@@ -160,10 +160,14 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
         )}
       </div>
       {input && !isSaving && (
-        <span className="text-foreground/8 w-36 text-sm">Press ↵ to save</span>
+        <span className="w-36 text-sm text-secondary-foreground">
+          press ↵ to save
+        </span>
       )}
       {isSaving && (
-        <span className="bg-background text-xs text-gray-500">Saving...</span>
+        <span className="bg-background text-xs text-secondary-foreground">
+          Saving...
+        </span>
       )}
     </div>
   )
