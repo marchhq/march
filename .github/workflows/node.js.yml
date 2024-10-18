@@ -14,15 +14,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'pnpm' 
+        cache: 'pnpm'
+
+    - name: Check Node.js and npm versions
+      run: |
+        node -v
+        npm -v
 
     - name: Install pnpm
       run: npm install -g pnpm
+
+    - name: Check pnpm version
+      run: pnpm -v
 
     - name: Install dependencies
       run: pnpm install
