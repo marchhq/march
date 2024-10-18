@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error("GitHub callback error:", error);
+    //logger is not required because i already mention above what is the error 
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

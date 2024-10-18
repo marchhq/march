@@ -17,5 +17,11 @@ export const GOOGLECALENDAR_REFRESH_TOKEN = "__CALENDAR_REFRESH_TOKEN__"
 /**
  * LINEAR ACCESS_TOKEN cookie name
  */
+
+
 export const LINEAR_ACCESS_TOKEN = "__LINEAR_ACCESS_TOKEN__"
+
+/**
+ * GITHUB ACCESS_TOKEN cookie name
+ */
 export const GITHUB_ACCESS_TOKEN = "__GITHUB_ACCESS_TOKEN__"
