@@ -317,10 +317,3 @@ export {
     createInboxItem,
     getThisWeekItems
 }
-
-// db.createUser(
-//     {user: "march",
-//     pwd: passwordPrompt(),roles: [{role: "readWrite", db: "march"},
-//     {role: "read",  db : "march"}
-//     ]
-//     })
