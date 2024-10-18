@@ -17,6 +17,7 @@ import { useToast } from "@/src/hooks/use-toast"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { TwitterIcon } from "@/src/lib/icons/TwitterIcon"
 import useUserStore from "@/src/lib/store/user.store"
+import { useModal } from "@/src/contexts/ModalProvider"
 
 type Inputs = {
   email: string
@@ -41,6 +42,7 @@ const FeedbackModal = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const { user } = useUserStore()
+  const { hideModal } = useModal()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -95,7 +97,7 @@ const FeedbackModal = () => {
         toast({
           title: "Submitted successfully!",
         })
-
+        hideModal()
         // Clear the form fields and selected files after successful submission
         reset() // reset method from useForm
         setSelectedFiles([]) // clear the selected files
@@ -135,15 +137,6 @@ const FeedbackModal = () => {
           />
           {errors.title && (
             <span className="px-3 text-xs text-red-500">Title is required</span>
-          )}
-          <input
-            placeholder="Email"
-            type="email"
-            className="w-full border-none bg-transparent px-2 py-3 text-xl placeholder:text-secondary-foreground focus:outline-none"
-            {...register("email", { required: true })}
-          />
-          {errors.title && (
-            <span className="px-3 text-xs text-red-500">Email is required</span>
           )}
           <Textarea
             className="min-h-40 border-none text-sm placeholder:text-secondary-foreground"
