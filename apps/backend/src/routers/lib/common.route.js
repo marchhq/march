@@ -7,7 +7,7 @@ import {
     updateInboxItemController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
-    getUserItemsByDateControlle,
+    getUserItemsByDateController,
     moveItemtoDateController,
     getAllitemsController
 } from "../../controllers/core/user.controller.js";
@@ -25,11 +25,10 @@ router.route("/inbox/").post(createInboxItemController);
 router.route("/inbox/:item/").put(updateInboxItemController);
 router.route("/inbox/:item/").get(getInboxItemController);
 router.route("/this-week/").get(getThisWeekItemsController);
-router.route("/inbox/create/").get(createInboxItemController);
 router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
 router.route("/setDate/").post(moveItemtoDateController);
-router.route("/:date/").get(getUserItemsByDateControlle);
+router.route("/:date/").get(getUserItemsByDateController);
 
 // journal controllers
 router.route("/journals/create-update/").post(createUpdateJournalController);
