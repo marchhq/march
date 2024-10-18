@@ -171,6 +171,7 @@ export const InboxItems: React.FC = () => {
                   WebkitTapHighlightColor: "transparent",
                   outline: "none",
                 }}
+                data-item-id={item._id}
               >
                 <div className="flex w-full flex-col truncate">
                   <div className="flex justify-between text-foreground">
