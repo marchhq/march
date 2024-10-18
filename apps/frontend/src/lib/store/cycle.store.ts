@@ -106,7 +106,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       set({ error: errorMessage, isLoading: false })
     }
   },
-
   updateItem: async (
     session: string,
     updates: Partial<CycleItem>,
@@ -138,6 +137,34 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
           }
         }
         return { ...state, isLoading: false }
+      })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage, isLoading: false })
+    }
+  },
+  deleteItem: async (
+    session: string,
+    updates: Partial<CycleItem>,
+    id: string
+  ) => {
+    set({ isLoading: true, error: null })
+    try {
+      set((state) => {
+        const index = state.items.findIndex((item) => item._id === id)
+        if (index !== -1) {
+          state.items.splice(index, 1)
+        }
+        return {
+          items: state.items,
+          isLoading: false,
+        }
+      })
+      await api.put(`/api/inbox/${id}`, updates, {
+        headers: { Authorization: `Bearer ${session}` },
       })
     } catch (error) {
       const errorMessage =

@@ -3,13 +3,17 @@
 import React, { useEffect, useCallback, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
+
 import {
   ContextMenu,
-  ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-} from "@radix-ui/react-context-menu"
-
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from "../ui/context-menu"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -28,6 +32,7 @@ export const InboxItems: React.FC = () => {
     fetchItems,
     updateItem,
     isLoading,
+    deleteItem,
   } = useCycleItemStore()
 
   const fetchInbox = useCallback(async () => {
@@ -57,14 +62,11 @@ export const InboxItems: React.FC = () => {
     [currentItem, setCurrentItem]
   )
 
-  /* const handleDelete = useCallback(
-    (id: string) => {
-      if (id) {
-        deleteItem(session, id)
-      }
-    },
-    [deleteItem, session]
-  ) */
+  const handleDelete = (id: string) => {
+    if (id) {
+      deleteItem(session, { isDeleted: true }, id)
+    }
+  }
 
   const handleDone = useCallback(
     (
@@ -110,22 +112,27 @@ export const InboxItems: React.FC = () => {
   const menuItems = (item: CycleItem) => [
     {
       name: "Expand",
-      icon: "ri:expand-diagonal-s-line",
+      icon: "ci:expand",
       onClick: () => handleExpand(item),
     },
     {
-      name: "Mark as done",
-      icon: "weui:done-outlined",
+      name: "Done",
+      icon: "material-symbols:done",
       onClick: (event: React.MouseEvent) =>
         handleDone(event, item._id!, item.status),
     },
     { name: "Plan", icon: "humbleicons:clock", onClick: () => {} },
-    { name: "Move", icon: "mingcute:move-line", onClick: () => {} },
+  ]
+
+  const subMenuItems = [
     {
-      name: "Delete",
-      icon: "weui:delete-outlined",
-      color: "#C45205",
-      //     onClick: () => handleDelete(item._id!),
+      name: "Notes",
+    },
+    {
+      name: "Meetings",
+    },
+    {
+      name: "Reading List",
     },
   ]
 
@@ -208,24 +215,64 @@ export const InboxItems: React.FC = () => {
                 </div>
               </div>
             </ContextMenuTrigger>
-            <ContextMenuContent className="rounded-md border border-border">
+            <ContextMenuContent className="rounded-md border border-border ">
               {menuItems(item).map((menuItem) => (
-                <ContextMenuItem
-                  key={menuItem.name}
-                  className="hover-bg rounded-md px-2 py-0.5"
-                >
-                  <button
-                    className="my-1 flex w-full items-center gap-3 text-primary-foreground"
-                    style={{ color: menuItem.color }}
-                    onClick={menuItem.onClick}
-                  >
-                    <Icon icon={menuItem.icon} className="text-[18px]" />
-                    <span className="flex-1 text-left text-[15px]">
-                      {menuItem.name}
-                    </span>
-                  </button>
-                </ContextMenuItem>
+                <>
+                  <ContextMenuItem key={menuItem.name}>
+                    <button
+                      className="my-1 flex w-full items-center gap-3"
+                      onClick={menuItem.onClick}
+                    >
+                      <Icon
+                        icon={menuItem.icon}
+                        className="text-[18px] text-secondary-foreground"
+                      />
+                      <span className="flex-1 text-left text-[15px]">
+                        {menuItem.name}
+                      </span>
+                    </button>
+                  </ContextMenuItem>
+                  {menuItem.name === "Expand" && <ContextMenuSeparator />}
+                </>
               ))}
+              <ContextMenuSub>
+                <ContextMenuSubTrigger>
+                  <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
+                    <Icon
+                      icon="hugeicons:move"
+                      className="text-[18px] text-secondary-foreground"
+                    />
+                    <span className="text-[15px]">Move</span>
+                  </div>
+                </ContextMenuSubTrigger>
+                <ContextMenuSubContent className="ml-2">
+                  <ContextMenuItem className="pointer-events-none text-xs text-secondary-foreground">
+                    <p>move to</p>
+                  </ContextMenuItem>
+                  {subMenuItems.map((subItem) => (
+                    <ContextMenuItem
+                      key={subItem.name}
+                      className="hover-bg cursor-pointer"
+                    >
+                      <span className="my-1 flex w-full text-xs">
+                        {subItem.name}
+                      </span>
+                    </ContextMenuItem>
+                  ))}
+                </ContextMenuSubContent>
+              </ContextMenuSub>
+              <ContextMenuItem>
+                <button
+                  className="my-1 flex w-full items-center gap-3 text-primary-foreground"
+                  onClick={() => handleDelete(item._id!)}
+                >
+                  <Icon
+                    icon="typcn:delete-outline"
+                    className="text-[18px] text-secondary-foreground"
+                  />
+                  <span className="text-[15px]">Delete</span>
+                </button>
+              </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
         ))

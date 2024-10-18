@@ -41,6 +41,11 @@ export interface CycleItemStore {
     updates: Partial<CycleItem>,
     id: string
   ) => Promise<void>
+  deleteItem: (
+    session: string,
+    updates: Partial<CycleItem>,
+    id: string
+  ) => Promise<void>
 }
 
 export interface CreateItemResponse {
