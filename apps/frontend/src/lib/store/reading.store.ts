@@ -72,7 +72,6 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
   },
 
   setReadingItems: (items: ReadingItem[]) => set({ readingItems: items }),
-
   addItem: async (
     session: string,
     spaceId: string,
@@ -81,7 +80,6 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
   ) => {
     const { readingItems } = get()
     try {
-      // Create the new item under the specific space and block
       const createResponse = await axios.post(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/`,
         itemData,
@@ -89,12 +87,10 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       )
 
       const createdItem = createResponse.data.item
+      const updatedItems = readingItems.map((item) => item._id)
 
-      // Update the block with the new list of items
-      const updatedItems = [
-        ...readingItems.map((item) => item._id),
-        createdItem._id,
-      ]
+      updatedItems.push(createdItem._id)
+
       await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/`,
         { data: { items: updatedItems } },
@@ -118,8 +114,9 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     const { readingItems } = get()
     try {
       // Perform the delete operation on the server
-      await axios.delete(
+      await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}/`,
+        { isDeleted: true },
         { headers: { Authorization: `Bearer ${session}` } }
       )
 

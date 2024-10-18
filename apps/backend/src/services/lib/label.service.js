@@ -57,13 +57,11 @@ const getLabelsBySpace = async (user, space) => {
 }
 
 const getLabelByName = async (name, user, space) => {
-    const labels = await Label.find({
+    const labels = await Label.findOne({
         name,
         user,
         space
     })
-        .sort({ name: 1 })
-        .exec();
 
     return labels;
 }
