@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useItemsStore from "@/src/lib/store/items.store"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
@@ -24,17 +24,17 @@ export const ThisWeekExpandedItem: React.FC = () => {
     description: "",
   })
 
-  const { selectedItem, setSelectedItem, updateItem } = useItemsStore()
+  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
 
   useEffect(() => {
-    if (selectedItem) {
-      setEditItemId(selectedItem._id || "")
+    if (currentItem) {
+      setEditItemId(currentItem._id || "")
       setEditedItem({
-        title: selectedItem.title || "",
-        description: selectedItem.description || "",
+        title: currentItem.title || "",
+        description: currentItem.description || "",
       })
     }
-  }, [selectedItem, setEditItemId, setEditedItem])
+  }, [currentItem, setEditItemId, setEditedItem])
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -76,16 +76,16 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
 
     timeoutId.current = setTimeout(() => {
-      if (selectedItem) {
-        handleSaveEditedItem(selectedItem)
+      if (currentItem) {
+        handleSaveEditedItem(currentItem)
       }
     }, 1000)
-  }, [editedItem, selectedItem, timeoutId])
+  }, [editedItem, currentItem, timeoutId])
 
   const handleClose = useCallback(() => {
-    setSelectedItem(null)
+    setCurrentItem(null)
     handleCancelEditItem()
-  }, [setSelectedItem])
+  }, [setCurrentItem])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -129,9 +129,9 @@ export const ThisWeekExpandedItem: React.FC = () => {
               <Icon icon="ep:back" className="text-[18px]" />
             </button>
             <p className="flex items-center">
-              {formatDateYear(selectedItem?.createdAt || "")}
+              {formatDateYear(currentItem?.createdAt || "")}
             </p>
-            <p>edited {fromNow(selectedItem?.updatedAt || "")}</p>
+            <p>edited {fromNow(currentItem?.updatedAt || "")}</p>
           </div>
           <div className="flex gap-4">
             <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
