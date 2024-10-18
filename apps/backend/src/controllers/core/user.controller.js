@@ -158,7 +158,7 @@ const getUserOverdueItemsController = async (req, res, next) => {
     }
 };
 
-const getUserItemsByDateControlle = async (req, res, next) => {
+const getUserItemsByDateController = async (req, res, next) => {
     try {
         const me = req.user.id;
         const { date } = req.params;
@@ -191,7 +191,7 @@ export {
     getInboxItemsController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
-    getUserItemsByDateControlle,
+    getUserItemsByDateController,
     moveItemtoDateController,
     getAllitemsController,
     getThisWeekItemsController
