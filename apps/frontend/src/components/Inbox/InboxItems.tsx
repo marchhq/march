@@ -32,6 +32,7 @@ export const InboxItems: React.FC = () => {
     fetchItems,
     updateItem,
     isLoading,
+    deleteItem,
   } = useCycleItemStore()
 
   const fetchInbox = useCallback(async () => {
@@ -61,14 +62,11 @@ export const InboxItems: React.FC = () => {
     [currentItem, setCurrentItem]
   )
 
-  /* const handleDelete = useCallback(
-    (id: string) => {
-      if (id) {
-        deleteItem(session, id)
-      }
-    },
-    [deleteItem, session]
-  ) */
+  const handleDelete = (id: string) => {
+    if (id) {
+      deleteItem(session, { isDeleted: true }, id)
+    }
+  }
 
   const handleDone = useCallback(
     (
