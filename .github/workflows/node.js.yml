@@ -1,10 +1,7 @@
-
 name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -17,13 +14,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: 'pnpm' 
 
+    - name: Install pnpm
+      run: npm install -g pnpm
+
+    - name: Install dependencies
+      run: pnpm install
 
     - name: Set environment variables
       run: |
