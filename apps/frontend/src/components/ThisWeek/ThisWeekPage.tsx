@@ -7,8 +7,8 @@ import { addWeeks } from "date-fns"
 import { CustomKanban } from "./CustomKanban"
 import { ThisWeekArrows } from "./ThisWeekArrows"
 import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
-import { Item } from "@/src/lib/@types/Items/Items"
-import useItemsStore from "@/src/lib/store/items.store"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import {
   getCurrentWeek,
   getFormattedDateRange,
@@ -21,9 +21,10 @@ export const ThisWeekPage: React.FC = () => {
   const weekNumber = getCurrentWeek(currentDate)
   const totalWeeks = getWeeksInMonth(currentDate)
   const formattedDateRange = getFormattedDateRange(currentDate)
-  const { items, selectedItem } = useItemsStore()
 
-  const doneItems = items.filter((item: Item) => item.status === "done")
+  const { items, currentItem } = useCycleItemStore()
+
+  const doneItems = items.filter((item: CycleItem) => item.status === "done")
 
   const handleWeekChange = (direction: "left" | "right") => {
     setCurrentDate((prevDate) => {
@@ -55,7 +56,7 @@ export const ThisWeekPage: React.FC = () => {
           <ThisWeekArrows onChangeWeek={handleWeekChange} />
         </div>
         <CustomKanban />
-        {selectedItem && <ThisWeekExpandedItem />}
+        {currentItem && <ThisWeekExpandedItem />}
       </div>
     </div>
   )

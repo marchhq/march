@@ -4,8 +4,10 @@ import { Icon } from "@iconify-icon/react"
 import { motion } from "framer-motion"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useItemsStore from "@/src/lib/store/items.store"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
+import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
 export const CustomKanban = () => {
   return (
@@ -16,15 +18,15 @@ export const CustomKanban = () => {
 }
 
 const Board = () => {
-  const { items, fetchItems, mutateItem } = useItemsStore()
+  const { items, fetchThisWeek, updateItem } = useCycleItemStore()
   const { session } = useAuth()
 
   useEffect(() => {
-    fetchItems(session, "this-week")
-  }, [session, fetchItems])
+    fetchThisWeek(session)
+  }, [session, fetchThisWeek])
 
-  const handleDragEnd = (itemId: string, newStatus: string) => {
-    mutateItem(session, itemId, newStatus)
+  const handleDragEnd = (itemId: string, newStatus) => {
+    updateItem(session, newStatus, itemId)
   }
 
   return (
@@ -55,7 +57,7 @@ const Board = () => {
 }
 
 const Column = ({ title, items, column, onDragEnd, icon }) => {
-  const { addItem } = useItemsStore()
+  const { createItem } = useCycleItemStore()
   const [active, setActive] = useState(false)
 
   const handleDragStart = (e, item) => {
@@ -78,7 +80,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
     clearHighlights()
 
     if (currentStatus !== column) {
-      onDragEnd(itemId, column)
+      onDragEnd(itemId, { status: column })
     }
   }
 
@@ -146,16 +148,16 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
           />
         ))}
         <DropIndicator beforeId={null} column={column} />
-        <AddCard column={column} addItem={addItem} />
+        <AddCard column={column} updateItem={createItem} />
       </div>
     </div>
   )
 }
 
 const Card = ({ title, _id, status, handleDragStart, item }) => {
-  const { setSelectedItem, selectedItem } = useItemsStore()
-  const handleExpand = (item: any) => {
-    setSelectedItem(item)
+  const { currentItem, setCurrentItem } = useCycleItemStore()
+  const handleExpand = (item: CycleItem) => {
+    setCurrentItem(item)
   }
 
   return (
@@ -167,12 +169,11 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
         draggable="true"
         onDragStart={(e) => handleDragStart(e, { _id, status })}
         onClick={() => {
-          console.log("item", item)
           handleExpand(item)
         }}
         className={classNames(
           "group flex cursor-grab flex-col gap-1 rounded-lg border p-4 text-left hover:border-border active:cursor-grabbing",
-          selectedItem?._id == item._id
+          currentItem?._id == item._id
             ? "border-border bg-background-hover"
             : "border-transparent"
         )}
@@ -196,15 +197,10 @@ const DropIndicator = ({ beforeId, column }) => {
 
 interface AddCardProps {
   column: string
-  addItem: (
-    session: string,
-    dueDate: string,
-    title: string,
-    status: string
-  ) => void
+  updateItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
+const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -224,17 +220,18 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
       e?.preventDefault()
       if (!text.trim().length) return
 
-      console.log("Attempting to add item:", {
-        session,
-        dueDate: new Date().toISOString(),
+      const cycleDate = getEndOfCurrentWeek(new Date())
+
+      const data: Partial<CycleItem> = {
+        cycleDate: cycleDate,
         title: text.trim(),
         status: column,
-      })
+      }
 
-      addItem(session, new Date().toISOString(), text.trim(), column)
+      updateItem(session, data)
       handleCancel()
     },
-    [addItem, column, session, text]
+    [updateItem, column, session, text]
   )
 
   const handleCancel = () => {
