@@ -1,3 +1,4 @@
+"use client"
 import React from "react"
 
 import { Icon } from "@/src/components/Icon"
@@ -43,17 +44,17 @@ interface UserInfoProps {
 
 const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   const { authMethod, email, icon } = getAuthInfo(user)
-
   return (
     <div className="mb-8 flex flex-col">
       {user.avatar && (
-        <Image
-        src={user.avatar}
-        alt={`${user.fullName}'s Avatar`}
-        width={24}
-        height={24}
-          className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
-        />
+         <Image
+         src={user.avatar}
+         alt={`${user.fullName}'s Avatar`}
+         width={32}
+         height={32}
+         priority
+         className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
+       />
       )}
       <h2 className="mb-1 text-[16px] font-semibold text-foreground">
         {user.fullName || "Anonymous User"}
