@@ -70,16 +70,13 @@ export const ThisWeekExpandedItem: React.FC = () => {
   }, [session, currentItem, editedItem, updateItem, hasChanges])
 
   useEffect(() => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current)
-    }
-
-    timeoutId.current = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       if (hasChanges) {
         handleSaveEditedItem()
       }
     }, 1000)
-  }, [editedItem, currentItem, timeoutId])
+    return () => clearTimeout(timeoutId)
+  }, [editedItem, hasChanges, handleSaveEditedItem])
 
   const handleInputChange = (field: "title" | "description", value: string) => {
     setEditedItem((prev) => ({ ...prev, [field]: value }))
