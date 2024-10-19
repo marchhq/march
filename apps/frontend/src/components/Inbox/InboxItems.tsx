@@ -4,6 +4,7 @@ import React, { useEffect, useCallback, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
+import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -21,6 +22,8 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set())
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [scheduleItemId, setScheduleItemId] = React.useState<string>("")
   const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
     new Set()
   )
@@ -52,9 +55,15 @@ export const InboxItems: React.FC = () => {
     console.log("Current Items:", items)
   }, [items])
 
+  useEffect(() => {
+    console.log("date", date)
+    if (date && scheduleItemId) {
+      updateItem(session, { dueDate: date }, scheduleItemId)
+    }
+  }, [date, updateItem, session])
+
   const handleExpand = useCallback(
     (item: CycleItem) => {
-      // Only update the current item if it's not already the selected item
       if (!currentItem || currentItem._id !== item._id) {
         setCurrentItem(item)
       }
@@ -121,7 +130,6 @@ export const InboxItems: React.FC = () => {
       onClick: (event: React.MouseEvent) =>
         handleDone(event, item._id!, item.status),
     },
-    { name: "Plan", icon: "humbleicons:clock", onClick: () => {} },
   ]
 
   const subMenuItems = [
@@ -217,8 +225,8 @@ export const InboxItems: React.FC = () => {
             </ContextMenuTrigger>
             <ContextMenuContent className="rounded-md border border-border ">
               {menuItems(item).map((menuItem) => (
-                <>
-                  <ContextMenuItem key={menuItem.name}>
+                <div key={menuItem.name}>
+                  <ContextMenuItem>
                     <button
                       className="my-1 flex w-full items-center gap-3"
                       onClick={menuItem.onClick}
@@ -233,8 +241,27 @@ export const InboxItems: React.FC = () => {
                     </button>
                   </ContextMenuItem>
                   {menuItem.name === "Expand" && <ContextMenuSeparator />}
-                </>
+                </div>
               ))}
+              <ContextMenuSub>
+                <ContextMenuSubTrigger
+                  onMouseEnter={() => {
+                    setScheduleItemId(item._id)
+                    console.log("hover", item._id)
+                  }}
+                >
+                  <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
+                    <Icon
+                      icon="humbleicons:clock"
+                      className="text-[18px] text-secondary-foreground"
+                    />
+                    <span className="text-[15px]">Plan</span>
+                  </div>
+                </ContextMenuSubTrigger>
+                <ContextMenuSubContent className="ml-2">
+                  <RescheduleCalendar date={date} setDate={setDate} />
+                </ContextMenuSubContent>
+              </ContextMenuSub>
               <ContextMenuSub>
                 <ContextMenuSubTrigger>
                   <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
