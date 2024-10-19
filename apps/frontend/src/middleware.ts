@@ -13,6 +13,7 @@ async function verifyToken(token: string): Promise<boolean> {
       },
     })
     const data = await response.json()
+    console.log(data)
     return data.isValidUser
   } catch (error) {
     console.error("Token verification failed:", error)
@@ -23,6 +24,8 @@ async function verifyToken(token: string): Promise<boolean> {
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const token = request.cookies.get(ACCESS_TOKEN)?.value
   const path = request.nextUrl.pathname
+
+  console.log("Something is happening")
 
   // Public paths that don't require authentication, can be updated later
   const publicPaths = ["/", "/login", "/register"]
