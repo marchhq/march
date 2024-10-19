@@ -46,7 +46,9 @@ const createEmailUser = async ({
                 email,
                 password: hash
             }
-        }
+        },
+        userVerification: false,
+        waitlist: true
     })
     return user;
 }
@@ -174,7 +176,9 @@ const createGoogleUser = async ({
             }
         },
         avatar,
-        userTimezone: timezone
+        userTimezone: timezone,
+        userVerification: false,
+        waitlist: true
     })
     return user;
 }
@@ -213,7 +217,9 @@ const createGithubUser = async (
                 userName
             }
         },
-        userTimezone: timezone
+        userTimezone: timezone,
+        userVerification: false,
+        waitlist: true
     })
     return user;
 }

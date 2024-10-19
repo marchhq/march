@@ -25,6 +25,14 @@ const UserSchema = new Schema({
         type: Schema.Types.Array,
         default: ["user"]
     },
+    userVerification: {
+        type: Boolean,
+        default: false
+    },
+    waitlist: {
+        type: Boolean,
+        default: true
+    },
     timezone: {
         type: String,
         default: 'UTC',
