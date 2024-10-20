@@ -1,8 +1,8 @@
 
-import UserTable from "@/components/UserTable";
+import UsersComponent from "@/components/UsersComponent";
 
 export default function Home() {
   return (
-      <UserTable/>
+      <UsersComponent/>
   );
 }
