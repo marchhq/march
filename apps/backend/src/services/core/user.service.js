@@ -4,6 +4,11 @@ import { environment } from "../../loaders/environment.loader.js";
 import { OauthClient } from "../../loaders/google.loader.js";
 import axios from 'axios';
 
+const getAllUsers = async () => {
+    const users = await User.find({});
+    return users;
+}
+
 const getUserByEmail = async (email) => {
     const user = await User.findOne({
         $or: [
@@ -236,6 +241,7 @@ const updateUser = async (user, data) => {
 }
 
 export {
+    getAllUsers,
     getUserByEmail,
     createEmailUser,
     validateEmailUser,

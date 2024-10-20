@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { getUserOverdueItems, getUserItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
-import { updateUser } from "../../services/core/user.service.js";
+import { getAllUsers, updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
 
@@ -14,6 +14,15 @@ const { ValidationError } = Joi;
 //         next(err)
 //     }
 // };
+
+export const getAllUsersController = async (req, res) => {
+    try {
+        const users = await getAllUsers();
+        return res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred', details: error.message });
+    }
+};
 
 const userProfileController = async (req, res, next) => {
     try {
