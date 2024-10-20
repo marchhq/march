@@ -1,6 +1,6 @@
-'use client'
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
+"use client";
+import { Calendar, Inbox, Search, Settings, Users2Icon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation"; // Import useRouter from Next.js
 import {
   Sidebar,
   SidebarContent,
@@ -10,79 +10,76 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { ThemeToggle } from "./ThemeToggle"
+} from "@/components/ui/sidebar";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Users",
+    url: "/",
+    icon: Users2Icon,
   },
   {
     title: "Inbox",
-    url: "#",
+    url: "/inbox", // Update to actual path
     icon: Inbox,
   },
   {
     title: "Calendar",
-    url: "#",
+    url: "/calendar", // Update to actual path
     icon: Calendar,
   },
   {
     title: "Search",
-    url: "#",
+    url: "/search", // Update to actual path
     icon: Search,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/settings", // Update to actual path
     icon: Settings,
   },
-]
+];
 
 export function AppSidebar() {
-  const { state } = useSidebar()
-  console.log(state)
+  const { state } = useSidebar();
+  const currentPath = usePathname(); 
+
   return (
     <Sidebar>
-      <SidebarContent>
+        <SidebarContent className="dark:bg-black">
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-        {state === 'expanded' ?  <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                   <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        :
           <SidebarGroupContent>
+
+           <div className={`${state === "collapsed" ? 'flex flex-col-reverse gap-2' : 'flex justify-between'} mb-2`}>
+            <ThemeToggle/>
+            <SidebarTrigger/>
+           </div>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
+                  <SidebarMenuButton tooltip={state === "collapsed" ? item.title : ""} asChild>
+                    <a
+                      href={item.url}
+                      className={`flex items-center p-2 rounded-md ${
+                        currentPath === item.url
+                          ? "bg-blue-500 text-white" // Active item styles
+                          : "text-gray-300 hover:bg-blue-600 hover:text-white"
+                      }`}
+                    >
+                      <item.icon className="mr-2" />
+                      {state === "expanded" && <span>{item.title}</span>} {/* Show title only when expanded */}
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        }
         </SidebarGroup>
-        <ThemeToggle/>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

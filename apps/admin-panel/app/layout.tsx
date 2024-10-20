@@ -40,7 +40,6 @@ export default function RootLayout({
          <div className="flex">
             <SidebarProvider>
               <AppSidebar/>
-              <SidebarTrigger/>
             <main className="flex-1">
               {children}
             </main>
