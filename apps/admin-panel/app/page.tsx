@@ -1,9 +1,10 @@
+import UserTable from "@/components/UserTable";
 import Image from "next/image";
 
 export default function Home() {
   return (
-   <div className="text-xl bg-red-400">
-    Hello
+   <div className="bg-background text-foreground">
+    <UserTable/>
    </div>
   );
 }
