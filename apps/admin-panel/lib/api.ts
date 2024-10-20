@@ -22,7 +22,6 @@ export const fetchAllUsers = async (): Promise<User[]> => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
     return response.data; // Return the fetched user data
   } catch (error) {
     console.error("Error while fetching all users:", error);

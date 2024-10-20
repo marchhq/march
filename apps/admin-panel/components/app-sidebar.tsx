@@ -1,12 +1,11 @@
 "use client";
 import { Calendar, Inbox, Search, Settings, Users2Icon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation"; // Import useRouter from Next.js
+import { usePathname } from "next/navigation"; 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,

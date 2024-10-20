@@ -48,7 +48,6 @@ const UserTable: React.FC<UserTableProps> = ({ users }) => {
             user.id === id ? { ...user, isVerified: newVerificationStatus } : user
           )
         );
-        console.log(`Updated verification status for user with id: ${id}`);
       }
     } catch (error) {
       console.error("Error updating verification status:", error);
