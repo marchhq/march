@@ -26,7 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
      return (
        <div className="overflow-x-auto">
          <Table className="min-w-full divide-y divide-gray-200">
-           <TableHeader className="bg-gray-50">
+           <TableHeader className="">
              <TableRow>
                <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</TableHead>
                <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</TableHead>
@@ -34,7 +34,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
                <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</TableHead>
              </TableRow>
            </TableHeader>
-           <TableBody className="bg-white divide-y divide-gray-200">
+           <TableBody className="0">
              {dummyUsers.map(user => (
                <TableRow key={user.id}>
                  <TableCell className="px-6 py-4 whitespace-nowrap">{user.name}</TableCell>
