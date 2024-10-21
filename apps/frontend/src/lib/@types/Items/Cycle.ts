@@ -34,6 +34,7 @@ export interface CycleItemStore {
   fetchThisWeek: (session: string) => Promise<void>
   fetchItem: (session: string, id: string) => Promise<void>
   fetchItemByDate: (session: string, date: string) => Promise<void>
+  fetchBlocksBySpaceId: (session: string, spaceId: string) => Promise<string[]>
   setCurrentItem: (item: CycleItem | null) => void
   createItem: (session: string, item: Partial<CycleItem>) => Promise<void>
   updateItem: (

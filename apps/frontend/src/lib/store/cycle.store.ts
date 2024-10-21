@@ -85,7 +85,27 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
       set({ error: errorMessage, isLoading: false })
     }
   },
-
+  fetchBlocksBySpaceId: async (session: string, spaceId: string) => {
+    set({ error: null })
+    try {
+      const { data } = await axios.get(
+        `${BACKEND_URL}/spaces/${spaceId}/blocks`,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      const blocks = data.blocks
+      return blocks
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+      set({ error: errorMessage })
+    }
+  },
   createItem: async (session: string, item: Partial<CycleItem>) => {
     set({ isLoading: true, error: null })
     try {

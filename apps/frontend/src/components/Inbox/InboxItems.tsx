@@ -35,6 +35,7 @@ export const InboxItems: React.FC = () => {
     currentItem,
     setCurrentItem,
     fetchItems,
+    fetchBlocksBySpaceId,
     updateItem,
     isLoading,
     deleteItem,
@@ -43,7 +44,6 @@ export const InboxItems: React.FC = () => {
   const { spaces, fetchSpaces } = useSpaceStore()
 
   const fetchInbox = useCallback(async () => {
-    console.log("Fetching inbox...")
     try {
       await fetchItems(session)
     } catch (error) {
@@ -62,11 +62,6 @@ export const InboxItems: React.FC = () => {
   }, [session, fetchSpaces, spaces])
 
   useEffect(() => {
-    console.log("Current Items:", items)
-  }, [items])
-
-  useEffect(() => {
-    console.log("date", date)
     if (date && scheduleItemId) {
       updateItem(session, { dueDate: date }, scheduleItemId)
     }
@@ -120,10 +115,21 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
-  const handleMoveToSpace = (item: CycleItem, spaceId: string) => {
+  const handleMoveToSpace = async (item: CycleItem, spaceId: string) => {
     if (item) {
       const existingSpaces = item.spaces || []
-      updateItem(session, { spaces: [...existingSpaces, spaceId] }, item._id)
+      const existingBlocks = item.blocks || []
+
+      const blocks = await fetchBlocksBySpaceId(session, spaceId)
+
+      updateItem(
+        session,
+        {
+          spaces: [...existingSpaces, spaceId],
+          blocks: [...existingBlocks, blocks[0]],
+        },
+        item._id
+      )
     }
   }
 
@@ -150,7 +156,6 @@ export const InboxItems: React.FC = () => {
   ]
 
   const filteredItems = items.filter((item) => item.status !== "done")
-  console.log("Filtered items:", filteredItems)
 
   return (
     <div className="flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
@@ -252,7 +257,6 @@ export const InboxItems: React.FC = () => {
                 <ContextMenuSubTrigger
                   onMouseEnter={() => {
                     setScheduleItemId(item._id)
-                    console.log("hover", item._id)
                   }}
                 >
                   <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
