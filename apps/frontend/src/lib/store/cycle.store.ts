@@ -16,7 +16,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
   },
   isLoading: false,
   error: null,
-
   fetchItems: async (session: string, date?: string) => {
     set({ isLoading: true, error: null })
     try {
@@ -111,7 +110,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
     updates: Partial<CycleItem>,
     id: string
   ) => {
-    set({ isLoading: true, error: null })
     try {
       const { data } = await api.put(`/api/inbox/${id}`, updates, {
         headers: { Authorization: `Bearer ${session}` },
@@ -133,17 +131,15 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
           return {
             items: updatedItems,
             currentItem: updatedCurrentItem,
-            isLoading: false,
           }
         }
-        return { ...state, isLoading: false }
+        return { ...state }
       })
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
           : "An unknown error occurred"
-      set({ error: errorMessage, isLoading: false })
     }
   },
   deleteItem: async (
@@ -151,7 +147,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
     updates: Partial<CycleItem>,
     id: string
   ) => {
-    set({ isLoading: true, error: null })
     try {
       set((state) => {
         const index = state.items.findIndex((item) => item._id === id)
@@ -160,7 +155,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
         }
         return {
           items: state.items,
-          isLoading: false,
         }
       })
       await api.put(`/api/inbox/${id}`, updates, {
@@ -171,7 +165,6 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
           : "An unknown error occurred"
-      set({ error: errorMessage, isLoading: false })
     }
   },
 }))

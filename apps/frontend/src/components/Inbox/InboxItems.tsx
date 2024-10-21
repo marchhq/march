@@ -18,6 +18,8 @@ import {
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import useSpaceStore from "@/src/lib/store/space.store"
+import classNames from "@/src/utils/classNames"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -38,6 +40,8 @@ export const InboxItems: React.FC = () => {
     deleteItem,
   } = useCycleItemStore()
 
+  const { spaces, fetchSpaces } = useSpaceStore()
+
   const fetchInbox = useCallback(async () => {
     console.log("Fetching inbox...")
     try {
@@ -50,6 +54,12 @@ export const InboxItems: React.FC = () => {
   useEffect(() => {
     fetchInbox()
   }, [fetchInbox])
+
+  useEffect(() => {
+    if (spaces.length == 0) {
+      fetchSpaces(session)
+    }
+  }, [session, fetchSpaces, spaces])
 
   useEffect(() => {
     console.log("Current Items:", items)
@@ -110,6 +120,13 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
+  const handleMoveToSpace = (item: CycleItem, spaceId: string) => {
+    if (item) {
+      const existingSpaces = item.spaces || []
+      updateItem(session, { spaces: [...existingSpaces, spaceId] }, item._id)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
@@ -129,18 +146,6 @@ export const InboxItems: React.FC = () => {
       icon: "material-symbols:done",
       onClick: (event: React.MouseEvent) =>
         handleDone(event, item._id!, item.status),
-    },
-  ]
-
-  const subMenuItems = [
-    {
-      name: "Notes",
-    },
-    {
-      name: "Meetings",
-    },
-    {
-      name: "Reading List",
     },
   ]
 
@@ -277,13 +282,18 @@ export const InboxItems: React.FC = () => {
                     <p>move to</p>
                   </ContextMenuItem>
                   <div className="flex flex-col gap-1">
-                    {subMenuItems.map((subItem) => (
+                    {spaces.map((space) => (
                       <ContextMenuItem
-                        key={subItem.name}
-                        className="hover-bg cursor-pointer"
+                        key={space._id}
+                        className={classNames(
+                          "hover-bg cursor-pointer border border-transparent",
+                          item.spaces.includes(space._id) &&
+                            "bg-background-hover border-border"
+                        )}
+                        onClick={() => handleMoveToSpace(item, space._id)}
                       >
                         <span className="my-1 flex w-full text-xs">
-                          {subItem.name}
+                          {space.name}
                         </span>
                       </ContextMenuItem>
                     ))}
