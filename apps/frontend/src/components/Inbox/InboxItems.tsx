@@ -258,7 +258,7 @@ export const InboxItems: React.FC = () => {
                     <span className="text-[15px]">Plan</span>
                   </div>
                 </ContextMenuSubTrigger>
-                <ContextMenuSubContent className="ml-2">
+                <ContextMenuSubContent className="mx-3">
                   <RescheduleCalendar date={date} setDate={setDate} />
                 </ContextMenuSubContent>
               </ContextMenuSub>
@@ -272,20 +272,22 @@ export const InboxItems: React.FC = () => {
                     <span className="text-[15px]">Move</span>
                   </div>
                 </ContextMenuSubTrigger>
-                <ContextMenuSubContent className="ml-2">
+                <ContextMenuSubContent className="ml-3 flex flex-col gap-2">
                   <ContextMenuItem className="pointer-events-none text-xs text-secondary-foreground">
                     <p>move to</p>
                   </ContextMenuItem>
-                  {subMenuItems.map((subItem) => (
-                    <ContextMenuItem
-                      key={subItem.name}
-                      className="hover-bg cursor-pointer"
-                    >
-                      <span className="my-1 flex w-full text-xs">
-                        {subItem.name}
-                      </span>
-                    </ContextMenuItem>
-                  ))}
+                  <div className="flex flex-col gap-1">
+                    {subMenuItems.map((subItem) => (
+                      <ContextMenuItem
+                        key={subItem.name}
+                        className="hover-bg cursor-pointer"
+                      >
+                        <span className="my-1 flex w-full text-xs">
+                          {subItem.name}
+                        </span>
+                      </ContextMenuItem>
+                    ))}
+                  </div>
                 </ContextMenuSubContent>
               </ContextMenuSub>
               <ContextMenuItem>
