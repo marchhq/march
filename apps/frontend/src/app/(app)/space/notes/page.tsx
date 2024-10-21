@@ -2,12 +2,14 @@
 
 import React, { useEffect, useCallback } from "react"
 
+import { useRouter } from "next/navigation"
+
 import { useAuth } from "@/src/contexts/AuthContext"
-import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
 
 const NotesPage: React.FC = () => {
   const { session } = useAuth()
+  const router = useRouter()
   const { notes, addNote, latestNote, fetchNotes, setIsFetched, isFetched } =
     useNotesStore()
 
@@ -28,20 +30,20 @@ const NotesPage: React.FC = () => {
 
   useEffect(() => {
     if (latestNote) {
-      redirectNote(latestNote._id)
+      router.push(`/space/notes/${latestNote._id}`)
     }
-  }, [latestNote])
+  }, [latestNote, router])
 
   const addNewNote = useCallback(async (): Promise<void> => {
     try {
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
-        redirectNote(newNote._id)
+        router.push(`/space/notes/${newNote._id}`)
       }
     } catch (error) {
       console.error(error)
     }
-  }, [session, addNote])
+  }, [session, addNote, router])
 
   useEffect(() => {
     if (notes.length === 0) {
