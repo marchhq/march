@@ -63,11 +63,14 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
 
   fetchMeets: async (session: string) => {
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/overview`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
+      const { data } = await axios.get(
+        `${BACKEND_URL}/spaces/meetings/overview`,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
       const response = data as GetMeetResponse
       set((state: MeetsStoreType) => ({
         ...state,
@@ -82,7 +85,7 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
   fetchUpcomingMeets: async (session: string) => {
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/api/meetings/upcomings/`,
+        `${BACKEND_URL}/spaces/meetings/upcomings/`,
         {
           headers: {
             Authorization: `Bearer ${session}`,
@@ -120,7 +123,7 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
     let meet: Meet | null = null
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/api/meetings/recent-upcoming-meeting/`,
+        `${BACKEND_URL}/spaces/meetings/recent-upcoming-meeting/`,
         {
           headers: {
             Authorization: `Bearer ${session}`,
