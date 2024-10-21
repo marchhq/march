@@ -164,7 +164,7 @@ const getUserItemsByDateController = async (req, res, next) => {
         const { date } = req.params;
         const items = await getUserItemsByDate(me, date);
         res.json({
-            items
+            response: items
         });
     } catch (err) {
         next(err);
