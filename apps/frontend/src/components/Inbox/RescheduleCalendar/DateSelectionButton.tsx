@@ -11,7 +11,7 @@ export default function DateSelectionButton({
 }) {
   return (
     <button
-      className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-lg p-2 hover:bg-secondary-foreground hover:text-primary"
+      className="hover-bg hover-text flex w-full cursor-pointer items-center justify-between gap-4 rounded-lg p-2"
       onClick={onClick}
     >
       <span className="flex items-center gap-2">
