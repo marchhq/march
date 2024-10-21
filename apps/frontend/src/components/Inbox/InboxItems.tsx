@@ -233,12 +233,12 @@ export const InboxItems: React.FC = () => {
                 </div>
               </div>
             </ContextMenuTrigger>
-            <ContextMenuContent className="rounded-md border border-border ">
+            <ContextMenuContent className="border border-border ">
               {menuItems(item).map((menuItem) => (
                 <div key={menuItem.name}>
                   <ContextMenuItem>
                     <button
-                      className="my-1 flex w-full items-center gap-3"
+                      className="my-1 flex w-full gap-4"
                       onClick={menuItem.onClick}
                     >
                       <Icon
@@ -259,7 +259,7 @@ export const InboxItems: React.FC = () => {
                     setScheduleItemId(item._id)
                   }}
                 >
-                  <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
+                  <div className="my-1 flex w-full items-center gap-4 text-primary-foreground">
                     <Icon
                       icon="humbleicons:clock"
                       className="text-[18px] text-secondary-foreground"
@@ -267,13 +267,13 @@ export const InboxItems: React.FC = () => {
                     <span className="text-[15px]">Plan</span>
                   </div>
                 </ContextMenuSubTrigger>
-                <ContextMenuSubContent className="mx-3">
+                <ContextMenuSubContent className="mx-5">
                   <RescheduleCalendar date={date} setDate={setDate} />
                 </ContextMenuSubContent>
               </ContextMenuSub>
               <ContextMenuSub>
                 <ContextMenuSubTrigger>
-                  <div className="my-1 flex w-full items-center gap-3 text-primary-foreground">
+                  <div className="my-1 flex w-full items-center gap-4 text-primary-foreground">
                     <Icon
                       icon="hugeicons:move"
                       className="text-[18px] text-secondary-foreground"
@@ -281,7 +281,7 @@ export const InboxItems: React.FC = () => {
                     <span className="text-[15px]">Move</span>
                   </div>
                 </ContextMenuSubTrigger>
-                <ContextMenuSubContent className="ml-3 flex flex-col gap-2">
+                <ContextMenuSubContent className="mx-5 flex flex-col gap-2">
                   <ContextMenuItem className="pointer-events-none text-xs text-secondary-foreground">
                     <p>move to</p>
                   </ContextMenuItem>
@@ -306,7 +306,7 @@ export const InboxItems: React.FC = () => {
               </ContextMenuSub>
               <ContextMenuItem>
                 <button
-                  className="my-1 flex w-full items-center gap-3 text-primary-foreground"
+                  className="my-1 flex w-full items-center gap-4 text-primary-foreground"
                   onClick={() => handleDelete(item._id!)}
                 >
                   <Icon
