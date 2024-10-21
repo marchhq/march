@@ -23,7 +23,6 @@ export default function Meetings() {
         const meet: Meet | null = await fetchLatestMeet(session)
         if (meet && meet._id) {
           router.push(`/space/meetings/${meet._id}`)
-          console.log("meet: ", meet)
         } else {
           setLoading(false)
           console.log("no meetings")
