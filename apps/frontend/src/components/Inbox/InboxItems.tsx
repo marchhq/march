@@ -56,6 +56,10 @@ export const InboxItems: React.FC = () => {
   }, [fetchInbox])
 
   useEffect(() => {
+    console.log("items", items)
+  }, [items])
+
+  useEffect(() => {
     if (spaces.length == 0) {
       fetchSpaces(session)
     }

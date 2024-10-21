@@ -107,22 +107,50 @@ export const useCycleItemStore = create<CycleItemStore>((set, get) => ({
     }
   },
   createItem: async (session: string, item: Partial<CycleItem>) => {
-    set({ isLoading: true, error: null })
+    set({ error: null })
     try {
+      const itemPreview = {
+        _id: "item-preview",
+        title: item.title,
+        description: item.description,
+        spaces: [],
+        blocks: [],
+      }
+      set((state: any) => ({
+        items: [itemPreview, ...state.items],
+      }))
       const { data } = await api.post("/api/inbox", item, {
         headers: { Authorization: `Bearer ${session}` },
       })
-      set((state) => ({
-        items: [data.response, ...state.items],
-        isLoading: false,
-      }))
+      set((state) => {
+        const updatedItems = state.items.map((item) =>
+          item._id === "item-preview" ? { ...item, ...data.response } : item
+        )
+        const updatedCurrentItem =
+          state.currentItem?._id === "item-preview"
+            ? { ...state.currentItem, ...data.response }
+            : state.currentItem
+
+        if (
+          JSON.stringify(updatedItems) !== JSON.stringify(state.items) ||
+          JSON.stringify(updatedCurrentItem) !==
+            JSON.stringify(state.currentItem)
+        ) {
+          return {
+            items: updatedItems,
+            currentItem: updatedCurrentItem,
+          }
+        }
+        return { ...state }
+      })
+
       return data.response
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
           : "An unknown error occurred"
-      set({ error: errorMessage, isLoading: false })
+      set({ error: errorMessage })
     }
   },
   updateItem: async (

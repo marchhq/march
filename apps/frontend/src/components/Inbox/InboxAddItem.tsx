@@ -47,11 +47,11 @@ export const InboxAddItem: React.FC = () => {
         title,
       }
 
-      await createItem(session, data)
-
       setAddingItem(false)
       setTitle("")
       setDescription("")
+
+      await createItem(session, data)
     } catch (error) {
       console.error("error adding item to inbox:", error)
     }
