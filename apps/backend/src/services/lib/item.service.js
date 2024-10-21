@@ -1,5 +1,4 @@
 import { Item } from "../../models/lib/item.model.js";
-import moment from 'moment-timezone';
 import { getLabelByName } from "./label.service.js";
 
 const getInboxItems = async (me) => {
@@ -82,7 +81,9 @@ const getUserTodayItems = async (me) => {
 }
 
 const getUserOverdueItems = async (me) => {
-    const startOfDay = moment().startOf('day');
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     const items = await Item.find({
         user: me,
         dueDate: { $lt: startOfDay },
