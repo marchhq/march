@@ -282,7 +282,7 @@ export const InboxItems: React.FC = () => {
                   </div>
                 </ContextMenuSubTrigger>
                 <ContextMenuSubContent className="mx-5 flex flex-col gap-2">
-                  <ContextMenuItem className="pointer-events-none text-xs text-secondary-foreground">
+                  <ContextMenuItem className="pointer-events-none py-0.5 text-xs text-secondary-foreground">
                     <p>move to</p>
                   </ContextMenuItem>
                   <div className="flex flex-col gap-1">
@@ -290,7 +290,7 @@ export const InboxItems: React.FC = () => {
                       <ContextMenuItem
                         key={space._id}
                         className={classNames(
-                          "hover-bg cursor-pointer border border-transparent",
+                          "py-0.5 hover-bg cursor-pointer border border-transparent",
                           item.spaces.includes(space._id) &&
                             "bg-background-hover border-border"
                         )}
