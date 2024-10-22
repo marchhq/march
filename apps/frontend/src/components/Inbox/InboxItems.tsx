@@ -22,13 +22,15 @@ export const InboxItems: React.FC = () => {
   )
 
   const {
-    items,
+    inbox,
     currentItem,
     setCurrentItem,
     fetchItems,
     updateItem,
     isLoading,
   } = useCycleItemStore()
+
+  const { items } = inbox
 
   const fetchInbox = useCallback(async () => {
     try {
