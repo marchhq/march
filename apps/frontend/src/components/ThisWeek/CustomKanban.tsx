@@ -139,7 +139,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`size-full max-h-[calc(100vh-300px)] overflow-y-auto`}
+        className={`no-scrollbar size-full max-h-[calc(100vh-300px)] overflow-y-auto`}
       >
         {items.map((item) => (
           <Card
