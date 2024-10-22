@@ -5,18 +5,19 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import { PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import TextEditor from "@/src/components/atoms/Editor"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Note } from "@/src/lib/@types/Items/Note"
-import { redirectNote } from "@/src/lib/server/actions/redirectNote"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
   const { session } = useAuth()
+  const router = useRouter()
   const {
     isFetched,
     setIsFetched,
@@ -138,7 +139,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
       setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
-        redirectNote(newNote._id)
+        router.push(`/space/notes/${newNote._id}`)
       }
     } catch (error) {
       console.error(error)
@@ -157,7 +158,7 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
             addNewNote()
             return
           }
-          redirectNote(remainingNotes[0]._id)
+          router.push(`/space/notes/${remainingNotes[0]._id}`)
         }
       } catch (error) {
         console.error(error)

@@ -18,7 +18,9 @@ export const CustomKanban = () => {
 }
 
 const Board = () => {
-  const { items, fetchThisWeek, updateItem } = useCycleItemStore()
+  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+  const { items } = thisWeek
+
   const { session } = useAuth()
 
   useEffect(() => {
@@ -137,7 +139,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`size-full max-h-[calc(100vh-300px)] overflow-y-auto`}
+        className={`no-scrollbar size-full max-h-[calc(100vh-300px)] overflow-y-auto`}
       >
         {items.map((item) => (
           <Card
