@@ -18,7 +18,8 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   const [optimisticItems, setOptimisticItems] = useState<CycleItem[]>([])
   const { session } = useAuth()
 
-  const { items, isLoading, fetchItems, updateItem } = useCycleItemStore()
+  const { today, isLoading, fetchItems, updateItem } = useCycleItemStore()
+  const { items } = today
 
   useEffect(() => {
     const date = getTodayISODate(selectedDate)
