@@ -6,6 +6,7 @@ import { Icon } from "@iconify-icon/react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const InboxExpandedItem: React.FC = () => {
@@ -124,7 +125,7 @@ export const InboxExpandedItem: React.FC = () => {
   }
 
   return (
-    <div className="flex-auto">
+    <div className={classNames(currentItem ? "flex-auto" : "invisible")}>
       {currentItem && (
         <div
           ref={divRef}

@@ -25,7 +25,7 @@ export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set())
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [scheduleItemId, setScheduleItemId] = React.useState<string>("")
+  const [scheduleItemId, setScheduleItemId] = useState<string>("")
   const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
     new Set()
   )
@@ -54,10 +54,6 @@ export const InboxItems: React.FC = () => {
   useEffect(() => {
     fetchInbox()
   }, [fetchInbox])
-
-  useEffect(() => {
-    console.log("items", items)
-  }, [items])
 
   useEffect(() => {
     if (spaces.length == 0) {
@@ -216,18 +212,41 @@ export const InboxItems: React.FC = () => {
                       </button>
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
+                        <button className="group/reschedule invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="humbleicons:clock"
-                            className="mt-0.5 text-[18px]"
+                            className="mt-0.5 text-[18px] group-hover/reschedule:text-foreground"
                           />
+                          <div className="invisible fixed z-50 flex min-w-32 flex-col gap-2 overflow-hidden rounded-lg border border-border bg-background p-2 text-neutral-950 shadow-md group-hover/reschedule:visible data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+                            <RescheduleCalendar date={date} setDate={setDate} />
+                          </div>
                         </button>
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
+                        <div className="group/move invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
-                            icon="mingcute:move-line"
-                            className="mt-0.5 text-[18px]"
+                            icon="hugeicons:move"
+                            className="mt-0.5 text-[18px] group-hover/move:text-foreground"
                           />
-                        </button>
+                          <div className="invisible fixed z-50 flex min-w-32 flex-col gap-2 overflow-hidden rounded-lg border border-border bg-background p-2 text-neutral-950 shadow-md group-hover/move:visible data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+                            {spaces.map((space) => (
+                              <button
+                                key={space._id}
+                                className={classNames(
+                                  "py-0.5 hover-bg cursor-pointer border hover-bg relative flex select-none items-start rounded-lg px-2 text-sm text-primary-foreground outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                                  item.spaces.includes(space._id)
+                                    ? "bg-background-hover border-border"
+                                    : "border-transparent"
+                                )}
+                                onClick={() =>
+                                  handleMoveToSpace(item, space._id)
+                                }
+                              >
+                                <span className="my-1 flex w-full text-xs">
+                                  {space.name}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
