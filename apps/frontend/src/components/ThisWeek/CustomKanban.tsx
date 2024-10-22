@@ -18,7 +18,9 @@ export const CustomKanban = () => {
 }
 
 const Board = () => {
-  const { items, fetchThisWeek, updateItem } = useCycleItemStore()
+  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+  const { items } = thisWeek
+
   const { session } = useAuth()
 
   useEffect(() => {
