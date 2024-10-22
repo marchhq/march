@@ -48,11 +48,17 @@ const NotesPage: React.FC = ({ params }: { params: { noteId: string } }) => {
     }
   }, [session, fetchNotes, setIsFetched])
 
+  /*
   useEffect(() => {
     if (!isFetched) {
       fetchTheNotes()
     }
   }, [fetchTheNotes, isFetched])
+  */
+
+  useEffect(() => {
+    fetchTheNotes()
+  }, [fetchTheNotes])
 
   useEffect(() => {
     return () => {
