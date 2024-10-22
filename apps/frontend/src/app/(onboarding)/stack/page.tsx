@@ -5,11 +5,15 @@ import { Icon } from "@iconify-icon/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-import { Integrations } from "@/src/components/atoms/Integrations"
+import Integrations from "@/src/components/profile/Integrations"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useUserStore from "@/src/lib/store/user.store"
 import Loader from "@/src/lib/icons/Loader"
 
 const StackConnect: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPageLoading, setIsLoading] = useState(false)
+  const { session } = useAuth()
+  const { user, error, isLoading, fetchUser } = useUserStore()
   const router = useRouter()
 
   useEffect(() => {
@@ -18,6 +22,15 @@ const StackConnect: React.FC = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (session) {
+      fetchUser(session)
+    }
+  }, [session, fetchUser])
+
+  if (error) return <div className="text-red-500">{error}</div>
+  if (!user) return <div>User not found</div>
+
   const handleContinue = () => {
     setIsLoading(true)
     setTimeout(() => {
@@ -25,7 +38,7 @@ const StackConnect: React.FC = () => {
     }, 1500)
   }
 
-  if (isLoading) {
+  if (isPageLoading || isLoading) {
     return (
       <div className="z-10 flex  h-full items-center justify-center">
         <Loader />
@@ -34,16 +47,10 @@ const StackConnect: React.FC = () => {
   }
 
   return (
-    <main className="flex h-full flex-col items-center justify-between">
-      <div className="flex size-full flex-col items-center justify-center gap-12 pb-12">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <div className="flex items-center justify-center p-2">
-            <Icon icon="uil:circuit" className="text-[50px]" />
-          </div>
-          <h2 className="text-3xl font-bold">Connect Your Stack</h2>
-        </div>
-        <div className="flex flex-col gap-8 text-base font-medium text-secondary-foreground">
-          <Integrations />
+    <main className="flex h-full flex-col items-center">
+      <div className="flex size-full flex-col items-center justify-center gap-12 pb-4">
+        <div className="flex flex-col gap-2 text-base font-medium text-secondary-foreground">
+          <Integrations user={user} />
           <div className="flex w-full flex-col items-center text-base">
             <button
               onClick={handleContinue}
