@@ -123,14 +123,33 @@ export const InboxItems: React.FC = () => {
 
       const blocks = await fetchBlocksBySpaceId(session, spaceId)
 
-      updateItem(
-        session,
-        {
-          spaces: [...existingSpaces, spaceId],
-          blocks: [...existingBlocks, blocks[0]],
-        },
-        item._id
-      )
+      if (existingSpaces.includes(spaceId)) {
+        const spaceIndex = existingSpaces.findIndex((id) => id === spaceId)
+        if (spaceIndex !== -1) {
+          existingSpaces.splice(spaceIndex, 1)
+        }
+        const blockIndex = existingBlocks.findIndex((id) => id === blocks[0])
+        if (blockIndex !== -1) {
+          existingBlocks.splice(blockIndex, 1)
+        }
+        updateItem(
+          session,
+          {
+            spaces: [...existingSpaces],
+            blocks: [...existingBlocks],
+          },
+          item._id
+        )
+      } else {
+        updateItem(
+          session,
+          {
+            spaces: [...existingSpaces, spaceId],
+            blocks: [...existingBlocks, blocks[0]],
+          },
+          item._id
+        )
+      }
     }
   }
 
