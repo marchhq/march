@@ -15,7 +15,7 @@ const Waitlist = (props: Props) => {
     alt='March Logo'
     /> */}
     <LogoDark/>
-    <h3 className='text-sm'>your flight to mars has been confirmed.</h3>
+    <h3 className='text-base'>your flight to mars is confirmed.</h3>
     <p className='ml-20 text-base text-secondary-foreground'> — we’ll get back to you soon;</p>
     </div>
 
