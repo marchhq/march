@@ -110,8 +110,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 //   }
 
 //   // redirect domain based on the current environment
-//   const isLocal = request.nextUrl.hostname.includes("localhost")
-//   const redirectDomain = "https://app.march.cat"
+// const isLocal = request.nextUrl.hostname.includes("localhost")
+// const redirectDomain = "https://app.march.cat"
 
 //   const response = NextResponse.redirect(
 //     new URL(res.isNewUser ? "/calendar" : "/today", redirectDomain)
