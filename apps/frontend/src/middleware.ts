@@ -56,6 +56,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
    return NextResponse.next()
   }
 
+  if(result && result.isValidUser && result.userVerification && path.includes('waitlist')){
+    return NextResponse.redirect(new URL("/today", request.url));
+  }
+
   // If valid user with no verification, send them to /waitlist
   if(result && result.isValidUser && !result.userVerification){
     return NextResponse.redirect(new URL('/waitlist', request.url))
