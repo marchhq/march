@@ -290,37 +290,73 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     updates: Partial<CycleItem>,
     id: string
   ) => {
-    set({ isLoading: true, error: null })
+    set((state) => {
+      const updateItemsInView = (items: CycleItem[], isOverdue = false) => {
+        // Only filter out done items from overdue list
+        if (isOverdue && updates.status === "done") {
+          return items.filter((item) => item._id !== id)
+        }
+
+        // For all other lists, just update the item
+        return items.map((item) =>
+          item._id === id ? { ...item, ...updates } : item
+        )
+      }
+
+      return {
+        inbox: { ...state.inbox, items: updateItemsInView(state.inbox.items) },
+        today: { ...state.today, items: updateItemsInView(state.today.items) }, // No filtering
+        overdue: {
+          ...state.overdue,
+          items: updateItemsInView(state.overdue.items, true),
+        }, // Only filter overdue
+        thisWeek: {
+          ...state.thisWeek,
+          items: updateItemsInView(state.thisWeek.items),
+        },
+        items: updateItemsInView(state.items),
+        currentItem:
+          state.currentItem?._id === id
+            ? { ...state.currentItem, ...updates }
+            : state.currentItem,
+      }
+    })
+
     try {
       const { data } = await api.put(`/api/inbox/${id}`, updates, {
         headers: { Authorization: `Bearer ${session}` },
       })
 
+      // Update with server response
       set((state) => {
         const updateItemsInView = (items: CycleItem[]) =>
           items.map((item) =>
             item._id === id ? { ...item, ...data.response } : item
           )
 
-        const updatedInbox = updateItemsInView(state.inbox.items)
-        const updatedToday = updateItemsInView(state.today.items)
-        const updatedOverdue = updateItemsInView(state.overdue.items)
-        const updatedThisWeek = updateItemsInView(state.thisWeek.items)
-        const updatedItems = updateItemsInView(state.items)
-
-        const updatedCurrentItem =
-          state.currentItem?._id === id
-            ? { ...state.currentItem, ...data.response }
-            : state.currentItem
-
         return {
-          inbox: { ...state.inbox, items: updatedInbox },
-          today: { ...state.today, items: updatedToday },
-          overdue: { ...state.overdue, items: updatedOverdue },
-          thisWeek: { ...state.thisWeek, items: updatedThisWeek },
-          items: updatedItems,
-          currentItem: updatedCurrentItem,
-          isLoading: false,
+          inbox: {
+            ...state.inbox,
+            items: updateItemsInView(state.inbox.items),
+          },
+          today: {
+            ...state.today,
+            items: updateItemsInView(state.today.items),
+          },
+          overdue: {
+            ...state.overdue,
+            items: updateItemsInView(state.overdue.items),
+          },
+          thisWeek: {
+            ...state.thisWeek,
+            items: updateItemsInView(state.thisWeek.items),
+          },
+          items: updateItemsInView(state.items),
+          currentItem:
+            state.currentItem?._id === id
+              ? { ...state.currentItem, ...data.response }
+              : state.currentItem,
+          error: null,
         }
       })
     } catch (error) {
@@ -328,7 +364,12 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
           : "An unknown error occurred"
-      set({ error: errorMessage, isLoading: false })
+
+      set((state) => ({
+        ...state,
+        error: errorMessage,
+      }))
+      throw error
     }
   },
 }))
