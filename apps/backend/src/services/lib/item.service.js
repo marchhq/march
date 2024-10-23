@@ -1,5 +1,4 @@
 import { Item } from "../../models/lib/item.model.js";
-import moment from 'moment-timezone';
 import { getLabelByName } from "./label.service.js";
 
 const getInboxItems = async (me) => {
@@ -69,18 +68,22 @@ const getAllitems = async (me) => {
 }
 
 const getUserTodayItems = async (me) => {
-    // const today = new Date();
-    const startOfDay = moment().startOf('day');
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lt: moment().endOf('day') }
-    })
+        dueDate: { $gte: startOfDay, $lt: endOfDay }
+    });
 
     return items;
 }
 
 const getUserOverdueItems = async (me) => {
-    const startOfDay = moment().startOf('day');
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     const items = await Item.find({
         user: me,
         dueDate: { $lt: startOfDay },
@@ -97,6 +100,18 @@ const getUserItemsByDate = async (me, date) => {
     const items = await Item.find({
         user: me,
         dueDate: date,
+        isArchived: false,
+        isDeleted: false
+    })
+        .sort({ createdAt: -1 });
+
+    return items;
+}
+
+const getOverdueItemsByDate = async (me, date) => {
+    const items = await Item.find({
+        user: me,
+        dueDate: { $lt: date },
         isArchived: false,
         isDeleted: false
     })
@@ -317,6 +332,7 @@ export {
     getItem,
     getUserOverdueItems,
     getUserItemsByDate,
+    getOverdueItemsByDate,
     moveItemtoDate,
     getUserTodayItems,
     getAllitems,

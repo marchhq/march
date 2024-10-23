@@ -22,7 +22,7 @@ export const InboxItems: React.FC = () => {
   )
 
   const {
-    items,
+    inbox,
     currentItem,
     setCurrentItem,
     fetchItems,
@@ -30,8 +30,9 @@ export const InboxItems: React.FC = () => {
     isLoading,
   } = useCycleItemStore()
 
+  const { items } = inbox
+
   const fetchInbox = useCallback(async () => {
-    console.log("Fetching inbox...")
     try {
       await fetchItems(session)
     } catch (error) {
@@ -43,9 +44,7 @@ export const InboxItems: React.FC = () => {
     fetchInbox()
   }, [fetchInbox])
 
-  useEffect(() => {
-    console.log("Current Items:", items)
-  }, [items])
+  useEffect(() => {}, [items])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
@@ -130,10 +129,9 @@ export const InboxItems: React.FC = () => {
   ]
 
   const filteredItems = items.filter((item) => item.status !== "done")
-  console.log("Filtered items:", filteredItems)
 
   return (
-    <div className="flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
+    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
       {filteredItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (
@@ -162,6 +160,7 @@ export const InboxItems: React.FC = () => {
                   WebkitTapHighlightColor: "transparent",
                   outline: "none",
                 }}
+                data-item-id={item._id}
               >
                 <div className="flex w-full flex-col truncate">
                   <div className="flex justify-between text-foreground">

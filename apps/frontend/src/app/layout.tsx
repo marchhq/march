@@ -1,7 +1,6 @@
 import * as React from "react"
 
 import type { Viewport } from "next"
-import NextTopLoader from "nextjs-toploader"
 
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
@@ -51,7 +50,6 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
         >
-          <NextTopLoader showSpinner={false} color={"#7B7B7B"} />
           {children}
         </GoogleOAuthProvider>
       </body>
