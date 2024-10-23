@@ -84,7 +84,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {optimisticTodayItems.length > 0 && (
         <ul className="space-y-2">
           {optimisticTodayItems.map((item) => (
@@ -99,17 +99,15 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
         </ul>
       )}
 
-      <ul className="space-y-2">
-        {optimisticOverdueItems.map((item) => (
-          <React.Fragment key={item._id}>
-            <DropdownItem
-              item={item}
-              onToggleComplete={(item) => handleToggleComplete(item, false)}
-              isOverdue={true}
-            />
-          </React.Fragment>
-        ))}
-      </ul>
+      {optimisticOverdueItems.map((item) => (
+        <React.Fragment key={item._id}>
+          <DropdownItem
+            item={item}
+            onToggleComplete={(item) => handleToggleComplete(item, false)}
+            isOverdue={true}
+          />
+        </React.Fragment>
+      ))}
     </div>
   )
 }

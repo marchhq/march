@@ -15,6 +15,7 @@ import { CycleItem } from "../lib/@types/Items/Cycle"
 import { Box, CheckedBox } from "../lib/icons/Box"
 import { LinearDark } from "../lib/icons/LinearCircle"
 import { Link } from "../lib/icons/Link"
+import { getOverdueText } from "../utils/datetime"
 
 interface DropdownItemProps {
   item: CycleItem
@@ -54,10 +55,6 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   onToggleComplete,
   isOverdue,
 }) => {
-  const getOverdueText = () => {
-    return "overdue"
-  }
-
   return (
     <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
@@ -87,7 +84,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
               <TooltipTrigger>
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
-              <TooltipContent>{getOverdueText()}</TooltipContent>
+              <TooltipContent>{getOverdueText(item.dueDate)}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
