@@ -5,16 +5,19 @@ import {
   GOOGLECALENDAR_ACCESS_TOKEN,
   GOOGLECALENDAR_REFRESH_TOKEN,
 } from "@/src/lib/constants/cookie"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
+import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get("code")
   const state = searchParams.get("state")
+  const redirectDomain = FRONTEND_URL
 
   if (!code) {
     console.error("No code received from Google Calendar")
-    return NextResponse.redirect(new URL("/login?error=no_code", request.url))
+    return NextResponse.redirect(
+      new URL("/login?error=no_code", redirectDomain)
+    )
   }
 
   const cookies = request.cookies
@@ -43,7 +46,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const res = NextResponse.redirect(new URL(redirectUrl, request.url))
+    const res = NextResponse.redirect(new URL(redirectUrl, redirectDomain))
     res.cookies.set(GOOGLECALENDAR_ACCESS_TOKEN, accessToken, {
       httpOnly: true,
       secure: true,
@@ -65,7 +68,7 @@ export async function GET(request: NextRequest) {
       console.error("Axios error details:", error.response?.data)
     }
     return NextResponse.redirect(
-      new URL("/login?error=calendar_authentication_failed", request.url)
+      new URL("/login?error=calendar_authentication_failed", redirectDomain)
     )
   }
 }
