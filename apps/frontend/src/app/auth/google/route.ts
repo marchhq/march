@@ -4,11 +4,20 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { type GoogleAuthResponse } from "@/src/lib/@types/auth/response"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/src/lib/constants/cookie"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
+// import { BACKEND_URL } from "@/src/lib/constants/urls"
+import { APP_ENV, BACKEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams
   const encodedCode = searchParams.get("code")
+
+  if (
+    APP_ENV === "production" &&
+    request.nextUrl.hostname.includes("localhost")
+  ) {
+    const appDomain = "https://alpha.march.cat/"
+    return NextResponse.redirect(new URL(appDomain, request.url))
+  }
   if (encodedCode == null) {
     return NextResponse.redirect(new URL("/", request.url))
   }
@@ -41,12 +50,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL("/", request.url))
   }
 
-  // const response = NextResponse.redirect(
-  //   new URL(res.isNewUser ? "/calendar" : "/today", request.url)
-  // )
   const response = NextResponse.redirect(
-    new URL(res.isNewUser ? "/calendar" : "/today", request.nextUrl.origin)
+    new URL(res.isNewUser ? "/calendar" : "/today", request.url)
   )
+  // const response = NextResponse.redirect(
+  //   new URL(res.isNewUser ? "/calendar" : "/today", request.nextUrl.origin)
+  // )
 
   response.cookies.set(ACCESS_TOKEN, res.accessToken, {
     maxAge: 60 * 60 * 24 * 30, // 30 days
