@@ -28,8 +28,8 @@ const StackConnect: React.FC = () => {
     }
   }, [session, fetchUser])
 
-  if (error) return <div className="text-red-500">{error}</div>
-  if (!user) return <div>User not found</div>
+  if (error) return <div className="text-red-500">Failed to fetch user data: {error}</div>
+  if (!user) return <div className="text-primary-foreground">User not found</div>
 
   const handleContinue = () => {
     setIsLoading(true)
