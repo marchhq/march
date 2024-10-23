@@ -11,7 +11,7 @@ import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
 export const CustomKanban = () => {
   return (
-    <div className="size-full">
+    <div className="h-full w-[calc(100%-100px)]">
       <Board />
     </div>
   )
