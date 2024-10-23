@@ -21,7 +21,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   const [optimisticOverdueItems, setOptimisticOverdueItems] = useState<
     CycleItem[]
   >([])
-
   const { session } = useAuth()
   const { today, overdue, isLoading, fetchToday, fetchOverdue, updateItem } =
     useCycleItemStore()
@@ -32,7 +31,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     const date = getTodayISODate(selectedDate)
     fetchToday(session, date)
     fetchOverdue(session, date)
-  }, [session, fetchToday, fetchOverdue, selectedDate])
+  }, [session, selectedDate])
 
   useEffect(() => {
     setOptimisticTodayItems(todayItems)
@@ -42,20 +41,8 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     setOptimisticOverdueItems(overdueItems)
   }, [overdueItems])
 
-  const handleToggleComplete = async (item: CycleItem, isOverdue: boolean) => {
+  const handleToggleComplete = async (item: CycleItem) => {
     const newStatus = item.status === "done" ? "todo" : "done"
-
-    if (isOverdue) {
-      const updatedItems = optimisticOverdueItems.map((i) =>
-        i._id === item._id ? { ...i, status: newStatus } : i
-      )
-      setOptimisticOverdueItems(updatedItems)
-    } else {
-      const updatedItems = optimisticTodayItems.map((i) =>
-        i._id === item._id ? { ...i, status: newStatus } : i
-      )
-      setOptimisticTodayItems(updatedItems)
-    }
 
     try {
       await updateItem(
@@ -67,11 +54,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
       )
     } catch (error) {
       console.error("Error updating item:", error)
-      if (isOverdue) {
-        setOptimisticOverdueItems(overdueItems)
-      } else {
-        setOptimisticTodayItems(todayItems)
-      }
+      // Error handling is now managed by the store
     }
   }
 
@@ -91,23 +74,26 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             <React.Fragment key={item._id}>
               <DropdownItem
                 item={item}
-                onToggleComplete={(item) => handleToggleComplete(item, true)}
+                onToggleComplete={(item) => handleToggleComplete(item, false)}
                 isOverdue={false}
               />
             </React.Fragment>
           ))}
         </ul>
       )}
-
-      {optimisticOverdueItems.map((item) => (
-        <React.Fragment key={item._id}>
-          <DropdownItem
-            item={item}
-            onToggleComplete={(item) => handleToggleComplete(item, false)}
-            isOverdue={true}
-          />
-        </React.Fragment>
-      ))}
+      {optimisticOverdueItems.length > 0 && (
+        <ul className="space-y-2">
+          {optimisticOverdueItems.map((item) => (
+            <React.Fragment key={item._id}>
+              <DropdownItem
+                item={item}
+                onToggleComplete={(item) => handleToggleComplete(item, true)}
+                isOverdue={true}
+              />
+            </React.Fragment>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
