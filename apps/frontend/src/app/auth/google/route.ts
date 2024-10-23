@@ -1,14 +1,22 @@
 import axios, { type AxiosError } from "axios"
-import { cookies } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { type GoogleAuthResponse } from "@/src/lib/@types/auth/response"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/src/lib/constants/cookie"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
+import { APP_ENV, BACKEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams
   const encodedCode = searchParams.get("code")
+
+  if (
+    APP_ENV === "production" &&
+    request.nextUrl.hostname.includes("localhost")
+  ) {
+    const appDomain = "https://alpha.march.cat/"
+    return NextResponse.redirect(new URL(appDomain, request.url))
+  }
+
   if (encodedCode == null) {
     return NextResponse.redirect(new URL("/", request.url))
   }
