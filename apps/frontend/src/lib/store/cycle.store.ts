@@ -23,20 +23,19 @@ const initialViewState: ViewState = {
 interface ExtendedCycleItemStore extends CycleItemStore {
   inbox: ViewState
   today: ViewState
+  overdue: ViewState
   thisWeek: ViewState
   setViewItems: (
-    view: "inbox" | "today" | "thisWeek",
+    view: "inbox" | "today" | "overdue" | "thisWeek",
     items: CycleItem[]
   ) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
-  // Separate states for different views
   inbox: { ...initialViewState },
   today: { ...initialViewState },
+  overdue: { ...initialViewState },
   thisWeek: { ...initialViewState },
-
-  // Keep these for backward compatibility
   items: [],
   currentItem: null,
   isLoading: false,
@@ -48,8 +47,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
         ...state[view],
         items,
       },
-      // Keep the items array updated for backward compatibility
-      items,
+      items: view === "inbox" ? items : state.items,
     }))
   },
 
@@ -57,22 +55,20 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     set({ currentItem: item })
   },
 
-  fetchItems: async (session: string, date?: string) => {
-    const view = date ? "today" : "inbox"
+  fetchInbox: async (session: string) => {
     set((state) => ({
-      [view]: { ...state[view], isLoading: true, error: null },
+      inbox: { ...state.inbox, isLoading: true, error: null },
       isLoading: true,
       error: null,
     }))
 
     try {
-      const endpoint = date ? `/api/${date}` : "/api/inbox"
-      const { data } = await api.get(endpoint, {
+      const { data } = await api.get("/api/inbox", {
         headers: { Authorization: `Bearer ${session}` },
       })
 
       set((state) => ({
-        [view]: {
+        inbox: {
           items: data.response || [],
           isLoading: false,
           error: null,
@@ -87,8 +83,84 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
           : "An unknown error occurred"
 
       set((state) => ({
-        [view]: {
-          ...state[view],
+        inbox: {
+          ...state.inbox,
+          error: errorMessage,
+          isLoading: false,
+        },
+        error: errorMessage,
+        isLoading: false,
+      }))
+    }
+  },
+
+  fetchToday: async (session: string, date: string) => {
+    set((state) => ({
+      today: { ...state.today, isLoading: true, error: null },
+      isLoading: true,
+      error: null,
+    }))
+
+    try {
+      const { data } = await api.get(`/api/${date}`, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => ({
+        today: {
+          items: data.response.today || [],
+          isLoading: false,
+          error: null,
+        },
+        isLoading: false,
+      }))
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+
+      set((state) => ({
+        today: {
+          ...state.today,
+          error: errorMessage,
+          isLoading: false,
+        },
+        error: errorMessage,
+        isLoading: false,
+      }))
+    }
+  },
+
+  fetchOverdue: async (session: string, date: string) => {
+    set((state) => ({
+      overdue: { ...state.overdue, isLoading: true, error: null },
+      isLoading: true,
+      error: null,
+    }))
+
+    try {
+      const { data } = await api.get(`/api/${date}`, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => ({
+        overdue: {
+          items: data.response.overdue || [],
+          isLoading: false,
+          error: null,
+        },
+        isLoading: false,
+      }))
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+
+      set((state) => ({
+        overdue: {
+          ...state.overdue,
           error: errorMessage,
           isLoading: false,
         },
@@ -225,7 +297,6 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       })
 
       set((state) => {
-        // Update items in all views
         const updateItemsInView = (items: CycleItem[]) =>
           items.map((item) =>
             item._id === id ? { ...item, ...data.response } : item
@@ -233,6 +304,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
 
         const updatedInbox = updateItemsInView(state.inbox.items)
         const updatedToday = updateItemsInView(state.today.items)
+        const updatedOverdue = updateItemsInView(state.overdue.items)
         const updatedThisWeek = updateItemsInView(state.thisWeek.items)
         const updatedItems = updateItemsInView(state.items)
 
@@ -244,6 +316,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
         return {
           inbox: { ...state.inbox, items: updatedInbox },
           today: { ...state.today, items: updatedToday },
+          overdue: { ...state.overdue, items: updatedOverdue },
           thisWeek: { ...state.thisWeek, items: updatedThisWeek },
           items: updatedItems,
           currentItem: updatedCurrentItem,

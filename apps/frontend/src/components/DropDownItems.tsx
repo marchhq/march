@@ -1,3 +1,5 @@
+import { format } from "path"
+
 import React from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
@@ -50,7 +52,12 @@ const getSourceIcon = (source) => {
 export const DropdownItem: React.FC<DropdownItemProps> = ({
   item,
   onToggleComplete,
+  isOverdue,
 }) => {
+  const getOverdueText = () => {
+    return "overdue"
+  }
+
   return (
     <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
@@ -74,7 +81,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
         ) : (
           <span className="truncate">{item.title}</span>
         )}
-        {/*       {isOverdue && (
+        {isOverdue && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
@@ -83,7 +90,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
               <TooltipContent>{getOverdueText()}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )} */}
+        )}
       </li>
       <div className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <AddToSpace itemId={item._id} />
