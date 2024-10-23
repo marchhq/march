@@ -12,15 +12,11 @@ export const InboxAddItem: React.FC = () => {
   const { session } = useAuth()
 
   const [addingItem, setAddingItem] = useState(false)
+  const [itemSaved, setItemSaved] = useState(true)
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [selectedPages, setSelectedPages] = React.useState<string[]>([])
 
   const { createItem } = useCycleItemStore()
-
-  /* todo: fix texarea */
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -30,10 +26,15 @@ export const InboxAddItem: React.FC = () => {
     }
   }, [title])
 
-  const handleCloseAddItemToInbox = async () => {
+  const handleAddItem = () => {
+    if (itemSaved) {
+      setAddingItem(true)
+    }
+  }
+
+  const handleCloseAddItemToInbox = () => {
     setAddingItem(false)
     setTitle("")
-    setDescription("")
   }
 
   const handleAddItemToInbox = async () => {
@@ -42,6 +43,8 @@ export const InboxAddItem: React.FC = () => {
       return
     }
 
+    setItemSaved(false)
+
     try {
       const data: Partial<CycleItem> = {
         title,
@@ -49,9 +52,11 @@ export const InboxAddItem: React.FC = () => {
 
       setAddingItem(false)
       setTitle("")
-      setDescription("")
 
-      await createItem(session, data)
+      const response = await createItem(session, data)
+      if (response) {
+        setItemSaved(true)
+      }
     } catch (error) {
       console.error("error adding item to inbox:", error)
     }
@@ -91,10 +96,7 @@ export const InboxAddItem: React.FC = () => {
   return (
     <div className="flex flex-col">
       {!addingItem ? (
-        <button
-          className="hover-bg rounded-lg p-4"
-          onClick={() => setAddingItem(true)}
-        >
+        <button className="hover-bg rounded-lg p-4" onClick={handleAddItem}>
           <div className="flex items-center gap-2">
             <Icon icon="ic:round-plus" className="text-[18px]" />
             <p>Click to Add an Item</p>
@@ -111,6 +113,7 @@ export const InboxAddItem: React.FC = () => {
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
+            disabled={!itemSaved}
             rows={1}
           />
         </div>
