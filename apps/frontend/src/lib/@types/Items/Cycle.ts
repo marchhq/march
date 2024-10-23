@@ -5,7 +5,7 @@ export interface CycleItem {
   type: string
   source: string
   description: string
-  dueDate: Date | string
+  dueDate: Date | string | null
   status: string
   spaces: string[]
   blocks: string[]

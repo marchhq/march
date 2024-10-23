@@ -15,6 +15,7 @@ interface RescheduleCalendarProps {
   scheduleItemId: string
   setScheduleItemId: (date: string | null) => void
   icon?: React.ReactNode
+  [key: string]: any
 }
 
 export function RescheduleCalendar({
@@ -22,6 +23,7 @@ export function RescheduleCalendar({
   setDate,
   scheduleItemId,
   setScheduleItemId,
+  ...props
 }: RescheduleCalendarProps) {
   const [noDate, setNoDateFlag] = React.useState<boolean>(false)
 
@@ -57,7 +59,10 @@ export function RescheduleCalendar({
       : "No Date Assigned"
 
   return (
-    <div className="flex flex-row-reverse overflow-hidden rounded-lg bg-background text-secondary-foreground">
+    <div
+      className="flex flex-row-reverse overflow-hidden rounded-lg bg-background text-secondary-foreground"
+      {...props}
+    >
       <div className="border-l border-border p-4 text-sm">
         <div className="mb-2 text-primary-foreground">
           Due Date:{" "}

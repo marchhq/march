@@ -5,17 +5,14 @@ import { Icon } from "@iconify-icon/react"
 import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
 import { InboxExpandedItem } from "@/src/components/Inbox/InboxExpandedItem"
 import { InboxItems } from "@/src/components/Inbox/InboxItems"
-import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 
 export const InboxPage: React.FC = () => {
-  const { items } = useCycleItemStore()
   return (
     <div className="flex h-full gap-8">
       <div
         className={classNames(
-          "flex h-full max-w-[800px] flex-col gap-8 text-sm",
-          items ? "w-1/2" : "w-full"
+          "flex size-full max-w-[800px] flex-col gap-8 text-sm z-50"
         )}
       >
         <header className="flex items-center gap-4 text-foreground">
