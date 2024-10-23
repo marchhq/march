@@ -15,7 +15,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     APP_ENV === "production" &&
     request.nextUrl.hostname.includes("localhost")
   ) {
-    const appDomain = "https://app.march.cat/"
+    const appDomain = "https://app.march.cat"
     return NextResponse.redirect(new URL(appDomain, request.url))
   }
   if (encodedCode == null) {
