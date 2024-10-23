@@ -108,6 +108,18 @@ const getUserItemsByDate = async (me, date) => {
     return items;
 }
 
+const getOverdueItemsByDate = async (me, date) => {
+    const items = await Item.find({
+        user: me,
+        dueDate: { $lt: date },
+        isArchived: false,
+        isDeleted: false
+    })
+        .sort({ createdAt: -1 });
+
+    return items;
+}
+
 const createItem = async (user, itemData, space, block) => {
     if (!space || !block) {
         const error = new Error("Space and block must be provided");
@@ -320,6 +332,7 @@ export {
     getItem,
     getUserOverdueItems,
     getUserItemsByDate,
+    getOverdueItemsByDate,
     moveItemtoDate,
     getUserTodayItems,
     getAllitems,
