@@ -215,7 +215,7 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
             if (!existingMeeting) {
                 const newMeeting = new Meeting({
                     title: meeting.summary,
-                    source: 'calender',
+                    source: 'calendar',
                     id: meeting.id,
                     user: userId,
                     metadata: {
@@ -302,7 +302,7 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
                 // Create new meeting
                 const newMeeting = new Meeting({
                     title: event.summary,
-                    source: 'calender',
+                    source: 'calendar',
                     id: event.id,
                     user: userId,
                     metadata: {
