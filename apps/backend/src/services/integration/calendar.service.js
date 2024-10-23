@@ -219,7 +219,6 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
                     user: userId,
                     metadata: {
                         status: meeting.status,
-                        description: meeting.description,
                         location: meeting.location,
                         attendees: meeting.attendees,
                         hangoutLink: meeting.hangoutLink,
@@ -287,7 +286,6 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
                 existingMeeting.title = event.summary;
                 existingMeeting.metadata = {
                     status: event.status,
-                    description: event.description,
                     location: event.location,
                     attendees: event.attendees,
                     hangoutLink: event.hangoutLink,
