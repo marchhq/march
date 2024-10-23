@@ -65,7 +65,7 @@ export const InboxItems: React.FC = () => {
     if (date && scheduleItemId) {
       updateItem(session, { dueDate: date }, scheduleItemId)
     }
-  }, [date, updateItem, session])
+  }, [date, updateItem, session, scheduleItemId])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
