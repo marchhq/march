@@ -10,29 +10,40 @@ import { Calendar } from "@/src/components/Inbox/RescheduleCalendar/Calendar"
 import DateSelectionButton from "@/src/components/Inbox/RescheduleCalendar/DateSelectionButton"
 
 interface RescheduleCalendarProps {
-  date: Date | undefined
-  setDate: (date: Date | undefined) => void
+  date: Date | null
+  setDate: (date: Date | null) => void
+  scheduleItemId: string
+  setScheduleItemId: (date: string | null) => void
   icon?: React.ReactNode
 }
 
-export function RescheduleCalendar({ date, setDate }: RescheduleCalendarProps) {
+export function RescheduleCalendar({
+  date,
+  setDate,
+  scheduleItemId,
+  setScheduleItemId,
+}: RescheduleCalendarProps) {
   const [noDate, setNoDateFlag] = React.useState<boolean>(false)
 
   const setToday = () => {
     setNoDateFlag(false)
     setDate(new Date())
+    setScheduleItemId(scheduleItemId)
   }
   const setTomorrow = () => {
     setNoDateFlag(false)
     setDate(addDays(new Date(), 1))
+    setScheduleItemId(scheduleItemId)
   }
   const setNextWeek = () => {
     setNoDateFlag(false)
     setDate(addDays(new Date(), 7))
+    setScheduleItemId(scheduleItemId)
   }
   const setNoDate = () => {
     setNoDateFlag(true)
-    setDate(undefined)
+    setDate(null)
+    setScheduleItemId(scheduleItemId)
   }
 
   const todayFormatted = format(new Date(), "eee")
@@ -85,6 +96,7 @@ export function RescheduleCalendar({ date, setDate }: RescheduleCalendarProps) {
         onSelect={(selectedDate) => {
           setNoDateFlag(false)
           setDate(selectedDate)
+          setScheduleItemId(scheduleItemId)
         }}
         initialFocus
       />

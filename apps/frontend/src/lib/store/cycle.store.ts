@@ -216,19 +216,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
         const updatedItems = state.items.map((item) =>
           item._id === "item-preview" ? { ...item, ...data.response } : item
         )
-        const updatedCurrentItem =
-          state.currentItem?._id === "item-preview"
-            ? { ...state.currentItem, ...data.response }
-            : state.currentItem
 
-        if (
-          JSON.stringify(updatedItems) !== JSON.stringify(state.items) ||
-          JSON.stringify(updatedCurrentItem) !==
-            JSON.stringify(state.currentItem)
-        ) {
+        if (JSON.stringify(updatedItems) !== JSON.stringify(state.items)) {
           return {
             items: updatedItems,
-            currentItem: updatedCurrentItem,
           }
         }
         set((state) => ({

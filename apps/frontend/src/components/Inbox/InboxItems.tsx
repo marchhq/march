@@ -25,7 +25,7 @@ export const InboxItems: React.FC = () => {
   const { session } = useAuth()
   const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set())
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [scheduleItemId, setScheduleItemId] = useState<string>("")
+  const [scheduleItemId, setScheduleItemId] = useState<string | null>(null)
   const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
     new Set()
   )
@@ -62,8 +62,9 @@ export const InboxItems: React.FC = () => {
   }, [session, fetchSpaces, spaces])
 
   useEffect(() => {
-    if (date && scheduleItemId) {
+    if (scheduleItemId) {
       updateItem(session, { dueDate: date }, scheduleItemId)
+      setScheduleItemId(null)
     }
   }, [date, updateItem, session, scheduleItemId])
 
@@ -212,15 +213,20 @@ export const InboxItems: React.FC = () => {
                       </button>
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                        <button className="group/reschedule invisible focus:outline-none focus:ring-0 group-hover:visible">
+                        <div className="group/reschedule invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="humbleicons:clock"
                             className="mt-0.5 text-[18px] group-hover/reschedule:text-foreground"
                           />
                           <div className="invisible fixed z-50 flex min-w-32 flex-col gap-2 overflow-hidden rounded-lg border border-border bg-background p-2 text-neutral-950 shadow-md group-hover/reschedule:visible data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
-                            <RescheduleCalendar date={date} setDate={setDate} />
+                            <RescheduleCalendar
+                              date={date}
+                              setDate={setDate}
+                              scheduleItemId={item._id}
+                              setScheduleItemId={setScheduleItemId}
+                            />
                           </div>
-                        </button>
+                        </div>
                         <div className="group/move invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="hugeicons:move"
