@@ -112,8 +112,9 @@ const getOverdueItemsByDate = async (me, date) => {
     const items = await Item.find({
         user: me,
         dueDate: { $lt: date },
-        isArchived: false,
-        isDeleted: false
+        isCompleted: false,
+        isDeleted: false,
+        isArchived: false
     })
         .sort({ createdAt: -1 });
 
