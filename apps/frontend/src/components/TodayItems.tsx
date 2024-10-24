@@ -74,7 +74,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             <React.Fragment key={item._id}>
               <DropdownItem
                 item={item}
-                onToggleComplete={(item) => handleToggleComplete(item, false)}
+                onToggleComplete={(item) => handleToggleComplete(item)}
                 isOverdue={false}
               />
             </React.Fragment>
@@ -87,7 +87,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             <React.Fragment key={item._id}>
               <DropdownItem
                 item={item}
-                onToggleComplete={(item) => handleToggleComplete(item, true)}
+                onToggleComplete={(item) => handleToggleComplete(item)}
                 isOverdue={true}
               />
             </React.Fragment>
