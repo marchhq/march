@@ -1,5 +1,24 @@
+export interface NotesStoreType {
+  notes: Note[]
+  spaceId: string | null
+  blockId: string | null
+  latestNote: Note | null
+  isFetched: boolean
+  setIsFetched: (isFetched: boolean) => void
+  fetchNotes: (session: string) => Promise<Note[]>
+  setNotes: (notes: Note[]) => void
+  addNote: (
+    session: string,
+    title: string,
+    content: string
+  ) => Promise<Note | null>
+  updateNote: (note: Note) => void
+  saveNote: (session: string, note: Note) => Promise<void>
+  deleteNote: (session: string, note: Note) => void
+}
+
 export interface Note {
-  id: string
+  _id: string
   title: string
   description: string
   user: string
@@ -11,7 +30,7 @@ export interface Note {
 }
 
 export interface NotesResponse {
-  notes: Note[]
+  items: Note[]
 }
 
 export interface NoteCreateResponse {

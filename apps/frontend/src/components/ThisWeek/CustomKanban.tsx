@@ -4,30 +4,35 @@ import { Icon } from "@iconify-icon/react"
 import { motion } from "framer-motion"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useItemsStore from "@/src/lib/store/items.store"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import classNames from "@/src/utils/classNames"
+import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
 export const CustomKanban = () => {
   return (
-    <div className="w-full">
+    <div className="h-full w-[calc(100%-100px)]">
       <Board />
     </div>
   )
 }
 
 const Board = () => {
-  const { items, fetchItems, mutateItem } = useItemsStore()
+  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+  const { items } = thisWeek
+
   const { session } = useAuth()
 
   useEffect(() => {
-    fetchItems(session, "this-week")
-  }, [session, fetchItems])
+    fetchThisWeek(session)
+  }, [session, fetchThisWeek])
 
-  const handleDragEnd = (itemId: string, newStatus: string) => {
-    mutateItem(session, itemId, newStatus)
+  const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
+    updateItem(session, newStatus, itemId)
   }
 
   return (
-    <div className="flex size-full gap-16">
+    <div className="flex size-full gap-8">
       <Column
         title="todo"
         column="todo"
@@ -54,7 +59,7 @@ const Board = () => {
 }
 
 const Column = ({ title, items, column, onDragEnd, icon }) => {
-  const { addItem } = useItemsStore()
+  const { createItem } = useCycleItemStore()
   const [active, setActive] = useState(false)
 
   const handleDragStart = (e, item) => {
@@ -77,7 +82,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
     clearHighlights()
 
     if (currentStatus !== column) {
-      onDragEnd(itemId, column)
+      onDragEnd(itemId, { status: column })
     }
   }
 
@@ -125,7 +130,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
   }
 
   return (
-    <div className="group/section flex flex-1 flex-col gap-4 rounded-lg p-4">
+    <div className="group/section flex size-full flex-1 flex-col gap-4 rounded-lg">
       <div className="flex items-center gap-2 text-xl text-foreground">
         <Icon icon={icon} />
         <h2 className="font-semibold">{title}</h2>
@@ -134,7 +139,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
         onDrop={handleDragEnd}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`size-full`}
+        className={`no-scrollbar size-full max-h-[calc(100vh-300px)] overflow-y-auto`}
       >
         {items.map((item) => (
           <Card
@@ -145,16 +150,16 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
           />
         ))}
         <DropIndicator beforeId={null} column={column} />
-        <AddCard column={column} addItem={addItem} />
+        <AddCard column={column} updateItem={createItem} />
       </div>
     </div>
   )
 }
 
 const Card = ({ title, _id, status, handleDragStart, item }) => {
-  const { setSelectedItem } = useItemsStore()
-  const handleExpand = (item: any) => {
-    setSelectedItem(item)
+  const { currentItem, setCurrentItem } = useCycleItemStore()
+  const handleExpand = (item: CycleItem) => {
+    setCurrentItem(item)
   }
 
   return (
@@ -166,10 +171,15 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
         draggable="true"
         onDragStart={(e) => handleDragStart(e, { _id, status })}
         onClick={() => {
-          console.log("item", item)
           handleExpand(item)
         }}
-        className="group flex cursor-grab flex-col gap-1 rounded-lg border border-transparent p-4 text-left hover:border-border active:cursor-grabbing"
+        className={classNames(
+          "group flex cursor-grab flex-col gap-1 rounded-lg border p-4 text-left hover:border-border active:cursor-grabbing",
+          currentItem?._id == item._id
+            ? "border-border bg-background-hover"
+            : "border-transparent"
+        )}
+        data-item-id={_id}
       >
         <p className="text-sm text-neutral-100">{title}</p>
       </motion.div>
@@ -189,15 +199,10 @@ const DropIndicator = ({ beforeId, column }) => {
 
 interface AddCardProps {
   column: string
-  addItem: (
-    session: string,
-    dueDate: string,
-    title: string,
-    status: string
-  ) => void
+  updateItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
+const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -217,17 +222,18 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
       e?.preventDefault()
       if (!text.trim().length) return
 
-      console.log("Attempting to add item:", {
-        session,
-        dueDate: new Date().toISOString(),
+      const cycleDate = getEndOfCurrentWeek(new Date())
+
+      const data: Partial<CycleItem> = {
+        cycleDate: cycleDate,
         title: text.trim(),
         status: column,
-      })
+      }
 
-      addItem(session, new Date().toISOString(), text.trim(), column)
+      updateItem(session, data)
       handleCancel()
     },
-    [addItem, column, session, text]
+    [updateItem, column, session, text]
   )
 
   const handleCancel = () => {
@@ -237,6 +243,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      /*
       if (
         adding &&
         addItemRef.current &&
@@ -246,7 +253,15 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
           handleSubmit()
         } else {
           handleCancel()
-        }
+      }
+      */
+
+      if (
+        adding &&
+        addItemRef.current &&
+        !addItemRef.current.contains(event.target as Node)
+      ) {
+        handleCancel()
       }
     }
 
@@ -268,7 +283,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
   }
 
   return (
-    <div ref={addItemRef}>
+    <div ref={addItemRef} className="">
       {adding ? (
         <motion.form layout onSubmit={handleSubmit}>
           <textarea
@@ -278,8 +293,10 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
               setText(e.target.value)
             }
             onKeyDown={handleKeyDown}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
             placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent py-1 text-base font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent p-4 text-sm font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
           />
           <button type="submit" style={{ display: "none" }}></button>
@@ -288,7 +305,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, addItem }) => {
         <motion.button
           layout
           onClick={() => setAdding(true)}
-          className="hover-bg flex w-full items-center gap-2 rounded-lg p-4 text-sm"
+          className="hover-bg invisible flex w-full items-center gap-2 rounded-lg p-4 text-sm group-hover/section:visible"
         >
           <Icon icon="ic:round-plus" className="text-[18px]" />
           <p>New item</p>
