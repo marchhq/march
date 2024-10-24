@@ -2,6 +2,7 @@ import { verifyJWTToken } from "../utils/jwt.service.js";
 import { BlackList } from "../models/core/black-list.model.js";
 import { getUserById } from "../services/core/user.service.js";
 import moment from 'moment-timezone';
+import { User } from "../models/core/user.model.js";
 
 const JWTMiddleware = async (req, res, next) => {
     try {
@@ -71,7 +72,18 @@ const checkUserVerificationController = async (req, res, next) => {
             return res.status(401).json({ isValidUser: false });
         }
 
-        return res.status(200).json({ isValidUser: true });
+        const user = await User.findOne({ uuid: payload.id });
+        console.log(user)
+        if (!user) {
+            return res.status(404).json({ message: "User not found", isValidUser: false });
+        }
+
+        return res.status(200).json({
+            isValidUser: true,
+            userVerification: user.userVerification,
+            waitlist: user.waitlist
+        })
+       
     } catch (err) {
         const error = new Error(err.message);
         error.statusCode = 401;

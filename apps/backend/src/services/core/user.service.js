@@ -4,6 +4,22 @@ import { environment } from "../../loaders/environment.loader.js";
 import { OauthClient } from "../../loaders/google.loader.js";
 import axios from 'axios';
 
+// Admin Panel
+const getAllUsers = async () => {
+    const users = await User.find({});
+    return users;
+}
+
+// Admin Panel
+const updateUserVerificationById = async (id, userVerification) => {
+    const user = await User.findByIdAndUpdate(
+        id,
+        { userVerification },
+        { new: true }
+    );
+    return user;
+}
+
 const getUserByEmail = async (email) => {
     const user = await User.findOne({
         $or: [
@@ -46,7 +62,9 @@ const createEmailUser = async ({
                 email,
                 password: hash
             }
-        }
+        },
+        userVerification: false,
+        waitlist: true
     })
     return user;
 }
@@ -174,7 +192,9 @@ const createGoogleUser = async ({
             }
         },
         avatar,
-        userTimezone: timezone
+        userTimezone: timezone,
+        userVerification: false,
+        waitlist: true
     })
     return user;
 }
@@ -213,7 +233,9 @@ const createGithubUser = async (
                 userName
             }
         },
-        userTimezone: timezone
+        userTimezone: timezone,
+        userVerification: false,
+        waitlist: true
     })
     return user;
 }
@@ -230,6 +252,8 @@ const updateUser = async (user, data) => {
 }
 
 export {
+    getAllUsers,
+    updateUserVerificationById,
     getUserByEmail,
     createEmailUser,
     validateEmailUser,

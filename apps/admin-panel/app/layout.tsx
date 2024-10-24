@@ -1,0 +1,52 @@
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
+
+export const metadata: Metadata = {
+  title: "March Admin Panel",
+  description: "Do admin stuff for the space travellers!",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+         <div className="flex">
+            <SidebarProvider>
+              <AppSidebar/>
+            <main className="flex-1">
+              {children}
+            </main>
+            </SidebarProvider>
+          </div>
+        </body>
+      </ThemeProvider>
+    </html>
+  );
+}

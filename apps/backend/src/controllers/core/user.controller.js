@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { getUserOverdueItems, getUserItemsByDate, getOverdueItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
-import { updateUser } from "../../services/core/user.service.js";
+import { getAllUsers, updateUser, updateUserVerificationById } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
 
@@ -14,6 +14,35 @@ const { ValidationError } = Joi;
 //         next(err)
 //     }
 // };
+
+// Admin Panel
+
+export const getAllUsersController = async (req, res) => {
+    try {
+        const users = await getAllUsers();
+        return res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred', details: error.message });
+    }
+};
+
+// Admin Panel
+export const updateUserVerificationByIdController = async (req, res) => {
+    const { id } = req.params; 
+    const { userVerification } = req.body; 
+
+    try {
+        const user = await updateUserVerificationById(id, userVerification); 
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        return res.status(200).json({ message: 'User updated successfully', user });
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred', details: error.message });
+    }
+};
 
 const userProfileController = async (req, res, next) => {
     try {
