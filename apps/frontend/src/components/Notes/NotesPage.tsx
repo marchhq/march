@@ -179,7 +179,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   }, [isSaved])
 
   return (
-    <div className="flex size-full gap-16 bg-background p-16">
+    <div className="flex size-full gap-16 bg-background px-16 py-10">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
         <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
           <div className="flex gap-8">

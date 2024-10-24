@@ -56,7 +56,7 @@ const SidebarLink = ({
   )
 }
 
-const Sidebar: React.FC = () => {
+export const Sidebar: React.FC = () => {
   const pathname = usePathname()
 
   const { showModal } = useModal()
@@ -194,5 +194,3 @@ const Sidebar: React.FC = () => {
     </div>
   )
 }
-
-export default Sidebar

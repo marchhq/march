@@ -41,9 +41,11 @@ const SpaceLayout: React.FC<Props> = ({ children }) => {
 
   return (
     <div className="flex h-full">
+      {/*
       <div className="ml-[100px] flex">
         <SecondSidebar items={items} />
       </div>
+      */}
       <div className="flex-1">{children}</div>
     </div>
   )
