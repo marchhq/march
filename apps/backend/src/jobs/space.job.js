@@ -6,6 +6,7 @@ import { createLabels } from '../services/lib/label.service.js';
 
 const processSpaceJob = async (job) => {
     const { user } = job.data;
+    console.log("im here working fine");
     const spaces = [
         { name: "Notes", icon: "note" },
         { name: "Meetings", icon: "meeting" },
