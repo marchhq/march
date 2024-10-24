@@ -116,7 +116,6 @@ const getOverdueItemsByDate = async (me, date) => {
         isDeleted: false,
         isArchived: false
     })
-        .sort({ createdAt: -1 });
 
     return items;
 }

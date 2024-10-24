@@ -25,24 +25,24 @@ export const InboxItems: React.FC = () => {
     inbox,
     currentItem,
     setCurrentItem,
-    fetchItems,
+    fetchInbox,
     updateItem,
     isLoading,
   } = useCycleItemStore()
 
   const { items } = inbox
 
-  const fetchInbox = useCallback(async () => {
+  const fetchInboxItems = useCallback(async () => {
     try {
-      await fetchItems(session)
+      await fetchInbox(session)
     } catch (error) {
       console.error("Error fetching inbox:", error)
     }
-  }, [session, fetchItems])
+  }, [session, fetchInbox])
 
   useEffect(() => {
-    fetchInbox()
-  }, [fetchInbox])
+    fetchInboxItems()
+  }, [fetchInboxItems])
 
   useEffect(() => {}, [items])
 
