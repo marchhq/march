@@ -9,6 +9,9 @@ import { handleCalendarWebhook } from "./controllers/integration/calendar.contro
 import { handleGithubWebhook } from "./controllers/integration/github.controller.js";
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
+import { linearQueue } from "./loaders/bullmq.loader.js";
+import { spaceQueue } from "./loaders/bullmq.loader.js";
+import { calendarQueue } from "./loaders/bullmq.loader.js";
 
 const { ValidationError } = Joi;
 const app = express();
