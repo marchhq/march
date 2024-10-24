@@ -4,13 +4,15 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { type GoogleAuthResponse } from "@/src/lib/@types/auth/response"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/src/lib/constants/cookie"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
+import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams
   const encodedCode = searchParams.get("code")
+  const redirectDomain = FRONTEND_URL
+
   if (encodedCode == null) {
-    return NextResponse.redirect(new URL("/", request.url))
+    return NextResponse.redirect(new URL("/", redirectDomain))
   }
   const code = decodeURIComponent(encodedCode)
   let res: GoogleAuthResponse
@@ -33,16 +35,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     } else {
       console.error("Google auth error: ", e.cause)
     }
-    return NextResponse.redirect(new URL("/", request.url))
+    return NextResponse.redirect(new URL("/", redirectDomain))
   }
 
   if (!res.accessToken) {
     console.error("Access token is missing from the response")
-    return NextResponse.redirect(new URL("/", request.url))
+    return NextResponse.redirect(new URL("/", redirectDomain))
   }
 
   const response = NextResponse.redirect(
-    new URL(res.isNewUser ? "/calendar" : "/today", request.url)
+    new URL(res.isNewUser ? "/calendar" : "/today", redirectDomain)
   )
 
   response.cookies.set(ACCESS_TOKEN, res.accessToken, {
