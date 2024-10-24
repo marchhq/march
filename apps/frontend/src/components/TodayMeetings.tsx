@@ -68,7 +68,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
       {agendaItems.length === 0 ? (
         <li>no agenda items</li>
       ) : (
-        <ol className="relative min-h-[200px] border-s border-border">
+        <ol className="relative min-h-[150px] border-s border-border">
           {agendaItems.map((item, index) => (
             <li key={index} className="mb-8 ms-4">
               {/* White line highlight only for first item */}
@@ -83,59 +83,34 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
               >
                 {item.time}
               </span>
-              <div className="pt-11">
-                <h1
-                  className={`text-[16px] font-medium ${index === 0 ? "text-primary-foreground" : "text-secondary-foreground"}`}
-                >
-                  {item.title}
-                </h1>
-                <p className="flex gap-2 text-[16px] font-medium text-secondary-foreground">
-                  {item.duration} min
-                  <a href={item.link}>
-                    {index === 0 ? (
-                      <Icon icon="logos:google-meet" className="text-[12px]" />
-                    ) : (
-                      <div className="mt-[4px]">
-                        <MeetMuted />
-                      </div>
-                    )}
-                  </a>
-                </p>
-              </div>
+              <a href={item.link}>
+                <div className="pt-11">
+                  <h1
+                    className={`text-[16px] font-medium ${index === 0 ? "text-primary-foreground" : "text-secondary-foreground"}`}
+                  >
+                    {item.title}
+                  </h1>
+                  <p className="flex gap-2 text-[16px] font-medium text-secondary-foreground">
+                    {item.duration} min
+                    <span>
+                      {index === 0 ? (
+                        <Icon
+                          icon="logos:google-meet"
+                          className="text-[12px]"
+                        />
+                      ) : (
+                        <div className="mt-[4px]">
+                          <MeetMuted />
+                        </div>
+                      )}
+                    </span>
+                  </p>
+                </div>
+              </a>
             </li>
           ))}
         </ol>
       )}
     </div>
   )
-  {
-    /* <ol className="text-[16px]">
-      {agendaItems.length === 0 ? (
-        <li className="text-lg font-medium text-[#DCDCDD]/80">
-          No agenda items
-        </li>
-      ) : (
-        agendaItems.map((item, index) => (
-          <React.Fragment key={index}>
-            <li className="font-medium text-primary-foreground/80">
-              {item.title}
-            </li>
-            <p className="mt-1">
-              {item.time}, {item.duration} min
-            </p>
-            <a
-              href={item.link}
-              target="_blank"
-              className="mb-8 mt-4 flex items-center justify-start gap-2 text-primary-foreground"
-            >
-              Join Meeting
-              <span>
-                <LinkIcon />
-              </span>
-            </a>
-          </React.Fragment>
-        ))
-      )}
-    </ol> */
-  }
 }
