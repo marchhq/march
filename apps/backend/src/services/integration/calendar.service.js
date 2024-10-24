@@ -176,7 +176,7 @@ const updateGoogleCalendarEvent = async (user, eventId, event) => {
     const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const updatedEvent = await calendar.events.update({
         calendarId: 'primary',
-        eventId: eventId,
+        eventId,
         resource: event
     });
 
