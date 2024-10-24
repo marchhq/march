@@ -1,6 +1,6 @@
-import * as React from "react"
+import React from "react"
 
-import Sidebar from "@/src/components/Sidebar"
+import { Sidebar } from "@/src/components/Sidebar/Sidebar"
 import { Toaster } from "@/src/components/ui/toaster"
 import { AuthProvider } from "@/src/contexts/AuthContext"
 import ModalProvider from "@/src/contexts/ModalProvider"
@@ -15,9 +15,12 @@ const AppLayout: React.FC<Props> = ({ children }) => {
       <QueryProvider>
         <ModalProvider>
           <main className="flex h-screen bg-background">
+            {/*
             <div className="fixed inset-y-0 z-50 flex">
               <Sidebar />
             </div>
+            */}
+            <Sidebar />
             <section className="flex-1">{children}</section>
             <Toaster />
           </main>

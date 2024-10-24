@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   html,
   body {
     @apply bg-background;
@@ -14,6 +13,7 @@
   :root {
     --background: 253, 253, 253;
     /* fdfdfd */
+    --background-test: 253, 253, 253;
     --background-hover: 244, 244, 245;
     /* f4f4f5 zinc-100 */
     --background-active: 240, 240, 241;
@@ -42,6 +42,7 @@
     :root {
       --background: 16, 16, 16;
       /* 101010 */
+      --background-test: 9, 9, 9;
       --background-hover: 22, 22, 22;
       --background-active: 24, 24, 24;
 
