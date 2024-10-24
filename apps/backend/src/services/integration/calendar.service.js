@@ -176,7 +176,7 @@ const updateGoogleCalendarEvent = async (user, eventId, event) => {
     const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
     const updatedEvent = await calendar.events.update({
         calendarId: 'primary',
-        eventId: eventId,
+        eventId,
         resource: event
     });
 
@@ -215,11 +215,11 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
             if (!existingMeeting) {
                 const newMeeting = new Meeting({
                     title: meeting.summary,
+                    source: 'calendar',
                     id: meeting.id,
                     user: userId,
                     metadata: {
                         status: meeting.status,
-                        description: meeting.description,
                         location: meeting.location,
                         attendees: meeting.attendees,
                         hangoutLink: meeting.hangoutLink,
@@ -287,7 +287,6 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
                 existingMeeting.title = event.summary;
                 existingMeeting.metadata = {
                     status: event.status,
-                    description: event.description,
                     location: event.location,
                     attendees: event.attendees,
                     hangoutLink: event.hangoutLink,
@@ -303,6 +302,7 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
                 // Create new meeting
                 const newMeeting = new Meeting({
                     title: event.summary,
+                    source: 'calendar',
                     id: event.id,
                     user: userId,
                     metadata: {

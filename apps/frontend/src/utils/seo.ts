@@ -5,11 +5,11 @@ export const BASE_URL = "https://example.com" // Don't include slash at the end
 interface MetadataArgs {
   path: string
   title: string
-  description: string
+  description?: string
   image?: string
 }
 
-const generateMetadata = ({
+const generateMetadataHelper = ({
   path,
   title,
   description,
@@ -86,4 +86,29 @@ const generateMetadata = ({
   return metadata
 }
 
-export default generateMetadata
+export default generateMetadataHelper
+
+export async function generateMetadata({
+  params,
+  type,
+}: {
+  params: { id?: string }
+  type: "meeting" | "note" | string // Add more types as needed
+}): Promise<Metadata> {
+  const id = params.id
+  const path = id ? `/${type}s/${id}` : `/${type}s`
+  const title = id ? `${capitalize(type)} ${id}` : `${capitalize(type)}s`
+  const description = id
+    ? `Details for this ${type}: ${id}`
+    : `List of all ${type}s`
+
+  return generateMetadataHelper({
+    path,
+    title,
+    description,
+  })
+}
+
+function capitalize(word: string) {
+  return word.charAt(0).toUpperCase() + word.slice(1)
+}
