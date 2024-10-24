@@ -1,8 +1,11 @@
 import React from "react"
 
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
+
 import { SkeletonCard } from "./atoms/SkeletonCard"
 import { useMeetings } from "../hooks/useMeetings"
 import { Link as LinkIcon } from "../lib/icons/Link"
+import { MeetMuted } from "../lib/icons/Meet"
 
 const isSameDay = (date1: Date, date2: Date): boolean => {
   return (
@@ -13,7 +16,14 @@ const isSameDay = (date1: Date, date2: Date): boolean => {
 }
 
 const formatTime = (date: Date): string => {
-  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+  return date
+    .toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .replace(" ", "")
+    .toUpperCase()
 }
 
 const calculateDuration = (start: Date, end: Date): number => {
@@ -38,7 +48,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
       return {
         title: meeting.summary,
         link: meeting.hangoutLink,
-        time: `${formatTime(startTime)} - ${formatTime(endTime)}`,
+        time: `${formatTime(startTime)}`,
         duration: calculateDuration(startTime, endTime),
       }
     }) || []
@@ -54,7 +64,52 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
   }
 
   return (
-    <ol className="text-[16px]">
+    <div>
+      {agendaItems.length === 0 ? (
+        <li>no agenda items</li>
+      ) : (
+        <ol className="relative min-h-[200px] border-s border-border">
+          {agendaItems.map((item, index) => (
+            <li key={index} className="mb-8 ms-4">
+              {/* White line highlight only for first item */}
+              {index === 0 && (
+                <div
+                  className="absolute -start-[1px] h-4 w-px bg-white"
+                  style={{ top: "calc(0.75rem + 38px)" }}
+                ></div>
+              )}
+              <span
+                className={`absolute -start-12 bg-background p-3 ${index === 0 ? "text-primary-foreground" : "text-secondary-foreground"}`}
+              >
+                {item.time}
+              </span>
+              <div className="pt-11">
+                <h1
+                  className={`text-[16px] font-medium ${index === 0 ? "text-primary-foreground" : "text-secondary-foreground"}`}
+                >
+                  {item.title}
+                </h1>
+                <p className="flex gap-2 text-[16px] font-medium text-secondary-foreground">
+                  {item.duration} min
+                  <a href={item.link}>
+                    {index === 0 ? (
+                      <Icon icon="logos:google-meet" className="text-[12px]" />
+                    ) : (
+                      <div className="mt-[4px]">
+                        <MeetMuted />
+                      </div>
+                    )}
+                  </a>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  )
+  {
+    /* <ol className="text-[16px]">
       {agendaItems.length === 0 ? (
         <li className="text-lg font-medium text-[#DCDCDD]/80">
           No agenda items
@@ -81,6 +136,6 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
           </React.Fragment>
         ))
       )}
-    </ol>
-  )
+    </ol> */
+  }
 }
