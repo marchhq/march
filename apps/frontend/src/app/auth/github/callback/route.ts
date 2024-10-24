@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GITHUB_ACCESS_TOKEN } from "@/src/lib/constants/cookie";
-import { BACKEND_URL } from "@/src/lib/constants/urls";
+import { BACKEND_URL,FRONTEND_URL } from "@/src/lib/constants/urls";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
+  const redirectDomain = FRONTEND_URL
+
   const installation_id = searchParams.get("installation_id");
   if (!installation_id) {
     return NextResponse.json({ error: "Missing installation_id parameter" }, { status: 400 });
@@ -27,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (response.ok) { // Check if the response status is OK
       const { accessToken } = await response.json(); // Parse the JSON response
 
-      const res = NextResponse.redirect(new URL("/profile", request.url));
+      const res = NextResponse.redirect(new URL("/profile", redirectDomain));
       res.cookies.set(GITHUB_ACCESS_TOKEN, accessToken, {
         httpOnly: true,
         secure: true,

@@ -83,7 +83,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         name: "Github",
         description:
           "Link your github account to pull assigned issues, PR to your workflow.",
-          handleConnect:installGitHub,
+        handleConnect: installGitHub,
       },
       {
         key: "linear",
