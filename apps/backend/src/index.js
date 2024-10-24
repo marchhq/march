@@ -33,6 +33,10 @@ app.post("/github/webhook", handleGithubWebhook);
 
 app.post("/sms", handleSmsItemCreation);
 
+linearWorker();
+calendaWorker();
+spaceWorker()
+
 initRoutes(app);
 // Express error handler
 app.use((err, req, res, next) => {
