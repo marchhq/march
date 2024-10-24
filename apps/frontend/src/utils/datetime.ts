@@ -6,6 +6,8 @@ import {
   startOfMonth,
   startOfWeek,
   getWeeksInMonth,
+  differenceInDays,
+  isWithinInterval,
 } from "date-fns"
 
 export const getOrdinalSuffix = (day) => {
@@ -67,10 +69,27 @@ export function getFormattedDateRange(date: Date): string {
   return `${format(startOfCurrentWeek, "MMM d")} - ${format(endOfCurrentWeek, "MMM d")}`
 }
 
+export function getEndOfCurrentWeek(date: Date): string {
+  const endDate = endOfWeek(date, { weekStartsOn: 0 })
+  return endDate.toISOString()
+}
+
 export { getWeeksInMonth }
 
-export function getTodayISODate(): string {
-  const today = new Date()
+export function getTodayISODate(date: Date): string {
+  const today = date
   today.setUTCHours(0, 0, 0, 0)
-  return today.toISOString()
+  const year = today.getUTCFullYear()
+  const month = String(today.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(today.getUTCDate()).padStart(2, "0")
+
+  return `${year}-${month}-${day}`
+}
+
+export const getOverdueText = (dueDate: string): string => {
+  const due = new Date(dueDate)
+  const now = new Date()
+  const diffInDays = differenceInDays(now, due)
+
+  return `since ${diffInDays} ${diffInDays === 1 ? "day" : "days"}`
 }

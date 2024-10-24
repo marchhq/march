@@ -1,3 +1,5 @@
+import { format } from "path"
+
 import React from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
@@ -9,14 +11,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./atoms/Tooltip"
-import { Item } from "../lib/@types/Items/TodayItems"
+import { CycleItem } from "../lib/@types/Items/Cycle"
 import { Box, CheckedBox } from "../lib/icons/Box"
 import { LinearDark } from "../lib/icons/LinearCircle"
 import { Link } from "../lib/icons/Link"
+import { getOverdueText } from "../utils/datetime"
 
 interface DropdownItemProps {
-  item: Item
-  onToggleComplete: (item: Item) => void
+  item: CycleItem
+  onToggleComplete: (item: CycleItem) => void
   isOverdue?: boolean
 }
 
@@ -52,24 +55,10 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   onToggleComplete,
   isOverdue,
 }) => {
-  const getOverdueText = () => {
-    if (!item.dueDate) return ""
-
-    const dueDate = new Date(item.dueDate)
-    const now = new Date()
-    const timeDiff = Math.abs(now.getTime() - dueDate.getTime())
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
-
-    if (daysDiff === 1) return "since yesterday"
-    if (daysDiff <= 7)
-      return `since ${dueDate.toLocaleDateString("en-US", { weekday: "long" })}`
-    return `since ${daysDiff} days`
-  }
-
   return (
     <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
-        {item.isCompleted ? <CheckedBox /> : <Box />}
+        {item.status === "done" ? <CheckedBox /> : <Box />}
       </button>
       <li
         className={`${item.isCompleted ? "text-[#6D7077]" : "text-white"} flex min-w-0 items-center gap-2`}
@@ -95,7 +84,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
               <TooltipTrigger>
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
-              <TooltipContent>{getOverdueText()}</TooltipContent>
+              <TooltipContent>{getOverdueText(item.dueDate)}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}

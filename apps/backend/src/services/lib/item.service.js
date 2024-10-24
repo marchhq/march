@@ -1,5 +1,4 @@
 import { Item } from "../../models/lib/item.model.js";
-import moment from 'moment-timezone';
 import { getLabelByName } from "./label.service.js";
 
 const getInboxItems = async (me) => {
@@ -10,7 +9,8 @@ const getInboxItems = async (me) => {
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
-        dueDate: null
+        dueDate: null,
+        cycleDate: null
     })
         .sort({ createdAt: -1 });
 
@@ -68,18 +68,22 @@ const getAllitems = async (me) => {
 }
 
 const getUserTodayItems = async (me) => {
-    // const today = new Date();
-    const startOfDay = moment().startOf('day');
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lt: moment().endOf('day') }
-    })
+        dueDate: { $gte: startOfDay, $lt: endOfDay }
+    });
 
     return items;
 }
 
 const getUserOverdueItems = async (me) => {
-    const startOfDay = moment().startOf('day');
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     const items = await Item.find({
         user: me,
         dueDate: { $lt: startOfDay },
@@ -104,7 +108,24 @@ const getUserItemsByDate = async (me, date) => {
     return items;
 }
 
+const getOverdueItemsByDate = async (me, date) => {
+    const items = await Item.find({
+        user: me,
+        dueDate: { $lt: date },
+        isCompleted: false,
+        isDeleted: false,
+        isArchived: false
+    })
+
+    return items;
+}
+
 const createItem = async (user, itemData, space, block) => {
+    if (!space || !block) {
+        const error = new Error("Space and block must be provided");
+        error.statusCode = 400;
+        throw error;
+    }
     const newItem = new Item({
         ...itemData,
         user,
@@ -146,6 +167,11 @@ const updateInboxItem = async (item, user, itemData) => {
     { $set: itemData },
     { new: true }
     )
+    if (!updatedItem) {
+        const error = new Error("Item not found or you do not have permission to update it");
+        error.statusCode = 404;
+        throw error;
+    }
     return updatedItem;
 };
 
@@ -306,6 +332,7 @@ export {
     getItem,
     getUserOverdueItems,
     getUserItemsByDate,
+    getOverdueItemsByDate,
     moveItemtoDate,
     getUserTodayItems,
     getAllitems,

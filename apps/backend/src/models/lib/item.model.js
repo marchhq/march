@@ -104,6 +104,17 @@ ItemSchema.pre("save", function (next) {
     next();
 });
 
+ItemSchema.pre("findOneAndUpdate", function (next) {
+    const update = this.getUpdate();
+    if (update.$set && update.$set.status === "done") {
+        update.$set.isCompleted = true;
+    } else if (update.$set && update.$set.status) {
+        update.$set.isCompleted = false;
+    }
+
+    next();
+});
+
 const Item = db.model("Item", ItemSchema, "items");
 
 export {
