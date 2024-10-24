@@ -1,14 +1,13 @@
 "use client"
 import React, { useState, useEffect } from "react"
 
-import { Icon } from "@iconify-icon/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import Integrations from "@/src/components/profile/Integrations"
 import { useAuth } from "@/src/contexts/AuthContext"
-import useUserStore from "@/src/lib/store/user.store"
 import Loader from "@/src/lib/icons/Loader"
+import useUserStore from "@/src/lib/store/user.store"
 
 const StackConnect: React.FC = () => {
   const [isPageLoading, setIsLoading] = useState(false)
@@ -28,8 +27,14 @@ const StackConnect: React.FC = () => {
     }
   }, [session, fetchUser])
 
-  if (error) return <div className="text-red-500">Failed to fetch user data: {error}</div>
-  if (!user) return <div className="text-primary-foreground">User not found</div>
+  if (error) {
+    return (
+      <div className="text-red-500">Failed to fetch user data: {error}</div>
+    )
+  }
+  if (!user) {
+    return <div className="text-primary-foreground">User not found</div>
+  }
 
   const handleContinue = () => {
     setIsLoading(true)
