@@ -30,17 +30,22 @@ export interface CycleItemStore {
   currentItem: CycleItem | null
   isLoading: boolean
   error: string | null
-  fetchItems: (session: string, date?: string) => Promise<void>
+  fetchInbox: (session: string) => Promise<void>
+  fetchToday: (session: string, date: string) => Promise<void>
+  fetchOverdue: (session: string, date: string) => Promise<void>
   fetchThisWeek: (session: string) => Promise<void>
   fetchItem: (session: string, id: string) => Promise<void>
   fetchItemByDate: (session: string, date: string) => Promise<void>
-  setCurrentItem: (item: CycleItem | null) => void
-  createItem: (session: string, item: Partial<CycleItem>) => Promise<void>
+  createItem: (
+    session: string,
+    item: Partial<CycleItem>
+  ) => Promise<CycleItem | undefined>
   updateItem: (
     session: string,
     updates: Partial<CycleItem>,
     id: string
   ) => Promise<void>
+  setCurrentItem: (item: CycleItem | null) => void
 }
 
 export interface CreateItemResponse {
