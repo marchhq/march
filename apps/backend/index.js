@@ -1,8 +1,8 @@
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
-import { linearWorker } from "./src/jobs/linear.job.js";
-import { calendaWorker } from "./src/jobs/calendar.job.js";
-import { spaceWorker } from "./src/jobs/space.job.js";
+// import { linearWorker } from "./src/jobs/linear.job.js";
+// import { calendaWorker } from "./src/jobs/calendar.job.js";
+// import { spaceWorker } from "./src/jobs/space.job.js";
 
 (async function init () {
     app.listen(environment.PORT, () => {
