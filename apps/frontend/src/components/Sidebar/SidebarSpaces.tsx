@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from "react"
 
-import { ChevronRight, ChevronDown, Orbit } from "lucide-react"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 
+import ChevronDownIcon from "@/public/icons/chevrondown.svg"
+import ChevronRightIcon from "@/public/icons/chevronright.svg"
+import SpacesIcon from "@/public/icons/spacesicon.svg"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useSpaceStore from "@/src/lib/store/space.store"
@@ -15,13 +18,15 @@ export const SidebarSpaces: React.FC = () => {
   const pathname = usePathname()
   const { session } = useAuth()
 
-  const [toggle, setToggle] = useState(true)
+  const [toggle, setToggle] = useState(false)
 
   const { spaces, fetchSpaces } = useSpaceStore()
 
   useEffect(() => {
-    fetchSpaces(session)
-  }, [session, fetchSpaces])
+    if (toggle) {
+      fetchSpaces(session)
+    }
+  }, [toggle, session, fetchSpaces])
 
   return (
     <div className="flex flex-col gap-2">
@@ -29,17 +34,28 @@ export const SidebarSpaces: React.FC = () => {
         className="flex items-center gap-1 text-xs"
         onClick={() => setToggle(!toggle)}
       >
-        {/* i think its better without the icon */}
-        {/*<Orbit className="size-3" />*/}
+        <Image src={SpacesIcon} alt="spaces icon" width={10} height={10} />
         <span>spaces</span>
         {toggle ? (
-          <ChevronDown className="size-3.5" />
+          <Image
+            src={ChevronDownIcon}
+            alt="chevron down icon"
+            width={12}
+            height={12}
+            className="opacity-50"
+          />
         ) : (
-          <ChevronRight className="size-3.5" />
+          <Image
+            src={ChevronRightIcon}
+            alt="chevron right icon"
+            width={12}
+            height={12}
+            className="opacity-50"
+          />
         )}
       </button>
-      {toggle && (
-        <div className="ml-2 flex flex-col gap-2 border-l border-border">
+      {toggle && spaces && (
+        <div className="ml-2 mt-1 flex flex-col gap-2 border-l border-border">
           {spaces.map((space) => (
             <SidebarSpaceLink
               key={space._id}
