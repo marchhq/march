@@ -19,7 +19,7 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="ml-[160px] h-full overflow-y-auto bg-background">
+    <main className="h-full overflow-y-auto bg-background">
       <section className="mt-4 flex max-w-[96%] items-center justify-end gap-4">
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
