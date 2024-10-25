@@ -37,17 +37,27 @@ const fetchInstallationDetails = async (installationId, user) => {
 
 const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
-    const issueOrPR = payload.issue || payload.pull_request;
     const repository = payload.repository;
-
-    if (!issueOrPR) {
-        console.log('No issue or pull request found in the payload.');
-        return;
-    }
     const user = await User.findOne({ 'integration.github.installationId': installationId });
     if (!user) {
         return;
     }
+    if (event === 'installation' && payload.action === 'deleted') {
+        if (user) {
+            user.integration.github.connected = false;
+            user.integration.github.installationId = null;
+            await user.save();
+
+            console.log(`GitHub App uninstalled for user ${user._id}`);
+        }
+        return;
+    }
+    const issueOrPR = payload.issue || payload.pull_request;
+    if (!issueOrPR) {
+        console.log('No issue or pull request found in the payload.');
+        return;
+    }
+
     const userId = user._id;
 
     const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);

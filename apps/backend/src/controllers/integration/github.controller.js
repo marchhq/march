@@ -2,8 +2,6 @@ import { fetchInstallationDetails, processWebhookEvent } from "../../services/in
 
 const handleGithubCallbackController = async (req, res, next) => {
     try {
-        console.log("hey");
-        console.log('Received GitHub callback with query:', req.query);
         const installationId = req.query.installation_id;
         const user = req.user;
         await fetchInstallationDetails(installationId, user);
