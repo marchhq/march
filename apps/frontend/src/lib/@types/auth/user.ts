@@ -18,6 +18,7 @@ export type IntegrationType =
 
 export interface User {
   fullName: string
+  username: string
   avatar: string
   timezone: string
   userName: string
