@@ -8,6 +8,7 @@ export interface Meeting {
     dateTime: string
     timeZone: string
   }
+  location: string
   hangoutLink: string
 }
 

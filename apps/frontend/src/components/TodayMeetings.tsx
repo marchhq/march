@@ -4,8 +4,53 @@ import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
 import { SkeletonCard } from "./atoms/SkeletonCard"
 import { useMeetings } from "../hooks/useMeetings"
-import { Link as LinkIcon } from "../lib/icons/Link"
-import { MeetMuted } from "../lib/icons/Meet"
+import { Link, Link as LinkIcon } from "../lib/icons/Link"
+import { MeetMuted, ZoomMuted } from "../lib/icons/Meet"
+
+const getMeetingType = (meeting) => {
+  if (
+    meeting.conferenceData?.conferenceSolution?.name === "Google Meet" ||
+    meeting.hangoutLink?.includes("meet.google.com")
+  ) {
+    return "google-meet"
+  }
+
+  if (
+    meeting.description?.includes("zoom.us") ||
+    meeting.location?.includes("zoom.us")
+  ) {
+    return "zoom"
+  }
+
+  return "other"
+}
+
+const MeetingIcon = ({ type, isActive }) => {
+  switch (type) {
+    case "google-meet":
+      return isActive ? (
+        <Icon icon="logos:google-meet" className="text-[12px]" />
+      ) : (
+        <div className="mt-[4px]">
+          <MeetMuted />
+        </div>
+      )
+    case "zoom":
+      return isActive ? (
+        <Icon icon="logos:zoom-icon" className={`pt-1 text-[15px]`} />
+      ) : (
+        <div className="mt-[4px]">
+          <ZoomMuted />
+        </div>
+      )
+    default:
+      return (
+        <div className={`mt-[4px]`}>
+          <Link />
+        </div>
+      )
+  }
+}
 
 const isSameDay = (date1: Date, date2: Date): boolean => {
   return (
@@ -47,9 +92,10 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
       const endTime = new Date(meeting.end.dateTime)
       return {
         title: meeting.summary,
-        link: meeting.hangoutLink,
+        link: meeting.hangoutLink || meeting.location,
         time: `${formatTime(startTime)}`,
         duration: calculateDuration(startTime, endTime),
+        meetingType: getMeetingType(meeting),
       }
     }) || []
 
@@ -71,38 +117,39 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
         <ol className="relative min-h-[150px] border-s border-border">
           {agendaItems.map((item, index) => (
             <li key={index} className="mb-8 ms-4">
-              {/* White line highlight only for first item */}
               {index === 0 && (
                 <div
                   className="absolute -start-[1px] h-4 w-px bg-white"
                   style={{ top: "calc(0.75rem + 38px)" }}
-                ></div>
+                />
               )}
               <span
-                className={`absolute -start-12 bg-background p-3 ${index === 0 ? "text-primary-foreground" : "text-secondary-foreground"}`}
+                className={`absolute -start-12 bg-background p-3 ${
+                  index === 0
+                    ? "text-primary-foreground"
+                    : "text-secondary-foreground"
+                }`}
               >
                 {item.time}
               </span>
-              <a href={item.link}>
+              <a href={item.link} target="_blank">
                 <div className="pt-11">
                   <h1
-                    className={`text-[16px] font-medium ${index === 0 ? "text-primary-foreground" : "text-secondary-foreground"}`}
+                    className={`text-[16px] font-medium ${
+                      index === 0
+                        ? "text-primary-foreground"
+                        : "text-secondary-foreground"
+                    }`}
                   >
                     {item.title}
                   </h1>
                   <p className="flex gap-2 text-[16px] font-medium text-secondary-foreground">
                     {item.duration} min
                     <span>
-                      {index === 0 ? (
-                        <Icon
-                          icon="logos:google-meet"
-                          className="text-[12px]"
-                        />
-                      ) : (
-                        <div className="mt-[4px]">
-                          <MeetMuted />
-                        </div>
-                      )}
+                      <MeetingIcon
+                        type={item.meetingType}
+                        isActive={index === 0}
+                      />
                     </span>
                   </p>
                 </div>
