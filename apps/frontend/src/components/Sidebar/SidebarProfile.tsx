@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 
 import { UserIcon } from "lucide-react"
 import Image from "next/image"
@@ -16,6 +16,10 @@ export const SidebarProfile: React.FC = () => {
   const user = useUserInfo()
 
   const isActive = pathname.includes("/profile")
+
+  useEffect(() => {
+    console.log("user", user)
+  }, [user])
 
   return (
     <div className="flex flex-col gap-3.5">
