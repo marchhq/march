@@ -14,7 +14,7 @@ export const SidebarFavorites: React.FC = () => {
   return (
     <div className="flex flex-col gap-2">
       <button
-        className="flex items-center gap-1 text-xs"
+        className="flex items-center gap-1 text-xs outline-none"
         onClick={() => setToggle(!toggle)}
       >
         <span>favorites</span>
