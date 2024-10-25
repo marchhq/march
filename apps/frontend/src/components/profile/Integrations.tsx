@@ -102,7 +102,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
           console.log("Notion connection not implemented yet"),
       },
     ],
-    [handleGoogleCalendarLogin, handleLinearLogin]
+    [handleGoogleCalendarLogin, handleLinearLogin , installGitHub ]
   )
 
   return (
