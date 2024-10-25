@@ -9,9 +9,9 @@ import { handleCalendarWebhook } from "./controllers/integration/calendar.contro
 import { handleGithubWebhook } from "./controllers/integration/github.controller.js";
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
-import { linearWorker } from "./jobs/linear.job.js";
-import { calendaWorker } from "./jobs/calendar.job.js";
 import { spaceWorker } from "./jobs/space.job.js";
+import { linearWorker } from "./jobs/linear.job.js"
+import { calendaWorker } from "./jobs/calendar.job.js"
 
 const { ValidationError } = Joi;
 const app = express();
