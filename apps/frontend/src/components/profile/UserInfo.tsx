@@ -1,11 +1,12 @@
 "use client"
 import React from "react"
 
+import Image from "next/image"
+
 import { Icon } from "@/src/components/Icon"
 import { User } from "@/src/lib/@types/auth/user"
 import { GithubDark } from "@/src/lib/icons/Github"
 import Google from "@/src/lib/icons/Google"
-import Image from "next/image"
 
 export const getAuthInfo = (
   user: User
@@ -47,20 +48,20 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   return (
     <div className="mb-8 flex flex-col">
       {user.avatar && (
-         <Image
-         src={user.avatar}
-         alt={`${user.fullName}'s Avatar`}
-         width={32}
-         height={32}
-         priority
-         className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
-       />
+        <Image
+          src={user.avatar}
+          alt={`${user.fullName}'s Avatar`}
+          width={32}
+          height={32}
+          priority
+          className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
+        />
       )}
       <h2 className="mb-1 text-[16px] font-semibold text-foreground">
         {user.fullName || "Anonymous User"}
       </h2>
       <p className="mb-4 text-xs text-secondary-foreground">{email}</p>
-      <div className="text-md flex items-center text-secondary-foreground">
+      <div className="flex items-center text-base text-secondary-foreground">
         <span className="mr-2 text-[13px]">Logged in with {authMethod}</span>
         {icon}
       </div>

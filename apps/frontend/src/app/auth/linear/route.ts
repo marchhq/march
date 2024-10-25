@@ -1,7 +1,6 @@
 import axios from "axios"
 import { NextRequest, NextResponse } from "next/server"
 
-import { LINEAR_ACCESS_TOKEN } from "@/src/lib/constants/cookie"
 import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest) {
@@ -28,16 +27,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const { accessToken } = response.data
-
     const res = NextResponse.redirect(new URL("/profile", redirectDomain))
-    res.cookies.set(LINEAR_ACCESS_TOKEN, accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: "/",
-    })
 
     return res
   } catch (error) {
