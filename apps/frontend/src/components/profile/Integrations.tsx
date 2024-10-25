@@ -21,12 +21,12 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
   connected,
   onConnect,
 }) => (
-  <div className="flex items-center justify-between rounded-lg py-4 text-foreground">
+  <div className="flex items-center justify-between rounded-lg p-4 text-foreground">
     <div className="flex items-center space-x-4">
       <div className="flex size-5 items-center justify-center">
         {integration.icon}
       </div>
-      <div className="max-w-md">
+      <div className="max-w-md text-left">
         <h4 className="text-[13px] font-medium">{integration.name}</h4>
         <p className="text-[13px] text-secondary-foreground">
           {integration.description}
@@ -108,7 +108,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   return (
     <div className="mb-8">
       <h3 className="mb-4 text-xl font-semibold text-foreground">
-        Integrations
+        Connect your stack
       </h3>
       <div className="-ml-8 space-y-4">
         {integrations.map((integration) => (
