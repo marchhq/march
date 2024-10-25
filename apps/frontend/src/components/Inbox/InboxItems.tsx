@@ -22,30 +22,29 @@ export const InboxItems: React.FC = () => {
   )
 
   const {
-    items,
+    inbox,
     currentItem,
     setCurrentItem,
-    fetchItems,
+    fetchInbox,
     updateItem,
     isLoading,
   } = useCycleItemStore()
 
-  const fetchInbox = useCallback(async () => {
-    console.log("Fetching inbox...")
+  const { items } = inbox
+
+  const fetchInboxItems = useCallback(async () => {
     try {
-      await fetchItems(session)
+      await fetchInbox(session)
     } catch (error) {
       console.error("Error fetching inbox:", error)
     }
-  }, [session, fetchItems])
+  }, [session, fetchInbox])
 
   useEffect(() => {
-    fetchInbox()
-  }, [fetchInbox])
+    fetchInboxItems()
+  }, [fetchInboxItems])
 
-  useEffect(() => {
-    console.log("Current Items:", items)
-  }, [items])
+  useEffect(() => {}, [items])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
@@ -130,10 +129,9 @@ export const InboxItems: React.FC = () => {
   ]
 
   const filteredItems = items.filter((item) => item.status !== "done")
-  console.log("Filtered items:", filteredItems)
 
   return (
-    <div className="flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
+    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
       {filteredItems.length === 0 ? (
         <p>inbox empty</p>
       ) : (

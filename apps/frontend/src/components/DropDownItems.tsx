@@ -1,3 +1,5 @@
+import { format } from "path"
+
 import React from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
@@ -13,6 +15,7 @@ import { CycleItem } from "../lib/@types/Items/Cycle"
 import { Box, CheckedBox } from "../lib/icons/Box"
 import { LinearDark } from "../lib/icons/LinearCircle"
 import { Link } from "../lib/icons/Link"
+import { getOverdueText } from "../utils/datetime"
 
 interface DropdownItemProps {
   item: CycleItem
@@ -50,6 +53,7 @@ const getSourceIcon = (source) => {
 export const DropdownItem: React.FC<DropdownItemProps> = ({
   item,
   onToggleComplete,
+  isOverdue,
 }) => {
   return (
     <div className="group relative flex items-center gap-2">
@@ -74,16 +78,16 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
         ) : (
           <span className="truncate">{item.title}</span>
         )}
-        {/*       {isOverdue && (
+        {isOverdue && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
-              <TooltipContent>{getOverdueText()}</TooltipContent>
+              <TooltipContent>{getOverdueText(item.dueDate)}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )} */}
+        )}
       </li>
       <div className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <AddToSpace itemId={item._id} />
