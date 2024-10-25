@@ -170,7 +170,11 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     }
   },
 
-  fetchThisWeek: async (session: string) => {
+  fetchThisWeek: async (
+    session: string,
+    startDate?: string,
+    endDate?: string
+  ) => {
     set((state) => ({
       thisWeek: { ...state.thisWeek, isLoading: true, error: null },
       isLoading: true,
@@ -178,7 +182,13 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     }))
 
     try {
-      const { data } = await api.get(`/api/this-week/`, {
+      const queryParams = new URLSearchParams()
+      if (startDate) queryParams.append("startDate", startDate)
+      if (endDate) queryParams.append("endDate", endDate)
+
+      const url = `/api/this-week/${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
+
+      const { data } = await api.get(url, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
