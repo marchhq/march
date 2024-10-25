@@ -31,7 +31,7 @@ export const SidebarSpaces: React.FC = () => {
   return (
     <div className="flex flex-col gap-2">
       <button
-        className="flex items-center gap-1 text-xs"
+        className="flex items-center gap-1 text-xs outline-none"
         onClick={() => setToggle(!toggle)}
       >
         <Image src={SpacesIcon} alt="spaces icon" width={10} height={10} />

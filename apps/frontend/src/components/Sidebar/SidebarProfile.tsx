@@ -17,10 +17,6 @@ export const SidebarProfile: React.FC = () => {
 
   const isActive = pathname.includes("/profile")
 
-  useEffect(() => {
-    console.log("user", user)
-  }, [user])
-
   return (
     <div className="flex flex-col gap-3.5">
       {user && (
@@ -45,7 +41,7 @@ export const SidebarProfile: React.FC = () => {
           ) : (
             <UserIcon className="size-4" />
           )}
-          <span>{user.fullName}</span>
+          <span>{user.userName}</span>
         </Link>
       )}
     </div>
