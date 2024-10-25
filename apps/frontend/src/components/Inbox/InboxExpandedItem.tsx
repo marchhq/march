@@ -128,13 +128,20 @@ export const InboxExpandedItem: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const isClickOnItem =
-        (event.target as HTMLElement).closest("[data-item-id]") !== null
+      const target = event.target as HTMLElement
+
+      const isClickOnItem = target.closest("[data-item-id]") !== null
+
+      const isTipTapClick =
+        target.closest(".tippy-box") !== null ||
+        target.closest(".tiptap") !== null ||
+        target.closest("[data-tippy-root]") !== null
 
       if (
         divRef.current &&
-        !divRef.current.contains(event.target as Node) &&
-        !isClickOnItem
+        !divRef.current.contains(target) &&
+        !isClickOnItem &&
+        !isTipTapClick
       ) {
         handleClose()
       }
