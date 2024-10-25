@@ -24,7 +24,7 @@ const TodayPage: React.FC = () => {
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
       </section>
-      <section className="mt-6 flex justify-between px-16">
+      <section className="mt-6 flex justify-between px-10">
         <div className="w-2/3">
           <header className="flex items-center justify-start gap-4">
             <DatePicker
