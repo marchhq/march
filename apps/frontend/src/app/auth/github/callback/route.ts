@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const installation_id = searchParams.get("installation_id")
   if (!installation_id) {
     return NextResponse.json(
-      { error: "Missing installation_id parameter" },
+      { message: "Missing installation_id parameter" },
       { status: 400 }
     )
   }
