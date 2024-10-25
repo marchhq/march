@@ -40,7 +40,13 @@ export default function InitialMeetings() {
   return (
     <>
       {loading && <p>loading...</p>}
-      {!loading && <p>No meetings found.</p>}
+      {!loading && (
+        <section className="size-full overflow-auto bg-background px-8 py-16">
+          <p className="text-secondary-foreground">
+            Please connect your calendar.
+          </p>
+        </section>
+      )}
     </>
   )
 }
