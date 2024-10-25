@@ -22,7 +22,10 @@ const SidebarMainLink = ({
   const activeClass = isActive && "text-foreground"
   return (
     <Link
-      className={classNames("hover-text flex items-center gap-2", activeClass)}
+      className={classNames(
+        "hover-text flex items-center gap-2 font-medium",
+        activeClass
+      )}
       href={href}
     >
       {icon}

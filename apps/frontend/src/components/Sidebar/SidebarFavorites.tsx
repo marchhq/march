@@ -2,8 +2,10 @@
 
 import React, { useState } from "react"
 
-import { ChevronDown, ChevronRight } from "lucide-react"
+import Image from "next/image"
 
+import ChevronDownIcon from "@/public/icons/chevrondown.svg"
+import ChevronRightIcon from "@/public/icons/chevronright.svg"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
 
 export const SidebarFavorites: React.FC = () => {
@@ -17,9 +19,21 @@ export const SidebarFavorites: React.FC = () => {
       >
         <span>favorites</span>
         {toggle ? (
-          <ChevronDown className="size-3.5" />
+          <Image
+            src={ChevronDownIcon}
+            alt="chevron down icon"
+            width={12}
+            height={12}
+            className="opacity-50"
+          />
         ) : (
-          <ChevronRight className="size-3.5" />
+          <Image
+            src={ChevronRightIcon}
+            alt="chevron right icon"
+            width={12}
+            height={12}
+            className="opacity-50"
+          />
         )}
       </button>
       {toggle && (
