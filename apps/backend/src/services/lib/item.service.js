@@ -58,6 +58,13 @@ const getThisWeekItems = async (me) => {
 }
 
 const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+    if (!me || !startDate || !endDate) {
+        throw new Error('Missing required parameters: me, startDate, endDate');
+    }
+
+    if (startDate > endDate) {
+        throw new Error('startDate must be before or equal to endDate');
+    }
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
 
