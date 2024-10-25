@@ -4,27 +4,32 @@ import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
 import { SkeletonCard } from "./atoms/SkeletonCard"
 import { useMeetings } from "../hooks/useMeetings"
+import { Meeting } from "../lib/@types/Items/calendar"
 import { Link, Link as LinkIcon } from "../lib/icons/Link"
 import { MeetMuted, ZoomMuted } from "../lib/icons/Meet"
 
-const getMeetingType = (meeting) => {
+const getMeetingType = (meeting: Meeting): "google-meet" | "zoom" | "other" => {
   if (
     meeting.conferenceData?.conferenceSolution?.name === "Google Meet" ||
-    meeting.hangoutLink?.includes("meet.google.com")
+    meeting.conferenceData?.entryPoints.some((entry) =>
+      entry.uri.includes("meet.google.com")
+    )
   ) {
     return "google-meet"
   }
 
   if (
-    meeting.description?.includes("zoom.us") ||
-    meeting.location?.includes("zoom.us")
+    meeting.conferenceData?.conferenceSolution?.name === "Zoom meeting" ||
+    meeting.conferenceData?.entryPoints.some((entry) =>
+      entry.uri.includes("zoom.us")
+    ) ||
+    meeting.location.includes("zoom.us")
   ) {
     return "zoom"
   }
 
   return "other"
 }
-
 const MeetingIcon = ({ type, isActive }) => {
   switch (type) {
     case "google-meet":
@@ -45,7 +50,7 @@ const MeetingIcon = ({ type, isActive }) => {
       )
     default:
       return (
-        <div className={`mt-[4px]`}>
+        <div className={`mt-[6px]`}>
           <Link />
         </div>
       )
@@ -90,9 +95,18 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
     todayMeetings?.map((meeting) => {
       const startTime = new Date(meeting.start.dateTime)
       const endTime = new Date(meeting.end.dateTime)
+
+      const meetingLink =
+        meeting.conferenceData?.entryPoints.find(
+          (entry) => entry.entryPointType === "video"
+        )?.uri ||
+        meeting.conferenceData?.entryPoints[0]?.uri ||
+        meeting.location ||
+        meeting.htmlLink
+
       return {
         title: meeting.summary,
-        link: meeting.hangoutLink || meeting.location,
+        link: meetingLink,
         time: `${formatTime(startTime)}`,
         duration: calculateDuration(startTime, endTime),
         meetingType: getMeetingType(meeting),
@@ -112,7 +126,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
   return (
     <div>
       {agendaItems.length === 0 ? (
-        <li>no agenda items</li>
+        <li className="list-none">No agenda items</li>
       ) : (
         <ol className="relative min-h-[150px] border-s border-border">
           {agendaItems.map((item, index) => (
