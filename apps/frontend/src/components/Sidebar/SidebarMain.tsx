@@ -8,6 +8,13 @@ import { usePathname } from "next/navigation"
 
 import classNames from "@/src/utils/classNames"
 
+function getWeekNumber(date: Date) {
+  const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1)
+  const dayOfMonth = date.getDate()
+  const dayOfWeek = startOfMonth.getDay()
+  return Math.ceil((dayOfMonth + dayOfWeek) / 7)
+}
+
 const SidebarMainLink = ({
   href,
   icon,
@@ -37,6 +44,7 @@ const SidebarMainLink = ({
 export const SidebarMain: React.FC = () => {
   const pathname = usePathname()
   const today = new Date().getDate()
+  const currentWeek = getWeekNumber(new Date())
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -55,7 +63,7 @@ export const SidebarMain: React.FC = () => {
       <SidebarMainLink
         href="/this-week"
         icon={<Calendar className="size-4" />}
-        label="this week"
+        label={`week ${currentWeek}`}
         isActive={pathname.includes("/this-week")}
       />
     </div>
