@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
+import useUserStore from "@/src/lib/store/user.store"
 
 export default function InitialMeetings() {
   const { session } = useAuth()
@@ -17,15 +18,22 @@ export default function InitialMeetings() {
     (state: MeetsStoreType) => state.fetchLatestMeet
   )
 
+  const { user } = useUserStore()
+
   useEffect(() => {
     const getMeetId = async () => {
       try {
+        if (!user?.integrations?.googleCalendar?.connected) {
+          setLoading(false)
+          return
+        }
+
         const meet: Meet | null = await fetchLatestMeet(session)
+
         if (meet && meet._id) {
           router.push(`/space/meetings/${meet._id}`)
         } else {
           setLoading(false)
-          console.log("no meetings")
         }
       } catch (error) {
         const e = error as AxiosError
@@ -34,8 +42,17 @@ export default function InitialMeetings() {
       }
     }
 
-    getMeetId()
-  }, [fetchLatestMeet, session, router])
+    if (session) {
+      getMeetId()
+    } else {
+      setLoading(false)
+    }
+  }, [
+    fetchLatestMeet,
+    session,
+    router,
+    user?.integrations?.googleCalendar?.connected,
+  ])
 
   return (
     <>
