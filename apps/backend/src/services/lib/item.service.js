@@ -57,6 +57,28 @@ const getThisWeekItems = async (me) => {
     return items;
 }
 
+const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    const items = await Item.find({
+        user: me,
+        isArchived: false,
+        isDeleted: false,
+        spaces: { $exists: true, $eq: [] },
+        $or: [
+            { status: { $nin: ["done"] } },
+            {
+                status: "done",
+                cycleDate: { $gte: startDate, $lte: endDate }
+            }
+        ],
+        cycleDate: { $ne: null }
+    });
+
+    return items;
+};
+
 const getAllitems = async (me) => {
     const items = await Item.find({
         user: me,
@@ -341,5 +363,6 @@ export {
     updateInboxItem,
     searchItemsByTitle,
     createInboxItem,
-    getThisWeekItems
+    getThisWeekItems,
+    getThisWeekItemsByDateRange
 }
