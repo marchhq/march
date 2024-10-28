@@ -1,77 +1,76 @@
-// const { Queue, Worker } = require('bullmq');
-// const redisConnection = { host: 'localhost', port: 6379 }; // Adjust your Redis connection config
-// const Item = require('./models/Item'); // Assuming this is your model
+import { cycleQueue } from '../loaders/bullmq.loader.js';
+import { Worker } from "bullmq";
+import { redisConnection } from "../loaders/redis.loader.js";
+import { Item } from '../models/lib/item.model.js';
 
-// // Create the BullMQ queue for managing cycles
-// const cycleQueue = new Queue('cycleQueue', {
-//     connection: redisConnection
-// });
+const getCurrentWeekDateRange = () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
 
-// // Helper function to get start and end of the current week (Sunday to Saturday)
-// const getCurrentWeekDateRange = () => {
-//     const now = new Date();
-//     const dayOfWeek = now.getDay(); // 0 is Sunday
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - dayOfWeek);
+    startOfWeek.setHours(0, 0, 0, 0);
 
-//     // Get start of the week (Sunday)
-//     const startOfWeek = new Date(now);
-//     startOfWeek.setDate(now.getDate() - dayOfWeek); // Adjust to Sunday
-//     startOfWeek.setHours(0, 0, 0, 0); // Set to start of the day
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
 
-//     // Get end of the week (Saturday)
-//     const endOfWeek = new Date(startOfWeek);
-//     endOfWeek.setDate(startOfWeek.getDate() + 6); // Set to Saturday
-//     endOfWeek.setHours(23, 59, 59, 999); // Set to end of the day
+    return { startOfWeek, endOfWeek };
+};
 
-//     return { startOfWeek, endOfWeek };
-// };
+const cycleWorker = new Worker('cycleQueue', async job => {
+    console.log('Processing job to move overdue items to the next cycle...');
 
-// // Create the job processor (Worker) that will move overdue items to the next cycle
-// const cycleWorker = new Worker('cycleQueue', async job => {
-//     console.log('Processing job to move overdue items to the next cycle...');
+    try {
+        const { startOfWeek, endOfWeek } = getCurrentWeekDateRange();
+        console.log("startOfWeek: ", startOfWeek);
+        console.log("endOfWeek: ", endOfWeek);
 
-//     try {
-//         // Get the current week date range (from Sunday to Saturday)
-//         const { startOfWeek, endOfWeek } = getCurrentWeekDateRange();
+        const overdueItems = await Item.find({
+            cycleDate: { $gte: startOfWeek, $lte: endOfWeek },
+            status: { $nin: ['done'] },
+            isArchived: false,
+            isDeleted: false
+        });
 
-//         // Find items with cycleDate between start and end of current week, and status not 'done'
-//         const overdueItems = await Item.find({
-//             cycleDate: { $gte: startOfWeek, $lte: endOfWeek }, // Current week range
-//             status: { $nin: ['done'] }, // Status not 'done'
-//             isArchived: false,
-//             isDeleted: false
-//         });
+        const startOfNextWeek = new Date(endOfWeek);
+        startOfNextWeek.setDate(endOfWeek.getDate() + 5);
+        startOfNextWeek.setHours(0, 0, 0, 0);
+        console.log(": startOfNextWeek: ", startOfNextWeek);
 
-//         // Get the start of next week (Sunday)
-//         const startOfNextWeek = new Date(endOfWeek);
-//         startOfNextWeek.setDate(endOfWeek.getDate() + 1); // Move to next Sunday
-//         startOfNextWeek.setHours(0, 0, 0, 0); // Set to start of the day
+        for (const item of overdueItems) {
+            item.cycleDate = startOfNextWeek;
+            await item.save();
+        }
 
-//         // Loop through items and update cycleDate for the overdue ones
-//         for (let item of overdueItems) {
-//             item.cycleDate = startOfNextWeek; // Update cycleDate to next week's Sunday
-//             await item.save(); // Save the updated item
-//         }
+        console.log(`Processed ${overdueItems.length} overdue items.`);
+    } catch (error) {
+        console.error('Error processing job:', error);
+    }
+}, {
+    connection: redisConnection
+});
 
-//         console.log(`Processed ${overdueItems.length} overdue items.`);
-//     } catch (error) {
-//         console.error('Error processing job:', error);
-//     }
-// }, {
-//     connection: redisConnection
-// });
+// Add the job to the queue
+const addCycleJob = async () => {
+    await cycleQueue.add('moveOverdueItems', {}, {
+        jobId: 'moveOverdueItemsJob',
+        repeat: {
+            cron: '59 23 * * 6' // Runs every Saturday at 11:59 PM
+        },
+        removeOnComplete: true
+    });
+};
 
-// // Add the job to the queue
-// const addCycleJob = async () => {
-//     await cycleQueue.add('moveOverdueItems', {}, {
-//         repeat: {
-//             cron: '59 23 * * 6' // Runs every Saturday at 11:59 PM
-//         }
-//     });
-// };
+// Schedule the job
+addCycleJob().then(() => {
+    console.log('Cycle job scheduled successfully!');
+}).catch(err => {
+    console.error('Failed to schedule cycle job:', err);
+});
 
-// // Schedule the job
-// addCycleJob().then(() => {
-//     console.log('Cycle job scheduled successfully!');
-// }).catch(err => {
-//     console.error('Failed to schedule cycle job:', err);
-// });
+export {
+    cycleQueue,
+    cycleWorker,
+    addCycleJob
+}

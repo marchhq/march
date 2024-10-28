@@ -57,6 +57,30 @@ const getThisWeekItems = async (me) => {
     return items;
 }
 
+// const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+//     if (!me || !startDate || !endDate) {
+//         throw new Error('Missing required parameters: me, startDate, endDate');
+//     }
+
+//     if (startDate > endDate) {
+//         throw new Error('startDate must be before or equal to endDate');
+//     }
+//     startDate.setHours(0, 0, 0, 0);
+//     endDate.setHours(23, 59, 59, 999);
+
+//     console.log("startDate: ", startDate);
+//     console.log("endDate: ", endDate);
+
+//     const items = await Item.find({
+//         user: me,
+//         isArchived: false,
+//         isDeleted: false,
+//         spaces: { $exists: true, $eq: [] },
+//         cycleDate: { $gte: startDate, $lte: endDate }
+//     })
+
+//     return items;
+// };
 const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
     if (!me || !startDate || !endDate) {
         throw new Error('Missing required parameters: me, startDate, endDate');
@@ -65,16 +89,25 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
     if (startDate > endDate) {
         throw new Error('startDate must be before or equal to endDate');
     }
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(23, 59, 59, 999);
+
+    // Set startDate to the start of the day (00:00:00.000) in UTC
+    startDate = new Date(startDate);
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    // Set endDate to the end of the day (23:59:59.999) in UTC
+    endDate = new Date(endDate);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    console.log("startDate (UTC): ", startDate);
+    console.log("endDate (UTC): ", endDate);
 
     const items = await Item.find({
         user: me,
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        cycleDate: { $gte: startDate, $lte: endDate }
-    })
+        cycleDate: { $gte: startDate, $lte: endDate } // Match cycleDate within the week
+    });
 
     return items;
 };
