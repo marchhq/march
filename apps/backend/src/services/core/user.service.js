@@ -163,6 +163,7 @@ const createGoogleUser = async ({
         error.statusCode = 400;
         throw error
     }
+    userName = userName || email.split('@')[0];
     user = await User.create({
         fullName,
         userName,
@@ -197,6 +198,7 @@ const createGithubUser = async (
         error.statusCode = 400;
         throw error
     }
+    userName = userName || email.split('@')[0];
     user = await User.create({
         fullName,
         userName,
