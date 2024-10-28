@@ -229,6 +229,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, createItem }) => {
 
       const data: Partial<CycleItem> = {
         cycleDate: cycleDate,
+        dueDate: today.toISOString(),
         title: text.trim(),
         status: column,
       }
