@@ -79,7 +79,8 @@ const ItemSchema = new Schema(
         },
         isFavourited: {
             type: Boolean,
-            default: false
+            default: false,
+            index: true
         },
         isCompleted: {
             type: Boolean,
