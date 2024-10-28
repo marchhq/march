@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React from "react"
 
 import { UserIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
 import classNames from "@/src/utils/classNames"
 
@@ -15,15 +16,17 @@ export const SidebarProfile: React.FC = () => {
 
   const user = useUserInfo()
 
+  const { isCollapsed } = useSidebarCollapse()
+
   const isActive = pathname.includes("/profile")
 
   return (
-    <div className="flex flex-col gap-3.5">
+    <div className={classNames(!isCollapsed && "pr-10")}>
       {user && (
         <Link
           className={classNames(
             isActive && "text-foreground",
-            "hover-text group flex items-center gap-2 font-medium"
+            "hover-text group flex items-center gap-2 font-medium min-h-5"
           )}
           href="/profile"
         >
@@ -41,7 +44,7 @@ export const SidebarProfile: React.FC = () => {
           ) : (
             <UserIcon className="size-4" />
           )}
-          <span>{user.userName}</span>
+          {!isCollapsed && <span>{user.userName}</span>}
         </Link>
       )}
     </div>

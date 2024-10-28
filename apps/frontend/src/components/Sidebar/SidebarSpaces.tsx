@@ -10,6 +10,7 @@ import ChevronRightIcon from "@/public/icons/chevronright.svg"
 import SpacesIcon from "@/public/icons/spacesicon.svg"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 import useSpaceStore from "@/src/lib/store/space.store"
 
 const spaceLinkClassName = "border-l border-border pl-2 -ml-[1px]"
@@ -19,6 +20,7 @@ export const SidebarSpaces: React.FC = () => {
   const { session } = useAuth()
 
   const [toggle, setToggle] = useState(false)
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse()
 
   const { spaces, fetchSpaces } = useSpaceStore()
 
@@ -28,14 +30,25 @@ export const SidebarSpaces: React.FC = () => {
     }
   }, [toggle, session, fetchSpaces])
 
+  useEffect(() => {
+    setToggle(!isCollapsed)
+  }, [isCollapsed])
+
+  const handleToggle = () => {
+    setToggle(!toggle)
+    if (isCollapsed) {
+      toggleCollapse()
+    }
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <button
         className="flex items-center gap-1 text-xs outline-none"
-        onClick={() => setToggle(!toggle)}
+        onClick={handleToggle}
       >
         <Image src={SpacesIcon} alt="spaces icon" width={10} height={10} />
-        <span>spaces</span>
+        {!isCollapsed && <span>spaces</span>}
         {toggle ? (
           <Image
             src={ChevronDownIcon}

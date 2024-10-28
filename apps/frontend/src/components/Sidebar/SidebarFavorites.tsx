@@ -1,23 +1,38 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
+import { Sparkle } from "lucide-react"
 import Image from "next/image"
 
 import ChevronDownIcon from "@/public/icons/chevrondown.svg"
 import ChevronRightIcon from "@/public/icons/chevronright.svg"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
+import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 
 export const SidebarFavorites: React.FC = () => {
-  const [toggle, setToggle] = useState(true)
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse()
+  const [toggle, setToggle] = useState(false)
+
+  useEffect(() => {
+    setToggle(!isCollapsed)
+  }, [isCollapsed])
+
+  const handleToggle = () => {
+    setToggle(!toggle)
+    if (isCollapsed) {
+      toggleCollapse()
+    }
+  }
 
   return (
     <div className="flex flex-col gap-2">
       <button
         className="flex items-center gap-1 text-xs outline-none"
-        onClick={() => setToggle(!toggle)}
+        onClick={handleToggle}
       >
-        <span>favorites</span>
+        <Sparkle className="size-2.5" />
+        {!isCollapsed && <span>favorites</span>}
         {toggle ? (
           <Image
             src={ChevronDownIcon}
