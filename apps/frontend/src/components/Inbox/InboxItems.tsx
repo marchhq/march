@@ -85,8 +85,10 @@ export const InboxItems: React.FC = () => {
           return newSet
         })
 
+        const today = new Date().toISOString()
+
         setTimeout(() => {
-          updateItem(session, { status: newStatus }, id)
+          updateItem(session, { status: newStatus, dueDate: today }, id)
           setAnimatingItems((prev) => {
             const newSet = new Set(prev)
             newSet.delete(id)
