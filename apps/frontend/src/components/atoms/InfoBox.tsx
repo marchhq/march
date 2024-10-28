@@ -3,7 +3,7 @@ import { ProfileBtn } from "./ProfileBtn"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
 
 export const InfoBox = (): JSX.Element => {
-  const user = useUserInfo()
+  const { user } = useUserInfo()
 
   return (
     <div>
