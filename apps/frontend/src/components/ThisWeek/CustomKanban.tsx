@@ -152,7 +152,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
           />
         ))}
         <DropIndicator beforeId={null} column={column} />
-        <AddCard column={column} updateItem={createItem} />
+        <AddCard column={column} createItem={createItem} />
       </div>
     </div>
   )
@@ -201,10 +201,10 @@ const DropIndicator = ({ beforeId, column }) => {
 
 interface AddCardProps {
   column: string
-  updateItem: (session: string, data: Partial<CycleItem>) => void
+  createItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
+const AddCard: React.FC<AddCardProps> = ({ column, createItem }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -224,18 +224,20 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
       e?.preventDefault()
       if (!text.trim().length) return
 
-      const cycleDate = getEndOfCurrentWeek(new Date())
+      const today = new Date()
+      const cycleDate = today.toISOString()
 
       const data: Partial<CycleItem> = {
         cycleDate: cycleDate,
+        dueDate: today.toISOString(),
         title: text.trim(),
         status: column,
       }
 
-      updateItem(session, data)
+      createItem(session, data)
       handleCancel()
     },
-    [updateItem, column, session, text]
+    [createItem, column, session, text]
   )
 
   const handleCancel = () => {

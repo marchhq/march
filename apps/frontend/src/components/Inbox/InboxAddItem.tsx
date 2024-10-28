@@ -43,8 +43,10 @@ export const InboxAddItem: React.FC = () => {
     }
 
     try {
+      const today = new Date().toISOString()
       const data: Partial<CycleItem> = {
         title,
+        dueDate: today,
       }
 
       await createItem(session, data)
