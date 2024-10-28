@@ -25,7 +25,7 @@ export const Sidebar: React.FC = () => {
 }
 
 const SidebarNav: React.FC = () => {
-  const { isCollapsed, toggleCollapse } = useSidebarCollapse()
+  const { isCollapsed } = useSidebarCollapse()
   return (
     <nav
       className={classNames(
@@ -34,33 +34,40 @@ const SidebarNav: React.FC = () => {
       )}
     >
       <div className="flex flex-col gap-7">
-        <button
-          onClick={toggleCollapse}
-          className="hover-bg group/button invisible absolute right-10 top-[45px] group-hover:visible"
-        >
-          {!isCollapsed ? (
-            <Image
-              src={ChevronDownIcon}
-              alt="chevron down icon"
-              width={12}
-              height={12}
-              className="opacity-50 group-hover/button:opacity-100"
-            />
-          ) : (
-            <Image
-              src={ChevronRightIcon}
-              alt="chevron right icon"
-              width={12}
-              height={12}
-              className="opacity-50 group-hover/button:opacity-100"
-            />
-          )}
-        </button>
+        <SidebarCollapseButton />
         <SidebarProfile />
         <SidebarMain />
         <SidebarFavorites />
         <SidebarSpaces />
       </div>
     </nav>
+  )
+}
+
+const SidebarCollapseButton: React.FC = () => {
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse()
+  return (
+    <button
+      onClick={toggleCollapse}
+      className="hover-bg group/button invisible absolute right-10 top-[45px] group-hover:visible"
+    >
+      {!isCollapsed ? (
+        <Image
+          src={ChevronDownIcon}
+          alt="chevron down icon"
+          width={12}
+          height={12}
+          className="opacity-50 group-hover/button:opacity-100"
+        />
+      ) : (
+        <Image
+          src={ChevronRightIcon}
+          alt="chevron right icon"
+          width={12}
+          height={12}
+          className="opacity-50 group-hover/button:opacity-100"
+        />
+      )}
+    </button>
   )
 }
