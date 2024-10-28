@@ -98,13 +98,13 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
-  if (isLoading) {
+  /*  if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <p>loading...</p>
       </div>
     )
-  }
+  } */
 
   const menuItems = (item: CycleItem) => [
     {
