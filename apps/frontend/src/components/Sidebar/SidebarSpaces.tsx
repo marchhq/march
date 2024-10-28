@@ -44,10 +44,10 @@ export const SidebarSpaces: React.FC = () => {
   return (
     <div className="flex flex-col gap-2">
       <button
-        className="flex items-center gap-1 text-xs outline-none"
+        className="flex items-center gap-2 font-medium outline-none"
         onClick={handleToggle}
       >
-        <Image src={SpacesIcon} alt="spaces icon" width={10} height={10} />
+        <Image src={SpacesIcon} alt="spaces icon" width={16} height={16} />
         {!isCollapsed && <span>spaces</span>}
         {toggle ? (
           <Image
