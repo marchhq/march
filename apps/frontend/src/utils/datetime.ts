@@ -7,7 +7,6 @@ import {
   startOfWeek,
   getWeeksInMonth,
   differenceInDays,
-  isWithinInterval,
 } from "date-fns"
 
 export const getOrdinalSuffix = (day) => {
