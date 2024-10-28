@@ -77,6 +77,10 @@ const ItemSchema = new Schema(
             ref: 'Space',
             default: null
         },
+        isFavourited: {
+            type: Boolean,
+            default: false
+        },
         isCompleted: {
             type: Boolean,
             default: false

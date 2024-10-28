@@ -10,7 +10,7 @@ import {
     moveItemtoDateController,
     getAllitemsController
 } from "../../controllers/core/user.controller.js";
-import { searchItemsByTitleController, createInboxItemController, filterItemsController, getThisWeekItemsByDateRangeController } from "../../controllers/lib/item.controller.js"
+import { searchItemsByTitleController, createInboxItemController, filterItemsController, getThisWeekItemsByDateRangeController, getUserfavouriteItemsController } from "../../controllers/lib/item.controller.js"
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
@@ -26,6 +26,7 @@ router.route("/inbox/:item/").get(getInboxItemController);
 router.route("/this-week/").get(getThisWeekItemsByDateRangeController);
 router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
+router.route("/favourite/").get(getUserfavouriteItemsController);
 router.route("/setDate/").post(moveItemtoDateController);
 router.route("/:date/").get(getUserItemsByDateController);
 
