@@ -1,4 +1,5 @@
 import { Worker } from "bullmq";
+import { spaceQueue } from "../loaders/bullmq.loader.js";
 import { redisConnection } from "../loaders/redis.loader.js";
 import { createSpace } from "../services/lib/space.service.js";
 import { createBlock } from "../services/lib/block.service.js";
@@ -66,5 +67,6 @@ spaceWorker.on('failed', (job, err) => {
 });
 
 export {
-    spaceWorker
+    spaceWorker,
+    spaceQueue
 }

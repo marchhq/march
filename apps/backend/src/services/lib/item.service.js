@@ -53,9 +53,64 @@ const getThisWeekItems = async (me) => {
         ],
         cycleDate: { $ne: null }
     })
-
+        .sort({ createdAt: -1 });
     return items;
 }
+
+// const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+//     if (!me || !startDate || !endDate) {
+//         throw new Error('Missing required parameters: me, startDate, endDate');
+//     }
+
+//     if (startDate > endDate) {
+//         throw new Error('startDate must be before or equal to endDate');
+//     }
+//     startDate.setHours(0, 0, 0, 0);
+//     endDate.setHours(23, 59, 59, 999);
+
+//     console.log("startDate: ", startDate);
+//     console.log("endDate: ", endDate);
+
+//     const items = await Item.find({
+//         user: me,
+//         isArchived: false,
+//         isDeleted: false,
+//         spaces: { $exists: true, $eq: [] },
+//         cycleDate: { $gte: startDate, $lte: endDate }
+//     })
+
+//     return items;
+// };
+const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+    if (!me || !startDate || !endDate) {
+        throw new Error('Missing required parameters: me, startDate, endDate');
+    }
+
+    if (startDate > endDate) {
+        throw new Error('startDate must be before or equal to endDate');
+    }
+
+    // Set startDate to the start of the day (00:00:00.000) in UTC
+    startDate = new Date(startDate);
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    // Set endDate to the end of the day (23:59:59.999) in UTC
+    endDate = new Date(endDate);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    console.log("startDate (UTC): ", startDate);
+    console.log("endDate (UTC): ", endDate);
+
+    const items = await Item.find({
+        user: me,
+        isArchived: false,
+        isDeleted: false,
+        spaces: { $exists: true, $eq: [] },
+        cycleDate: { $gte: startDate, $lte: endDate } // Match cycleDate within the week
+    });
+
+    return items;
+};
 
 const getAllitems = async (me) => {
     const items = await Item.find({
@@ -97,16 +152,22 @@ const getUserOverdueItems = async (me) => {
 }
 
 const getUserItemsByDate = async (me, date) => {
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const items = await Item.find({
         user: me,
-        dueDate: date,
+        dueDate: { $gte: startOfDay, $lte: endOfDay },
         isArchived: false,
         isDeleted: false
     })
         .sort({ createdAt: -1 });
 
     return items;
-}
+};
 
 const getOverdueItemsByDate = async (me, date) => {
     const items = await Item.find({
@@ -341,5 +402,6 @@ export {
     updateInboxItem,
     searchItemsByTitle,
     createInboxItem,
-    getThisWeekItems
+    getThisWeekItems,
+    getThisWeekItemsByDateRange
 }

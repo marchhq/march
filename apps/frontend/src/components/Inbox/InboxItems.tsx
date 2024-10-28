@@ -85,8 +85,10 @@ export const InboxItems: React.FC = () => {
           return newSet
         })
 
+        const today = new Date().toISOString()
+
         setTimeout(() => {
-          updateItem(session, { status: newStatus }, id)
+          updateItem(session, { status: newStatus, dueDate: today }, id)
           setAnimatingItems((prev) => {
             const newSet = new Set(prev)
             newSet.delete(id)
@@ -98,13 +100,13 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
-  if (isLoading) {
+  /*  if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <p>loading...</p>
       </div>
     )
-  }
+  } */
 
   const menuItems = (item: CycleItem) => [
     {
