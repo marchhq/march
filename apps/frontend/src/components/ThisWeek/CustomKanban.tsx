@@ -7,28 +7,42 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
-import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
-export const CustomKanban = () => {
+export const CustomKanban = ({ startDate, endDate }) => {
   return (
     <div className="h-full w-[calc(100%-100px)]">
-      <Board />
+      <Board startDate={startDate} endDate={endDate} />
     </div>
   )
 }
 
-const Board = () => {
-  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+const Board = ({ startDate, endDate }) => {
+  const { thisWeek, fetchThisWeek, updateItem, setWeekDates } =
+    useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
 
   useEffect(() => {
-    fetchThisWeek(session)
-  }, [session, fetchThisWeek])
+    setWeekDates(startDate, endDate)
+  }, [startDate, endDate, setWeekDates])
+
+  useEffect(() => {
+    fetchThisWeek(session, startDate, endDate)
+  }, [session, fetchThisWeek, startDate, endDate])
+
+  useEffect(() => {}, [items])
 
   const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
-    updateItem(session, newStatus, itemId)
+    const today = new Date().toISOString()
+    updateItem(
+      session,
+      {
+        status: newStatus.status,
+        dueDate: today,
+      },
+      itemId
+    )
   }
 
   return (
@@ -150,7 +164,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
           />
         ))}
         <DropIndicator beforeId={null} column={column} />
-        <AddCard column={column} updateItem={createItem} />
+        <AddCard column={column} createItem={createItem} />
       </div>
     </div>
   )
@@ -199,10 +213,10 @@ const DropIndicator = ({ beforeId, column }) => {
 
 interface AddCardProps {
   column: string
-  updateItem: (session: string, data: Partial<CycleItem>) => void
+  createItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
+const AddCard: React.FC<AddCardProps> = ({ column, createItem }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -222,18 +236,19 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
       e?.preventDefault()
       if (!text.trim().length) return
 
-      const cycleDate = getEndOfCurrentWeek(new Date())
-
       const data: Partial<CycleItem> = {
-        cycleDate: cycleDate,
         title: text.trim(),
         status: column,
       }
 
-      updateItem(session, data)
+      if (column === "done") {
+        data.dueDate = new Date().toISOString()
+      }
+
+      createItem(session, data)
       handleCancel()
     },
-    [updateItem, column, session, text]
+    [createItem, column, session, text]
   )
 
   const handleCancel = () => {
