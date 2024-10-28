@@ -241,6 +241,10 @@ const AddCard: React.FC<AddCardProps> = ({ column, createItem }) => {
         status: column,
       }
 
+      if (column === "done") {
+        data.dueDate = new Date().toISOString()
+      }
+
       createItem(session, data)
       handleCancel()
     },
