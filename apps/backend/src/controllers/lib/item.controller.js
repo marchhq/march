@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserfavouriteItems } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -174,6 +174,20 @@ const getThisWeekItemsByDateRangeController = async (req, res, next) => {
     }
 };
 
+const getUserfavouriteItemsController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+
+        const items = await getUserfavouriteItems(user);
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createItemController,
     filterItemsController,
@@ -183,5 +197,6 @@ export {
     searchItemsByTitleController,
     getAllItemsByBloackController,
     createInboxItemController,
-    getThisWeekItemsByDateRangeController
+    getThisWeekItemsByDateRangeController,
+    getUserfavouriteItemsController
 }

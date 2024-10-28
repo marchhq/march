@@ -384,6 +384,17 @@ const searchItemsByTitle = async (title, user) => {
     return items;
 };
 
+const getUserfavouriteItems = async (user) => {
+    const items = await Item.find({
+        isFavourited: true,
+        isArchived: false,
+        isDeleted: false,
+        user
+    })
+
+    return items;
+};
+
 export {
     getInboxItems,
     getInboxItem,
@@ -403,5 +414,6 @@ export {
     searchItemsByTitle,
     createInboxItem,
     getThisWeekItems,
-    getThisWeekItemsByDateRange
+    getThisWeekItemsByDateRange,
+    getUserfavouriteItems
 }
