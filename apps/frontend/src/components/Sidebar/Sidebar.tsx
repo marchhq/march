@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 
 import { SidebarFavorites } from "@/src/components/Sidebar/SidebarFavorites"
