@@ -189,7 +189,6 @@ const config: Config = {
         foreground: "rgba(var(--foreground))",
         background: {
           DEFAULT: "rgba(var(--background))",
-          test: "rgba(var(--background-test))",
           hover: "rgba(var(--background-hover))",
           active: "rgba(var(--background-active))",
         },
