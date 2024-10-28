@@ -14,7 +14,7 @@ import classNames from "@/src/utils/classNames"
 export const SidebarProfile: React.FC = () => {
   const pathname = usePathname()
 
-  const user = useUserInfo()
+  const { user } = useUserInfo()
 
   const { isCollapsed } = useSidebarCollapse()
 
