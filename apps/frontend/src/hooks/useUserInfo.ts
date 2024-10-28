@@ -30,5 +30,5 @@ export const useUserInfo = () => {
     }
   }, [session])
 
-  return user
+  return { user }
 }

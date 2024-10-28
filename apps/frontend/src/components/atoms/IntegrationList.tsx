@@ -40,7 +40,7 @@ const integrations = [
 ]
 
 export const IntegrationList = (): JSX.Element => {
-  const user = useUserInfo()
+  const { user } = useUserInfo()
   const handleLogin = useGoogleCalendarLogin("/profile")
 
   return (
