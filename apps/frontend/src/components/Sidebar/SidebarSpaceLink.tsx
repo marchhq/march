@@ -13,7 +13,7 @@ export const SidebarSpaceLink = ({
 }: {
   href: string
   label: string
-  customClass: string
+  customClass?: string
   isActive?: boolean
   isSpace?: boolean
 }) => {
@@ -22,7 +22,7 @@ export const SidebarSpaceLink = ({
   return (
     <Link
       className={classNames(
-        "truncate",
+        "truncate hover-text",
         customClass,
         activeClass,
         activeClassSpace

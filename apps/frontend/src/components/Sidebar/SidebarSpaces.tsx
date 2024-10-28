@@ -12,7 +12,7 @@ import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useSpaceStore from "@/src/lib/store/space.store"
 
-const spaceLinkClassName = "border-l border-border pl-2 hover-text -ml-[1px]"
+const spaceLinkClassName = "border-l border-border pl-2 -ml-[1px]"
 
 export const SidebarSpaces: React.FC = () => {
   const pathname = usePathname()
