@@ -53,7 +53,7 @@ const getThisWeekItems = async (me) => {
         ],
         cycleDate: { $ne: null }
     })
-
+        .sort({ createdAt: -1 });
     return items;
 }
 
