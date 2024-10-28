@@ -38,16 +38,8 @@ export const SidebarFavorites: React.FC = () => {
       </button>
       {toggle && (
         <div className="flex flex-col gap-2 font-medium">
-          <SidebarSpaceLink
-            href="/inbox"
-            label="my productive setup"
-            customClass="hover-text"
-          />
-          <SidebarSpaceLink
-            href="/inbox"
-            label="my other productive setup"
-            customClass="hover-text"
-          />
+          <SidebarSpaceLink href="/inbox" label="my productive setup" />
+          <SidebarSpaceLink href="/inbox" label="my other productive setup" />
         </div>
       )}
     </div>
