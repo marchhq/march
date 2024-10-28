@@ -1,4 +1,5 @@
 import { Worker } from "bullmq";
+import { calendarQueue } from "../loaders/bullmq.loader.js";
 import { redisConnection } from "../loaders/redis.loader.js";
 import { getGoogleCalendarupComingMeetings, saveUpcomingMeetingsToDatabase } from "../services/integration/calendar.service.js";
 
@@ -7,6 +8,8 @@ const processCalendarJob = async (job) => {
     try {
         const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
         if (meetings) {
+            const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
+
             await saveUpcomingMeetingsToDatabase(meetings, userId);
         }
     } catch (error) {
@@ -32,5 +35,6 @@ calendaWorker.on('failed', (job, err) => {
 });
 
 export {
-    calendaWorker
+    calendaWorker,
+    calendarQueue
 }

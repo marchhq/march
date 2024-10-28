@@ -25,3 +25,10 @@ export interface User {
   accounts: Partial<Record<AccountProvider, AuthAccount>>
   integrations: Partial<Record<IntegrationType, { connected: boolean }>>
 }
+
+export const isIntegrationConnected = (
+  user: User | null,
+  integrationType: IntegrationType
+): boolean => {
+  return user?.integrations?.[integrationType]?.connected === true
+}
