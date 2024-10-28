@@ -73,15 +73,8 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        $or: [
-            { status: { $nin: ["done"] } },
-            {
-                status: "done",
-                cycleDate: { $gte: startDate, $lte: endDate }
-            }
-        ],
-        cycleDate: { $ne: null }
-    });
+        cycleDate: { $gte: startDate, $lte: endDate }
+    })
 
     return items;
 };
