@@ -93,3 +93,12 @@ export const getOverdueText = (dueDate: string): string => {
 
   return `since ${diffInDays} ${diffInDays === 1 ? "day" : "days"}`
 }
+
+export const getWeekDates = (date: Date) => {
+  const start = startOfWeek(date, { weekStartsOn: 0 })
+  const end = endOfWeek(date, { weekStartsOn: 0 })
+  return {
+    startDate: format(start, "yyyy-MM-dd"),
+    endDate: format(end, "yyyy-MM-dd"),
+  }
+}

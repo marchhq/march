@@ -9,23 +9,25 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
-export const CustomKanban = () => {
+export const CustomKanban = ({ startDate, endDate }) => {
   return (
     <div className="h-full w-[calc(100%-100px)]">
-      <Board />
+      <Board startDate={startDate} endDate={endDate} />
     </div>
   )
 }
 
-const Board = () => {
+const Board = ({ startDate, endDate }) => {
   const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
 
   useEffect(() => {
-    fetchThisWeek(session)
-  }, [session, fetchThisWeek])
+    fetchThisWeek(session, startDate, endDate)
+  }, [session, fetchThisWeek, startDate, endDate])
+
+  useEffect(() => {}, [items])
 
   const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
     updateItem(session, newStatus, itemId)
