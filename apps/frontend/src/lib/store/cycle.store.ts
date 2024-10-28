@@ -327,6 +327,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         error: errorMessage,
         isLoading: false,
       }))
+      throw error
     }
   },
 
