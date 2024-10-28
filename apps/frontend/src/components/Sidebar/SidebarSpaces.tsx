@@ -31,8 +31,10 @@ export const SidebarSpaces: React.FC = () => {
   }, [toggle, session, fetchSpaces])
 
   useEffect(() => {
-    setToggle(!isCollapsed)
-  }, [isCollapsed])
+    if (toggle) {
+      setToggle(!isCollapsed)
+    }
+  }, [toggle, isCollapsed])
 
   const handleToggle = () => {
     setToggle(!toggle)

@@ -8,15 +8,26 @@ import Image from "next/image"
 import ChevronDownIcon from "@/public/icons/chevrondown.svg"
 import ChevronRightIcon from "@/public/icons/chevronright.svg"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
+import { useAuth } from "@/src/contexts/AuthContext"
 import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 
 export const SidebarFavorites: React.FC = () => {
+  const { session } = useAuth()
+
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
+  const { favorites, fetchFavorites } = useCycleItemStore()
   const [toggle, setToggle] = useState(false)
 
   useEffect(() => {
-    setToggle(!isCollapsed)
-  }, [isCollapsed])
+    fetchFavorites(session)
+  }, [session, fetchFavorites])
+
+  useEffect(() => {
+    if (toggle) {
+      setToggle(!isCollapsed)
+    }
+  }, [toggle, isCollapsed])
 
   const handleToggle = () => {
     setToggle(!toggle)
@@ -25,38 +36,47 @@ export const SidebarFavorites: React.FC = () => {
     }
   }
 
-  return (
-    <div className="flex flex-col gap-2">
-      <button
-        className="flex items-center gap-2 font-medium outline-none"
-        onClick={handleToggle}
-      >
-        <Sparkle className="size-4" />
-        {!isCollapsed && <span>favorites</span>}
-        {toggle ? (
-          <Image
-            src={ChevronDownIcon}
-            alt="chevron down icon"
-            width={12}
-            height={12}
-            className="opacity-50"
-          />
-        ) : (
-          <Image
-            src={ChevronRightIcon}
-            alt="chevron right icon"
-            width={12}
-            height={12}
-            className="opacity-50"
-          />
+  if (favorites.items.length !== 0) {
+    return (
+      <div className="flex flex-col gap-2">
+        <button
+          className="flex items-center gap-2 font-medium outline-none"
+          onClick={handleToggle}
+        >
+          <Sparkle className="size-4" />
+          {!isCollapsed && <span>favorites</span>}
+          {toggle ? (
+            <Image
+              src={ChevronDownIcon}
+              alt="chevron down icon"
+              width={12}
+              height={12}
+              className="opacity-50"
+            />
+          ) : (
+            <Image
+              src={ChevronRightIcon}
+              alt="chevron right icon"
+              width={12}
+              height={12}
+              className="opacity-50"
+            />
+          )}
+        </button>
+        {toggle && favorites.items.length !== 0 && (
+          <div className="flex flex-col gap-2 font-medium">
+            {favorites.items.map((favorite) => (
+              <SidebarSpaceLink
+                key={favorite._id}
+                href={"/inbox"}
+                label={favorite.title}
+              />
+            ))}
+          </div>
         )}
-      </button>
-      {toggle && (
-        <div className="flex flex-col gap-2 font-medium">
-          <SidebarSpaceLink href="/inbox" label="my productive setup" />
-          <SidebarSpaceLink href="/inbox" label="my other productive setup" />
-        </div>
-      )}
-    </div>
-  )
+      </div>
+    )
+  }
+
+  return null
 }
