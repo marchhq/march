@@ -7,7 +7,6 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
-import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
 export const CustomKanban = ({ startDate, endDate }) => {
   return (
@@ -18,10 +17,15 @@ export const CustomKanban = ({ startDate, endDate }) => {
 }
 
 const Board = ({ startDate, endDate }) => {
-  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+  const { thisWeek, fetchThisWeek, updateItem, setWeekDates } =
+    useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
+
+  useEffect(() => {
+    setWeekDates(startDate, endDate)
+  }, [startDate, endDate, setWeekDates])
 
   useEffect(() => {
     fetchThisWeek(session, startDate, endDate)
