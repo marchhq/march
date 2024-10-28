@@ -30,7 +30,15 @@ const Board = ({ startDate, endDate }) => {
   useEffect(() => {}, [items])
 
   const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
-    updateItem(session, newStatus, itemId)
+    const today = new Date().toISOString()
+    updateItem(
+      session,
+      {
+        status: newStatus.status,
+        dueDate: today,
+      },
+      itemId
+    )
   }
 
   return (
@@ -229,7 +237,6 @@ const AddCard: React.FC<AddCardProps> = ({ column, createItem }) => {
 
       const data: Partial<CycleItem> = {
         cycleDate: cycleDate,
-        dueDate: today.toISOString(),
         title: text.trim(),
         status: column,
       }
