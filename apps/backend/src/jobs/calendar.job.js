@@ -7,6 +7,8 @@ const processCalendarJob = async (job) => {
     try {
         const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
         if (meetings) {
+            const meetings = await getGoogleCalendarupComingMeetings(accessToken, refreshToken);
+
             await saveUpcomingMeetingsToDatabase(meetings, userId);
         }
     } catch (error) {
@@ -16,6 +18,8 @@ const processCalendarJob = async (job) => {
 };
 
 const calendaWorker = new Worker('calendarQueue', async (job) => {
+    console.log("Job received by worker:", job.data);
+    console.log("im sajda's checking clg");
     await processCalendarJob(job);
 }, {
     connection: redisConnection
