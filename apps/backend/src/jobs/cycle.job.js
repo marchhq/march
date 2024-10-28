@@ -28,7 +28,7 @@ const cycleWorker = new Worker('cycleQueue', async job => {
 
         const overdueItems = await Item.find({
             cycleDate: { $gte: startOfWeek, $lte: endOfWeek },
-            status: { $nin: ['done'] },
+            isCompleted: false,
             isArchived: false,
             isDeleted: false
         });
