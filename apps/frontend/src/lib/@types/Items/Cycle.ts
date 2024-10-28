@@ -33,7 +33,11 @@ export interface CycleItemStore {
   fetchInbox: (session: string) => Promise<void>
   fetchToday: (session: string, date: string) => Promise<void>
   fetchOverdue: (session: string, date: string) => Promise<void>
-  fetchThisWeek: (session: string) => Promise<void>
+  fetchThisWeek: (
+    session: string,
+    startDate: string,
+    endDate: string
+  ) => Promise<void>
   fetchItem: (session: string, id: string) => Promise<void>
   fetchItemByDate: (session: string, date: string) => Promise<void>
   createItem: (
