@@ -295,7 +295,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         const end = new Date(thisWeek.endDate)
         const middleTimestamp =
           start.getTime() + (end.getTime() - start.getTime()) / 2
-        item.dueDate = new Date(middleTimestamp).toISOString()
+        item.cycleDate = new Date(middleTimestamp).toISOString()
       }
 
       const { data } = await api.post("/api/inbox", item, {
