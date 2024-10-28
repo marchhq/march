@@ -3,7 +3,6 @@ import { createUpdateJournalController, getUserTodayJournalController, getUserAl
 import {
     getInboxItemsController,
     getInboxItemController,
-    getThisWeekItemsController,
     updateInboxItemController,
     getUserTodayItemsController,
     getUserOverdueItemsController,
@@ -11,7 +10,7 @@ import {
     moveItemtoDateController,
     getAllitemsController
 } from "../../controllers/core/user.controller.js";
-import { searchItemsByTitleController, createInboxItemController, filterItemsController } from "../../controllers/lib/item.controller.js"
+import { searchItemsByTitleController, createInboxItemController, filterItemsController, getThisWeekItemsByDateRangeController } from "../../controllers/lib/item.controller.js"
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
@@ -24,7 +23,7 @@ router.route("/inbox/").get(getInboxItemsController);
 router.route("/inbox/").post(createInboxItemController);
 router.route("/inbox/:item/").put(updateInboxItemController);
 router.route("/inbox/:item/").get(getInboxItemController);
-router.route("/this-week/").get(getThisWeekItemsController);
+router.route("/this-week/").get(getThisWeekItemsByDateRangeController);
 router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
 router.route("/setDate/").post(moveItemtoDateController);

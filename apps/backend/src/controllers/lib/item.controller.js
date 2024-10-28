@@ -1,5 +1,5 @@
 // import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -153,6 +153,27 @@ const searchItemsByTitleController = async (req, res, next) => {
     }
 };
 
+const getThisWeekItemsByDateRangeController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { startDate, endDate } = req.query;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({
+                message: "Please provide both startDate and endDate."
+            });
+        }
+
+        const items = await getThisWeekItemsByDateRange(me, new Date(startDate), new Date(endDate));
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createItemController,
     filterItemsController,
@@ -161,5 +182,6 @@ export {
     getItemFilterByLabelController,
     searchItemsByTitleController,
     getAllItemsByBloackController,
-    createInboxItemController
+    createInboxItemController,
+    getThisWeekItemsByDateRangeController
 }
