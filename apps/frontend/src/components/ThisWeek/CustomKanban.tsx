@@ -129,6 +129,8 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
     setActive(false)
   }
 
+  const totalItems = items?.length || 0
+
   return (
     <div className="group/section flex size-full flex-1 flex-col gap-4 rounded-lg">
       <div className="flex items-center gap-2 text-xl text-foreground">
@@ -150,7 +152,11 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
           />
         ))}
         <DropIndicator beforeId={null} column={column} />
-        <AddCard column={column} updateItem={createItem} />
+        <AddCard
+          column={column}
+          updateItem={createItem}
+          totalItems={totalItems}
+        />
       </div>
     </div>
   )
@@ -202,7 +208,7 @@ interface AddCardProps {
   updateItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
+const AddCard = ({ column, updateItem, totalItems = 0 }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -221,15 +227,12 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
     (e?: React.FormEvent) => {
       e?.preventDefault()
       if (!text.trim().length) return
-
       const cycleDate = getEndOfCurrentWeek(new Date())
-
-      const data: Partial<CycleItem> = {
+      const data = {
         cycleDate: cycleDate,
         title: text.trim(),
         status: column,
       }
-
       updateItem(session, data)
       handleCancel()
     },
@@ -243,19 +246,6 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      /*
-      if (
-        adding &&
-        addItemRef.current &&
-        !addItemRef.current.contains(event.target as Node)
-      ) {
-        if (text.trim().length) {
-          handleSubmit()
-        } else {
-          handleCancel()
-      }
-      */
-
       if (
         adding &&
         addItemRef.current &&
@@ -264,7 +254,6 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
         handleCancel()
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
@@ -282,6 +271,14 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
     }
   }
 
+  // Determine visibility class based on column and total items
+  const getVisibilityClass = () => {
+    if (column === "todo" && totalItems === 0) {
+      return "visible" // Always visible for todo column when no items
+    }
+    return "invisible group-hover/section:visible" // Default hover behavior
+  }
+
   return (
     <div ref={addItemRef} className="">
       {adding ? (
@@ -293,7 +290,6 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
               setText(e.target.value)
             }
             onKeyDown={handleKeyDown}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent p-4 text-sm font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
@@ -305,7 +301,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
         <motion.button
           layout
           onClick={() => setAdding(true)}
-          className="hover-bg invisible flex w-full items-center gap-2 rounded-lg p-4 text-sm group-hover/section:visible"
+          className={`hover-bg flex w-full items-center gap-2 rounded-lg p-4 text-sm ${getVisibilityClass()}`}
         >
           <Icon icon="ic:round-plus" className="text-[18px]" />
           <p>New item</p>
