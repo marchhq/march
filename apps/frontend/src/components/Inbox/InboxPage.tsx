@@ -1,6 +1,7 @@
 "use client"
 
 import { Icon } from "@iconify-icon/react"
+import { ListFilter } from "lucide-react"
 
 import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
 import { InboxExpandedItem } from "@/src/components/Inbox/InboxExpandedItem"
@@ -14,13 +15,16 @@ export const InboxPage: React.FC = () => {
     <div className="flex h-full gap-8">
       <div
         className={classNames(
-          "flex h-full max-w-[800px] flex-col gap-8 text-sm",
+          "flex h-full max-w-[800px] flex-col gap-2 text-sm",
           items ? "w-1/2" : "w-full"
         )}
       >
-        <header className="flex items-center gap-4 text-foreground">
-          <Icon icon="hugeicons:inbox" className="text-[38px]" />
-          <h1 className="text-2xl font-semibold">Inbox</h1>
+        <header className="flex flex-col gap-3 pl-4 text-foreground">
+          <div className="flex items-center gap-3 text-secondary-foreground">
+            <ListFilter size={16} />
+            <h1 className="">all unorganised items</h1>
+          </div>
+          <h2 className="text-sm font-semibold">Inbox</h2>
         </header>
         <div className="flex h-full flex-col gap-4 pb-16">
           <InboxAddItem />

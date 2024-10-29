@@ -19,35 +19,31 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="ml-[160px] h-full overflow-y-auto bg-background">
-      <section className="mt-4 flex max-w-[96%] items-center justify-end gap-4">
+    <main className="ml-[160px] h-full overflow-y-hidden bg-background p-10">
+      {/* <section className="mt-4 flex max-w-[96%] items-center justify-between gap-4">
         <span className="text-[11px] font-medium text-white">show agenda</span>
         <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
-      </section>
-      <section className="mt-6 flex justify-between px-16">
+      </section> */}
+      <section className="flex justify-between ">
         <div className="w-2/3">
-          <header className="flex items-center justify-start gap-4">
-            <DatePicker
-              selectedDate={selectedDate}
-              onDateChange={setSelectedDate}
-            />
+          <header className="flex items-center justify-start">
             <DateCycle
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
             />
           </header>
-          <section className="mb-4 mt-6">
+          <section className="my-3">
             <TodayTextArea selectedDate={selectedDate} />
           </section>
           <section className="space-y-8 text-[16px] text-secondary-foreground">
             <TodayItems selectedDate={selectedDate} />
           </section>
         </div>
-        {showAgenda && (
-          <div className="w-1/4 text-secondary-foreground">
+        {/*showAgenda && (
+          <div className=" text-secondary-foreground">
             <TodayMeetings selectedDate={selectedDate} />
           </div>
-        )}
+        )*/}
       </section>
     </main>
   )

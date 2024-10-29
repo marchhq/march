@@ -96,8 +96,7 @@ export const InboxAddItem: React.FC = () => {
           onClick={() => setAddingItem(true)}
         >
           <div className="flex items-center gap-2">
-            <Icon icon="ic:round-plus" className="text-[18px]" />
-            <p>Click to Add an Item</p>
+            <p className="text-sm">add anything..</p>
           </div>
         </button>
       ) : (
