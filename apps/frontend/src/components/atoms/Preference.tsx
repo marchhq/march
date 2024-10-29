@@ -9,7 +9,7 @@ export const PreferenceBox = (): JSX.Element => {
   const [is24HourFormat, setIs24HourFormat] = useState(false)
   const [currentDateTime, setCurrentDateTime] = useState(new Date())
 
-  const user = useUserInfo()
+  const { user } = useUserInfo()
 
   useEffect(() => {
     const timer = setInterval(() => {

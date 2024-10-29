@@ -7,28 +7,42 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
-import { getEndOfCurrentWeek } from "@/src/utils/datetime"
 
-export const CustomKanban = () => {
+export const CustomKanban = ({ startDate, endDate }) => {
   return (
     <div className="h-full w-[calc(100%-100px)]">
-      <Board />
+      <Board startDate={startDate} endDate={endDate} />
     </div>
   )
 }
 
-const Board = () => {
-  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+const Board = ({ startDate, endDate }) => {
+  const { thisWeek, fetchThisWeek, updateItem, setWeekDates } =
+    useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
 
   useEffect(() => {
-    fetchThisWeek(session)
-  }, [session, fetchThisWeek])
+    setWeekDates(startDate, endDate)
+  }, [startDate, endDate, setWeekDates])
+
+  useEffect(() => {
+    fetchThisWeek(session, startDate, endDate)
+  }, [session, fetchThisWeek, startDate, endDate])
+
+  useEffect(() => {}, [items])
 
   const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
-    updateItem(session, newStatus, itemId)
+    const today = new Date().toISOString()
+    updateItem(
+      session,
+      {
+        status: newStatus.status,
+        dueDate: today,
+      },
+      itemId
+    )
   }
 
   return (
@@ -205,7 +219,7 @@ const DropIndicator = ({ beforeId, column }) => {
 
 interface AddCardProps {
   column: string
-  updateItem: (session: string, data: Partial<CycleItem>) => void
+  createItem: (session: string, data: Partial<CycleItem>) => void
 }
 
 const AddCard = ({ column, updateItem, totalItems = 0 }) => {
@@ -227,6 +241,7 @@ const AddCard = ({ column, updateItem, totalItems = 0 }) => {
     (e?: React.FormEvent) => {
       e?.preventDefault()
       if (!text.trim().length) return
+<<<<<<< HEAD
       const cycleDate = getEndOfCurrentWeek(new Date())
       const data = {
         cycleDate: cycleDate,
@@ -234,9 +249,22 @@ const AddCard = ({ column, updateItem, totalItems = 0 }) => {
         status: column,
       }
       updateItem(session, data)
+=======
+
+      const data: Partial<CycleItem> = {
+        title: text.trim(),
+        status: column,
+      }
+
+      if (column === "done") {
+        data.dueDate = new Date().toISOString()
+      }
+
+      createItem(session, data)
+>>>>>>> 7d9cce183a616acfbe82efc3137676881a9d5534
       handleCancel()
     },
-    [updateItem, column, session, text]
+    [createItem, column, session, text]
   )
 
   const handleCancel = () => {
