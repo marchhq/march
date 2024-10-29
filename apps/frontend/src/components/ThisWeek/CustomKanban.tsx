@@ -297,34 +297,34 @@ const AddCard = ({ column, createItem, totalItems = 0 }) => {
     return "invisible group-hover/section:visible" // Default hover behavior
   }
 
-  return (
-    <div ref={addItemRef} className="">
-      {adding ? (
-        <motion.form layout onSubmit={handleSubmit}>
-          <textarea
-            ref={textareaRefTitle}
-            value={text}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setText(e.target.value)
-            }
-            onKeyDown={handleKeyDown}
-            autoFocus
-            placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent p-4 text-sm font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-            rows={1}
-          />
-          <button type="submit" style={{ display: "none" }}></button>
-        </motion.form>
-      ) : (
-        <motion.button
-          layout
-          onClick={() => setAdding(true)}
-          className={`hover-bg flex w-full items-center gap-2 rounded-lg p-4 text-sm ${getVisibilityClass()}`}
-        >
-          <Icon icon="ic:round-plus" className="text-[18px]" />
-          <p>New item</p>
-        </motion.button>
-      )}
-    </div>
-  )
-}
+return (
+  <div ref={addItemRef} className="">
+    {adding ? (
+      <motion.form layout onSubmit={handleSubmit}>
+        <textarea
+          ref={textareaRefTitle}
+          value={text}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setText(e.target.value)
+          }
+          onKeyDown={handleKeyDown}
+          /* eslint-disable-next-line jsx-a11y/no-autofocus */
+          autoFocus
+          placeholder="title"
+          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent p-4 text-sm font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+          rows={1}
+        />
+        <button type="submit" style={{ display: "none" }}></button>
+      </motion.form>
+    ) : (
+      <motion.button
+        layout
+        onClick={() => setAdding(true)}
+        className={`hover-bg flex w-full items-center gap-2 rounded-lg p-4 text-sm ${getVisibilityClass()}`}
+      >
+        <Icon icon="ic:round-plus" className="text-[18px]" />
+        <p>New item</p>
+      </motion.button>
+    )}
+  </div>
+)
