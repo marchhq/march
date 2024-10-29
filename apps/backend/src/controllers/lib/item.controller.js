@@ -1,4 +1,3 @@
-// import { itemQueue } from "../../loaders/bullmq.loader.js";
 import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserfavouriteItems } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
@@ -56,7 +55,18 @@ const createInboxItemController = async (req, res, next) => {
         const user = req.user._id;
 
         const requestedData = req.body;
-        const items = await createInboxItem(user, requestedData);
+        const { type } = requestedData;
+
+        let itemData = requestedData;
+
+        if (type === 'link' || type === 'text') {
+            const updatedData = await generateLinkPreview(requestedData);
+            if (updatedData) {
+                itemData = updatedData;
+            }
+        }
+
+        const items = await createInboxItem(user, itemData);
 
         res.status(200).json({
             response: items
