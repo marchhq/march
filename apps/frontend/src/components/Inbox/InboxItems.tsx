@@ -186,6 +186,9 @@ export const InboxItems: React.FC = () => {
                           className="mt-0.5 text-[18px]"
                         />
                       </button>
+                      <span className="mt-1.5 size-2 rounded bg-white">
+                        {item.metadata?.favicon}
+                      </span>
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
                         <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
