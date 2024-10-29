@@ -68,6 +68,7 @@ export const SidebarFavorites: React.FC = () => {
             {favorites.items.map((favorite) => (
               <SidebarSpaceLink
                 key={favorite._id}
+                /* todo: dynamic href with space and block id */
                 href={"/inbox"}
                 label={favorite.title}
               />
