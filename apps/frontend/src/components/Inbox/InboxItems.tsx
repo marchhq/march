@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import { extractParagraphs } from "@/src/utils/helpers"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -203,7 +204,9 @@ export const InboxItems: React.FC = () => {
                     </div>
                   </div>
                   <div className="ml-[18px] pl-2 text-xs">
-                    <p className="max-w-full truncate">{item.description}</p>
+                    <p className="max-w-full truncate">
+                      {extractParagraphs(item.description)}
+                    </p>
                   </div>
                 </div>
               </div>
