@@ -252,7 +252,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     }))
 
     try {
-      const { data } = await api.get("/api/favourite", {
+      const { data } = await api.get("/api/favorite", {
         headers: { Authorization: `Bearer ${session}` },
       })
 
