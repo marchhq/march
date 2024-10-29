@@ -84,7 +84,9 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
               <TooltipTrigger>
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
-              <TooltipContent>{getOverdueText(item.dueDate)}</TooltipContent>
+              <TooltipContent>
+                {getOverdueText(item.dueDate) ?? ""}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
