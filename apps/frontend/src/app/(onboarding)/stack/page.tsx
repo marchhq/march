@@ -32,7 +32,7 @@ const StackConnect: React.FC = () => {
       <div className="text-red-500">Failed to fetch user data: {error}</div>
     )
   }
-  if (!user) {
+  if (!user && !isLoading) {
     return <div className="text-primary-foreground">User not found</div>
   }
 
@@ -55,7 +55,7 @@ const StackConnect: React.FC = () => {
     <main className="flex h-full flex-col items-center">
       <div className="flex size-full flex-col items-center justify-center gap-12 pb-4">
         <div className="flex flex-col gap-2 text-base font-medium text-secondary-foreground">
-          <Integrations user={user} />
+          {user && <Integrations user={user} />}
           <div className="flex w-full flex-col items-center text-base">
             <button
               onClick={handleContinue}
