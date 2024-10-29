@@ -3,6 +3,7 @@ import React, { useState } from "react"
 import { ListFilter } from "lucide-react"
 
 import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 
 const formatDate = (date: Date) => {
   const weekday = date.toLocaleDateString("en-US", { weekday: "long" })
@@ -21,6 +22,15 @@ export const DateCycle: React.FC<DateCycleProps> = ({
   selectedDate,
   onDateChange,
 }) => {
+  const { today, overdue } = useCycleItemStore()
+  const { items: todayItems } = today
+  const { items: overdueItems } = overdue
+
+  const totalTodayItems = todayItems.length
+  const totalOverdueItems = overdueItems.length
+
+  const totalItems = totalTodayItems + totalOverdueItems
+
   const goToPreviousDay = () => {
     const newDate = new Date(selectedDate)
     newDate.setDate(newDate.getDate() - 1)
@@ -52,7 +62,10 @@ export const DateCycle: React.FC<DateCycleProps> = ({
         </div>
       </div>
       {isToday && (
-        <p className="text-sm font-semibold text-foreground">Today</p>
+        <div className="flex items-center gap-2 text-sm">
+          <h1 className="font-semibold text-foreground">Today</h1>
+          <p className="text-secondary-foreground">{totalItems}</p>
+        </div>
       )}
     </div>
   )
