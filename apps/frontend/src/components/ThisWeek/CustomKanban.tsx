@@ -33,46 +33,33 @@ const Board = ({ startDate, endDate }) => {
 
   useEffect(() => {}, [items])
 
-  const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
-    const today = new Date().toISOString()
-    updateItem(
-      session,
-      {
-        status: newStatus.status,
-        dueDate: today,
-      },
-      itemId
-    )
-  }
-
   return (
     <div className="flex size-full gap-8">
       <Column
         title="todo"
         column="todo"
         items={items.filter((item) => item.status === "todo")}
-        onDragEnd={handleDragEnd}
         icon="carbon:circle-outline"
       />
       <Column
         title="in progress"
         column="in progress"
         items={items.filter((item) => item.status === "in progress")}
-        onDragEnd={handleDragEnd}
         icon="carbon:in-progress"
       />
       <Column
         title="done"
         column="done"
         items={items.filter((item) => item.status === "done")}
-        onDragEnd={handleDragEnd}
         icon="carbon:circle-solid"
       />
     </div>
   )
 }
 
-const Column = ({ title, items, column, onDragEnd, icon }) => {
+const Column = ({ title, items, column, icon }) => {
+  const { updateItem } = useCycleItemStore()
+  const { session } = useAuth()
   const { createItem } = useCycleItemStore()
   const [active, setActive] = useState(false)
 
@@ -85,6 +72,24 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
     e.preventDefault()
     highlightIndicator(e)
     setActive(true)
+  }
+
+  const onDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
+    const today = new Date().toISOString()
+
+    const data: Partial<CycleItem> = {
+      status: newStatus.status,
+    }
+
+    if (column !== "done") {
+      data.dueDate = null
+    }
+
+    if (column === "done") {
+      data.dueDate = today
+    }
+
+    updateItem(session, data, itemId)
   }
 
   const handleDragEnd = (e) => {
