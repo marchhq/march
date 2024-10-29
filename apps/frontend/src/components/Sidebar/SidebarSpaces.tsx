@@ -22,7 +22,7 @@ export const SidebarSpaces: React.FC = () => {
   const [toggle, setToggle] = useState(false)
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
 
-  const { spaces, fetchSpaces } = useSpaceStore()
+  const { error, spaces, fetchSpaces } = useSpaceStore()
 
   useEffect(() => {
     if (toggle) {
@@ -70,19 +70,26 @@ export const SidebarSpaces: React.FC = () => {
         )}
       </button>
       {toggle && spaces && (
-        <div className="ml-2 mt-1 flex flex-col gap-2 border-l border-border">
-          {spaces.map((space) => (
-            <SidebarSpaceLink
-              key={space._id}
-              href={`/space/${space.name.toLowerCase().replace(/\s+/g, "-")}`}
-              label={space.name}
-              customClass={spaceLinkClassName}
-              isActive={pathname.includes(
-                `/space/${space.name.toLowerCase().replace(/\s+/g, "-")}`
-              )}
-              isSpace={true}
-            />
-          ))}
+        <div>
+          {error && (
+            <div className="truncate text-xs text-danger-foreground">
+              <span>{error}</span>
+            </div>
+          )}
+          <div className="ml-2 mt-1 flex flex-col gap-2 border-l border-border">
+            {spaces.map((space) => (
+              <SidebarSpaceLink
+                key={space._id}
+                href={`/space/${space.name.toLowerCase().replace(/\s+/g, "-")}`}
+                label={space.name}
+                customClass={spaceLinkClassName}
+                isActive={pathname.includes(
+                  `/space/${space.name.toLowerCase().replace(/\s+/g, "-")}`
+                )}
+                isSpace={true}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

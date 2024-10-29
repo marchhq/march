@@ -26,10 +26,13 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
         `${BACKEND_URL}/spaces/`,
         config
       )
-      set({ spaces: response.data.spaces, loading: false })
+      set({
+        spaces: response.data.spaces,
+        loading: false,
+      })
     } catch (error: any) {
       set({
-        error: error?.response?.data?.message || "Failed to fetch pages",
+        error: error?.response?.data?.message || "failed to fetch spaces",
         loading: false,
       })
     }
