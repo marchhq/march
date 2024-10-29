@@ -10,7 +10,9 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 
 export const InboxPage: React.FC = () => {
-  const { items } = useCycleItemStore()
+  const { inbox } = useCycleItemStore()
+  const { items } = inbox
+  const totalItems = items.length
   return (
     <div className="flex h-full gap-8">
       <div
@@ -24,7 +26,10 @@ export const InboxPage: React.FC = () => {
             <ListFilter size={16} />
             <h1 className="">all unorganised items</h1>
           </div>
-          <h2 className="text-sm font-semibold">Inbox</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold">Inbox</h2>
+            <p className="text-sm text-secondary-foreground">{totalItems}</p>
+          </div>
         </header>
         <div className="flex h-full flex-col gap-4 pb-16">
           <InboxAddItem />
