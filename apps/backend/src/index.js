@@ -12,6 +12,7 @@ import bodyParser from "body-parser";
 import { spaceWorker } from "./jobs/space.job.js";
 import { linearWorker } from "./jobs/linear.job.js"
 import { calendaWorker } from "./jobs/calendar.job.js"
+import { addCycleJob } from "./jobs/cycle.job.js";
 
 const { ValidationError } = Joi;
 const app = express();
@@ -34,6 +35,7 @@ app.post("/github/webhook", handleGithubWebhook);
 app.post("/sms", handleSmsItemCreation);
 
 initRoutes(app);
+addCycleJob();
 // Express error handler
 app.use((err, req, res, next) => {
     console.log(err);

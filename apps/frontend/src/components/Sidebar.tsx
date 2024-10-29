@@ -14,6 +14,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { useModal } from "../contexts/ModalProvider"
 import { type User } from "../lib/@types/auth/user"
 import { BACKEND_URL } from "../lib/constants/urls"
+import useUserStore from "../lib/store/user.store"
 import {
   Tooltip,
   TooltipContent,
@@ -62,6 +63,7 @@ const Sidebar: React.FC = () => {
   const { showModal } = useModal()
 
   const [isExpanded, setIsExpanded] = useState(false)
+  const { setUser } = useUserStore()
 
   if (pathname.includes("auth")) {
     return null
@@ -73,6 +75,7 @@ const Sidebar: React.FC = () => {
   const today = new Date()
   const day = today.getDate()
 
+  // Todo: can be replaced with fetchUser of userStore for more cleaner code
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data } = useQuery<User>({
     queryKey: ["user"],
@@ -83,6 +86,7 @@ const Sidebar: React.FC = () => {
             Authorization: `Bearer ${session}`,
           },
         })
+        setUser(data)
         return data as User
       } catch (error) {
         return error

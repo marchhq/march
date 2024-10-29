@@ -16,3 +16,16 @@ export function truncateString(input: string, maxLength: number): string {
   }
   return input
 }
+
+export const extractParagraphs = (htmlString) => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlString, "text/html")
+
+  // Get all <p> tags
+  const paragraphs = doc.querySelectorAll("p")
+
+  // Join the text content of all <p> tags
+  return Array.from(paragraphs)
+    .map((p) => p.textContent) // Extract text content of each <p> tag
+    .join(" ") // Join paragraphs into a single string
+}

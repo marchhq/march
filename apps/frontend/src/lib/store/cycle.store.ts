@@ -12,12 +12,16 @@ interface ViewState {
   items: CycleItem[]
   isLoading: boolean
   error: null | string
+  startDate?: string
+  endDate?: string
 }
 
 const initialViewState: ViewState = {
   items: [],
   isLoading: false,
   error: null,
+  startDate: "",
+  endDate: "",
 }
 
 interface ExtendedCycleItemStore extends CycleItemStore {
@@ -29,9 +33,10 @@ interface ExtendedCycleItemStore extends CycleItemStore {
     view: "inbox" | "today" | "overdue" | "thisWeek",
     items: CycleItem[]
   ) => void
+  setWeekDates: (startDate: string, endDate: string) => void
 }
 
-export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
+export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   inbox: { ...initialViewState },
   today: { ...initialViewState },
   overdue: { ...initialViewState },
@@ -170,15 +175,41 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     }
   },
 
-  fetchThisWeek: async (session: string) => {
+  setWeekDates: (startDate, endDate) => {
     set((state) => ({
-      thisWeek: { ...state.thisWeek, isLoading: true, error: null },
+      thisWeek: {
+        ...state.thisWeek,
+        startDate,
+        endDate,
+      },
+    }))
+  },
+
+  fetchThisWeek: async (
+    session: string,
+    startDate?: string,
+    endDate?: string
+  ) => {
+    set((state) => ({
+      thisWeek: {
+        ...state.thisWeek,
+        isLoading: true,
+        error: null,
+        startDate: startDate || state.thisWeek.startDate,
+        endDate: endDate || state.thisWeek.endDate,
+      },
       isLoading: true,
       error: null,
     }))
 
     try {
-      const { data } = await api.get(`/api/this-week/`, {
+      const queryParams = new URLSearchParams()
+      if (startDate) queryParams.append("startDate", startDate)
+      if (endDate) queryParams.append("endDate", endDate)
+
+      const url = `/api/this-week/${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
+
+      const { data } = await api.get(url, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
@@ -189,6 +220,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
           items: data.response || [],
           isLoading: false,
           error: null,
+          startDate: startDate || state.thisWeek.startDate,
+          endDate: endDate || state.thisWeek.endDate,
         },
         items: data.response || [],
         isLoading: false,
@@ -254,6 +287,18 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     }))
 
     try {
+      // Use get to access the current state
+      const { thisWeek } = get()
+
+      // Calculate dueDate if we're in thisWeek view and have dates
+      if (thisWeek.startDate && thisWeek.endDate) {
+        const start = new Date(thisWeek.startDate)
+        const end = new Date(thisWeek.endDate)
+        const middleTimestamp =
+          start.getTime() + (end.getTime() - start.getTime()) / 2
+        item.cycleDate = new Date(middleTimestamp).toISOString()
+      }
+
       const { data } = await api.post("/api/inbox", item, {
         headers: { Authorization: `Bearer ${session}` },
       })
@@ -293,6 +338,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
         error: errorMessage,
         isLoading: false,
       }))
+      throw error
     }
   },
 

@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import { extractParagraphs } from "@/src/utils/helpers"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -85,8 +86,10 @@ export const InboxItems: React.FC = () => {
           return newSet
         })
 
+        const today = new Date().toISOString()
+
         setTimeout(() => {
-          updateItem(session, { status: newStatus }, id)
+          updateItem(session, { status: newStatus, dueDate: today }, id)
           setAnimatingItems((prev) => {
             const newSet = new Set(prev)
             newSet.delete(id)
@@ -98,13 +101,13 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
-  if (isLoading) {
+  /*  if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <p>loading...</p>
       </div>
     )
-  }
+  } */
 
   const menuItems = (item: CycleItem) => [
     {
@@ -201,7 +204,9 @@ export const InboxItems: React.FC = () => {
                     </div>
                   </div>
                   <div className="ml-[18px] pl-2 text-xs">
-                    <p className="max-w-full truncate">{item.description}</p>
+                    <p className="max-w-full truncate">
+                      {extractParagraphs(item.description)}
+                    </p>
                   </div>
                 </div>
               </div>
