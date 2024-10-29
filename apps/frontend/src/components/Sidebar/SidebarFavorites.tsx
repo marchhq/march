@@ -40,7 +40,7 @@ export const SidebarFavorites: React.FC = () => {
     return (
       <div className="flex flex-col gap-2">
         <button
-          className="flex items-center gap-2 font-medium outline-none"
+          className="flex min-h-5 items-center gap-2 font-medium outline-none"
           onClick={handleToggle}
         >
           <Sparkle className="size-4" />
