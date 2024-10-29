@@ -4,7 +4,6 @@ import * as React from "react"
 
 import { DateCycle } from "@/src/components/atoms/Date"
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
-import { DatePicker } from "@/src/components/DatePicker"
 import { TodayItems } from "@/src/components/TodayItems"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
@@ -19,35 +18,35 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="h-full overflow-y-auto bg-background">
-      <section className="mt-4 flex max-w-[96%] items-center justify-end gap-4">
-        <span className="text-[11px] font-medium text-white">show agenda</span>
-        <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
-      </section>
-      <section className="mt-6 flex justify-between px-10">
-        <div className="w-2/3">
-          <header className="flex items-center justify-start gap-4">
-            <DatePicker
-              selectedDate={selectedDate}
-              onDateChange={setSelectedDate}
-            />
+    <main className="h-full overflow-y-hidden bg-background p-10">
+      <section className="flex justify-between">
+        <div className="">
+          <header className="flex items-center justify-start">
             <DateCycle
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
             />
           </header>
-          <section className="mb-4 mt-6">
+          <section className="my-3">
             <TodayTextArea selectedDate={selectedDate} />
           </section>
           <section className="space-y-8 text-[16px] text-secondary-foreground">
             <TodayItems selectedDate={selectedDate} />
           </section>
         </div>
-        {showAgenda && (
-          <div className="w-1/4 text-secondary-foreground">
-            <TodayMeetings selectedDate={selectedDate} />
+        <section className="w-[96%] max-w-[300px]">
+          <div className="flex items-center justify-end gap-4">
+            <span className="mt-2 text-[11px] font-medium text-foreground">
+              show agenda
+            </span>
+            <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
           </div>
-        )}
+          {showAgenda && (
+            <div className="my-4 text-secondary-foreground">
+              <TodayMeetings selectedDate={selectedDate} />
+            </div>
+          )}
+        </section>
       </section>
     </main>
   )

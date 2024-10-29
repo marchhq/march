@@ -10,8 +10,9 @@ export interface CycleItem {
   spaces: string[]
   blocks: string[]
   labels: string[]
-  metadata: {
-    url: string
+  metadata?: {
+    url?: string
+    favicon?: string
   }
   isCompleted: boolean
   isArchived: boolean

@@ -3,10 +3,12 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Icon } from "@iconify-icon/react"
 import { motion } from "framer-motion"
 
+import ImageWithFallback from "../ui/ImageWithFallback"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
+import { isLink } from "@/src/utils/helpers"
 
 export const CustomKanban = ({ startDate, endDate }) => {
   return (
@@ -201,7 +203,18 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
         )}
         data-item-id={_id}
       >
-        <p className="text-sm text-neutral-100">{title}</p>
+        <p className="flex items-center gap-2 text-sm text-neutral-100">
+          {item.metadata?.favicon ? (
+            <ImageWithFallback
+              src={item.metadata?.favicon}
+              alt=""
+              width={12}
+              height={12}
+              className="size-4 shrink-0"
+            />
+          ) : null}
+          <span>{title}</span>
+        </p>
       </motion.div>
     </>
   )
@@ -242,9 +255,27 @@ const AddCard = ({ column, createItem, totalItems = 0 }) => {
       e?.preventDefault()
       if (!text.trim().length) return
 
+      const trimmedTitle = text.trim()
+
+      if (!trimmedTitle) return
+
+      const linkDetected = isLink(trimmedTitle)
+
+      const finalTitle =
+        linkDetected && !/^https:\/\//i.test(trimmedTitle)
+          ? `https://${trimmedTitle}`
+          : trimmedTitle
+
       const data: Partial<CycleItem> = {
-        title: text.trim(),
+        title: finalTitle,
+        type: linkDetected ? "link" : "Issue",
         status: column,
+      }
+
+      if (linkDetected) {
+        data.metadata = {
+          url: finalTitle,
+        }
       }
 
       if (column === "done") {
