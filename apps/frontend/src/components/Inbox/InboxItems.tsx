@@ -190,9 +190,9 @@ export const InboxItems: React.FC = () => {
                       <img
                         src={item.metadata?.favicon}
                         alt="favicon"
-                        width={16}
-                        height={16}
-                        className="size-5 shrink-0"
+                        width={12}
+                        height={12}
+                        className="mt-0.5 size-4 shrink-0"
                       />
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
