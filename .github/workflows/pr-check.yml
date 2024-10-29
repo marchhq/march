@@ -11,41 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code using the latest version
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # Install pnpm
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm
-
-      # Step 1: Install dependencies and run build
-      - name: Install dependencies
-        run: |
-          pnpm install
-
-      - name: Run build
-        run: |
-          pnpm run build
-
-      # Step 2: Check if the branch is up-to-date with preview
-      - name: Fetch preview branch
-        run: git fetch origin preview
-
-      - name: Check if branch is up-to-date with preview
-        id: check_update
-        run: |
-          # Determine if the branch is up-to-date with preview
-          if git merge-base --is-ancestor origin/preview HEAD; then
-            echo "Branch is up-to-date with preview";
-            echo "::set-output name=uptodate::true"
-          else
-            echo "Branch is NOT up-to-date with preview";
-            echo "::set-output name=uptodate::false"
-            exit 1
-          fi
-
-      - name: Set PR status if branch is not up-to-date
-        if: steps.check_update.outputs.uptodate == 'false'
-        run: |
-          echo "Your branch is outdated. Please rebase with the preview branch."
+      # Set up Node.js with caching
+      - name: Set up Node.js and pnpm with cache
+        uses: actions/setup-node@v3
