@@ -168,7 +168,7 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
         <DropIndicator beforeId={null} column={column} />
         <AddCard
           column={column}
-          updateItem={createItem}
+          createItem={createItem}
           totalItems={totalItems}
         />
       </div>
