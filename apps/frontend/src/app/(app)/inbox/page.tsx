@@ -11,7 +11,7 @@ export const metadata: Metadata = generateMetadata({
 
 const Inbox: React.FC = () => {
   return (
-    <section className="ml-[160px] h-full overflow-y-hidden bg-background p-10 text-secondary-foreground">
+    <section className="h-full overflow-y-hidden bg-background p-10 text-secondary-foreground">
       <InboxPage />
     </section>
   )

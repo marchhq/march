@@ -29,6 +29,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
   today: ViewState
   overdue: ViewState
   thisWeek: ViewState
+  favorites: ViewState
   setViewItems: (
     view: "inbox" | "today" | "overdue" | "thisWeek",
     items: CycleItem[]
@@ -41,11 +42,11 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   today: { ...initialViewState },
   overdue: { ...initialViewState },
   thisWeek: { ...initialViewState },
+  favorites: { ...initialViewState },
   items: [],
   currentItem: null,
   isLoading: false,
   error: null,
-
   setViewItems: (view, items) => {
     set((state) => ({
       [view]: {
@@ -235,6 +236,44 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       set((state) => ({
         thisWeek: {
           ...state.thisWeek,
+          error: errorMessage,
+          isLoading: false,
+        },
+        error: errorMessage,
+        isLoading: false,
+      }))
+    }
+  },
+  fetchFavorites: async (session: string) => {
+    set((state) => ({
+      favorites: { ...state.favorites, isLoading: true, error: null },
+      isLoading: true,
+      error: null,
+    }))
+
+    try {
+      const { data } = await api.get("/api/favorite", {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => ({
+        favorites: {
+          items: data.response || [],
+          isLoading: false,
+          error: null,
+        },
+        items: data.response || [],
+        isLoading: false,
+      }))
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "unknown: failed to fetch favorites"
+
+      set((state) => ({
+        favorites: {
+          ...state.favorites,
           error: errorMessage,
           isLoading: false,
         },
