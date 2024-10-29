@@ -79,7 +79,7 @@ export const InboxAddItem: React.FC = () => {
       // Prepare the item data
       const data: Partial<CycleItem> = {
         title: finalTitle,
-        type: linkDetected ? "link" : "text",
+        type: linkDetected ? "link" : "Issue",
       }
 
       if (linkDetected) {
