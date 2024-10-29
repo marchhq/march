@@ -9,7 +9,9 @@ import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@radix-ui/react-context-menu"
+import Image from "next/image"
 
+import ImageWithFallback from "../ui/ImageWithFallback"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -188,6 +190,17 @@ export const InboxItems: React.FC = () => {
                       </button>
                       <p className="mr-1">{item.title}</p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
+                        {item.metadata?.favicon ? (
+                          <ImageWithFallback
+                            src={item.metadata?.favicon}
+                            alt=""
+                            width={12}
+                            height={12}
+                            className=" size-4 shrink-0"
+                          />
+                        ) : (
+                          ""
+                        )}
                         <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
                           <Icon
                             icon="humbleicons:clock"
