@@ -7,6 +7,25 @@ import { Icon } from "@iconify-icon/react"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import { isLink } from "@/src/utils/helpers"
+
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+interface ItemData {
+  title: string
+  type: string
+  description?: string
+  metadata?: {
+    url: string
+  }
+}
 
 export const InboxAddItem: React.FC = () => {
   const { session } = useAuth()
@@ -43,8 +62,30 @@ export const InboxAddItem: React.FC = () => {
     }
 
     try {
+      const trimmedTitle = title.trim()
+
+      if (!trimmedTitle) {
+        return
+      }
+
+      const linkDetected = isLink(trimmedTitle)
+
+      // Prepare the final URL if it's a link
+      const finalTitle =
+        linkDetected && !/^https:\/\//i.test(trimmedTitle)
+          ? `https://${trimmedTitle}`
+          : trimmedTitle
+
+      // Prepare the item data
       const data: Partial<CycleItem> = {
-        title,
+        title: finalTitle,
+        type: linkDetected ? "link" : "text",
+      }
+
+      if (linkDetected) {
+        data.metadata = {
+          url: finalTitle,
+        }
       }
 
       await createItem(session, data)
