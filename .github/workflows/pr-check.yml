@@ -14,6 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Install pnpm
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+
       # Step 1: Install dependencies and run build
       - name: Install dependencies
         run: |
