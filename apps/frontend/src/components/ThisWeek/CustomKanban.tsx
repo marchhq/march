@@ -222,7 +222,7 @@ interface AddCardProps {
   createItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard = ({ column, updateItem, totalItems = 0 }) => {
+const AddCard = ({ column, createItem, totalItems = 0 }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -241,15 +241,6 @@ const AddCard = ({ column, updateItem, totalItems = 0 }) => {
     (e?: React.FormEvent) => {
       e?.preventDefault()
       if (!text.trim().length) return
-<<<<<<< HEAD
-      const cycleDate = getEndOfCurrentWeek(new Date())
-      const data = {
-        cycleDate: cycleDate,
-        title: text.trim(),
-        status: column,
-      }
-      updateItem(session, data)
-=======
 
       const data: Partial<CycleItem> = {
         title: text.trim(),
@@ -261,7 +252,6 @@ const AddCard = ({ column, updateItem, totalItems = 0 }) => {
       }
 
       createItem(session, data)
->>>>>>> 7d9cce183a616acfbe82efc3137676881a9d5534
       handleCancel()
     },
     [createItem, column, session, text]
