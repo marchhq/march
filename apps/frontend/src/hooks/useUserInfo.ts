@@ -10,6 +10,7 @@ import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 export const useUserInfo = () => {
   const [user, setUser] = useState<User | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const { session } = useAuth()
 
   useEffect(() => {
@@ -21,8 +22,10 @@ export const useUserInfo = () => {
           },
         })
         setUser(response.data)
+        setError(null)
       } catch (error) {
         console.error("Failed to fetch user info:", error)
+        setError("failed to fetch user info")
       }
     }
 
@@ -31,5 +34,5 @@ export const useUserInfo = () => {
     }
   }, [session])
 
-  return { user }
+  return { user, error }
 }
