@@ -52,7 +52,7 @@ export const DateCycle: React.FC<DateCycleProps> = ({
         </div>
       </div>
       {isToday && (
-        <p className="text-sm font-semibold text-primary-foreground">Today</p>
+        <p className="text-sm font-semibold text-foreground">Today</p>
       )}
     </div>
   )
