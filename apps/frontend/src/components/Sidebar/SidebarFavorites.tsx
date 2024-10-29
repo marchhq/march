@@ -64,15 +64,22 @@ export const SidebarFavorites: React.FC = () => {
           )}
         </button>
         {toggle && favorites.items.length !== 0 && (
-          <div className="flex flex-col gap-2 font-medium">
-            {favorites.items.map((favorite) => (
-              <SidebarSpaceLink
-                key={favorite._id}
-                /* todo: dynamic href with space and block id */
-                href={"/inbox"}
-                label={favorite.title}
-              />
-            ))}
+          <div>
+            {favorites.error && (
+              <div className="truncate text-xs text-danger-foreground">
+                <span>{favorites.error}</span>
+              </div>
+            )}
+            <div className="flex flex-col gap-2 font-medium">
+              {favorites.items.map((favorite) => (
+                <SidebarSpaceLink
+                  key={favorite._id}
+                  /* todo: dynamic href with space and block id */
+                  href={"/inbox"}
+                  label={favorite.title}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>

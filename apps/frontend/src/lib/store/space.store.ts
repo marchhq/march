@@ -32,7 +32,8 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
       })
     } catch (error: any) {
       set({
-        error: error?.response?.data?.message || "failed to fetch spaces",
+        error:
+          error?.response?.data?.message || "unknow: failed to fetch spaces",
         loading: false,
       })
     }
