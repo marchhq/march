@@ -281,6 +281,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   createItem: async (session: string, item: Partial<CycleItem>) => {
     set((state) => ({
       inbox: { ...state.inbox, isLoading: true, error: null },
+      thisWeek: { ...state.thisWeek, isLoading: true, error: null },
       isLoading: true,
       error: null,
     }))
@@ -308,6 +309,11 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           isLoading: false,
           error: null,
         },
+        thisWeek: {
+          items: [data.response, ...state.thisWeek.items],
+          isLoading: false,
+          error: null,
+        },
         items: [data.response, ...state.items],
         isLoading: false,
       }))
@@ -321,6 +327,11 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       set((state) => ({
         inbox: {
           ...state.inbox,
+          error: errorMessage,
+          isLoading: false,
+        },
+        thisWeek: {
+          ...state.thisWeek,
           error: errorMessage,
           isLoading: false,
         },
