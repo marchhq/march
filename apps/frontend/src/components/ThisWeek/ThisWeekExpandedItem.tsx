@@ -97,7 +97,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
         }
         setHasUnsavedCHanges(false)
         setIsSaved(true)
-      }, 2000)
+      }, 500)
       return () => clearTimeout(debounceTimer)
     }
   }, [content, hasUnsavedChanges, currentItem, session, updateItem])
