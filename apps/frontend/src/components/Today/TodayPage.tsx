@@ -18,7 +18,7 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="ml-[180px] h-full overflow-y-hidden bg-background p-10">
+    <main className="h-full overflow-y-hidden bg-background p-10">
       <section className="flex justify-between">
         <div className="">
           <header className="flex items-center justify-start">
