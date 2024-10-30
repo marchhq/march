@@ -14,6 +14,7 @@ import { Note } from "@/src/lib/@types/Items/Note"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
+import { handleTextareaKeyDown } from "@/src/utils/helpers"
 
 interface Props {
   noteId: string
@@ -43,6 +44,8 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   const [loading, setLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [closeToggle, setCloseToggle] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
 
   const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
@@ -87,14 +90,15 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   }, [isFetched, editor, notes, noteId])
 
   useEffect(() => {
-    if (note !== null && !loading) {
+    if (note !== null && !loading && isInitialLoad) {
       if (!title || title.trim() === "") {
         textareaRef.current?.focus()
       } else {
         editor?.commands.focus()
       }
+      setIsInitialLoad(false)
     }
-  }, [note, loading, title, editor])
+  }, [note, loading, title, editor, isInitialLoad])
 
   useEffect(() => {
     const textarea = textareaRef.current
@@ -234,11 +238,14 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
               ref={textareaRef}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleTextareaKeyDown}
               placeholder="Untitled"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
               /* eslint-disable-next-line jsx-a11y/no-autofocus */
               autoFocus={!title || title.trim() === ""}
+              onFocus={() => setIsEditingTitle(true)}
+              onBlur={() => setIsEditingTitle(false)}
             />
             <div className="text-foreground">
               <TextEditor editor={editor} />
