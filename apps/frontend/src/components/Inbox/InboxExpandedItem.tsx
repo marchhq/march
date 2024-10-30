@@ -79,6 +79,7 @@ export const InboxExpandedItem: React.FC = () => {
     setContent(currentItem?.description || "<p></p>")
     editor?.commands.setContent(currentItem?.description || "<p></p>")
     lastSavedContent.current = currentItem?.description || "<p></p>"
+    editor?.commands.focus()
   }, [currentItem, editor])
 
   useEffect(() => {
