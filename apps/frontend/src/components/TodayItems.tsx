@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react"
 
 import { SkeletonCard } from "./atoms/SkeletonCard"
-import { DropdownItem } from "./DropDownItems"
+import { DropdownItem, DropdownItemProps } from "./DropDownItems"
 import { useAuth } from "../contexts/AuthContext"
 import { CycleItem } from "../lib/@types/Items/Cycle"
 import { useCycleItemStore } from "../lib/store/cycle.store"
@@ -76,6 +76,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
                 item={item}
                 onToggleComplete={(item) => handleToggleComplete(item)}
                 isOverdue={false}
+                maxTitleLength={50}
               />
             </React.Fragment>
           ))}
@@ -89,6 +90,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
                 item={item}
                 onToggleComplete={(item) => handleToggleComplete(item)}
                 isOverdue={true}
+                maxTitleLength={50}
               />
             </React.Fragment>
           ))}

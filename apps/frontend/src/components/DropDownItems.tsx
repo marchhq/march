@@ -17,10 +17,11 @@ import { LinearDark } from "../lib/icons/LinearCircle"
 import { Link } from "../lib/icons/Link"
 import { getOverdueText } from "../utils/datetime"
 
-interface DropdownItemProps {
+export interface DropdownItemProps {
   item: CycleItem
   onToggleComplete: (item: CycleItem) => void
   isOverdue?: boolean
+  maxTitleLength?: number
 }
 
 const getSourceIcon = (source) => {
@@ -50,11 +51,30 @@ const getSourceIcon = (source) => {
   }
 }
 
+export interface DropdownItemProps {
+  item: CycleItem
+  onToggleComplete: (item: CycleItem) => void
+  isOverdue?: boolean
+  maxTitleLength?: number
+}
+
 export const DropdownItem: React.FC<DropdownItemProps> = ({
   item,
   onToggleComplete,
   isOverdue,
+  maxTitleLength = 25,  // Changed to 25 characters
 }) => {
+  const truncateTitle = (title: string) => {
+    if (!maxTitleLength || title.length <= maxTitleLength) return title;
+    return `${title.slice(0, maxTitleLength)}...`;
+  };
+
+  const titleElement = (
+    <span className="truncate">
+      {truncateTitle(item.title)}
+    </span>
+  );
+
   return (
     <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
@@ -70,13 +90,13 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
             rel="noopener noreferrer"
             className="flex items-center gap-3 truncate"
           >
-            <span className="truncate">{item.title}</span>
+            {titleElement}
             <span className="shrink-0">
               {getSourceIcon(item.source) || <Link />}
             </span>
           </a>
         ) : (
-          <span className="truncate">{item.title}</span>
+          titleElement
         )}
         {isOverdue && (
           <TooltipProvider>
