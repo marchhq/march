@@ -32,11 +32,17 @@ const getAccessTokenController = async (req, res, next) => {
     try {
         const accessToken = await getAccessToken(code, user);
         const userInfo = await fetchUserInfo(accessToken, user);
+
         await linearQueue.add('linearQueue', {
             accessToken,
             linearUserId: userInfo.id,
             userId: user._id
+        }, {
+            attempts: 3,
+            backoff: 1000,
+            timeout: 30000
         });
+
         res.status(200).json({
             accessToken
         });
