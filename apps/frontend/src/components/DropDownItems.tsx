@@ -1,7 +1,4 @@
-import { format } from "path"
-
 import React from "react"
-
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
 import { AddToSpace } from "./AddToSpace"
@@ -24,7 +21,7 @@ export interface DropdownItemProps {
   maxTitleLength?: number
 }
 
-const getSourceIcon = (source) => {
+const getSourceIcon = (source: string) => {
   switch (source) {
     case "github":
       return (
@@ -51,29 +48,22 @@ const getSourceIcon = (source) => {
   }
 }
 
-export interface DropdownItemProps {
-  item: CycleItem
-  onToggleComplete: (item: CycleItem) => void
-  isOverdue?: boolean
-  maxTitleLength?: number
-}
-
 export const DropdownItem: React.FC<DropdownItemProps> = ({
   item,
   onToggleComplete,
   isOverdue,
-  maxTitleLength = 25,  // Changed to 25 characters
+  maxTitleLength = 25,
 }) => {
   const truncateTitle = (title: string) => {
-    if (!maxTitleLength || title.length <= maxTitleLength) return title;
-    return `${title.slice(0, maxTitleLength)}...`;
-  };
+    if (!maxTitleLength || title.length <= maxTitleLength) return title
+    return `${title.slice(0, maxTitleLength)}...`
+  }
 
   const titleElement = (
     <span className="truncate">
       {truncateTitle(item.title)}
     </span>
-  );
+  )
 
   return (
     <div className="group relative flex items-center gap-2">
