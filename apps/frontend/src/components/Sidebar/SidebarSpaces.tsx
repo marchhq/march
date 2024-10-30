@@ -19,7 +19,7 @@ export const SidebarSpaces: React.FC = () => {
   const pathname = usePathname()
   const { session } = useAuth()
 
-  const [toggle, setToggle] = useState(false)
+  const [toggle, setToggle] = useState(true)
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
 
   const { error, spaces, fetchSpaces } = useSpaceStore()
