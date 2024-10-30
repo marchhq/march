@@ -56,7 +56,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
 }) => {
   const truncateTitle = (title: string) => {
     if (!maxTitleLength || title.length <= maxTitleLength) return title
-    return `${title.slice(0, maxTitleLength)}...`
+    return `${title.slice(0, maxTitleLength)}…`  // Using proper ellipsis character
   }
 
   const titleElement = (
@@ -71,7 +71,9 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
         {item.status === "done" ? <CheckedBox /> : <Box />}
       </button>
       <li
-        className={`${item.isCompleted ? "text-[#6D7077]" : "text-white"} flex min-w-0 items-center gap-2`}
+        className={`${
+          item.isCompleted ? "text-[#6D7077]" : "text-white"
+        } flex min-w-0 items-center gap-2`}
       >
         {item.metadata?.url ? (
           <a
@@ -92,7 +94,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
+                <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80" />
               </TooltipTrigger>
               <TooltipContent>
                 {getOverdueText(item.dueDate) ?? ""}
