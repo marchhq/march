@@ -88,7 +88,7 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
 
   useEffect(() => {
     if (hasUnsavedChanges && !isLoading) {
-      const debounceTimer = setTimeout(saveJournal, 2000)
+      const debounceTimer = setTimeout(saveJournal, 500)
       return () => clearTimeout(debounceTimer)
     }
   }, [content, hasUnsavedChanges, isLoading])
