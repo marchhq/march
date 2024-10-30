@@ -17,11 +17,20 @@ const getGoogleCalendarOAuthAuthorizationUrl = () => {
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
     OauthCalClient.setCredentials(tokens);
+    console.log("hey");
+    const oauth2 = google.oauth2({
+        auth: OauthCalClient,
+        version: "v2"
+    });
+
+    const { data: profile } = await oauth2.userinfo.get();
 
     user.integration.googleCalendar.accessToken = tokens.access_token;
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
     user.integration.googleCalendar.connected = true;
+    user.integration.googleCalendar.email = profile.email;
     await user.save();
+
     return tokens;
 };
 

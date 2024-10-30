@@ -98,6 +98,7 @@ const UserSchema = new Schema({
         googleCalendar: {
             accessToken: String,
             refreshToken: String,
+            email: String,
             connected: { type: Boolean, default: false }
         },
         gmail: {
