@@ -43,6 +43,8 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   const [loading, setLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [closeToggle, setCloseToggle] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
 
   const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
@@ -85,6 +87,17 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
       setNotFound(true)
     }
   }, [isFetched, editor, notes, noteId])
+
+  useEffect(() => {
+    if (note !== null && !loading && isInitialLoad) {
+      if (!title || title.trim() === "") {
+        textareaRef.current?.focus()
+      } else {
+        editor?.commands.focus()
+      }
+      setIsInitialLoad(false)
+    }
+  }, [note, loading, title, editor, isInitialLoad])
 
   useEffect(() => {
     const textarea = textareaRef.current
@@ -178,6 +191,31 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
     }
   }, [isSaved])
 
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          title.slice(0, cursorPosition) + "\n" + title.slice(cursorPosition)
+
+        setTitle(newValue)
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        editor?.commands.focus()
+        editor?.commands.setTextSelection(0)
+      }
+    }
+  }
+
   return (
     <div className="flex size-full gap-16 bg-background p-10">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
@@ -224,9 +262,14 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
               ref={textareaRef}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleTextareaKeyDown}
               placeholder="Untitled"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
+              /* eslint-disable-next-line jsx-a11y/no-autofocus */
+              autoFocus={!title || title.trim() === ""}
+              onFocus={() => setIsEditingTitle(true)}
+              onBlur={() => setIsEditingTitle(false)}
             />
             <div className="text-foreground">
               <TextEditor editor={editor} />
