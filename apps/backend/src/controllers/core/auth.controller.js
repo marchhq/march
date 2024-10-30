@@ -53,42 +53,85 @@ const emailLoginController = async (req, res, next) => {
     }
 }
 
+// const authenticateWithGoogleController = async (req, res, next) => {
+//     try {
+//         const token = req.headers["x-google-auth"]
+//         if (!token) {
+//             const error = new Error("Bad request")
+//             error.statusCode = 400
+//             throw error
+//         }
+//         const payload = await validateGoogleUser(token);
+//         if (!payload.email) {
+//             const error = new Error("Failed to authenticate with google")
+//             error.statusCode = 401
+//             throw error
+//         }
+//         let user = await getUserByEmail(payload.email);
+//         let isNewUser = false;
+//         console.log("user: ", user);
+//         if (!user) {
+//             console.log("im hete in 74");
+//             isNewUser = true;
+//             user = await createGoogleUser(payload);
+
+//             console.log("jon setup 78");
+//             await spaceQueue.add('spaceQueue', {
+//                 user: user._id
+//             });
+//         }
+//         const tokenPair = await generateJWTTokenPair(user)
+//         res.status(200).json({
+//             ...tokenPair,
+//             isNewUser
+
+//         })
+//     } catch (err) {
+//         next(err)
+//     }
+// }
+
 const authenticateWithGoogleController = async (req, res, next) => {
     try {
-        const token = req.headers["x-google-auth"]
+        const token = req.headers["x-google-auth"];
         if (!token) {
-            const error = new Error("Bad request")
-            error.statusCode = 400
-            throw error
+            const error = new Error("Bad request");
+            error.statusCode = 400;
+            throw error;
         }
+
         const payload = await validateGoogleUser(token);
         if (!payload.email) {
-            const error = new Error("Failed to authenticate with google")
-            error.statusCode = 401
-            throw error
+            const error = new Error("Failed to authenticate with Google");
+            error.statusCode = 401;
+            throw error;
         }
+
         let user = await getUserByEmail(payload.email);
         let isNewUser = false;
         if (!user) {
+            console.log("New user detected, creating Google user");
             isNewUser = true;
             user = await createGoogleUser(payload);
-            await spaceQueue.add('spaceQueue', {
-                user: user._id
-            }, {
+
+            console.log("Adding job to spaceQueue for new user");
+            await spaceQueue.add('spaceQueue', { user: user._id }, {
                 attempts: 3,
-                backoff: 5000
+                backoff: 1000, // 1 second delay between retries
+                timeout: 30000 // Job timeout set to 30 seconds
             });
+            console.log("Job added to spaceQueue");
         }
-        const tokenPair = await generateJWTTokenPair(user)
+
+        const tokenPair = await generateJWTTokenPair(user);
         res.status(200).json({
             ...tokenPair,
             isNewUser
-
-        })
+        });
     } catch (err) {
-        next(err)
+        next(err);
     }
-}
+};
 
 const authenticateWithGithubController = async (req, res, next) => {
     try {
