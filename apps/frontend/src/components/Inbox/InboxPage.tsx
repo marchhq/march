@@ -19,7 +19,7 @@ export const InboxPage: React.FC = () => {
     <div className="flex h-full gap-8">
       <div
         className={classNames(
-          "flex h-full max-w-[800px] flex-col gap-2 text-sm",
+          "flex h-full max-w-[800px] flex-col gap-5 text-sm",
           items ? "w-1/2" : "w-full"
         )}
       >
@@ -36,7 +36,7 @@ export const InboxPage: React.FC = () => {
             <p className="text-sm text-secondary-foreground">{totalItems}</p>
           </div>
         </header>
-        <div className="flex h-full flex-col gap-4 pb-16">
+        <div className="flex flex-col gap-4">
           <InboxAddItem />
           <InboxItems />
         </div>
