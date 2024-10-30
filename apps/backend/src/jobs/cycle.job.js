@@ -23,8 +23,8 @@ const cycleWorker = new Worker('cycleQueue', async job => {
 
     try {
         const { startOfWeek, endOfWeek } = getCurrentWeekDateRange();
-        console.log("startOfWeek: ", startOfWeek);
-        console.log("endOfWeek: ", endOfWeek);
+        console.log("Start of Week: ", startOfWeek);
+        console.log("End of Week: ", endOfWeek);
 
         const overdueItems = await Item.find({
             cycleDate: { $gte: startOfWeek, $lte: endOfWeek },
@@ -33,36 +33,43 @@ const cycleWorker = new Worker('cycleQueue', async job => {
             isDeleted: false
         });
 
+        if (overdueItems.length === 0) {
+            console.log("No overdue items found for this week.");
+            return;
+        }
+
         const startOfNextWeek = new Date(endOfWeek);
         startOfNextWeek.setDate(endOfWeek.getDate() + 5);
         startOfNextWeek.setHours(0, 0, 0, 0);
-        console.log(": startOfNextWeek: ", startOfNextWeek);
+        console.log("Start of Next Week: ", startOfNextWeek);
 
-        for (const item of overdueItems) {
-            item.cycleDate = startOfNextWeek;
-            await item.save();
-        }
+        await Item.updateMany(
+            { _id: { $in: overdueItems.map(item => item._id) } },
+            { $set: { cycleDate: startOfNextWeek } }
+        );
 
         console.log(`Processed ${overdueItems.length} overdue items.`);
     } catch (error) {
         console.error('Error processing job:', error);
+        throw error;
     }
 }, {
-    connection: redisConnection
+    connection: redisConnection,
+    concurrency: 5
 });
 
-// Add the job to the queue
 const addCycleJob = async () => {
     await cycleQueue.add('moveOverdueItems', {}, {
         jobId: 'moveOverdueItemsJob',
         repeat: {
             cron: '59 23 * * 6' // Runs every Saturday at 11:59 PM
         },
-        removeOnComplete: true
+        removeOnComplete: true,
+        attempts: 3,
+        backoff: 1000
     });
 };
 
-// Schedule the job
 addCycleJob().then(() => {
     console.log('Cycle job scheduled successfully!');
 }).catch(err => {
@@ -73,4 +80,4 @@ export {
     cycleQueue,
     cycleWorker,
     addCycleJob
-}
+};
