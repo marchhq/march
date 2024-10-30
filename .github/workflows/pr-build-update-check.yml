@@ -1,56 +1,35 @@
-name: PR Build and Up-to-Date Check
+name: CI
 
 on:
   pull_request:
     branches:
-      - preview  # Trigger only on pull requests targeting the preview branch
+      - preview
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
 
 jobs:
+
   build:
-    name: Build and Up-to-Date Check
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout code using the latest version
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Set up Node.js with caching
-      - name: Set up Node.js and cache pnpm
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'  # Specify the version of Node.js you need
-          cache: 'pnpm'       # Enable caching for pnpm dependencies
-
-      # Install pnpm using the official action
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 'latest'  # Use the latest version of pnpm
-
-      # Step 1: Install dependencies and run build
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run build
-        run: pnpm run build
-
-      # Step 2: Check if the branch is up-to-date with preview
-      - name: Fetch preview branch
-        run: git fetch origin preview
-
-      - name: Check if branch is up-to-date with preview
-        id: check_update
-        run: |
-          # Determine if the branch is up-to-date with preview
-          if git merge-base --is-ancestor origin/preview HEAD; then
-            echo "uptodate=true" >> $GITHUB_OUTPUT
-          else
-            echo "uptodate=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-
-      - name: Set PR status if branch is not up-to-date
-        if: steps.check_update.outputs.uptodate == 'false'
-        run: |
-          echo "Your branch is outdated. Please take a pull from preview branch."
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build
+      run: pnpm run build
+    - name: Check preview branch sync
+      run: |
+        git fetch origin preview
+        git diff --quiet origin/preview || (echo "Branch is not up to date with preview" && exit 1)
