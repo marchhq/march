@@ -19,24 +19,23 @@ export const InboxPage: React.FC = () => {
     <div className="flex h-full gap-8">
       <div
         className={classNames(
-          "flex h-full max-w-[800px] flex-col gap-5 text-sm",
-          items ? "w-1/2" : "w-full"
+          "flex h-full max-w-[800px] flex-col gap-5 text-sm w-full"
         )}
       >
-        <header className="flex flex-col gap-4 text-foreground">
+        <header className="flex flex-col gap-4 pl-5 text-foreground">
           <div className="flex gap-4 text-sm text-secondary-foreground">
-            <p className="flex items-center">{formatDateYear(new Date())}</p>
+            <p className="flex items-center">can we add something here?</p>
             <button className="hover-bg flex w-fit items-center gap-2 rounded-md px-1">
               <ListFilter size={16} />
               <span>all unorganised items</span>
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <h1 className="text-sm font-semibold">Inbox</h1>
+            <h1 className="text-sm font-semibold">inbox</h1>
             <p className="text-sm text-secondary-foreground">{totalItems}</p>
           </div>
         </header>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-10">
           <InboxAddItem />
           <InboxItems />
         </div>

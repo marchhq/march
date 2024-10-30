@@ -15,7 +15,7 @@ const ItemSchema = new Schema(
         },
         type: {
             type: String,
-            default: "Issue"
+            default: "issue"
         },
         source: {
             type: String,
@@ -74,7 +74,7 @@ const ItemSchema = new Schema(
         ],
         lastVisitedSpace: {
             type: Schema.Types.ObjectId,
-            ref: 'Space',
+            ref: "Space",
             default: null
         },
         isFavorite: {
@@ -122,6 +122,4 @@ ItemSchema.pre("findOneAndUpdate", function (next) {
 
 const Item = db.model("Item", ItemSchema, "items");
 
-export {
-    Item
-}
+export { Item };

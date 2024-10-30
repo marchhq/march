@@ -86,7 +86,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknow: failed to fetch inbox"
 
       set((state) => ({
         inbox: {
