@@ -14,7 +14,6 @@ import { Note } from "@/src/lib/@types/Items/Note"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
-import { handleTextareaKeyDown } from "@/src/utils/helpers"
 
 interface Props {
   noteId: string
@@ -191,6 +190,31 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
       window.removeEventListener("beforeunload", handleBeforeUnload)
     }
   }, [isSaved])
+
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          title.slice(0, cursorPosition) + "\n" + title.slice(cursorPosition)
+
+        setTitle(newValue)
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        editor?.commands.focus()
+        editor?.commands.setTextSelection(0)
+      }
+    }
+  }
 
   return (
     <div className="flex size-full gap-16 bg-background p-10">
