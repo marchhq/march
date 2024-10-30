@@ -87,6 +87,16 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   }, [isFetched, editor, notes, noteId])
 
   useEffect(() => {
+    if (note !== null && !loading) {
+      if (!title || title.trim() === "") {
+        textareaRef.current?.focus()
+      } else {
+        editor?.commands.focus()
+      }
+    }
+  }, [note, loading, title, editor])
+
+  useEffect(() => {
     const textarea = textareaRef.current
     if (textarea) {
       textarea.style.height = "auto"
@@ -227,6 +237,8 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
               placeholder="Untitled"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
+              /* eslint-disable-next-line jsx-a11y/no-autofocus */
+              autoFocus={!title || title.trim() === ""}
             />
             <div className="text-foreground">
               <TextEditor editor={editor} />
