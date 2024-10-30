@@ -56,7 +56,7 @@ export const SidebarMain: React.FC = () => {
     <div className="flex flex-col gap-3.5">
       <SidebarMainLink
         href="/inbox"
-        icon={<Inbox className="size-4" />}
+        icon={<Inbox size={16} />}
         label="inbox"
         isActive={pathname.includes("/inbox")}
         isCollapsed={isCollapsed}
@@ -70,7 +70,7 @@ export const SidebarMain: React.FC = () => {
       />
       <SidebarMainLink
         href="/this-week"
-        icon={<Calendar className="size-4" />}
+        icon={<Calendar size={16} />}
         label={`week ${currentWeek}`}
         isActive={pathname.includes("/this-week")}
         isCollapsed={isCollapsed}

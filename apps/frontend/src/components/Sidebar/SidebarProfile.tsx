@@ -43,7 +43,7 @@ export const SidebarProfile: React.FC = () => {
                 )}
               />
             ) : (
-              <UserIcon className="size-4" />
+              <UserIcon size={16} />
             )}
             {!isCollapsed && <span>{user.userName}</span>}
           </Link>
