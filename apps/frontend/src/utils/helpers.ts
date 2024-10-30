@@ -29,3 +29,28 @@ export const extractParagraphs = (htmlString) => {
     .map((p) => p.textContent) // Extract text content of each <p> tag
     .join(" ") // Join paragraphs into a single string
 }
+
+export const handleTextareaKeyDown = (
+  e: React.KeyboardEvent<HTMLTextAreaElement>
+) => {
+  if (e.key === "Enter") {
+    e.preventDefault()
+
+    if (e.shiftKey) {
+      const textarea = e.currentTarget
+      const cursorPosition = textarea.selectionStart
+      const newValue =
+        title.slice(0, cursorPosition) + "\n" + title.slice(cursorPosition)
+
+      setTitle(newValue)
+
+      requestAnimationFrame(() => {
+        textarea.selectionStart = cursorPosition + 1
+        textarea.selectionEnd = cursorPosition + 1
+      })
+    } else {
+      editor?.commands.focus()
+      editor?.commands.setTextSelection(0)
+    }
+  }
+}
