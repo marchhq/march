@@ -15,7 +15,7 @@ export const InboxExpandedItem: React.FC = () => {
   const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
-  const timeoutId = useRef<NodeJS.Timeout | null>(null)
+  const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<{
     title: string
@@ -24,7 +24,7 @@ export const InboxExpandedItem: React.FC = () => {
   })
   const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
-  const [hasUnsavedChanges, setHasUnsavedCHanges] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const lastSavedContent = useRef(currentItem?.description || "<p></p>")
 
   useEffect(() => {
@@ -43,6 +43,38 @@ export const InboxExpandedItem: React.FC = () => {
       textarea.style.height = `${textarea.scrollHeight}px`
     }
   }, [editedItem.title])
+
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          editedItem.title.slice(0, cursorPosition) +
+          "\n" +
+          editedItem.title.slice(cursorPosition)
+
+        setEditedItem((prev) => ({
+          ...prev,
+          title: newValue,
+        }))
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        if (editor) {
+          editor.commands.focus()
+          editor.commands.setTextSelection(0)
+        }
+      }
+    }
+  }
 
   const handleSaveEditedItem = async (item: any) => {
     try {
@@ -64,7 +96,7 @@ export const InboxExpandedItem: React.FC = () => {
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
     if (newContent !== lastSavedContent.current) {
-      setHasUnsavedCHanges(true)
+      setHasUnsavedChanges(true)
       setIsSaved(false)
     }
   }, [])
@@ -93,7 +125,7 @@ export const InboxExpandedItem: React.FC = () => {
           )
           lastSavedContent.current = content
         }
-        setHasUnsavedCHanges(false)
+        setHasUnsavedChanges(false)
         setIsSaved(true)
       }, 2000)
       return () => clearTimeout(debounceTimer)
@@ -120,7 +152,7 @@ export const InboxExpandedItem: React.FC = () => {
         clearTimeout(timeoutId.current)
       }
     }
-  }, [editedItem, currentItem, timeoutId])
+  }, [editedItem, currentItem])
 
   const handleClose = useCallback(() => {
     setCurrentItem(null)
@@ -185,6 +217,7 @@ export const InboxExpandedItem: React.FC = () => {
                   title: e.target.value,
                 }))
               }
+              onKeyDown={handleTextareaKeyDown}
               placeholder="title"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
