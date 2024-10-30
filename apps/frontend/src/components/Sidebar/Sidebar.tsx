@@ -30,12 +30,14 @@ const SidebarNav: React.FC = () => {
     <nav
       className={classNames(
         "flex w-full relative flex-col justify-between bg-background p-10 text-sm text-secondary-foreground group",
-        isCollapsed ? "max-w-[118px]" : "max-w-[calc(min(-40px+100vw,250px))]"
+        isCollapsed ? "max-w-fit" : "max-w-[calc(min(-40px+100vw,250px))]"
       )}
     >
       <div className="flex flex-col gap-7">
-        <SidebarCollapseButton />
-        <SidebarProfile />
+        <div className="flex gap-4">
+          <SidebarProfile />
+          <SidebarCollapseButton />
+        </div>
         <SidebarMain />
         <SidebarFavorites />
         <SidebarSpaces />
@@ -49,22 +51,22 @@ const SidebarCollapseButton: React.FC = () => {
   return (
     <button
       onClick={toggleCollapse}
-      className="hover-bg group/button invisible absolute right-10 top-[45px] group-hover:visible"
+      className="group/button invisible group-hover:visible"
     >
       {!isCollapsed ? (
         <Image
           src={ChevronDownIcon}
           alt="chevron down icon"
-          width={12}
-          height={12}
+          width={16}
+          height={16}
           className="opacity-50 group-hover/button:opacity-100"
         />
       ) : (
         <Image
           src={ChevronRightIcon}
           alt="chevron right icon"
-          width={12}
-          height={12}
+          width={16}
+          height={16}
           className="opacity-50 group-hover/button:opacity-100"
         />
       )}

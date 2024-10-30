@@ -20,40 +20,44 @@ export const SidebarProfile: React.FC = () => {
 
   const isActive = pathname.includes("/profile")
 
-  return (
-    <div className={classNames(!isCollapsed && "pr-10")}>
-      {user && (
-        <div className="flex flex-col gap-2">
-          <Link
-            className={classNames(
-              isActive && "text-foreground",
-              "hover-text group flex items-center gap-2 font-medium min-h-5"
-            )}
-            href="/profile"
-          >
-            {user.avatar ? (
-              <Image
-                src={user.avatar}
-                alt="user avatar"
-                width={16}
-                height={16}
-                className={classNames(
-                  isActive && "border-foreground",
-                  "rounded border border-border group-hover:border-foreground"
-                )}
-              />
-            ) : (
-              <UserIcon className="size-4" />
-            )}
-            {!isCollapsed && <span>{user.userName}</span>}
-          </Link>
-          {error && (
-            <div className="truncate text-xs text-danger-foreground">
-              <span>{error}</span>
-            </div>
+  if (user) {
+    return (
+      <div className="flex w-full max-w-[calc(100%-32px)] flex-col gap-2">
+        <Link
+          className={classNames(
+            isActive && "text-foreground",
+            "hover-text group flex items-center gap-2 font-medium min-h-5 truncate"
           )}
-        </div>
-      )}
-    </div>
-  )
+          href="/profile"
+        >
+          {user.avatar ? (
+            <Image
+              src={user.avatar}
+              alt="user avatar"
+              width={16}
+              height={16}
+              className={classNames(
+                isActive && "border-foreground",
+                "rounded border border-border group-hover:border-foreground"
+              )}
+            />
+          ) : (
+            <UserIcon size={16} />
+          )}
+          {!isCollapsed && (
+            <span className="max-w-[calc(100%-24px)] truncate">
+              {user.userName}
+            </span>
+          )}
+        </Link>
+        {error && (
+          <div className="truncate text-xs text-danger-foreground">
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return null
 }
