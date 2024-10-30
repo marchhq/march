@@ -41,7 +41,12 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
             accessToken: tokenInfo.access_token,
             refreshToken: tokenInfo.refresh_token,
             userId: user._id
+        }, {
+            attempts: 3,
+            backoff: 1000,
+            timeout: 30000
         });
+
         res.status(200).json({
             tokenInfo
         });
