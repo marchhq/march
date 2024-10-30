@@ -12,7 +12,7 @@ import generateMetadata from "@/src/utils/seo"
 
 export const metadata: Metadata = generateMetadata({
   path: "/",
-  title: "march | satellite",
+  title: "march",
   description: "engineered for makers",
 })
 
