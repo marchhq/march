@@ -22,9 +22,11 @@ jobs:
           node-version: '18'  # Specify the version of Node.js you need
           cache: 'pnpm'       # Enable caching for pnpm dependencies
 
-      # Enable pnpm via corepack
-      - name: Enable pnpm
-        run: corepack enable pnpm
+      # Install pnpm using the official action
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 'latest'  # Use the latest version of pnpm
 
       # Step 1: Install dependencies and run build
       - name: Install dependencies
