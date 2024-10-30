@@ -22,9 +22,13 @@ jobs:
           node-version: '18'  # Specify the version of Node.js you need
           cache: 'pnpm'       # Enable caching for pnpm dependencies
 
-      # Install pnpm globally
+      # Install pnpm via the official installer
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: |
+          curl -fsSL https://get.pnpm.io/install.sh | sh -
+          export PNPM_HOME="$HOME/.local/share/pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          pnpm install -g pnpm
 
       # Step 1: Install dependencies and run build
       - name: Install dependencies
