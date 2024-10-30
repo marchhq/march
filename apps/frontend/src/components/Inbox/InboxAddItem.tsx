@@ -2,30 +2,10 @@
 
 import React, { useState, useEffect, useRef } from "react"
 
-import { Icon } from "@iconify-icon/react"
-
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { isLink } from "@/src/utils/helpers"
-
-function isValidUrl(url: string): boolean {
-  try {
-    new URL(url)
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-interface ItemData {
-  title: string
-  type: string
-  description?: string
-  metadata?: {
-    url: string
-  }
-}
 
 export const InboxAddItem: React.FC = () => {
   const { session } = useAuth()
