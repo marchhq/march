@@ -48,7 +48,7 @@ export const InboxAddItem: React.FC = () => {
     // prepare the item data
     const data: Partial<CycleItem> = {
       title: finalTitle,
-      type: linkDetected ? "link" : "Issue",
+      type: linkDetected ? "link" : "issue",
     }
 
     if (linkDetected) {
@@ -100,7 +100,7 @@ export const InboxAddItem: React.FC = () => {
   }, [addingItem])
 
   return (
-    <div onBlur={handleOnBlur}>
+    <div onBlur={handleOnBlur} className="pl-5">
       <textarea
         ref={textareaRefTitle}
         value={title}
