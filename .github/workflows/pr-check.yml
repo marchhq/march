@@ -1,0 +1,20 @@
+name: PR Build and Up-to-Date Check
+
+on:
+  pull_request:
+    branches:
+      - preview  # Trigger only on pull requests targeting the preview branch
+
+jobs:
+  build:
+    name: Build and Up-to-Date Check
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code using the latest version
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js with caching
+      - name: Set up Node.js and pnpm with cache
+        uses: actions/setup-node@v3
