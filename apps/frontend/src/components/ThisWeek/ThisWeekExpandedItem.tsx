@@ -47,6 +47,38 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.title])
 
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          editedItem.title.slice(0, cursorPosition) +
+          "\n" +
+          editedItem.title.slice(cursorPosition)
+
+        setEditedItem((prev) => ({
+          ...prev,
+          title: newValue,
+        }))
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        if (editor) {
+          editor.commands.focus()
+          editor.commands.setTextSelection(0)
+        }
+      }
+    }
+  }
+
   const handleSaveEditedItem = async (item: any) => {
     try {
       if (editItemId && editedItem) {
@@ -202,6 +234,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
                 title: e.target.value,
               }))
             }
+            onKeyDown={handleTextareaKeyDown}
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
