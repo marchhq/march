@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - preview
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+
+jobs:
+
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Get all history for all branches
+        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.17.0'  # Updated to meet Next.js requirements
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build
+      run: pnpm run build
+    - name: Check preview branch sync
+      run: |
+        git fetch origin preview
+        BASE_SHA=$(git merge-base origin/preview HEAD)
+        PREVIEW_SHA=$(git rev-parse origin/preview)
+        if [ "$BASE_SHA" != "$PREVIEW_SHA" ]; then
+          echo "❌ Your branch is not up to date with preview branch"
+          echo "Current preview SHA: $PREVIEW_SHA"
+          echo "Last common commit: $BASE_SHA"
+          echo "Differences:"
+          git log --oneline origin/preview...HEAD
+          exit 1
+        else
+          echo "✅ Branch is up to date with preview"
+        fi
