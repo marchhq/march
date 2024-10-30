@@ -46,7 +46,6 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
             backoff: 1000,
             timeout: 30000
         });
-
         res.status(200).json({
             tokenInfo
         });
