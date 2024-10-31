@@ -95,11 +95,6 @@ const authenticateWithGoogleController = async (req, res, next) => {
             });
             console.log("Job added to spaceQueue");
         }
-        if (user.isWaitlisted) {
-            return res.status(403).json({
-                message: "You are currently on the waitlist. Please wait for activation."
-            });
-        }
 
         const tokenPair = await generateJWTTokenPair(user);
         res.status(200).json({
