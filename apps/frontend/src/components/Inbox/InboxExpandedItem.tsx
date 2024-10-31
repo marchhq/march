@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
-import { Icon } from "@iconify-icon/react"
 import Image from "next/image"
 
 import TextEditor from "../atoms/Editor"
@@ -161,7 +160,7 @@ export const InboxExpandedItem: React.FC = () => {
   }
 
   return (
-    <div className="flex-auto">
+    <div className="min-w-max flex-auto">
       {currentItem && (
         <div
           ref={divRef}
@@ -185,7 +184,7 @@ export const InboxExpandedItem: React.FC = () => {
             </p>
             <p>edited {fromNow(currentItem.updatedAt)}</p>
           </div>
-          <div>
+          <div className="flex items-center">
             <textarea
               ref={textareaRefTitle}
               value={editedItem.title}
@@ -203,7 +202,6 @@ export const InboxExpandedItem: React.FC = () => {
           <div className="mt-1 text-foreground">
             <TextEditor editor={editor} />
           </div>
-          <div className="size-full"></div>
         </div>
       )}
     </div>
