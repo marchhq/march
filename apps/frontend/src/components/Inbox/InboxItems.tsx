@@ -143,7 +143,7 @@ export const InboxItems: React.FC = () => {
                 onClick={() => handleExpand(item)}
                 data-item-id={item._id}
               >
-                <div className="flex items-start gap-2">
+                <div className="flex items-start gap-2 truncate">
                   <Image
                     src={BoxIcon}
                     alt="checkbox icon"
@@ -154,7 +154,7 @@ export const InboxItems: React.FC = () => {
                   />
                   <span
                     className={classNames(
-                      "text-left",
+                      "text-left truncate",
                       item.type === "link" && "group-hover:underline"
                     )}
                   >

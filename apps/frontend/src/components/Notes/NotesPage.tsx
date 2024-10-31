@@ -72,21 +72,35 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   const handleClose = () => setCloseToggle(!closeToggle)
 
   useEffect(() => {
-    if (!isFetched || notes.length === 0) {
+    // Wait for data to be ready
+    if (!isFetched) {
       editor?.setEditable(false)
       return
     }
-    const noteByParams = notes.filter((n) => n._id === noteId)
-    if (noteByParams.length !== 0) {
-      editor?.setEditable(true)
-      editor?.commands.setContent(noteByParams[0].description)
-      setNote(noteByParams[0])
-      setTitle(noteByParams[0].title)
-      setContent(noteByParams[0].description)
-    } else {
-      setNotFound(true)
+
+    // Handle case where we're waiting for a new note to be created
+    if (notes.length === 0) {
+      editor?.setEditable(false)
+      return
     }
-  }, [isFetched, editor, notes, noteId])
+
+    const currentNote = notes.find((n) => n._id === noteId)
+
+    if (currentNote) {
+      // Note exists - set it up
+      editor?.setEditable(true)
+      editor?.commands.setContent(currentNote.description)
+      setNote(currentNote)
+      setTitle(currentNote.title)
+      setContent(currentNote.description)
+      setNotFound(false)
+    } else {
+      // Note doesn't exist - redirect to first note
+      // This handles the case when returning to a deleted note's URL
+      const firstNote = notes[0]
+      router.push(`/space/notes/${firstNote._id}`)
+    }
+  }, [isFetched, editor, notes, noteId, router])
 
   useEffect(() => {
     if (note !== null && !loading && isInitialLoad) {
@@ -142,7 +156,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
     }
   }, [content])
 
-  const addNewNote = async (): Promise<void> => {
+  const addNewNote = async (): Promise<Note | null> => {
     if (!isSaved) {
       if (note) await saveNoteToServer({ ...note, title, description: content })
     }
@@ -151,29 +165,34 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
         router.push(`/space/notes/${newNote._id}`)
+        return newNote // Return the new note
       }
+      return null
     } catch (error) {
       console.error(error)
+      return null
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDeleteNote = (n: Note): void => {
-    if (session && n) {
-      try {
-        deleteNote(session, n)
-        const remainingNotes = notes.filter((n_) => n_._id !== n._id)
-        if (n._id === note?._id) {
-          if (remainingNotes.length <= 0) {
-            addNewNote()
-            return
-          }
+  const handleDeleteNote = async (n: Note): Promise<void> => {
+    if (!session || !n) return
+
+    try {
+      await deleteNote(session, n)
+      const remainingNotes = notes.filter((n_) => n_._id !== n._id)
+
+      if (n._id === note?._id) {
+        if (remainingNotes.length <= 0) {
+          const newNote = await addNewNote()
+          // No need to redirect here since addNewNote already does the routing
+        } else {
           router.push(`/space/notes/${remainingNotes[0]._id}`)
         }
-      } catch (error) {
-        console.error(error)
       }
+    } catch (error) {
+      console.error("Error deleting note:", error)
     }
   }
 
