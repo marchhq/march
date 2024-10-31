@@ -1,0 +1,31 @@
+name: Notify on community issue creation and updates
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      # Notify when a new issue is created with community label
+      - name: Send Discord Notification for New Community Issues
+        if: |
+          github.event_name == 'issues' && 
+          github.event.action == 'opened' && 
+          contains(github.event.issue.labels.*.name, 'community')
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"🆕 New community issue created: ${{ github.event.issue.html_url }}\"}" \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+      # Notify when community label is added to an existing issue
+      - name: Send Discord Notification when Community Label is Added
+        if: |
+          github.event_name == 'issues' && 
+          github.event.action == 'labeled' && 
+          github.event.label.name == 'community'
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"🏷️ Community label added to issue: ${{ github.event.issue.html_url }}\"}" \
+               ${{ secrets.DISCORD_WEBHOOK }}
