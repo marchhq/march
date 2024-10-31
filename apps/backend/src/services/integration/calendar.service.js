@@ -22,6 +22,7 @@ const getGoogleCalendarAccessToken = async (code, user) => {
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
     user.integration.googleCalendar.connected = true;
     await user.save();
+
     return tokens;
 };
 
@@ -223,10 +224,10 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
                         location: meeting.location,
                         attendees: meeting.attendees,
                         hangoutLink: meeting.hangoutLink,
+                        conferenceData: meeting.conferenceData,
                         start: meeting.start,
                         end: meeting.end,
-                        creator: meeting.creator,
-                        conferenceData: meeting.conferenceData
+                        creator: meeting.creator
                     },
                     createdAt: meeting.createdAt,
                     updatedAt: meeting.updatedAt
