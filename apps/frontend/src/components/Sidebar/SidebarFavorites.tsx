@@ -43,7 +43,7 @@ export const SidebarFavorites: React.FC = () => {
           className="flex min-h-5 items-center gap-2 font-medium outline-none"
           onClick={handleToggle}
         >
-          <Sparkle className="size-4" />
+          <Sparkle size={16} />
           {!isCollapsed && <span>favorites</span>}
           {toggle ? (
             <Image
