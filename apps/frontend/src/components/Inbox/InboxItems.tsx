@@ -29,9 +29,10 @@ export const InboxItems: React.FC = () => {
     fetchInbox,
     updateItem,
     deleteItem,
+    error,
   } = useCycleItemStore()
 
-  const { items, error } = inbox
+  const { items, error: inboxError } = inbox
 
   useEffect(() => {
     fetchInbox(session)
@@ -124,6 +125,11 @@ export const InboxItems: React.FC = () => {
         <span className="pl-5">inbox empty</span>
       ) : (
         <div>
+          {inboxError && (
+            <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+              <span>{inboxError}</span>
+            </div>
+          )}
           {error && (
             <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
               <span>{error}</span>
