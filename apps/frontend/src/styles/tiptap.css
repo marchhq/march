@@ -59,10 +59,11 @@
         @apply flex items-center mr-2;
 
         &>span {
-          @apply flex-shrink-0 bg-zinc-700 rounded-md;
-          width: 1.25em;
-          height: 1.25em;
-          margin-top: 0.50em;
+          @apply flex-shrink-0;
+          background-image: url("/icons/box.svg");
+          width: 20px;
+          height: 20px;
+          margin-top: 13px;
         }
 
         &>input {
@@ -70,8 +71,7 @@
         }
 
         &>input:checked~span {
-          background-image: url("/icons/check.svg");
-          background-size: calc(100% - 5px) calc(100% - 5px);
+          background-image: url("/icons/checkbox.svg");
           @apply bg-center bg-no-repeat;
         }
       }
