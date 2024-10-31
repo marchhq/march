@@ -79,7 +79,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
         }
         setHasUnsavedChanges(false)
         setIsSaved(true)
-      }, 2000)
+      }, 500)
 
       return () => clearTimeout(debounceTimer)
     }
