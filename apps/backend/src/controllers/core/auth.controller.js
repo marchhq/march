@@ -4,6 +4,7 @@ import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
 import { spaceQueue } from "../../loaders/bullmq.loader.js";
+import { logsnag } from "../../loaders/logsnag.loader.js";
 
 const { ValidationError } = Joi;
 
@@ -74,12 +75,30 @@ const authenticateWithGoogleController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGoogleUser(payload);
+            console.log("hey");
+            await logsnag.track({
+                channel: "waitlist",
+                event: `${user.userName} is Waitlisted`,
+                user_id: user._id,
+                icon: "⏳",
+                notify: true,
+                tags: {
+                    method: "Google",
+                    email: user.accounts.google.email,
+                    name: user.fullName
+                }
+            });
             await spaceQueue.add('spaceQueue', { user: user._id }, {
                 attempts: 3,
                 backoff: 1000, // 1 second delay between retries
                 timeout: 30000 // Job timeout set to 30 seconds
             });
             console.log("Job added to spaceQueue");
+        }
+        if (user.isWaitlisted) {
+            return res.status(403).json({
+                message: "You are currently on the waitlist. Please wait for activation."
+            });
         }
 
         const tokenPair = await generateJWTTokenPair(user);
