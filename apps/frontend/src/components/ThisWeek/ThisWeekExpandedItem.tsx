@@ -13,63 +13,40 @@ import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const ThisWeekExpandedItem: React.FC = () => {
   const { session } = useAuth()
-
   const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
-
-  const [content, setContent] = useState(currentItem?.description || "<p></p>")
-  const [isSaved, setIsSaved] = useState(true)
-  const [hasUnsavedChanges, setHasUnsavedCHanges] = useState(false)
-  const lastSavedContent = useRef(currentItem?.description || "<p></p>")
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
-  const timeoutId = useRef<NodeJS.Timeout | null>(null)
-  const [editItemId, setEditItemId] = useState<string | null>(null)
-  const [editedItem, setEditedItem] = useState<{
-    title: string
-  }>({
-    title: "",
-  })
+
+  const [content, setContent] = useState("<p></p>")
+  const [editedTitle, setEditedTitle] = useState("")
+  const [isSaved, setIsSaved] = useState(true)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [hasTitleChanges, setHasTitleChanges] = useState(false)
+
+  const lastSavedContent = useRef("<p></p>")
+  const lastSavedTitle = useRef("")
 
   useEffect(() => {
-    if (currentItem && currentItem._id !== editItemId) {
-      setEditItemId(currentItem._id || "")
-      setEditedItem({
-        title: currentItem.title || "",
-      })
+    if (currentItem) {
+      setContent(currentItem.description || "<p></p>")
+      setEditedTitle(currentItem.title || "")
+      lastSavedContent.current = currentItem.description || "<p></p>"
+      lastSavedTitle.current = currentItem.title || ""
     }
-  }, [currentItem, editItemId])
-
-  useEffect(() => {
-    const textarea = textareaRefTitle.current
-    if (textarea) {
-      textarea.style.height = "auto"
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-  }, [editedItem.title])
-
-  const handleSaveEditedItem = async (item: any) => {
-    try {
-      if (editItemId && editedItem) {
-        updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-          },
-          item._id
-        )
-      }
-    } catch (error) {
-      console.error("error updating item:", error)
-    }
-  }
+  }, [currentItem])
 
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
     if (newContent !== lastSavedContent.current) {
-      setHasUnsavedCHanges(true)
+      setHasUnsavedChanges(true)
       setIsSaved(false)
     }
+  }, [])
+
+  const handleTitleChange = useCallback((newTitle: string) => {
+    setEditedTitle(newTitle)
+    setHasTitleChanges(true)
+    setIsSaved(false)
   }, [])
 
   const editor = useEditorHook({
@@ -79,54 +56,50 @@ export const ThisWeekExpandedItem: React.FC = () => {
   })
 
   useEffect(() => {
-    setContent(currentItem?.description || "<p></p>")
-    editor?.commands.setContent(currentItem?.description || "<p></p>")
-    lastSavedContent.current = currentItem?.description || "<p></p>"
-  }, [currentItem, editor])
+    const textarea = textareaRefTitle.current
+    if (textarea) {
+      textarea.style.height = "auto"
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }, [editedTitle])
 
   useEffect(() => {
-    if (hasUnsavedChanges) {
-      const debounceTimer = setTimeout(() => {
-        if (content !== lastSavedContent.current && currentItem?._id) {
-          updateItem(
-            session,
-            { ...currentItem, description: content },
-            currentItem._id
-          )
-          lastSavedContent.current = content
-        }
-        setHasUnsavedCHanges(false)
-        setIsSaved(true)
-      }, 500)
-      return () => clearTimeout(debounceTimer)
-    }
-  }, [content, hasUnsavedChanges, currentItem, session, updateItem])
+    if (!currentItem?._id || (!hasUnsavedChanges && !hasTitleChanges)) return
 
-  useEffect(() => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current)
-    }
+    const debounceTimer = setTimeout(() => {
+      const updates: any = {}
 
-    const isEdited = editedItem.title !== (currentItem?.title || "")
-
-    if (isEdited) {
-      timeoutId.current = setTimeout(() => {
-        if (currentItem) {
-          handleSaveEditedItem(currentItem)
-        }
-      }, 1000)
-    }
-
-    return () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current)
+      if (content !== lastSavedContent.current) {
+        updates.description = content
+        lastSavedContent.current = content
       }
-    }
-  }, [editedItem, currentItem, timeoutId])
+
+      if (editedTitle !== lastSavedTitle.current) {
+        updates.title = editedTitle
+        lastSavedTitle.current = editedTitle
+      }
+
+      if (Object.keys(updates).length > 0) {
+        updateItem(session, { ...currentItem, ...updates }, currentItem._id)
+        setIsSaved(true)
+        setHasUnsavedChanges(false)
+        setHasTitleChanges(false)
+      }
+    }, 500)
+
+    return () => clearTimeout(debounceTimer)
+  }, [
+    content,
+    editedTitle,
+    hasUnsavedChanges,
+    hasTitleChanges,
+    currentItem,
+    session,
+    updateItem,
+  ])
 
   const handleClose = useCallback(() => {
     setCurrentItem(null)
-    handleCancelEditItem()
   }, [setCurrentItem])
 
   useEffect(() => {
@@ -134,7 +107,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
       const target = event.target as HTMLElement
 
       const isClickOnItem = target.closest("[data-item-id]") !== null
-
       const isTipTapClick =
         target.closest(".tippy-box") !== null ||
         target.closest(".tiptap") !== null ||
@@ -156,11 +128,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [handleClose])
 
-  const handleCancelEditItem = () => {
-    setEditItemId(null)
-    setEditedItem({ title: "" })
-  }
-
   return (
     <div
       ref={divRef}
@@ -181,6 +148,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
               {formatDateYear(currentItem?.createdAt || "")}
             </p>
             <p>edited {fromNow(currentItem?.updatedAt || "")}</p>
+            {!isSaved && <p className="text-secondary-foreground">Saving...</p>}
           </div>
           <div className="flex gap-4">
             <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
@@ -194,13 +162,8 @@ export const ThisWeekExpandedItem: React.FC = () => {
         <div>
           <textarea
             ref={textareaRefTitle}
-            value={editedItem.title}
-            onChange={(e) =>
-              setEditedItem((prev) => ({
-                ...prev,
-                title: e.target.value,
-              }))
-            }
+            value={editedTitle}
+            onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
