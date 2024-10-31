@@ -15,17 +15,8 @@ jobs:
       - name: Send Discord Notification for PRs
         if: github.event_name == 'pull_request'
         run: |
-          AUTHOR="${{ github.event.pull_request.user.login }}"
-          IS_MEMBER="${{ contains(github.event.pull_request.author_association, 'MEMBER') || contains(github.event.pull_request.author_association, 'OWNER') }}"
-          
-          if [ "$IS_MEMBER" = "true" ]; then
-            BADGE="👨‍💻"
-          else
-            BADGE="🎉"
-          fi
-          
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"${BADGE} New pull request by **${AUTHOR}** (${{ github.event.pull_request.author_association }})\n${{ github.event.pull_request.html_url }}\n> ${{ github.event.pull_request.title }}\"}" \
+               -d "{\"content\": \"🔄 New pull request by **${{ github.event.pull_request.user.login }}**\n${{ github.event.pull_request.html_url }}\n> ${{ github.event.pull_request.title }}\"}" \
                ${{ secrets.DISCORD_WEBHOOK_PR }}
 
       # Notify for PR review comments with mentions
