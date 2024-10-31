@@ -45,7 +45,7 @@ const useEditorHook = ({
       }),
     ],
     content,
-    autofocus: "end",
+    autofocus: false,
     onUpdate: ({ editor }) => {
       setIsSaved(false)
       setContent(editor.getHTML())

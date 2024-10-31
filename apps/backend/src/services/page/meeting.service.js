@@ -41,7 +41,7 @@ const getUpcomingMeetings = async (user, currentDateTime) => {
 
 const updateMeeting = async (id, updateData) => {
     const updatedBlock = await Meeting.findOneAndUpdate({
-        uuid: id
+        _id: id
     },
     { $set: updateData },
     { new: true }
@@ -51,7 +51,7 @@ const updateMeeting = async (id, updateData) => {
 };
 
 const deleteMeeting = async (id) => {
-    const meeting = await Meeting.findOneAndDelete({ uuid: id });
+    const meeting = await Meeting.findOneAndDelete({ _id: id });
 
     if (!meeting) {
         throw new Error('meeting not found');
