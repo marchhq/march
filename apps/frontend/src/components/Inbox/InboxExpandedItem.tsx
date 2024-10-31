@@ -126,6 +126,31 @@ export const InboxExpandedItem: React.FC = () => {
     }
   }, [handleClose])
 
+  const handleTextareaKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      if (e.shiftKey) {
+        const textarea = e.currentTarget as HTMLTextAreaElement
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          editedTitle.slice(0, cursorPosition) +
+          "\n" +
+          editedTitle.slice(cursorPosition)
+
+        setEditedTitle(newValue)
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        if (editor) {
+          editor.commands.focus()
+          editor.commands.setTextSelection(0)
+        }
+      }
+    }
+  }
   return (
     <div className="flex-auto">
       {currentItem && (
@@ -141,13 +166,13 @@ export const InboxExpandedItem: React.FC = () => {
               {formatDateYear(currentItem.createdAt || "")}
             </p>
             <p>edited {fromNow(currentItem.updatedAt || "")}</p>
-            {!isSaved && <p className="text-secondary-foreground">Saving...</p>}
           </div>
           <div>
             <textarea
               ref={textareaRefTitle}
               value={editedTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
+              onKeyDown={handleTextareaKeyDown}
               placeholder="title"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}

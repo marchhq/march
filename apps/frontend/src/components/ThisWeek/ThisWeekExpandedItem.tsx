@@ -17,12 +17,12 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
 
-  const [content, setContent] = useState("<p></p>")
   const [editedTitle, setEditedTitle] = useState("")
-  const [isSaved, setIsSaved] = useState(true)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [hasTitleChanges, setHasTitleChanges] = useState(false)
 
+  const [content, setContent] = useState("<p></p>")
+  const [isSaved, setIsSaved] = useState(true)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const lastSavedContent = useRef("<p></p>")
   const lastSavedTitle = useRef("")
 
@@ -46,7 +46,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
   const handleTitleChange = useCallback((newTitle: string) => {
     setEditedTitle(newTitle)
     setHasTitleChanges(true)
-    setIsSaved(false)
   }, [])
 
   const editor = useEditorHook({
@@ -128,51 +127,65 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [handleClose])
 
+  const handleTextareaKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      if (e.shiftKey) {
+        const textarea = e.currentTarget as HTMLTextAreaElement
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          editedTitle.slice(0, cursorPosition) +
+          "\n" +
+          editedTitle.slice(cursorPosition)
+
+        setEditedTitle(newValue)
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        if (editor) {
+          editor.commands.focus()
+          editor.commands.setTextSelection(0)
+        }
+      }
+    }
+  }
+
   return (
-    <div
-      ref={divRef}
-      className={classNames(
-        `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`
-      )}
-    >
-      <div className="flex w-full flex-col gap-4 p-4">
-        <div className="flex items-center justify-between text-xs text-secondary-foreground">
-          <div className="flex gap-4">
-            <button
-              className="hover-text flex items-center"
-              onClick={handleClose}
-            >
+    <div className="flex-auto">
+      {currentItem && (
+        <div
+          ref={divRef}
+          className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground"
+        >
+          <div className="flex items-center gap-4 text-xs text-secondary-foreground">
+            <button className="flex items-center" onClick={handleClose}>
               <Icon icon="ep:back" className="text-[18px]" />
             </button>
             <p className="flex items-center">
-              {formatDateYear(currentItem?.createdAt || "")}
+              {formatDateYear(currentItem.createdAt || "")}
             </p>
-            <p>edited {fromNow(currentItem?.updatedAt || "")}</p>
-            {!isSaved && <p className="text-secondary-foreground">Saving...</p>}
+            <p>edited {fromNow(currentItem.updatedAt || "")}</p>
           </div>
-          <div className="flex gap-4">
-            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>reschedule</span>
-            </button>
-            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>del</span>
-            </button>
+          <div>
+            <textarea
+              ref={textareaRefTitle}
+              value={editedTitle}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              onKeyDown={handleTextareaKeyDown}
+              placeholder="title"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              rows={1}
+            />
           </div>
-        </div>
-        <div>
-          <textarea
-            ref={textareaRefTitle}
-            value={editedTitle}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-            rows={1}
-          />
           <div className="text-foreground">
             <TextEditor editor={editor} />
           </div>
+          <div className="size-full"></div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

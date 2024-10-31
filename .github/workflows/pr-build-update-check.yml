@@ -1,4 +1,4 @@
-name: CI
+name: Build and branch check
 
 on:
   pull_request:
@@ -9,29 +9,107 @@ on:
       - synchronize
       - edited
       - reopened
+  push:
+    branches:
+      - preview
+  workflow_dispatch:
+    inputs:
+      check_all_prs:
+        description: 'Check all open PRs'
+        type: boolean
+        default: false
+      pr_number:
+        description: 'PR number to check (leave empty to check all)'
+        required: false
 
 jobs:
-
-  build:
-    if: github.event.pull_request.draft == false
+  trigger-pr-checks:
+    if: |
+      github.event_name == 'push' && github.ref == 'refs/heads/preview'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Trigger checks for all open PRs
+      uses: actions/github-script@v6
       with:
-        fetch-depth: 0  # Get all history for all branches
-        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const per_page = 100;
+          let page = 1;
+          let allPRs = [];
+          
+          // Fetch all open PRs
+          while (true) {
+            console.log(`Fetching PRs page ${page}...`);
+            const response = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: 'preview',
+              state: 'open',
+              per_page: per_page,
+              page: page
+            });
+            
+            allPRs = allPRs.concat(response.data);
+            
+            if (response.data.length < per_page) {
+              break;
+            }
+            page++;
+          }
+          
+          console.log(`Found ${allPRs.length} open PRs`);
+          
+          // Process each PR
+          for (const pr of allPRs) {
+            if (!pr.draft) {
+              console.log(`Processing PR #${pr.number} (${pr.head.ref})`);
+              
+              try {
+                // Create check run to show status
+                const check = await github.rest.checks.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: 'Preview Branch Sync Check',
+                  head_sha: pr.head.sha,
+                  status: 'in_progress',
+                  started_at: new Date().toISOString
+                });
+                console.log(`Successfully triggered check for PR #${pr.number}`);
+              } catch (error) {
+                console.log(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
+              }
+            } else {
+              console.log(`Skipping draft PR #${pr.number}`);
+            }
+          }
+
+  build:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number != '')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: '18.17.0'  # Updated to meet Next.js requirements
+        node-version: '18.17.0'
+
     - name: Setup pnpm
       uses: pnpm/action-setup@v2
       with:
         version: latest
+
     - name: Install dependencies
       run: pnpm install
+
     - name: Build
       run: pnpm run build
+
     - name: Check preview branch sync
       run: |
         git fetch origin preview

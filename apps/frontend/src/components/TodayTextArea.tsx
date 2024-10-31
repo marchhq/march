@@ -49,10 +49,12 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
     if (journal?.journal?.content) {
       setContent(journal.journal.content)
       editor?.commands.setContent(journal.journal.content)
+      editor?.commands.focus()
       lastSavedContent.current = journal.journal.content
     } else {
       setContent("<p></p>")
       editor?.commands.setContent("<p></p>")
+      editor?.commands.focus()
       lastSavedContent.current = "<p></p>"
     }
     setHasUnsavedChanges(false)
