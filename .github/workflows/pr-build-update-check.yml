@@ -1,4 +1,4 @@
-name: CI
+name: Build and branch check
 
 on:
   pull_request:
@@ -9,29 +9,52 @@ on:
       - synchronize
       - edited
       - reopened
+  push:
+    branches:
+      - preview
 
 jobs:
-
   build:
-    if: github.event.pull_request.draft == false
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Get all history for all branches
         ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
+        
+    - name: Get all PRs
+      if: github.event_name == 'push'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const prs = await github.rest.pulls.list({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'preview',
+            state: 'open'
+          });
+          console.log(`Found ${prs.data.length} open PRs`);
+          return prs.data;
+
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18.17.0'  # Updated to meet Next.js requirements
+        node-version: '18.17.0'
+
     - name: Setup pnpm
       uses: pnpm/action-setup@v2
       with:
         version: latest
+
     - name: Install dependencies
       run: pnpm install
+
     - name: Build
       run: pnpm run build
+
     - name: Check preview branch sync
       run: |
         git fetch origin preview
@@ -47,3 +70,29 @@ jobs:
         else
           echo "✅ Branch is up to date with preview"
         fi
+
+    - name: Trigger checks for existing PRs
+      if: github.event_name == 'push'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const prs = await github.rest.pulls.list({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'preview',
+            state: 'open'
+          });
+          
+          for (const pr of prs.data) {
+            console.log(`Re-running checks for PR #${pr.number}`);
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'pr-build-update-check.yml',
+              ref: pr.head.ref,
+              inputs: {
+                pr_number: pr.number.toString()
+              }
+            });
+          }
