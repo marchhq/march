@@ -2,10 +2,11 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import { Calendar, Move, GithubIcon } from "lucide-react"
+import { Calendar, Move, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
 import BoxIcon from "@/public/icons/box.svg"
+import LinearIcon from "@/public/icons/linear.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -73,6 +74,26 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
+  const getSourceIcon = (source: string) => {
+    switch (source) {
+      case "gmail":
+        return <MailsIcon size={14} />
+      case "githubIssue":
+        return <GithubIcon size={14} />
+      case "githubPullRequest":
+        return <GithubIcon size={14} />
+      case "linear":
+        return (
+          <Image src={LinearIcon} alt="linear icon" width={14} height={14} />
+        )
+      case "march":
+      case "marchClipper":
+        return null
+      default:
+        return null
+    }
+  }
+
   const filteredItems = items.filter((item) => item.status !== "done")
 
   return (
@@ -89,9 +110,10 @@ export const InboxItems: React.FC = () => {
           <div className="flex flex-col gap-2.5">
             {filteredItems.map((item) => (
               <button
-                key="item._id"
+                key={item._id}
                 className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
                 onClick={() => handleExpand(item)}
+                data-item-id={item._id}
               >
                 <div className="flex items-start gap-2">
                   <Image
@@ -110,9 +132,9 @@ export const InboxItems: React.FC = () => {
                   >
                     {item.title}
                   </span>
-                  {item.source === "githubPullRequest" && (
+                  {item.source !== "march" && (
                     <div className="mt-[3px] flex items-center text-secondary-foreground">
-                      <GithubIcon size={14} />
+                      {getSourceIcon(item.source)}
                     </div>
                   )}
                 </div>
