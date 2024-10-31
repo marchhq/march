@@ -37,8 +37,8 @@ jobs:
           contains(github.event.comment.body, '@')
         run: |
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"💬 New mention in PR review comment\n${{ github.event.comment.html_url }}\nBy **${{ github.event.comment.user.login }}**: ${{ github.event.comment.body }}\"}" \
-               ${{ secrets.DISCORD_WEBHOOK_PR }}
+\
+}
 
       # Notify for PR comments with mentions
       - name: Send Discord Notification for PR Comments
