@@ -13,7 +13,8 @@ import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 export const InboxExpandedItem: React.FC = () => {
   const { session } = useAuth()
-  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
+  const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
+    useCycleItemStore()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -192,6 +193,16 @@ export const InboxExpandedItem: React.FC = () => {
     setEditedItem({ title: "" })
   }
 
+  const handleDelete = useCallback(
+    (event: React.MouseEvent, id: string) => {
+      event.stopPropagation()
+      if (id) {
+        deleteItem(session, id)
+      }
+    },
+    [deleteItem, session]
+  )
+
   return (
     <div className="min-w-max flex-auto">
       {currentItem && (
@@ -216,6 +227,12 @@ export const InboxExpandedItem: React.FC = () => {
               {formatDateYear(currentItem.createdAt)}
             </p>
             <p>edited {fromNow(currentItem.updatedAt)}</p>
+            <button
+              className="hover-text flex w-fit items-center"
+              onClick={(e) => handleDelete(e, currentItem._id)}
+            >
+              <span>del</span>
+            </button>
           </div>
           <div className="flex items-center">
             <textarea
