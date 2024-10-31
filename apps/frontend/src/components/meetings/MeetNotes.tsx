@@ -85,6 +85,30 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
     }
   }, [content, hasUnsavedChanges, meetData, session, updateMeet])
 
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          title.slice(0, cursorPosition) + "\n" + title.slice(cursorPosition)
+
+        setTitle(newValue)
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        editor?.commands.focus()
+        editor?.commands.setTextSelection(0)
+      }
+    }
+  }
   return (
     <>
       <div className="flex items-center gap-1 text-sm">
@@ -121,6 +145,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
           ref={textareaRef}
           value={title}
           onChange={handleTitleChange}
+          onKeyDown={handleTextareaKeyDown}
           placeholder="Untitled"
           className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
           rows={1}
