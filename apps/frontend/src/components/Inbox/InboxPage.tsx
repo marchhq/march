@@ -17,11 +17,7 @@ export const InboxPage: React.FC = () => {
 
   return (
     <div className="flex h-full gap-8">
-      <div
-        className={classNames(
-          "flex h-full max-w-[800px] flex-col gap-5 text-sm w-full"
-        )}
-      >
+      <div className="flex h-full max-w-[800px] flex-col gap-5 text-sm w-full">
         <header className="flex flex-col gap-4 pl-5 text-foreground">
           <div className="flex gap-4 text-sm text-secondary-foreground">
             <p className="flex items-center">can we add something here?</p>
