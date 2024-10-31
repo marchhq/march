@@ -12,35 +12,27 @@ on:
   push:
     branches:
       - preview
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: false
 
 jobs:
   build:
     if: |
       (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
-      github.event_name == 'push'
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
-        fetch-depth: 0  # Get all history for all branches
-        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
-        
-    - name: Get all PRs
-      if: github.event_name == 'push'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const prs = await github.rest.pulls.list({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            base: 'preview',
-            state: 'open'
-          });
-          console.log(`Found ${prs.data.length} open PRs`);
-          return prs.data;
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: '18.17.0'
 
@@ -71,28 +63,57 @@ jobs:
           echo "✅ Branch is up to date with preview"
         fi
 
-    - name: Trigger checks for existing PRs
-      if: github.event_name == 'push'
+  trigger-pr-checks:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/preview'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger checks for all open PRs
       uses: actions/github-script@v6
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const prs = await github.rest.pulls.list({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            base: 'preview',
-            state: 'open'
-          });
+          const per_page = 100;
+          let page = 1;
+          let allPRs = [];
           
-          for (const pr of prs.data) {
-            console.log(`Re-running checks for PR #${pr.number}`);
-            await github.rest.actions.createWorkflowDispatch({
+          while (true) {
+            const response = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'pr-build-update-check.yml',
-              ref: pr.head.ref,
-              inputs: {
-                pr_number: pr.number.toString()
-              }
+              base: 'preview',
+              state: 'open',
+              per_page: per_page,
+              page: page
             });
+            
+            allPRs = allPRs.concat(response.data);
+            
+            if (response.data.length < per_page) {
+              break;
+            }
+            page++;
+          }
+          
+          console.log(`Found ${allPRs.length} open PRs`);
+          
+          for (const pr of allPRs) {
+            if (!pr.draft) {
+              console.log(`Triggering check for PR #${pr.number} (${pr.head.ref})`);
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: 'pr-build-update-check.yml',
+                  ref: pr.head.ref,
+                  inputs: {
+                    pr_number: pr.number.toString()
+                  }
+                });
+                console.log(`Successfully triggered check for PR #${pr.number}`);
+              } catch (error) {
+                console.log(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
+              }
+            } else {
+              console.log(`Skipping draft PR #${pr.number}`);
+            }
           }
