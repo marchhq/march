@@ -47,5 +47,7 @@ export const environment = {
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
-    FEEDBACK_RECEIVER_EMAIL: process.env.FEEDBACK_RECEIVER_EMAIL
+    FEEDBACK_RECEIVER_EMAIL: process.env.FEEDBACK_RECEIVER_EMAIL,
+    LOGSNAG_TOKEN: process.env.LOGSNAG_TOKEN,
+    LOGSNAG_PROJECT_NAME: process.env.LOGSNAG_PROJECT_NAME
 };
