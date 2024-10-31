@@ -2,71 +2,74 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import { Icon } from "@iconify-icon/react"
 import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-} from "@radix-ui/react-context-menu"
+  CalendarIcon,
+  MoveIcon,
+  GithubIcon,
+  MailsIcon,
+  XIcon,
+} from "lucide-react"
 import Image from "next/image"
 
-import ImageWithFallback from "../ui/ImageWithFallback"
+import BoxIcon from "@/public/icons/box.svg"
+import LinearIcon from "@/public/icons/linear.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import { extractParagraphs, truncateString } from "@/src/utils/helpers"
+import classNames from "@/src/utils/classNames"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
-  const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set())
-  const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
-    new Set()
-  )
 
+  const [isControlHeld, setIsControlHeld] = useState(false)
   const {
     inbox,
     currentItem,
     setCurrentItem,
     fetchInbox,
     updateItem,
-    isLoading,
+    deleteItem,
+    error,
   } = useCycleItemStore()
 
-  const { items } = inbox
-
-  const fetchInboxItems = useCallback(async () => {
-    try {
-      await fetchInbox(session)
-    } catch (error) {
-      console.error("Error fetching inbox:", error)
-    }
-  }, [session, fetchInbox])
+  const { items, error: inboxError } = inbox
 
   useEffect(() => {
-    fetchInboxItems()
-  }, [fetchInboxItems])
+    fetchInbox(session)
+  }, [fetchInbox, session])
 
-  useEffect(() => {}, [items])
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Control" && event.location === 1) {
+        setIsControlHeld(true)
+      }
+    }
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Control" && event.location === 1) {
+        setIsControlHeld(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keyup", handleKeyUp)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
-      // Only update the current item if it's not already the selected item
-      if (!currentItem || currentItem._id !== item._id) {
+      if (isControlHeld && item.type === "link") {
+        window.open(item.metadata?.url, "_blank")
+      } else if (!currentItem || currentItem._id !== item._id) {
         setCurrentItem(item)
       }
     },
-    [currentItem, setCurrentItem]
+    [currentItem, setCurrentItem, isControlHeld]
   )
-
-  /* const handleDelete = useCallback(
-    (id: string) => {
-      if (id) {
-        deleteItem(session, id)
-      }
-    },
-    [deleteItem, session]
-  ) */
 
   const handleDone = useCallback(
     (
@@ -77,179 +80,116 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        setAnimatingItems((prev) => new Set(prev).add(id))
-        setOptimisticDoneItems((prev) => {
-          const newSet = new Set(prev)
-          if (newStatus === "done") {
-            newSet.add(id)
-          } else {
-            newSet.delete(id)
-          }
-          return newSet
-        })
-
         const today = new Date().toISOString()
-
-        setTimeout(() => {
-          updateItem(session, { status: newStatus, dueDate: today }, id)
-          setAnimatingItems((prev) => {
-            const newSet = new Set(prev)
-            newSet.delete(id)
-            return newSet
-          })
-        }, 400)
+        updateItem(session, { status: newStatus, dueDate: today }, id)
       }
     },
     [updateItem, session]
   )
 
-  /*  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4">
-        <p>loading...</p>
-      </div>
-    )
-  } */
+  const handleDelete = useCallback(
+    (event: React.MouseEvent, id: string) => {
+      event.stopPropagation()
+      if (id) {
+        deleteItem(session, id)
+      }
+    },
+    [deleteItem, session]
+  )
 
-  const menuItems = (item: CycleItem) => [
-    {
-      name: "Expand",
-      icon: "ri:expand-diagonal-s-line",
-      onClick: () => handleExpand(item),
-    },
-    {
-      name: "Mark as done",
-      icon: "weui:done-outlined",
-      onClick: (event: React.MouseEvent) =>
-        handleDone(event, item._id!, item.status),
-    },
-    { name: "Plan", icon: "humbleicons:clock", onClick: () => {} },
-    { name: "Move", icon: "mingcute:move-line", onClick: () => {} },
-    {
-      name: "Delete",
-      icon: "weui:delete-outlined",
-      color: "#C45205",
-      //     onClick: () => handleDelete(item._id!),
-    },
-  ]
+  const getSourceIcon = (source: string) => {
+    switch (source) {
+      case "gmail":
+        return <MailsIcon size={14} />
+      case "githubIssue":
+        return <GithubIcon size={14} />
+      case "githubPullRequest":
+        return <GithubIcon size={14} />
+      case "linear":
+        return (
+          <Image src={LinearIcon} alt="linear icon" width={14} height={14} />
+        )
+      case "march":
+      case "marchClipper":
+        return null
+      default:
+        return null
+    }
+  }
 
   const filteredItems = items.filter((item) => item.status !== "done")
 
   return (
-    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
+    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       {filteredItems.length === 0 ? (
-        <p>inbox empty</p>
+        <span className="pl-5">inbox empty</span>
       ) : (
-        filteredItems.map((item) => (
-          <ContextMenu key={item._id}>
-            <ContextMenuTrigger asChild>
-              <div
-                className={`group relative flex justify-between gap-1 rounded-lg border p-4 text-left transition-all duration-300 hover:border-border focus:outline-none focus:ring-0 ${
-                  animatingItems.has(item._id!)
-                    ? "transform-none opacity-100 sm:translate-x-full sm:opacity-0 sm:blur-lg"
-                    : ""
-                } ${
-                  currentItem && currentItem._id === item._id
-                    ? "border-border"
-                    : "border-transparent"
-                }`}
+        <div>
+          {inboxError && (
+            <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+              <span>{inboxError}</span>
+            </div>
+          )}
+          {error && (
+            <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+              <span>{error}</span>
+            </div>
+          )}
+          <div className="flex flex-col gap-2.5">
+            {filteredItems.map((item) => (
+              <button
+                key={item._id}
+                className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
                 onClick={() => handleExpand(item)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleExpand(item)
-                  }
-                }}
-                tabIndex={0}
-                role="button"
-                style={{
-                  WebkitTapHighlightColor: "transparent",
-                  outline: "none",
-                }}
                 data-item-id={item._id}
               >
-                <div className="flex w-full flex-col truncate">
-                  <div className="flex justify-between text-foreground">
-                    <div className="flex w-full items-start gap-2">
-                      <button
-                        onClick={(e) => handleDone(e, item._id!, item.status)}
-                        aria-label={
-                          optimisticDoneItems.has(item._id!)
-                            ? "Mark as not done"
-                            : "Mark as done"
-                        }
-                        className="focus:outline-none focus:ring-0"
-                      >
-                        <Icon
-                          icon={
-                            optimisticDoneItems.has(item._id!)
-                              ? "weui:done2-filled"
-                              : "material-symbols:circle-outline"
-                          }
-                          className="mt-0.5 text-[18px]"
-                        />
-                      </button>
-                      <p className="mr-1">
-                        {truncateString(
-                          item.title.replace(/^https?:\/\/(www\.)?/, ""),
-                          35
-                        )}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                        {item.metadata?.favicon ? (
-                          <ImageWithFallback
-                            src={item.metadata?.favicon}
-                            alt=""
-                            width={12}
-                            height={12}
-                            className=" size-4 shrink-0"
-                          />
-                        ) : (
-                          ""
-                        )}
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
-                          <Icon
-                            icon="humbleicons:clock"
-                            className="mt-0.5 text-[18px]"
-                          />
-                        </button>
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
-                          <Icon
-                            icon="mingcute:move-line"
-                            className="mt-0.5 text-[18px]"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="ml-[18px] pl-2 text-xs">
-                    <p className="max-w-full truncate">
-                      {extractParagraphs(item.description)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </ContextMenuTrigger>
-            <ContextMenuContent className="rounded-md border border-border">
-              {menuItems(item).map((menuItem) => (
-                <ContextMenuItem
-                  key={menuItem.name}
-                  className="hover-bg rounded-md px-2 py-0.5"
-                >
-                  <button
-                    className="my-1 flex w-full items-center gap-3 text-primary-foreground"
-                    style={{ color: menuItem.color }}
-                    onClick={menuItem.onClick}
+                <div className="flex items-start gap-2 truncate">
+                  <Image
+                    src={BoxIcon}
+                    alt="checkbox icon"
+                    width={12}
+                    height={12}
+                    onClick={(e) => handleDone(e, item._id, item.status)}
+                    className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+                  />
+                  <span
+                    className={classNames(
+                      "text-left truncate",
+                      item.type === "link" && "group-hover:underline"
+                    )}
                   >
-                    <Icon icon={menuItem.icon} className="text-[18px]" />
-                    <span className="flex-1 text-left text-[15px]">
-                      {menuItem.name}
-                    </span>
-                  </button>
-                </ContextMenuItem>
-              ))}
-            </ContextMenuContent>
-          </ContextMenu>
-        ))
+                    {item.title}
+                  </span>
+                  {item.source !== "march" && (
+                    <div className="mt-[3px] flex items-center text-secondary-foreground">
+                      {getSourceIcon(item.source)}
+                    </div>
+                  )}
+                </div>
+                <div className="invisible mt-[3px] flex items-center gap-5 text-secondary-foreground group-hover:visible">
+                  <div className="flex gap-2">
+                    <CalendarIcon
+                      size={14}
+                      className="hover-text"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <MoveIcon
+                      size={14}
+                      className="hover-text"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  <XIcon
+                    size={14}
+                    className="hover-text"
+                    onClick={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => handleDelete(e, item._id)}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   )
