@@ -5,6 +5,7 @@ import Image from "next/image"
 import waitlist from "../../../../public/icons/logo.svg"
 import { LogoDark } from "@/src/lib/icons/Logo"
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {}
 
 const Waitlist = (props: Props) => {
