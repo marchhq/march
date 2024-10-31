@@ -15,7 +15,7 @@ import ImageWithFallback from "../ui/ImageWithFallback"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import { extractParagraphs } from "@/src/utils/helpers"
+import { extractParagraphs, truncateString } from "@/src/utils/helpers"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -188,7 +188,12 @@ export const InboxItems: React.FC = () => {
                           className="mt-0.5 text-[18px]"
                         />
                       </button>
-                      <p className="mr-1">{item.title}</p>
+                      <p className="mr-1">
+                        {truncateString(
+                          item.title.replace(/^https?:\/\/(www\.)?/, ""),
+                          35
+                        )}
+                      </p>
                       <div className="flex items-center gap-2 text-xs text-secondary-foreground">
                         {item.metadata?.favicon ? (
                           <ImageWithFallback
