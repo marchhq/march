@@ -1,14 +1,9 @@
 "use client"
 
-import { Icon } from "@iconify-icon/react"
-import { ListFilter } from "lucide-react"
-
 import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
 import { InboxExpandedItem } from "@/src/components/Inbox/InboxExpandedItem"
 import { InboxItems } from "@/src/components/Inbox/InboxItems"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import classNames from "@/src/utils/classNames"
-import { formatDateYear } from "@/src/utils/datetime"
 
 export const InboxPage: React.FC = () => {
   const { inbox } = useCycleItemStore()
@@ -20,11 +15,7 @@ export const InboxPage: React.FC = () => {
       <div className="flex size-full max-w-[800px] flex-col gap-5 text-sm lg:max-w-[500px] xl:max-w-[600px] 2xl:max-w-[800px]">
         <header className="flex flex-col gap-4 pl-5 text-foreground">
           <div className="flex gap-4 text-sm text-secondary-foreground">
-            <p className="flex items-center">can we add something here?</p>
-            <button className="hover-bg flex w-fit items-center gap-2 rounded-md px-1">
-              <ListFilter size={16} />
-              <span>all unorganised items</span>
-            </button>
+            <span className="flex items-center">all unorganised items</span>
           </div>
           <div className="flex items-center gap-2">
             <h1 className="text-sm font-semibold">inbox</h1>
