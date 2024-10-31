@@ -45,6 +45,8 @@ jobs:
                 page: page
               });
               
+              if (response.data.length === 0) break;
+              
               allPRs = allPRs.concat(response.data);
               
               if (response.data.length < per_page) {
@@ -55,11 +57,12 @@ jobs:
             
             console.log(`Found ${allPRs.length} open PRs`);
             
-            // Process each PR
+            // Process each PR regardless of its previous status
             for (const pr of allPRs) {
               if (!pr.draft) {
                 console.log(`Processing PR #${pr.number} (${pr.head.ref})`);
                 try {
+                  // Force a new check by triggering the workflow
                   await github.rest.actions.createWorkflowDispatch({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -71,7 +74,7 @@ jobs:
                   });
                   console.log(`Successfully triggered check for PR #${pr.number}`);
                 } catch (error) {
-                  console.log(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
+                  console.error(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
                 }
               } else {
                 console.log(`Skipping draft PR #${pr.number}`);
