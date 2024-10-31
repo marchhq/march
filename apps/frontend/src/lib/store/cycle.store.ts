@@ -468,4 +468,72 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       throw error
     }
   },
+  deleteItem: async (session: string, id: string) => {
+    const updates = { isDeleted: true }
+
+    set((state) => {
+      const deleteItemsInView = (items: CycleItem[]) =>
+        items.filter((item) => item._id !== id)
+
+      return {
+        inbox: { ...state.inbox, items: deleteItemsInView(state.inbox.items) },
+        today: { ...state.today, items: deleteItemsInView(state.today.items) },
+        overdue: {
+          ...state.overdue,
+          items: deleteItemsInView(state.overdue.items),
+        },
+        thisWeek: {
+          ...state.thisWeek,
+          items: deleteItemsInView(state.thisWeek.items),
+        },
+        items: deleteItemsInView(state.items),
+        currentItem: state.currentItem?._id === id ? null : state.currentItem,
+      }
+    })
+
+    try {
+      const { data } = await api.put(`/api/inbox/${id}`, updates, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => {
+        const updateItemsInView = (items: CycleItem[]) =>
+          items.map((item) =>
+            item._id === id ? { ...item, ...data.response } : item
+          )
+
+        return {
+          inbox: {
+            ...state.inbox,
+            items: updateItemsInView(state.inbox.items),
+          },
+          today: {
+            ...state.today,
+            items: updateItemsInView(state.today.items),
+          },
+          overdue: {
+            ...state.overdue,
+            items: updateItemsInView(state.overdue.items),
+          },
+          thisWeek: {
+            ...state.thisWeek,
+            items: updateItemsInView(state.thisWeek.items),
+          },
+          items: updateItemsInView(state.items),
+          error: null,
+        }
+      })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unknown error occurred"
+
+      set((state) => ({
+        ...state,
+        error: errorMessage,
+      }))
+      throw error
+    }
+  },
 }))

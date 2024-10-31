@@ -2,7 +2,13 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import { Calendar, Move, GithubIcon, MailsIcon } from "lucide-react"
+import {
+  CalendarIcon,
+  MoveIcon,
+  GithubIcon,
+  MailsIcon,
+  XIcon,
+} from "lucide-react"
 import Image from "next/image"
 
 import BoxIcon from "@/public/icons/box.svg"
@@ -16,8 +22,14 @@ export const InboxItems: React.FC = () => {
   const { session } = useAuth()
 
   const [isControlHeld, setIsControlHeld] = useState(false)
-  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem } =
-    useCycleItemStore()
+  const {
+    inbox,
+    currentItem,
+    setCurrentItem,
+    fetchInbox,
+    updateItem,
+    deleteItem,
+  } = useCycleItemStore()
 
   const { items, error } = inbox
 
@@ -72,6 +84,16 @@ export const InboxItems: React.FC = () => {
       }
     },
     [updateItem, session]
+  )
+
+  const handleDelete = useCallback(
+    (event: React.MouseEvent, id: string) => {
+      event.stopPropagation()
+      if (id) {
+        deleteItem(session, id)
+      }
+    },
+    [deleteItem, session]
   )
 
   const getSourceIcon = (source: string) => {
@@ -138,16 +160,24 @@ export const InboxItems: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
-                  <Calendar
+                <div className="invisible mt-[3px] flex items-center gap-5 text-secondary-foreground group-hover:visible">
+                  <div className="flex gap-2">
+                    <CalendarIcon
+                      size={14}
+                      className="hover-text"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <MoveIcon
+                      size={14}
+                      className="hover-text"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  <XIcon
                     size={14}
                     className="hover-text"
                     onClick={(e) => e.stopPropagation()}
-                  />
-                  <Move
-                    size={14}
-                    className="hover-text"
-                    onClick={(e) => e.stopPropagation()}
+                    onDoubleClick={(e) => handleDelete(e, item._id)}
                   />
                 </div>
               </button>
