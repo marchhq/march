@@ -1,4 +1,4 @@
-name: CI
+name: Build and branch check
 
 on:
   pull_request:
@@ -9,41 +9,115 @@ on:
       - synchronize
       - edited
       - reopened
+  push:
+    branches:
+      - preview
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: false
 
 jobs:
-
-  build:
-    if: github.event.pull_request.draft == false
+  # Job 1: Runs when preview branch changes
+  check-all-prs:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/preview'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Get all history for all branches
-        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
-    - name: Use Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18.17.0'  # Updated to meet Next.js requirements
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: latest
-    - name: Install dependencies
-      run: pnpm install
-    - name: Build
-      run: pnpm run build
-    - name: Check preview branch sync
-      run: |
-        git fetch origin preview
-        BASE_SHA=$(git merge-base origin/preview HEAD)
-        PREVIEW_SHA=$(git rev-parse origin/preview)
-        if [ "$BASE_SHA" != "$PREVIEW_SHA" ]; then
-          echo "❌ Your branch is not up to date with preview branch"
-          echo "Current preview SHA: $PREVIEW_SHA"
-          echo "Last common commit: $BASE_SHA"
-          echo "Differences:"
-          git log --oneline origin/preview...HEAD
-          exit 1
-        else
-          echo "✅ Branch is up to date with preview"
-        fi
+      - name: Trigger checks for all open PRs
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const per_page = 100;
+            let page = 1;
+            let allPRs = [];
+            
+            // Fetch all open PRs
+            while (true) {
+              console.log(`Fetching PRs page ${page}...`);
+              const response = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: 'preview',
+                state: 'open',
+                per_page: per_page,
+                page: page
+              });
+              
+              allPRs = allPRs.concat(response.data);
+              
+              if (response.data.length < per_page) {
+                break;
+              }
+              page++;
+            }
+            
+            console.log(`Found ${allPRs.length} open PRs`);
+            
+            // Process each PR
+            for (const pr of allPRs) {
+              if (!pr.draft) {
+                console.log(`Processing PR #${pr.number} (${pr.head.ref})`);
+                try {
+                  await github.rest.actions.createWorkflowDispatch({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: 'pr-build-update-check.yml',
+                    ref: pr.head.ref,
+                    inputs: {
+                      pr_number: pr.number.toString()
+                    }
+                  });
+                  console.log(`Successfully triggered check for PR #${pr.number}`);
+                } catch (error) {
+                  console.log(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
+                }
+              } else {
+                console.log(`Skipping draft PR #${pr.number}`);
+              }
+            }
+
+  # Job 2: Runs for individual PRs
+  build-and-check:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number != '')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.17.0'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Check preview branch sync
+        run: |
+          git fetch origin preview
+          BASE_SHA=$(git merge-base origin/preview HEAD)
+          PREVIEW_SHA=$(git rev-parse origin/preview)
+          if [ "$BASE_SHA" != "$PREVIEW_SHA" ]; then
+            echo "❌ Your branch is not up to date with preview branch"
+            echo "Current preview SHA: $PREVIEW_SHA"
+            echo "Last common commit: $BASE_SHA"
+            echo "Differences:"
+            git log --oneline origin/preview...HEAD
+            exit 1
+          else
+            echo "✅ Branch is up to date with preview"
+          fi
