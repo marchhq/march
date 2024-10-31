@@ -107,7 +107,13 @@ export const InboxItems: React.FC = () => {
         return <GithubIcon size={14} />
       case "linear":
         return (
-          <Image src={LinearIcon} alt="linear icon" width={14} height={14} />
+          <Image
+            src={LinearIcon}
+            alt="linear icon"
+            width={14}
+            height={14}
+            className="opacity-50"
+          />
         )
       case "march":
       case "marchClipper":
