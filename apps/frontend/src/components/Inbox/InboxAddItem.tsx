@@ -13,9 +13,8 @@ export const InboxAddItem: React.FC = () => {
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const [addingItem, setAddingItem] = useState(false)
   const [title, setTitle] = useState("")
-  const [error, setError] = useState("")
 
-  const { createItem } = useCycleItemStore()
+  const { createItem, error } = useCycleItemStore()
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -57,16 +56,10 @@ export const InboxAddItem: React.FC = () => {
       }
     }
 
-    try {
-      await createItem(session, data)
+    await createItem(session, data)
 
-      setAddingItem(false)
-      setTitle("")
-      setError("")
-    } catch (error) {
-      setError("error adding item to inbox")
-      console.error("error adding item to inbox:", error)
-    }
+    setAddingItem(false)
+    setTitle("")
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
