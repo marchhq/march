@@ -1,6 +1,6 @@
 import { Item } from "../../models/lib/item.model.js";
 import { getLabelByName } from "./label.service.js";
-// todo:  update with current logic
+
 const getInboxItems = async (me) => {
     const items = await Item.find({
         user: me,
@@ -10,9 +10,9 @@ const getInboxItems = async (me) => {
         spaces: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
-        cycleDate: null
-    })
-        .sort({ createdAt: -1 });
+        "cycle.startsAt": null,
+        "cycle.endsAt": null
+    }).sort({ createdAt: -1 });
 
     return items;
 }
