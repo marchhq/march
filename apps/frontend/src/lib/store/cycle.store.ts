@@ -334,11 +334,14 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
 
       // Calculate cycleDate if we're in thisWeek view and have dates
       if (thisWeek.startDate && thisWeek.endDate) {
-        const start = new Date(thisWeek.startDate)
-        const end = new Date(thisWeek.endDate)
-        const middleTimestamp =
-          start.getTime() + (end.getTime() - start.getTime()) / 2
-        itemToCreate.cycleDate = new Date(middleTimestamp).toISOString()
+        const start = new Date(thisWeek.startDate).toISOString()
+        const end = new Date(thisWeek.endDate).toISOString()
+
+        itemToCreate.cycle = {
+          startsAt: start,
+          endsAt: end,
+          ...itemToCreate.cycle,
+        }
       }
 
       const { data } = await api.post("/api/inbox", itemToCreate, {
