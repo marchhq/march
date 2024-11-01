@@ -1,0 +1,68 @@
+name: Build and Sync Check (Preview Updates)
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - preview
+  workflow_dispatch:
+
+jobs:
+  check-all-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger checks for all open PRs
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const per_page = 100;
+            let page = 1;
+            let allPRs = [];
+            
+            // Fetch all open PRs
+            while (true) {
+              console.log(`Fetching PRs page ${page}...`);
+              const response = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: 'preview',
+                state: 'open',
+                per_page: per_page,
+                page: page
+              });
+              
+              if (response.data.length === 0) break;
+              allPRs = allPRs.concat(response.data);
+              if (response.data.length < per_page) break;
+              page++;
+            }
+            
+            console.log(`Found ${allPRs.length} open PRs`);
+            
+            // Trigger sync check workflow for each non-draft PR
+            for (const pr of allPRs) {
+              if (!pr.draft) {
+                console.log(`Processing PR #${pr.number} (${pr.head.ref})`);
+                try {
+                  await github.rest.actions.createWorkflowDispatch({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: 'sync-check.yml',
+                    ref: pr.head.ref,
+                    inputs: {
+                      pr_number: pr.number.toString()
+                    }
+                  });
+                  console.log(`Successfully triggered check for PR #${pr.number}`);
+                } catch (error) {
+                  console.error(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
+                }
+              } else {
+                console.log(`Skipping draft PR #${pr.number}`);
+              }
+            } 
