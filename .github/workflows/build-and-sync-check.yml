@@ -48,6 +48,16 @@ jobs:
             for (const pr of allPRs) {
               if (!pr.draft) {
                 console.log(`Processing PR #${pr.number} (${pr.head.ref})`);
+                
+                // Get the latest check status for this PR
+                const checks = await github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: pr.head.sha
+                });
+                
+                console.log(`PR #${pr.number} - Previous status: ${checks.data.check_runs.length > 0 ? 'Has checks' : 'No previous checks'}`);
+                
                 try {
                   await github.rest.actions.createWorkflowDispatch({
                     owner: context.repo.owner,
