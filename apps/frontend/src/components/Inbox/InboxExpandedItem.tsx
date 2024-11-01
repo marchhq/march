@@ -9,6 +9,7 @@ import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface EditedItem {
@@ -27,10 +28,9 @@ const SAVE_DELAY = {
 
 export const InboxExpandedItem: React.FC = () => {
   const { session } = useAuth()
-  const { currentItem, setCurrentItem, updateItem, deleteItem } =
+  const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
     useCycleItemStore()
 
-  // Refs
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutRefs = useRef<TimeoutRefs>({
@@ -39,14 +39,14 @@ export const InboxExpandedItem: React.FC = () => {
   })
   const lastSavedContent = useRef(currentItem?.description || "<p></p>")
 
-  // State
+  // state
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
   const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
-  // Memoized handlers
+  // memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
     const hasChanged = newContent !== lastSavedContent.current
@@ -90,14 +90,14 @@ export const InboxExpandedItem: React.FC = () => {
     [session, updateItem, editItemId, editedItem.title]
   )
 
-  // Editor setup
+  // editor setup
   const editor = useEditorHook({
     content,
     setContent: handleContentChange,
     setIsSaved,
   })
 
-  // Handle editor content updates with debounce
+  // handle editor content updates with debounce
   const saveContent = useCallback(() => {
     if (!currentItem?._id || content === lastSavedContent.current) return
 
@@ -111,7 +111,7 @@ export const InboxExpandedItem: React.FC = () => {
     setIsSaved(true)
   }, [content, currentItem, session, updateItem])
 
-  // Effect to handle content auto-save
+  // effect to handle content auto-save
   useEffect(() => {
     if (!hasUnsavedChanges) return
 
@@ -128,7 +128,7 @@ export const InboxExpandedItem: React.FC = () => {
     }
   }, [hasUnsavedChanges, saveContent])
 
-  // Effect to initialize editor when currentItem changes
+  // effect to initialize editor when currentItem changes
   useEffect(() => {
     if (!currentItem) return
 
@@ -147,7 +147,7 @@ export const InboxExpandedItem: React.FC = () => {
     }
   }, [currentItem, editItemId, editor])
 
-  // Effect to handle title auto-save
+  // effect to handle title auto-save
   useEffect(() => {
     if (!currentItem || editedItem.title === currentItem.title) return
 
@@ -166,7 +166,7 @@ export const InboxExpandedItem: React.FC = () => {
     }
   }, [editedItem.title, currentItem, handleSaveEditedItem])
 
-  // Effect to handle textarea auto-resize
+  // effect to handle textarea auto-resize
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
@@ -175,7 +175,7 @@ export const InboxExpandedItem: React.FC = () => {
     }
   }, [editedItem.title])
 
-  // Effect to handle click outside
+  // effect to handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -198,7 +198,7 @@ export const InboxExpandedItem: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [handleClose])
 
-  // Memoized handler for textarea keydown
+  // memoized handler for textarea keydown
   const handleTextareaKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key !== "Enter") return
@@ -238,7 +238,7 @@ export const InboxExpandedItem: React.FC = () => {
   )
 
   return (
-    <div className="min-w-max flex-auto">
+    <div className={classNames("", currentItem && "w-1/2")}>
       {currentItem && (
         <div
           ref={divRef}
@@ -261,17 +261,18 @@ export const InboxExpandedItem: React.FC = () => {
               {formatDateYear(currentItem.createdAt)}
             </p>
             <p>edited {fromNow(currentItem.updatedAt)}</p>
+            <button
+              className="hover-text flex w-fit items-center"
+              onClick={(e) => handleDelete(e, currentItem._id)}
+            >
+              <span>del</span>
+            </button>
           </div>
           <div className="flex items-center">
             <textarea
               ref={textareaRefTitle}
               value={editedItem.title}
-              onChange={(e) =>
-                setEditedItem((prev) => ({
-                  ...prev,
-                  title: e.target.value,
-                }))
-              }
+              onChange={(e) => handleTitleChange(e)}
               onKeyDown={handleTextareaKeyDown}
               placeholder="title"
               className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
