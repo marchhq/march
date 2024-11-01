@@ -1,0 +1,64 @@
+name: PR Sync and Build Check
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    branches:
+      - preview
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: false
+
+jobs:
+  build-and-check:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number != '')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.17.0'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Check preview branch sync
+        run: |
+          git fetch origin preview
+          BASE_SHA=$(git merge-base origin/preview HEAD)
+          PREVIEW_SHA=$(git rev-parse origin/preview)
+          if [ "$BASE_SHA" != "$PREVIEW_SHA" ]; then
+            echo "❌ Your branch is not up to date with preview branch"
+            echo "Current preview SHA: $PREVIEW_SHA"
+            echo "Last common commit: $BASE_SHA"
+            echo "Differences:"
+            git log --oneline origin/preview...HEAD
+            exit 1
+          else
+            echo "✅ Branch is up to date with preview"
+          fi 
