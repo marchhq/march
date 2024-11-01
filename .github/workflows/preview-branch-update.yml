@@ -1,0 +1,18 @@
+name: Preview Branch Update
+
+on:
+  push:
+    branches:
+      - preview
+
+jobs:
+  trigger-pr-build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger PR Build and Sync Check for all PRs
+        run: |
+          gh pr list --state open --json number --jq '.[].number' | while read pr_number; do
+            gh workflow run "PR Build and Sync Check" -f pr_number="$pr_number"
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
