@@ -17,6 +17,10 @@ on:
       pr_number:
         description: 'PR number to check'
         required: false
+  workflow_run:
+    workflows: ["Preview Branch Update"]
+    types:
+      - completed
 
 jobs:
   build-and-check:
