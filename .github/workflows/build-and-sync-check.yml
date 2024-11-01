@@ -1,5 +1,4 @@
-name: Build and Sync Check (Preview Updates)
-
+name: Build and Sync Check (Preview sync)
 permissions:
   actions: write
   contents: read
