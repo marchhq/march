@@ -10,9 +10,9 @@ const getInboxItems = async (me) => {
         spaces: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
-        cycleDate: null
-    })
-        .sort({ createdAt: -1 });
+        "cycle.startsAt": null,
+        "cycle.endsAt": null
+    }).sort({ createdAt: -1 });
 
     return items;
 }
@@ -72,15 +72,13 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
     endDate = new Date(endDate);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    console.log("startDate (UTC): ", startDate);
-    console.log("endDate (UTC): ", endDate);
-
     const items = await Item.find({
         user: me,
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        cycleDate: { $gte: startDate, $lte: endDate }
+        "cycle.startsAt": { $gte: startDate },
+        "cycle.endsAt": { $lte: endDate }
     })
         .sort({ createdAt: 1 });
 
