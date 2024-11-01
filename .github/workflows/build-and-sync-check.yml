@@ -15,11 +15,20 @@ jobs:
   check-all-prs:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug trigger info
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+
       - name: Trigger checks for all open PRs
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log('Starting workflow with event:', process.env.GITHUB_EVENT_NAME);
+            console.log('Branch ref:', process.env.GITHUB_REF);
+            
             const per_page = 100;
             let page = 1;
             let allPRs = [];
