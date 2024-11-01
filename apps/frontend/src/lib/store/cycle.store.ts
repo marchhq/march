@@ -326,19 +326,25 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     }))
 
     try {
-      // Use get to access the current state
-      const { thisWeek } = get()
+      // get fresh state
+      const currentState = get()
+      const { thisWeek } = currentState
 
-      // Calculate dueDate if we're in thisWeek view and have dates
+      const itemToCreate = { ...item }
+
+      // Calculate cycleDate if we're in thisWeek view and have dates
       if (thisWeek.startDate && thisWeek.endDate) {
-        const start = new Date(thisWeek.startDate)
-        const end = new Date(thisWeek.endDate)
-        const middleTimestamp =
-          start.getTime() + (end.getTime() - start.getTime()) / 2
-        item.cycleDate = new Date(middleTimestamp).toISOString()
+        const start = new Date(thisWeek.startDate).toISOString()
+        const end = new Date(thisWeek.endDate).toISOString()
+
+        itemToCreate.cycle = {
+          startsAt: start,
+          endsAt: end,
+          ...itemToCreate.cycle,
+        }
       }
 
-      const { data } = await api.post("/api/inbox", item, {
+      const { data } = await api.post("/api/inbox", itemToCreate, {
         headers: { Authorization: `Bearer ${session}` },
       })
 
@@ -349,13 +355,15 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           error: null,
         },
         thisWeek: {
-          items: [data.response, ...state.thisWeek.items],
+          ...state.thisWeek,
+          items: [...state.thisWeek.items, data.response],
           isLoading: false,
           error: null,
         },
         items: [data.response, ...state.items],
         isLoading: false,
       }))
+
       return data.response
     } catch (error) {
       const errorMessage =

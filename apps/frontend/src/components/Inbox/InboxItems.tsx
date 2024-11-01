@@ -17,20 +17,14 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
+import { getWeekDates } from "@/src/utils/datetime"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
 
   const [isControlHeld, setIsControlHeld] = useState(false)
-  const {
-    inbox,
-    currentItem,
-    setCurrentItem,
-    fetchInbox,
-    updateItem,
-    deleteItem,
-    error,
-  } = useCycleItemStore()
+  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
+    useCycleItemStore()
 
   const { items, error: inboxError } = inbox
 
@@ -80,21 +74,23 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date().toISOString()
-        updateItem(session, { status: newStatus, dueDate: today }, id)
+        const today = new Date()
+        const { startDate, endDate } = getWeekDates(today)
+        updateItem(
+          session,
+          {
+            status: newStatus,
+            dueDate: today.toISOString(),
+            cycle: {
+              startsAt: startDate,
+              endsAt: endDate,
+            },
+          },
+          id
+        )
       }
     },
     [updateItem, session]
-  )
-
-  const handleDelete = useCallback(
-    (event: React.MouseEvent, id: string) => {
-      event.stopPropagation()
-      if (id) {
-        deleteItem(session, id)
-      }
-    },
-    [deleteItem, session]
   )
 
   const getSourceIcon = (source: string) => {
@@ -107,7 +103,13 @@ export const InboxItems: React.FC = () => {
         return <GithubIcon size={14} />
       case "linear":
         return (
-          <Image src={LinearIcon} alt="linear icon" width={14} height={14} />
+          <Image
+            src={LinearIcon}
+            alt="linear icon"
+            width={14}
+            height={14}
+            className="opacity-50"
+          />
         )
       case "march":
       case "marchClipper":
@@ -166,24 +168,16 @@ export const InboxItems: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="invisible mt-[3px] flex items-center gap-5 text-secondary-foreground group-hover:visible">
-                  <div className="flex gap-2">
-                    <CalendarIcon
-                      size={14}
-                      className="hover-text"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <MoveIcon
-                      size={14}
-                      className="hover-text"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                  <XIcon
+                <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
+                  <CalendarIcon
                     size={14}
                     className="hover-text"
                     onClick={(e) => e.stopPropagation()}
-                    onDoubleClick={(e) => handleDelete(e, item._id)}
+                  />
+                  <MoveIcon
+                    size={14}
+                    className="hover-text"
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               </button>
