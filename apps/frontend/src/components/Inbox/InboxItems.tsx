@@ -17,6 +17,7 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
+import { getWeekDates } from "@/src/utils/datetime"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -80,8 +81,20 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date().toISOString()
-        updateItem(session, { status: newStatus, dueDate: today }, id)
+        const today = new Date()
+        const { startDate, endDate } = getWeekDates(today)
+        updateItem(
+          session,
+          {
+            status: newStatus,
+            dueDate: today.toISOString(),
+            cycle: {
+              startsAt: startDate,
+              endsAt: endDate,
+            },
+          },
+          id
+        )
       }
     },
     [updateItem, session]
