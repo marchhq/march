@@ -360,6 +360,12 @@ const handleWebhookEvent = async (payload) => {
     }
 
     if (!issue.assignee || !issue.assignee.id) {
+        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
+        if (deletedIssue) {
+            console.log(`Unassigned issue with ID: ${issue.id} deleted from the database.`);
+        } else {
+            console.log(`Unassigned issue with ID: ${issue.id} not found in the database.`);
+        }
         return;
     }
 
