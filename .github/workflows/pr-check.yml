@@ -53,4 +53,3 @@ jobs:
             exit 1
           else
             echo "✅ Branch is up to date with preview"
-          fi 
