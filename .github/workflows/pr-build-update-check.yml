@@ -19,7 +19,7 @@ on:
         required: false
 
 jobs:
-  # Job 1: Runs when preview branch changes
+  # Take the updated version of both jobs
   check-all-prs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/preview'
     runs-on: ubuntu-latest
@@ -81,7 +81,6 @@ jobs:
               }
             }
 
-  # Job 2: Runs for individual PRs
   build-and-check:
     if: |
       (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
