@@ -1,5 +1,8 @@
 export interface CycleItem {
-  cycleDate: string
+  cycle: {
+    startsAt: string | null
+    endsAt: string | null
+  }
   _id: string
   title: string
   type: string
