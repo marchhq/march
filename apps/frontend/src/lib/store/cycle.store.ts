@@ -349,7 +349,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           error: null,
         },
         thisWeek: {
-          items: [data.response, ...state.thisWeek.items],
+          items: [...state.thisWeek.items, data.response],
           isLoading: false,
           error: null,
         },
