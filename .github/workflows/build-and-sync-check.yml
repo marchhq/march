@@ -15,11 +15,20 @@ jobs:
   check-all-prs:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug trigger info
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+
       - name: Trigger checks for all open PRs
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log('Starting workflow with event:', process.env.GITHUB_EVENT_NAME);
+            console.log('Branch ref:', process.env.GITHUB_REF);
+            
             const per_page = 100;
             let page = 1;
             let allPRs = [];
@@ -53,10 +62,12 @@ jobs:
                 const checks = await github.rest.checks.listForRef({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  ref: pr.head.sha
+                  ref: pr.head.sha,
+                  check_name: 'build-and-check'
                 });
                 
-                console.log(`PR #${pr.number} - Previous status: ${checks.data.check_runs.length > 0 ? 'Has checks' : 'No previous checks'}`);
+                const lastCheck = checks.data.check_runs[0];
+                console.log(`PR #${pr.number} - Previous status: ${lastCheck ? lastCheck.conclusion : 'No previous checks'}`);
                 
                 try {
                   await github.rest.actions.createWorkflowDispatch({
@@ -68,7 +79,7 @@ jobs:
                       pr_number: pr.number.toString()
                     }
                   });
-                  console.log(`Successfully triggered check for PR #${pr.number}`);
+                  console.log(`Successfully triggered check for PR #${pr.number} (previous status: ${lastCheck ? lastCheck.conclusion : 'none'})`);
                 } catch (error) {
                   console.error(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
                 }
