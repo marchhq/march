@@ -1,0 +1,56 @@
+name: PR Build and Sync Check
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    branches:
+      - preview
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: false
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.17.0'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Check sync with preview
+        run: |
+          git fetch origin preview
+          BASE_SHA=$(git merge-base origin/preview HEAD)
+          PREVIEW_SHA=$(git rev-parse origin/preview)
+          if [ "$BASE_SHA" != "$PREVIEW_SHA" ]; then
+            echo "❌ Branch is not up to date with preview"
+            exit 1
+          else
+            echo "✅ Branch is up to date with preview"
+          fi
