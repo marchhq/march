@@ -75,11 +75,22 @@ const processWebhookEvent = async (event, payload) => {
         return;
     }
     const githubUsername = user.integration.github.userName;
+
+    // Check if the issue/PR is assigned to the user
     const isAssignedToUser = issueOrPR.assignees.some(assignee => assignee.login === githubUsername);
 
-    if (!isAssignedToUser) {
-        console.log(`Issue/PR not assigned to user: ${githubUsername}. Skipping.`);
-        return;
+    // Check if the user is a reviewer for the PR
+    const isReviewer = issueOrPR.requested_reviewers && issueOrPR.requested_reviewers.some(reviewer => reviewer.login === githubUsername);
+
+    // Check if the user created the PR
+    const isCreatedByUser = issueOrPR.user.login === githubUsername;
+
+    // Determine if we should process the PR
+    const shouldProcessPR = isAssignedToUser || isReviewer || isCreatedByUser;
+
+    if (!shouldProcessPR) {
+        console.log(`PR not assigned to or created by user: ${githubUsername}. Skipping.`);
+        return; // Return if the PR is not relevant to the user
     }
     const userId = user._id;
 
@@ -102,7 +113,6 @@ const processWebhookEvent = async (event, payload) => {
             'metadata.assignees': issueOrPR.assignees,
             updatedAt: issueOrPR.updated_at
         }, { new: true });
-        console.log(`Updated ${event} with ID: ${issueOrPR.id}`);
     } else {
         // Create new item
         const newItem = new Item({
@@ -126,7 +136,6 @@ const processWebhookEvent = async (event, payload) => {
         });
 
         await newItem.save();
-        console.log(`Saved new ${event} with ID: ${issueOrPR.id}`);
     }
 };
 
