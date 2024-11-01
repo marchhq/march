@@ -19,7 +19,6 @@ export const InboxItems: React.FC = () => {
 
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
-  const [updateInbox, setUpdateInbox] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
     null
   )
@@ -60,13 +59,8 @@ export const InboxItems: React.FC = () => {
       updateItem(session, { dueDate: date }, reschedulingItemId)
       setReschedulingItemId(null)
       setDateChanged(false)
-      setUpdateInbox(!updateInbox)
     }
-  }, [date, updateItem, session, reschedulingItemId, dateChanged, updateInbox])
-
-  useEffect(() => {
-    fetchInbox(session)
-  }, [updateInbox, fetchInbox, session])
+  }, [date, updateItem, session, reschedulingItemId, dateChanged])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
