@@ -19,8 +19,7 @@ export const CustomKanban = ({ startDate, endDate }) => {
 }
 
 const Board = ({ startDate, endDate }) => {
-  const { thisWeek, fetchThisWeek, updateItem, setWeekDates } =
-    useCycleItemStore()
+  const { thisWeek, fetchThisWeek, setWeekDates } = useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
