@@ -12,6 +12,9 @@ on:
       - opened
       - synchronize
       - reopened
+  push:
+    branches:
+      - preview
   workflow_dispatch:
     inputs:
       pr_number:
