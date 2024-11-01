@@ -62,10 +62,12 @@ jobs:
                 const checks = await github.rest.checks.listForRef({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  ref: pr.head.sha
+                  ref: pr.head.sha,
+                  check_name: 'build-and-check'
                 });
                 
-                console.log(`PR #${pr.number} - Previous status: ${checks.data.check_runs.length > 0 ? 'Has checks' : 'No previous checks'}`);
+                const lastCheck = checks.data.check_runs[0];
+                console.log(`PR #${pr.number} - Previous status: ${lastCheck ? lastCheck.conclusion : 'No previous checks'}`);
                 
                 try {
                   await github.rest.actions.createWorkflowDispatch({
@@ -77,7 +79,7 @@ jobs:
                       pr_number: pr.number.toString()
                     }
                   });
-                  console.log(`Successfully triggered check for PR #${pr.number}`);
+                  console.log(`Successfully triggered check for PR #${pr.number} (previous status: ${lastCheck ? lastCheck.conclusion : 'none'})`);
                 } catch (error) {
                   console.error(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
                 }
