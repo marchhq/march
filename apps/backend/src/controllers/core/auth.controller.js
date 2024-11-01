@@ -5,6 +5,8 @@ import { RegisterPayload, LoginPayload } from "../../payloads/core/auth.payload.
 import { BlackList } from "../../models/core/black-list.model.js";
 import { spaceQueue } from "../../loaders/bullmq.loader.js";
 import { logsnag } from "../../loaders/logsnag.loader.js";
+import axios from "axios";
+import { environment } from "../../loaders/environment.loader.js";
 
 const { ValidationError } = Joi;
 
@@ -54,6 +56,58 @@ const emailLoginController = async (req, res, next) => {
     }
 }
 
+// const authenticateWithGoogleController = async (req, res, next) => {
+//     try {
+//         const token = req.headers["x-google-auth"];
+//         if (!token) {
+//             const error = new Error("Bad request");
+//             error.statusCode = 400;
+//             throw error;
+//         }
+
+//         const payload = await validateGoogleUser(token);
+//         if (!payload.email) {
+//             const error = new Error("Failed to authenticate with Google");
+//             error.statusCode = 401;
+//             throw error;
+//         }
+
+//         let user = await getUserByEmail(payload.email);
+//         let isNewUser = false;
+//         if (!user) {
+//             isNewUser = true;
+//             user = await createGoogleUser(payload);
+//             console.log("hey");
+//             await logsnag.track({
+//                 channel: "waitlist",
+//                 event: `${user.userName} is Waitlisted`,
+//                 user_id: user._id,
+//                 icon: "⏳",
+//                 notify: true,
+//                 tags: {
+//                     method: "Google",
+//                     email: user.accounts.google.email,
+//                     name: user.fullName
+//                 }
+//             });
+//             await spaceQueue.add('spaceQueue', { user: user._id }, {
+//                 attempts: 3,
+//                 backoff: 1000, // 1 second delay between retries
+//                 timeout: 30000 // Job timeout set to 30 seconds
+//             });
+//             console.log("Job added to spaceQueue");
+//         }
+
+//         const tokenPair = await generateJWTTokenPair(user);
+//         res.status(200).json({
+//             ...tokenPair,
+//             isNewUser
+//         });
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
 const authenticateWithGoogleController = async (req, res, next) => {
     try {
         const token = req.headers["x-google-auth"];
@@ -75,7 +129,8 @@ const authenticateWithGoogleController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGoogleUser(payload);
-            console.log("hey");
+
+            // Log user event to LogSnag
             await logsnag.track({
                 channel: "waitlist",
                 event: `${user.userName} is Waitlisted`,
@@ -88,11 +143,28 @@ const authenticateWithGoogleController = async (req, res, next) => {
                     name: user.fullName
                 }
             });
+
+            // Send an event to Loops for email confirmation
+
+            await axios.post('https://app.loops.so/api/v1/events/send', {
+                email: user.accounts.google.email,
+                eventName: "user hits",
+                FirstName: user.userName
+
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${environment.LOOPS_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Add job to spaceQueue
             await spaceQueue.add('spaceQueue', { user: user._id }, {
                 attempts: 3,
                 backoff: 1000, // 1 second delay between retries
                 timeout: 30000 // Job timeout set to 30 seconds
             });
+
             console.log("Job added to spaceQueue");
         }
 
@@ -126,12 +198,43 @@ const authenticateWithGithubController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGithubUser(payload);
-            await spaceQueue.add('spaceQueue', {
-                user: user._id
-            }, {
-                attempts: 3,
-                backoff: 5000
+
+            // Log user event to LogSnag
+            await logsnag.track({
+                channel: "waitlist",
+                event: `${user.userName} is Waitlisted`,
+                user_id: user._id,
+                icon: "⏳",
+                notify: true,
+                tags: {
+                    method: "Github",
+                    email: user.accounts.github.email,
+                    name: user.fullName
+                }
             });
+
+            // Send an event to Loops for email confirmation
+
+            await axios.post('https://app.loops.so/api/v1/events/send', {
+                email: user.accounts.google.email,
+                eventName: "user hits",
+                FirstName: user.userName
+
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${environment.LOOPS_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Add job to spaceQueue
+            await spaceQueue.add('spaceQueue', { user: user._id }, {
+                attempts: 3,
+                backoff: 1000, // 1 second delay between retries
+                timeout: 30000 // Job timeout set to 30 seconds
+            });
+
+            console.log("Job added to spaceQueue");
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
