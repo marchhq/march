@@ -3,33 +3,36 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Icon } from "@iconify-icon/react"
 import { motion } from "framer-motion"
 
+import ImageWithFallback from "../ui/ImageWithFallback"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
-import { getEndOfCurrentWeek } from "@/src/utils/datetime"
+import { isLink } from "@/src/utils/helpers"
 
-export const CustomKanban = () => {
+export const CustomKanban = ({ startDate, endDate }) => {
   return (
     <div className="h-full w-[calc(100%-100px)]">
-      <Board />
+      <Board startDate={startDate} endDate={endDate} />
     </div>
   )
 }
 
-const Board = () => {
-  const { thisWeek, fetchThisWeek, updateItem } = useCycleItemStore()
+const Board = ({ startDate, endDate }) => {
+  const { thisWeek, fetchThisWeek, setWeekDates } = useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
 
   useEffect(() => {
-    fetchThisWeek(session)
-  }, [session, fetchThisWeek])
+    setWeekDates(startDate, endDate)
+  }, [startDate, endDate, setWeekDates])
 
-  const handleDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
-    updateItem(session, newStatus, itemId)
-  }
+  useEffect(() => {
+    fetchThisWeek(session, startDate, endDate)
+  }, [session, fetchThisWeek, startDate, endDate])
+
+  useEffect(() => {}, [items])
 
   return (
     <div className="flex size-full gap-8">
@@ -37,28 +40,27 @@ const Board = () => {
         title="todo"
         column="todo"
         items={items.filter((item) => item.status === "todo")}
-        onDragEnd={handleDragEnd}
         icon="carbon:circle-outline"
       />
       <Column
         title="in progress"
         column="in progress"
         items={items.filter((item) => item.status === "in progress")}
-        onDragEnd={handleDragEnd}
         icon="carbon:in-progress"
       />
       <Column
         title="done"
         column="done"
         items={items.filter((item) => item.status === "done")}
-        onDragEnd={handleDragEnd}
         icon="carbon:circle-solid"
       />
     </div>
   )
 }
 
-const Column = ({ title, items, column, onDragEnd, icon }) => {
+const Column = ({ title, items, column, icon }) => {
+  const { updateItem } = useCycleItemStore()
+  const { session } = useAuth()
   const { createItem } = useCycleItemStore()
   const [active, setActive] = useState(false)
 
@@ -71,6 +73,24 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
     e.preventDefault()
     highlightIndicator(e)
     setActive(true)
+  }
+
+  const onDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
+    const today = new Date().toISOString()
+
+    const data: Partial<CycleItem> = {
+      status: newStatus.status,
+    }
+
+    if (column !== "done") {
+      data.dueDate = null
+    }
+
+    if (column === "done") {
+      data.dueDate = today
+    }
+
+    updateItem(session, data, itemId)
   }
 
   const handleDragEnd = (e) => {
@@ -129,6 +149,8 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
     setActive(false)
   }
 
+  const totalItems = items?.length || 0
+
   return (
     <div className="group/section flex size-full flex-1 flex-col gap-4 rounded-lg">
       <div className="flex items-center gap-2 text-xl text-foreground">
@@ -150,7 +172,11 @@ const Column = ({ title, items, column, onDragEnd, icon }) => {
           />
         ))}
         <DropIndicator beforeId={null} column={column} />
-        <AddCard column={column} updateItem={createItem} />
+        <AddCard
+          column={column}
+          createItem={createItem}
+          totalItems={totalItems}
+        />
       </div>
     </div>
   )
@@ -181,7 +207,18 @@ const Card = ({ title, _id, status, handleDragStart, item }) => {
         )}
         data-item-id={_id}
       >
-        <p className="text-sm text-neutral-100">{title}</p>
+        <p className="flex items-center gap-2 text-sm text-neutral-100">
+          {item.metadata?.favicon ? (
+            <ImageWithFallback
+              src={item.metadata?.favicon}
+              alt=""
+              width={12}
+              height={12}
+              className="size-4 shrink-0"
+            />
+          ) : null}
+          <span>{title}</span>
+        </p>
       </motion.div>
     </>
   )
@@ -199,10 +236,10 @@ const DropIndicator = ({ beforeId, column }) => {
 
 interface AddCardProps {
   column: string
-  updateItem: (session: string, data: Partial<CycleItem>) => void
+  createItem: (session: string, data: Partial<CycleItem>) => void
 }
 
-const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
+const AddCard = ({ column, createItem, totalItems = 0 }) => {
   const [text, setText] = useState("")
   const [adding, setAdding] = useState(false)
   const { session } = useAuth()
@@ -222,18 +259,37 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
       e?.preventDefault()
       if (!text.trim().length) return
 
-      const cycleDate = getEndOfCurrentWeek(new Date())
+      const trimmedTitle = text.trim()
+
+      if (!trimmedTitle) return
+
+      const linkDetected = isLink(trimmedTitle)
+
+      const finalTitle =
+        linkDetected && !/^https:\/\//i.test(trimmedTitle)
+          ? `https://${trimmedTitle}`
+          : trimmedTitle
 
       const data: Partial<CycleItem> = {
-        cycleDate: cycleDate,
-        title: text.trim(),
+        title: finalTitle,
+        type: linkDetected ? "link" : "Issue",
         status: column,
       }
 
-      updateItem(session, data)
+      if (linkDetected) {
+        data.metadata = {
+          url: finalTitle,
+        }
+      }
+
+      if (column === "done") {
+        data.dueDate = new Date().toISOString()
+      }
+
+      createItem(session, data)
       handleCancel()
     },
-    [updateItem, column, session, text]
+    [createItem, column, session, text]
   )
 
   const handleCancel = () => {
@@ -243,19 +299,6 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      /*
-      if (
-        adding &&
-        addItemRef.current &&
-        !addItemRef.current.contains(event.target as Node)
-      ) {
-        if (text.trim().length) {
-          handleSubmit()
-        } else {
-          handleCancel()
-      }
-      */
-
       if (
         adding &&
         addItemRef.current &&
@@ -264,7 +307,6 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
         handleCancel()
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
@@ -282,6 +324,14 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
     }
   }
 
+  // Determine visibility class based on column and total items
+  const getVisibilityClass = () => {
+    if (column === "todo" && totalItems === 0) {
+      return "visible" // Always visible for todo column when no items
+    }
+    return "invisible group-hover/section:visible" // Default hover behavior
+  }
+
   return (
     <div ref={addItemRef} className="">
       {adding ? (
@@ -293,7 +343,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
               setText(e.target.value)
             }
             onKeyDown={handleKeyDown}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
+            /* eslint-disable-next-line jsx-a11y/no-autofocus */
             autoFocus
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent p-4 text-sm font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
@@ -305,7 +355,7 @@ const AddCard: React.FC<AddCardProps> = ({ column, updateItem }) => {
         <motion.button
           layout
           onClick={() => setAdding(true)}
-          className="hover-bg invisible flex w-full items-center gap-2 rounded-lg p-4 text-sm group-hover/section:visible"
+          className={`hover-bg flex w-full items-center gap-2 rounded-lg p-4 text-sm ${getVisibilityClass()}`}
         >
           <Icon icon="ic:round-plus" className="text-[18px]" />
           <p>New item</p>

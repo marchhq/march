@@ -1,17 +1,21 @@
 export interface CycleItem {
-  cycleDate: string
+  cycle: {
+    startsAt: string | null
+    endsAt: string | null
+  }
   _id: string
   title: string
   type: string
   source: string
   description: string
-  dueDate: string
+  dueDate: string | null
   status: string
   spaces: string[]
   blocks: string[]
   labels: string[]
-  metadata: {
-    url: string
+  metadata?: {
+    url?: string
+    favicon?: string
   }
   isCompleted: boolean
   isArchived: boolean
@@ -30,10 +34,16 @@ export interface CycleItemStore {
   currentItem: CycleItem | null
   isLoading: boolean
   error: string | null
+  setCurrentItem: (item: CycleItem | null) => void
   fetchInbox: (session: string) => Promise<void>
   fetchToday: (session: string, date: string) => Promise<void>
   fetchOverdue: (session: string, date: string) => Promise<void>
-  fetchThisWeek: (session: string) => Promise<void>
+  fetchThisWeek: (
+    session: string,
+    startDate: string,
+    endDate: string
+  ) => Promise<void>
+  fetchFavorites: (session: string) => Promise<void>
   fetchItem: (session: string, id: string) => Promise<void>
   fetchItemByDate: (session: string, date: string) => Promise<void>
   createItem: (
@@ -45,7 +55,7 @@ export interface CycleItemStore {
     updates: Partial<CycleItem>,
     id: string
   ) => Promise<void>
-  setCurrentItem: (item: CycleItem | null) => void
+  deleteItem: (session: string, id: string) => Promise<void>
 }
 
 export interface CreateItemResponse {

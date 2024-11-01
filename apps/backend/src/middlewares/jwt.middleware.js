@@ -1,7 +1,6 @@
 import { verifyJWTToken } from "../utils/jwt.service.js";
 import { BlackList } from "../models/core/black-list.model.js";
 import { getUserById } from "../services/core/user.service.js";
-import moment from 'moment-timezone';
 
 const JWTMiddleware = async (req, res, next) => {
     try {
@@ -19,9 +18,7 @@ const JWTMiddleware = async (req, res, next) => {
         const payload = await verifyJWTToken(token);
         const user = await getUserById(payload.id)
         req.user = user;
-        if (user) {
-            moment.tz.setDefault(user.timezone);
-        }
+
         next();
     } catch (err) {
         const error = new Error(err.message);
@@ -70,7 +67,10 @@ const checkUserVerificationController = async (req, res, next) => {
         if (!payload) {
             return res.status(401).json({ isValidUser: false });
         }
-
+        const user = await getUserById(payload.id)
+        if (!user) {
+            return res.status(401).json({ isValidUser: false });
+        }
         return res.status(200).json({ isValidUser: true });
     } catch (err) {
         const error = new Error(err.message);

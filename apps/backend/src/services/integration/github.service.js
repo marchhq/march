@@ -9,15 +9,13 @@ const fetchInstallationDetails = async (installationId, user) => {
     try {
         const appId = environment.GITHUB_APP_ID;
         const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
-        // const privateKeyPath = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
-        // const privateKey = fs.readFileSync(privateKeyPath, "utf8");
         const auth = createAppAuth({
-            appId: appId,
-            privateKey: privateKey,
+            appId,
+            privateKey,
             webhooks: {
                 secret: environment.GITHUB_WEBHOOK_SECRET
             },
-            installationId: installationId
+            installationId
         });
         const installationAuthentication = await auth({ type: 'installation' });
 

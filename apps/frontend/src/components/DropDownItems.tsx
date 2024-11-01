@@ -16,6 +16,7 @@ import { Box, CheckedBox } from "../lib/icons/Box"
 import { LinearDark } from "../lib/icons/LinearCircle"
 import { Link } from "../lib/icons/Link"
 import { getOverdueText } from "../utils/datetime"
+import { truncateString } from "../utils/helpers"
 
 interface DropdownItemProps {
   item: CycleItem
@@ -70,13 +71,20 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
             rel="noopener noreferrer"
             className="flex items-center gap-3 truncate"
           >
-            <span className="truncate">{item.title}</span>
+            <span className="truncate">
+              {truncateString(
+                item.title.replace(/^https?:\/\/(www\.)?/, ""),
+                25
+              )}
+            </span>
             <span className="shrink-0">
               {getSourceIcon(item.source) || <Link />}
             </span>
           </a>
         ) : (
-          <span className="truncate">{item.title}</span>
+          <span className="truncate">
+            {truncateString(item.title.replace(/^https?:\/\/(www\.)?/, ""), 25)}
+          </span>
         )}
         {isOverdue && (
           <TooltipProvider>
@@ -84,7 +92,9 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
               <TooltipTrigger>
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
-              <TooltipContent>{getOverdueText(item.dueDate)}</TooltipContent>
+              <TooltipContent>
+                {getOverdueText(item.dueDate) ?? ""}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}

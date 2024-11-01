@@ -12,12 +12,16 @@ interface ViewState {
   items: CycleItem[]
   isLoading: boolean
   error: null | string
+  startDate?: string
+  endDate?: string
 }
 
 const initialViewState: ViewState = {
   items: [],
   isLoading: false,
   error: null,
+  startDate: "",
+  endDate: "",
 }
 
 interface ExtendedCycleItemStore extends CycleItemStore {
@@ -25,22 +29,24 @@ interface ExtendedCycleItemStore extends CycleItemStore {
   today: ViewState
   overdue: ViewState
   thisWeek: ViewState
+  favorites: ViewState
   setViewItems: (
     view: "inbox" | "today" | "overdue" | "thisWeek",
     items: CycleItem[]
   ) => void
+  setWeekDates: (startDate: string, endDate: string) => void
 }
 
-export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
+export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   inbox: { ...initialViewState },
   today: { ...initialViewState },
   overdue: { ...initialViewState },
   thisWeek: { ...initialViewState },
+  favorites: { ...initialViewState },
   items: [],
   currentItem: null,
   isLoading: false,
   error: null,
-
   setViewItems: (view, items) => {
     set((state) => ({
       [view]: {
@@ -80,7 +86,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknow: failed to fetch inbox"
 
       set((state) => ({
         inbox: {
@@ -118,7 +124,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknow: failed to fetch today"
 
       set((state) => ({
         today: {
@@ -156,7 +162,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknow: failed to fetch overdue"
 
       set((state) => ({
         overdue: {
@@ -170,15 +176,41 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
     }
   },
 
-  fetchThisWeek: async (session: string) => {
+  setWeekDates: (startDate, endDate) => {
     set((state) => ({
-      thisWeek: { ...state.thisWeek, isLoading: true, error: null },
+      thisWeek: {
+        ...state.thisWeek,
+        startDate,
+        endDate,
+      },
+    }))
+  },
+
+  fetchThisWeek: async (
+    session: string,
+    startDate?: string,
+    endDate?: string
+  ) => {
+    set((state) => ({
+      thisWeek: {
+        ...state.thisWeek,
+        isLoading: true,
+        error: null,
+        startDate: startDate || state.thisWeek.startDate,
+        endDate: endDate || state.thisWeek.endDate,
+      },
       isLoading: true,
       error: null,
     }))
 
     try {
-      const { data } = await api.get(`/api/this-week/`, {
+      const queryParams = new URLSearchParams()
+      if (startDate) queryParams.append("startDate", startDate)
+      if (endDate) queryParams.append("endDate", endDate)
+
+      const url = `/api/this-week/${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
+
+      const { data } = await api.get(url, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
@@ -186,6 +218,46 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
 
       set((state) => ({
         thisWeek: {
+          items: data.response || [],
+          isLoading: false,
+          error: null,
+          startDate: startDate || state.thisWeek.startDate,
+          endDate: endDate || state.thisWeek.endDate,
+        },
+        items: data.response || [],
+        isLoading: false,
+      }))
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "unknow: failed to fetch this week"
+
+      set((state) => ({
+        thisWeek: {
+          ...state.thisWeek,
+          error: errorMessage,
+          isLoading: false,
+        },
+        error: errorMessage,
+        isLoading: false,
+      }))
+    }
+  },
+  fetchFavorites: async (session: string) => {
+    set((state) => ({
+      favorites: { ...state.favorites, isLoading: true, error: null },
+      isLoading: true,
+      error: null,
+    }))
+
+    try {
+      const { data } = await api.get("/api/favorite", {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => ({
+        favorites: {
           items: data.response || [],
           isLoading: false,
           error: null,
@@ -197,11 +269,11 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknown: failed to fetch favorites"
 
       set((state) => ({
-        thisWeek: {
-          ...state.thisWeek,
+        favorites: {
+          ...state.favorites,
           error: errorMessage,
           isLoading: false,
         },
@@ -222,7 +294,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknown: failed to fetch item"
       set({ error: errorMessage, isLoading: false })
     }
   },
@@ -240,7 +312,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknown: failed to fetch item by date"
       set({ error: errorMessage, isLoading: false })
     }
   },
@@ -248,12 +320,31 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
   createItem: async (session: string, item: Partial<CycleItem>) => {
     set((state) => ({
       inbox: { ...state.inbox, isLoading: true, error: null },
+      thisWeek: { ...state.thisWeek, isLoading: true, error: null },
       isLoading: true,
       error: null,
     }))
 
     try {
-      const { data } = await api.post("/api/inbox", item, {
+      // get fresh state
+      const currentState = get()
+      const { thisWeek } = currentState
+
+      const itemToCreate = { ...item }
+
+      // Calculate cycleDate if we're in thisWeek view and have dates
+      if (thisWeek.startDate && thisWeek.endDate) {
+        const start = new Date(thisWeek.startDate).toISOString()
+        const end = new Date(thisWeek.endDate).toISOString()
+
+        itemToCreate.cycle = {
+          startsAt: start,
+          endsAt: end,
+          ...itemToCreate.cycle,
+        }
+      }
+
+      const { data } = await api.post("/api/inbox", itemToCreate, {
         headers: { Authorization: `Bearer ${session}` },
       })
 
@@ -263,15 +354,22 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
           isLoading: false,
           error: null,
         },
+        thisWeek: {
+          ...state.thisWeek,
+          items: [...state.thisWeek.items, data.response],
+          isLoading: false,
+          error: null,
+        },
         items: [data.response, ...state.items],
         isLoading: false,
       }))
+
       return data.response
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknown: failed to create item"
 
       set((state) => ({
         inbox: {
@@ -279,9 +377,15 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
           error: errorMessage,
           isLoading: false,
         },
+        thisWeek: {
+          ...state.thisWeek,
+          error: errorMessage,
+          isLoading: false,
+        },
         error: errorMessage,
         isLoading: false,
       }))
+      throw error
     }
   },
 
@@ -363,7 +467,75 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "An unknown error occurred"
+          : "unknown: failed to update item"
+
+      set((state) => ({
+        ...state,
+        error: errorMessage,
+      }))
+      throw error
+    }
+  },
+  deleteItem: async (session: string, id: string) => {
+    const updates = { isDeleted: true }
+
+    set((state) => {
+      const deleteItemsInView = (items: CycleItem[]) =>
+        items.filter((item) => item._id !== id)
+
+      return {
+        inbox: { ...state.inbox, items: deleteItemsInView(state.inbox.items) },
+        today: { ...state.today, items: deleteItemsInView(state.today.items) },
+        overdue: {
+          ...state.overdue,
+          items: deleteItemsInView(state.overdue.items),
+        },
+        thisWeek: {
+          ...state.thisWeek,
+          items: deleteItemsInView(state.thisWeek.items),
+        },
+        items: deleteItemsInView(state.items),
+        currentItem: state.currentItem?._id === id ? null : state.currentItem,
+      }
+    })
+
+    try {
+      const { data } = await api.put(`/api/inbox/${id}`, updates, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => {
+        const updateItemsInView = (items: CycleItem[]) =>
+          items.map((item) =>
+            item._id === id ? { ...item, ...data.response } : item
+          )
+
+        return {
+          inbox: {
+            ...state.inbox,
+            items: updateItemsInView(state.inbox.items),
+          },
+          today: {
+            ...state.today,
+            items: updateItemsInView(state.today.items),
+          },
+          overdue: {
+            ...state.overdue,
+            items: updateItemsInView(state.overdue.items),
+          },
+          thisWeek: {
+            ...state.thisWeek,
+            items: updateItemsInView(state.thisWeek.items),
+          },
+          items: updateItemsInView(state.items),
+          error: null,
+        }
+      })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "unknown: failed to delete item"
 
       set((state) => ({
         ...state,

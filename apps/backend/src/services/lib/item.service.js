@@ -10,9 +10,9 @@ const getInboxItems = async (me) => {
         spaces: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
-        cycleDate: null
-    })
-        .sort({ createdAt: -1 });
+        "cycle.startsAt": null,
+        "cycle.endsAt": null
+    }).sort({ createdAt: -1 });
 
     return items;
 }
@@ -53,9 +53,37 @@ const getThisWeekItems = async (me) => {
         ],
         cycleDate: { $ne: null }
     })
-
+        .sort({ createdAt: -1 });
     return items;
 }
+
+const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+    if (!me || !startDate || !endDate) {
+        throw new Error('Missing required parameters: me, startDate, endDate');
+    }
+
+    if (startDate > endDate) {
+        throw new Error('startDate must be before or equal to endDate');
+    }
+
+    startDate = new Date(startDate);
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    endDate = new Date(endDate);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    const items = await Item.find({
+        user: me,
+        isArchived: false,
+        isDeleted: false,
+        spaces: { $exists: true, $eq: [] },
+        "cycle.startsAt": { $gte: startDate },
+        "cycle.endsAt": { $lte: endDate }
+    })
+        .sort({ createdAt: 1 });
+
+    return items;
+};
 
 const getAllitems = async (me) => {
     const items = await Item.find({
@@ -97,16 +125,22 @@ const getUserOverdueItems = async (me) => {
 }
 
 const getUserItemsByDate = async (me, date) => {
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const items = await Item.find({
         user: me,
-        dueDate: date,
+        dueDate: { $gte: startOfDay, $lte: endOfDay },
         isArchived: false,
         isDeleted: false
     })
         .sort({ createdAt: -1 });
 
     return items;
-}
+};
 
 const getOverdueItemsByDate = async (me, date) => {
     const items = await Item.find({
@@ -323,6 +357,17 @@ const searchItemsByTitle = async (title, user) => {
     return items;
 };
 
+const getUserFavoriteItems = async (user) => {
+    const items = await Item.find({
+        isFavorite: true,
+        isArchived: false,
+        isDeleted: false,
+        user
+    })
+
+    return items;
+};
+
 export {
     getInboxItems,
     getInboxItem,
@@ -341,5 +386,7 @@ export {
     updateInboxItem,
     searchItemsByTitle,
     createInboxItem,
-    getThisWeekItems
+    getThisWeekItems,
+    getThisWeekItemsByDateRange,
+    getUserFavoriteItems
 }
