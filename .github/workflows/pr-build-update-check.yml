@@ -12,62 +12,102 @@ on:
   push:
     branches:
       - preview
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: false
 
 jobs:
+  # Take the updated version of both jobs
   check-all-prs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/preview'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
+      - name: Trigger checks for all open PRs
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data: pulls } = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              base: 'preview'
-            });
+            const per_page = 100;
+            let page = 1;
+            let allPRs = [];
             
-            console.log(`Found ${pulls.length} open PRs`);
+            // Fetch all open PRs
+            while (true) {
+              console.log(`Fetching PRs page ${page}...`);
+              const response = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: 'preview',
+                state: 'open',
+                per_page: per_page,
+                page: page
+              });
+              
+              if (response.data.length === 0) break;
+              
+              allPRs = allPRs.concat(response.data);
+              
+              if (response.data.length < per_page) {
+                break;
+              }
+              page++;
+            }
             
-            for (const pr of pulls) {
+            console.log(`Found ${allPRs.length} open PRs`);
+            
+            // Process each PR regardless of its previous status
+            for (const pr of allPRs) {
               if (!pr.draft) {
-                console.log(`Checking PR #${pr.number}`);
-                await github.rest.actions.createWorkflowDispatch({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  workflow_id: 'pr-build-update-check.yml',
-                  ref: pr.head.ref,
-                  inputs: {
-                    pr_number: pr.number.toString()
-                  }
-                });
+                console.log(`Processing PR #${pr.number} (${pr.head.ref})`);
+                try {
+                  // Force a new check by triggering the workflow
+                  await github.rest.actions.createWorkflowDispatch({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: 'pr-build-update-check.yml',
+                    ref: pr.head.ref,
+                    inputs: {
+                      pr_number: pr.number.toString()
+                    }
+                  });
+                  console.log(`Successfully triggered check for PR #${pr.number}`);
+                } catch (error) {
+                  console.error(`Failed to trigger check for PR #${pr.number}: ${error.message}`);
+                }
+              } else {
+                console.log(`Skipping draft PR #${pr.number}`);
               }
             }
 
-  build:
+  build-and-check:
     if: |
-      github.event.pull_request.draft == false && 
-      (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number != '')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '18.17.0'
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
+
       - name: Install dependencies
         run: pnpm install
+
       - name: Build
         run: pnpm run build
+
       - name: Check preview branch sync
         run: |
           git fetch origin preview
