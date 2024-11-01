@@ -1,6 +1,6 @@
 import { Item } from "../../models/lib/item.model.js";
 import { getLabelByName } from "./label.service.js";
-
+// todo:  update with current logic
 const getInboxItems = async (me) => {
     const items = await Item.find({
         user: me,
