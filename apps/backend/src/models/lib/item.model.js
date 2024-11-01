@@ -29,9 +29,15 @@ const ItemSchema = new Schema(
             type: Date,
             default: null
         },
-        cycleDate: {
-            type: Date,
-            default: null
+        cycle: {
+            startsAt: {
+                type: Date,
+                default: null
+            },
+            endsAt: {
+                type: Date,
+                default: null
+            }
         },
         status: {
             type: String,

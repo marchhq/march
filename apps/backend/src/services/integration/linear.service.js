@@ -197,6 +197,13 @@ const getMyLinearIssues = async (user) => {
                         name
                     }
                     url
+                    cycle { 
+                    id
+                    name
+                    startsAt
+                    endsAt
+                    number
+                }
                 }
             }
         }
@@ -209,29 +216,6 @@ const getMyLinearIssues = async (user) => {
     });
 
     const issues = response.data.data.issues.nodes;
-
-    // Save issues to MongoDB
-    // for (const issue of issues) {
-    //     const integration = new Integration({
-    //         title: issue.title,
-    //         type: 'linearIssue',
-    //         id: issue.id,
-    //         user: id,
-    //         url: issue.url,
-    //         metadata: {
-    //             description: issue.description,
-    //             labels: issue.labels,
-    //             state: issue.state,
-    //             priority: issue.priority,
-    //             project: issue.project,
-    //             dueDate: issue.dueDate
-    //         },
-    //         createdAt: issue.createdAt,
-    //         updatedAt: issue.updatedAt
-    //     });
-
-    //     await integration.save();
-    // }
 
     return issues;
 };
