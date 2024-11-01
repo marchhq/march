@@ -31,6 +31,7 @@ export interface CycleItemStore {
   currentItem: CycleItem | null
   isLoading: boolean
   error: string | null
+  setCurrentItem: (item: CycleItem | null) => void
   fetchInbox: (session: string) => Promise<void>
   fetchToday: (session: string, date: string) => Promise<void>
   fetchOverdue: (session: string, date: string) => Promise<void>
@@ -51,7 +52,7 @@ export interface CycleItemStore {
     updates: Partial<CycleItem>,
     id: string
   ) => Promise<void>
-  setCurrentItem: (item: CycleItem | null) => void
+  deleteItem: (session: string, id: string) => Promise<void>
 }
 
 export interface CreateItemResponse {

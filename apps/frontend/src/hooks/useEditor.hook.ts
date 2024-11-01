@@ -27,7 +27,12 @@ const useEditorHook = ({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
-      TaskList,
+      TaskList.configure({
+        HTMLAttributes: {
+          "data-type": "taskList",
+        },
+        itemTypeName: "taskItem",
+      }),
       TaskItem.configure({
         nested: true,
       }),
