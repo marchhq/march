@@ -40,12 +40,40 @@ const processWebhookEvent = async (event, payload) => {
     if (!user) {
         return;
     }
-    if (event === 'installation' && payload.action === 'deleted') {
-        user.integration.github.connected = false;
-        user.integration.github.installationId = null;
-        await user.save();
+    // if (event === 'installation' && payload.action === 'deleted') {
+    //     user.integration.github.connected = false;
+    //     user.integration.github.installationId = null;
+    //     await user.save();
 
-        console.log(`GitHub App uninstalled for user ${user._id}`);
+    //     console.log(`GitHub App uninstalled for user ${user._id}`);
+    //     return;
+    // }
+    if (event === 'installation') {
+        const user = await User.findOne({ 'integration.github.installationId': installationId });
+
+        // Extract the GitHub username of the person who installed the app
+        const githubUsername = payload.installation.account.login;
+
+        if (payload.action === 'created') {
+            if (user) {
+                // Update the user's profile with the GitHub username
+                user.integration.github.username = githubUsername;
+                user.integration.github.connected = true;
+                await user.save();
+
+                console.log(`GitHub App installed for user ${user._id}, GitHub username: ${githubUsername}`);
+            }
+        }
+
+        if (payload.action === 'deleted') {
+            if (user) {
+                user.integration.github.connected = false;
+                user.integration.github.installationId = null;
+                await user.save();
+
+                console.log(`GitHub App uninstalled for user ${user._id}`);
+            }
+        }
         return;
     }
     const issueOrPR = payload.issue || payload.pull_request;
