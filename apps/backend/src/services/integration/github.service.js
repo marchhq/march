@@ -40,14 +40,14 @@ const processWebhookEvent = async (event, payload) => {
     if (!user) {
         return;
     }
-    // if (event === 'installation' && payload.action === 'deleted') {
-    //     user.integration.github.connected = false;
-    //     user.integration.github.installationId = null;
-    //     await user.save();
+    if (event === 'installation' && payload.action === 'deleted') {
+        user.integration.github.connected = false;
+        user.integration.github.installationId = null;
+        await user.save();
 
-    //     console.log(`GitHub App uninstalled for user ${user._id}`);
-    //     return;
-    // }
+        console.log(`GitHub App uninstalled for user ${user._id}`);
+        return;
+    }
     if (event === 'installation') {
         const user = await User.findOne({ 'integration.github.installationId': installationId });
 
