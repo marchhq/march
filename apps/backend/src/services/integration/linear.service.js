@@ -197,6 +197,13 @@ const getMyLinearIssues = async (user) => {
                         name
                     }
                     url
+                    cycle { 
+                    id
+                    name
+                    startsAt
+                    endsAt
+                    number
+                }
                 }
             }
         }
@@ -209,29 +216,6 @@ const getMyLinearIssues = async (user) => {
     });
 
     const issues = response.data.data.issues.nodes;
-
-    // Save issues to MongoDB
-    // for (const issue of issues) {
-    //     const integration = new Integration({
-    //         title: issue.title,
-    //         type: 'linearIssue',
-    //         id: issue.id,
-    //         user: id,
-    //         url: issue.url,
-    //         metadata: {
-    //             description: issue.description,
-    //             labels: issue.labels,
-    //             state: issue.state,
-    //             priority: issue.priority,
-    //             project: issue.project,
-    //             dueDate: issue.dueDate
-    //         },
-    //         createdAt: issue.createdAt,
-    //         updatedAt: issue.updatedAt
-    //     });
-
-    //     await integration.save();
-    // }
 
     return issues;
 };
@@ -399,6 +383,8 @@ const handleWebhookEvent = async (payload) => {
             'metadata.priority': issue.priority,
             'metadata.project': issue.project,
             dueDate: issue.dueDate,
+            'cycle.startsAt': issue.cycle?.startsAt,
+            'cycle.endsAt': issue.cycle?.endsAt,
             updatedAt: issue.updatedAt
         }, { new: true });
     } else {
@@ -409,6 +395,8 @@ const handleWebhookEvent = async (payload) => {
             user: userId,
             description: issue.description,
             dueDate: issue.dueDate,
+            'cycle.startsAt': issue.cycle?.startsAt,
+            'cycle.endsAt': issue.cycle?.endsAt,
             metadata: {
                 labels: issue.labels,
                 state: issue.state,
@@ -421,6 +409,7 @@ const handleWebhookEvent = async (payload) => {
         });
 
         await newIssue.save();
+        console.log("newIssue: ", newIssue);
     }
 };
 
