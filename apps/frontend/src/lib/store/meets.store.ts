@@ -139,7 +139,7 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
   },
   updateMeet: async (meet: Meet, session: string) => {
     try {
-      await axios.put(`${BACKEND_URL}/api/meetings/${meet.uuid}`, meet, {
+      await axios.put(`${BACKEND_URL}/spaces/meetings/${meet._id}`, meet, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
@@ -159,7 +159,7 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
 
   saveMeet: async (meet: any, session: string) => {
     try {
-      await axios.put(`${BACKEND_URL}/api/meetings/${meet.uuid}`, meet, {
+      await axios.put(`${BACKEND_URL}/spaces/meetings/${meet._id}`, meet, {
         headers: {
           Authorization: `Bearer ${session}`,
         },

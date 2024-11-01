@@ -30,14 +30,14 @@
   }
 
   p {
-    @apply text-inherit;
+    @apply text-sm;
   }
 
   pre {
     @apply bg-zinc-900 rounded-lg py-3 px-5 text-sm;
   }
 
-  p>code {
+  p > code {
     @apply bg-zinc-900 text-sm px-1 py-0.5 rounded-md;
   }
 
@@ -52,33 +52,33 @@
       @apply line-through text-zinc-500;
     }
 
-    &>li {
+    & > li {
       @apply flex items-start;
 
-      &>label {
+      & > label {
         @apply flex items-center mr-2;
 
-        &>span {
+        & > span {
           @apply flex-shrink-0 bg-zinc-700 rounded-md;
           width: 1.25em;
           height: 1.25em;
-          margin-top: 0.50em;
+          margin-top: 0.5em;
         }
 
-        &>input {
+        & > input {
           @apply hidden;
         }
 
-        &>input:checked~span {
+        & > input:checked ~ span {
           background-image: url("/icons/check.svg");
           background-size: calc(100% - 5px) calc(100% - 5px);
           @apply bg-center bg-no-repeat;
         }
       }
 
-      &>div {
+      & > div {
         @apply flex-grow;
-        margin-top: 0.30em;
+        margin-top: 0.3em;
       }
     }
   }

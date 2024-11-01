@@ -2,9 +2,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
-import { Icon } from "@iconify-icon/react"
+import Image from "next/image"
 
 import TextEditor from "../atoms/Editor"
+import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -15,7 +16,7 @@ export const InboxExpandedItem: React.FC = () => {
   const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
-  const timeoutId = useRef<NodeJS.Timeout | null>(null)
+  const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<{
     title: string
@@ -24,7 +25,7 @@ export const InboxExpandedItem: React.FC = () => {
   })
   const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
-  const [hasUnsavedChanges, setHasUnsavedCHanges] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const lastSavedContent = useRef(currentItem?.description || "<p></p>")
 
   useEffect(() => {
@@ -43,6 +44,38 @@ export const InboxExpandedItem: React.FC = () => {
       textarea.style.height = `${textarea.scrollHeight}px`
     }
   }, [editedItem.title])
+
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          editedItem.title.slice(0, cursorPosition) +
+          "\n" +
+          editedItem.title.slice(cursorPosition)
+
+        setEditedItem((prev) => ({
+          ...prev,
+          title: newValue,
+        }))
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else {
+        if (editor) {
+          editor.commands.focus()
+          editor.commands.setTextSelection(0)
+        }
+      }
+    }
+  }
 
   const handleSaveEditedItem = async (item: any) => {
     try {
@@ -64,7 +97,7 @@ export const InboxExpandedItem: React.FC = () => {
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
     if (newContent !== lastSavedContent.current) {
-      setHasUnsavedCHanges(true)
+      setHasUnsavedChanges(true)
       setIsSaved(false)
     }
   }, [])
@@ -79,6 +112,7 @@ export const InboxExpandedItem: React.FC = () => {
     setContent(currentItem?.description || "<p></p>")
     editor?.commands.setContent(currentItem?.description || "<p></p>")
     lastSavedContent.current = currentItem?.description || "<p></p>"
+    editor?.commands.focus()
   }, [currentItem, editor])
 
   useEffect(() => {
@@ -92,7 +126,7 @@ export const InboxExpandedItem: React.FC = () => {
           )
           lastSavedContent.current = content
         }
-        setHasUnsavedCHanges(false)
+        setHasUnsavedChanges(false)
         setIsSaved(true)
       }, 2000)
       return () => clearTimeout(debounceTimer)
@@ -119,7 +153,7 @@ export const InboxExpandedItem: React.FC = () => {
         clearTimeout(timeoutId.current)
       }
     }
-  }, [editedItem, currentItem, timeoutId])
+  }, [editedItem, currentItem])
 
   const handleClose = useCallback(() => {
     setCurrentItem(null)
@@ -159,22 +193,31 @@ export const InboxExpandedItem: React.FC = () => {
   }
 
   return (
-    <div className="flex-auto">
+    <div className="min-w-max flex-auto">
       {currentItem && (
         <div
           ref={divRef}
-          className="flex size-full flex-col gap-4 border-l border-border p-4 text-foreground"
+          className="flex size-full flex-col gap-4 border-l border-border px-4 text-foreground"
         >
           <div className="flex items-center gap-4 text-xs text-secondary-foreground">
-            <button className="flex items-center" onClick={handleClose}>
-              <Icon icon="ep:back" className="text-[18px]" />
+            <button
+              className="group/button flex items-center"
+              onClick={handleClose}
+            >
+              <Image
+                src={ChevronLeftIcon}
+                alt="chevron left icon"
+                width={16}
+                height={16}
+                className="opacity-50 group-hover/button:opacity-100"
+              />
             </button>
             <p className="flex items-center">
-              {formatDateYear(currentItem.createdAt || "")}
+              {formatDateYear(currentItem.createdAt)}
             </p>
-            <p>edited {fromNow(currentItem.updatedAt || "")}</p>
+            <p>edited {fromNow(currentItem.updatedAt)}</p>
           </div>
-          <div>
+          <div className="flex items-center">
             <textarea
               ref={textareaRefTitle}
               value={editedItem.title}
@@ -184,15 +227,15 @@ export const InboxExpandedItem: React.FC = () => {
                   title: e.target.value,
                 }))
               }
+              onKeyDown={handleTextareaKeyDown}
               placeholder="title"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
             />
           </div>
-          <div className="text-foreground">
+          <div className="mt-1 text-foreground">
             <TextEditor editor={editor} />
           </div>
-          <div className="size-full"></div>
         </div>
       )}
     </div>
