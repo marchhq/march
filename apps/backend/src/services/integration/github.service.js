@@ -32,10 +32,30 @@ const fetchInstallationDetails = async (installationId, user) => {
         throw error;
     }
 };
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
     const repository = payload.repository;
+
+    if (payload.action === 'created' && payload.installation) {
+        const githubUsername = payload.installation.account.login;
+
+        await delay(1000);
+        const user = await User.findOne({ 'integration.github.installationId': installationId });
+
+        if (!user) {
+            console.log(`No user found for installation ID: ${installationId}`);
+            return
+        }
+
+        user.integration.github.userName = githubUsername;
+        await user.save();
+
+        console.log(`Linked GitHub installation to user: ${user._id}`);
+        return;
+    }
+
     const user = await User.findOne({ 'integration.github.installationId': installationId });
     if (!user) {
         return;
@@ -48,40 +68,19 @@ const processWebhookEvent = async (event, payload) => {
         console.log(`GitHub App uninstalled for user ${user._id}`);
         return;
     }
-    if (event === 'installation') {
-        const user = await User.findOne({ 'integration.github.installationId': installationId });
 
-        // Extract the GitHub username of the person who installed the app
-        const githubUsername = payload.installation.account.login;
-
-        if (payload.action === 'created') {
-            if (user) {
-                // Update the user's profile with the GitHub username
-                user.integration.github.username = githubUsername;
-                user.integration.github.connected = true;
-                await user.save();
-
-                console.log(`GitHub App installed for user ${user._id}, GitHub username: ${githubUsername}`);
-            }
-        }
-
-        if (payload.action === 'deleted') {
-            if (user) {
-                user.integration.github.connected = false;
-                user.integration.github.installationId = null;
-                await user.save();
-
-                console.log(`GitHub App uninstalled for user ${user._id}`);
-            }
-        }
-        return;
-    }
     const issueOrPR = payload.issue || payload.pull_request;
     if (!issueOrPR) {
         console.log('No issue or pull request found in the payload.');
         return;
     }
+    const githubUsername = user.integration.github.userName;
+    const isAssignedToUser = issueOrPR.assignees.some(assignee => assignee.login === githubUsername);
 
+    if (!isAssignedToUser) {
+        console.log(`Issue/PR not assigned to user: ${githubUsername}. Skipping.`);
+        return;
+    }
     const userId = user._id;
 
     const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
