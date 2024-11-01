@@ -49,7 +49,7 @@ export const SidebarMain: React.FC = () => {
 
   const { isCollapsed } = useSidebarCollapse()
 
-  const today = new Date().getDate()
+  const today = String(new Date().getDate()).padStart(2, "0")
   const currentWeek = getWeekNumber(new Date())
 
   return (
