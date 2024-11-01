@@ -7,7 +7,6 @@ import {
   startOfWeek,
   getWeeksInMonth,
   differenceInDays,
-  isWithinInterval,
 } from "date-fns"
 
 export const getOrdinalSuffix = (day) => {
@@ -70,8 +69,8 @@ export function getFormattedDateRange(date: Date): string {
 }
 
 export function getEndOfCurrentWeek(date: Date): string {
-  const endDate = endOfWeek(date, { weekStartsOn: 0 })
-  return endDate.toISOString()
+  const startDate = startOfWeek(date, { weekStartsOn: 0 })
+  return startDate.toISOString()
 }
 
 export { getWeeksInMonth }
@@ -86,10 +85,23 @@ export function getTodayISODate(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export const getOverdueText = (dueDate: string): string => {
+export const getOverdueText = (dueDate: string | null): string => {
+  if (!dueDate) {
+    return "" // or some default text like "No due date"
+  }
+
   const due = new Date(dueDate)
   const now = new Date()
   const diffInDays = differenceInDays(now, due)
 
   return `since ${diffInDays} ${diffInDays === 1 ? "day" : "days"}`
+}
+
+export const getWeekDates = (date: Date) => {
+  const start = startOfWeek(date, { weekStartsOn: 0 })
+  const end = endOfWeek(date, { weekStartsOn: 0 })
+  return {
+    startDate: format(start, "yyyy-MM-dd"),
+    endDate: format(end, "yyyy-MM-dd"),
+  }
 }

@@ -15,7 +15,7 @@ const ItemSchema = new Schema(
         },
         type: {
             type: String,
-            default: "Issue"
+            default: "issue"
         },
         source: {
             type: String,
@@ -29,9 +29,15 @@ const ItemSchema = new Schema(
             type: Date,
             default: null
         },
-        cycleDate: {
-            type: Date,
-            default: null
+        cycle: {
+            startsAt: {
+                type: Date,
+                default: null
+            },
+            endsAt: {
+                type: Date,
+                default: null
+            }
         },
         status: {
             type: String,
@@ -74,8 +80,13 @@ const ItemSchema = new Schema(
         ],
         lastVisitedSpace: {
             type: Schema.Types.ObjectId,
-            ref: 'Space',
+            ref: "Space",
             default: null
+        },
+        isFavorite: {
+            type: Boolean,
+            default: false,
+            index: true
         },
         isCompleted: {
             type: Boolean,
@@ -117,6 +128,4 @@ ItemSchema.pre("findOneAndUpdate", function (next) {
 
 const Item = db.model("Item", ItemSchema, "items");
 
-export {
-    Item
-}
+export { Item };

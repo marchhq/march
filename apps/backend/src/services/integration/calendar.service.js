@@ -17,11 +17,11 @@ const getGoogleCalendarOAuthAuthorizationUrl = () => {
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
     OauthCalClient.setCredentials(tokens);
-
     user.integration.googleCalendar.accessToken = tokens.access_token;
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
     user.integration.googleCalendar.connected = true;
     await user.save();
+
     return tokens;
 };
 
@@ -31,7 +31,6 @@ const refreshGoogleCalendarAccessToken = async (user) => {
     });
 
     const { credentials } = await OauthCalClient.refreshAccessToken();
-    // console.log("access_token: ", credentials.access_token);
     user.integration.googleCalendar.accessToken = credentials.access_token;
     user.integration.googleCalendar.refreshToken = credentials.refresh_token;
     await user.save();
@@ -223,10 +222,10 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
                         location: meeting.location,
                         attendees: meeting.attendees,
                         hangoutLink: meeting.hangoutLink,
+                        conferenceData: meeting.conferenceData,
                         start: meeting.start,
                         end: meeting.end,
-                        creator: meeting.creator,
-                        conferenceData: meeting.conferenceData
+                        creator: meeting.creator
                     },
                     createdAt: meeting.createdAt,
                     updatedAt: meeting.updatedAt

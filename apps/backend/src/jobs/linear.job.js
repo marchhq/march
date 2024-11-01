@@ -9,7 +9,7 @@ const processLinearJob = async (job) => {
         const issues = await fetchAssignedIssues(accessToken, linearUserId);
         await saveIssuesToDatabase(issues, userId);
     } catch (error) {
-        console.error('Error processing issues:', error);
+        console.error('Error processing Linear job:', error);
         throw error;
     }
 };
@@ -17,20 +17,25 @@ const processLinearJob = async (job) => {
 const linearWorker = new Worker('linearQueue', async (job) => {
     await processLinearJob(job);
 }, {
-    connection: redisConnection
+    connection: redisConnection,
+    concurrency: 5
 });
 
-// To start the worker
+// Handle job completion and removal
 linearWorker.on('completed', async (job) => {
     console.log(`Job with id ${job.id} has been completed`);
     await job.remove();
 });
 
 linearWorker.on('failed', (job, err) => {
-    console.error(`Job with id ${job.id} has failed with error ${err.message}`);
+    console.error(`Job with id ${job.id} failed with error: ${err.message}`);
+});
+
+linearWorker.on('error', (err) => {
+    console.error('Redis connection error in linearWorker:', err);
 });
 
 export {
     linearQueue,
     linearWorker
-}
+};
