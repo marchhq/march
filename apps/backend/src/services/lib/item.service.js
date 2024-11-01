@@ -72,15 +72,13 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
     endDate = new Date(endDate);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    console.log("startDate (UTC): ", startDate);
-    console.log("endDate (UTC): ", endDate);
-
     const items = await Item.find({
         user: me,
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        cycleDate: { $gte: startDate, $lte: endDate }
+        "cycle.startsAt": { $gte: startDate },
+        "cycle.endsAt": { $lte: endDate }
     })
         .sort({ createdAt: 1 });
 
