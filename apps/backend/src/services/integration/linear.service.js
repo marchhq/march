@@ -383,8 +383,8 @@ const handleWebhookEvent = async (payload) => {
             'metadata.priority': issue.priority,
             'metadata.project': issue.project,
             dueDate: issue.dueDate,
-            'cycle.startsAt': issue.cycle.startsAt,
-            'cycle.endsAt': issue.cycle.endsAt,
+            'cycle.startsAt': issue.cycle?.startsAt,
+            'cycle.endsAt': issue.cycle?.endsAt,
             updatedAt: issue.updatedAt
         }, { new: true });
     } else {
@@ -395,8 +395,8 @@ const handleWebhookEvent = async (payload) => {
             user: userId,
             description: issue.description,
             dueDate: issue.dueDate,
-            'cycle.startsAt': issue.cycle.startsAt,
-            'cycle.endsAt': issue.cycle.endsAt,
+            'cycle.startsAt': issue.cycle?.startsAt,
+            'cycle.endsAt': issue.cycle?.endsAt,
             metadata: {
                 labels: issue.labels,
                 state: issue.state,
