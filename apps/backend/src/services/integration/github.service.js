@@ -82,11 +82,8 @@ const processWebhookEvent = async (event, payload) => {
     // Check if the user is a reviewer for the PR
     const isReviewer = issueOrPR.requested_reviewers && issueOrPR.requested_reviewers.some(reviewer => reviewer.login === githubUsername);
 
-    // Check if the user created the PR
-    const isCreatedByUser = issueOrPR.user.login === githubUsername;
-
     // Determine if we should process the PR
-    const shouldProcessPR = isAssignedToUser || isReviewer || isCreatedByUser;
+    const shouldProcessPR = isAssignedToUser || isReviewer;
 
     if (!shouldProcessPR) {
         console.log(`PR not assigned to or created by user: ${githubUsername}. Skipping.`);
