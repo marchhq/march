@@ -3,13 +3,13 @@ import React, { useMemo } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
+import installGitHub from "@/src/hooks/useInstallGitHub"
 import useLinear from "@/src/hooks/useLinear"
 import { IntegrationType, User } from "@/src/lib/@types/auth/user"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
-
 interface IntegrationItemProps {
   integration: Integration
   connected: boolean
@@ -83,8 +83,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         name: "Github",
         description:
           "Link your github account to pull assigned issues, PR to your workflow.",
-        handleConnect: () =>
-          console.log("GitHub connection not implemented yet"),
+        handleConnect: installGitHub,
       },
       {
         key: "linear",

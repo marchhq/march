@@ -32,19 +32,62 @@ const fetchInstallationDetails = async (installationId, user) => {
         throw error;
     }
 };
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
-    const issueOrPR = payload.issue || payload.pull_request;
     const repository = payload.repository;
 
+    if (payload.action === 'created' && payload.installation) {
+        const githubUsername = payload.installation.account.login;
+
+        await delay(1000);
+        const user = await User.findOne({ 'integration.github.installationId': installationId });
+
+        if (!user) {
+            console.log(`No user found for installation ID: ${installationId}`);
+            return
+        }
+
+        user.integration.github.userName = githubUsername;
+        await user.save();
+
+        console.log(`Linked GitHub installation to user: ${user._id}`);
+        return;
+    }
+
+    const user = await User.findOne({ 'integration.github.installationId': installationId });
+    if (!user) {
+        return;
+    }
+    if (event === 'installation' && payload.action === 'deleted') {
+        user.integration.github.connected = false;
+        user.integration.github.installationId = null;
+        await user.save();
+
+        console.log(`GitHub App uninstalled for user ${user._id}`);
+        return;
+    }
+
+    const issueOrPR = payload.issue || payload.pull_request;
     if (!issueOrPR) {
         console.log('No issue or pull request found in the payload.');
         return;
     }
-    const user = await User.findOne({ 'integration.github.installationId': installationId });
-    if (!user) {
-        return;
+    const githubUsername = user.integration.github.userName;
+
+    // Check if the issue/PR is assigned to the user
+    const isAssignedToUser = issueOrPR.assignees.some(assignee => assignee.login === githubUsername);
+
+    // Check if the user is a reviewer for the PR
+    const isReviewer = issueOrPR.requested_reviewers && issueOrPR.requested_reviewers.some(reviewer => reviewer.login === githubUsername);
+
+    // Determine if we should process the PR
+    const shouldProcessPR = isAssignedToUser || isReviewer;
+
+    if (!shouldProcessPR) {
+        console.log(`PR not assigned to or created by user: ${githubUsername}. Skipping.`);
+        return; // Return if the PR is not relevant to the user
     }
     const userId = user._id;
 
@@ -67,7 +110,6 @@ const processWebhookEvent = async (event, payload) => {
             'metadata.assignees': issueOrPR.assignees,
             updatedAt: issueOrPR.updated_at
         }, { new: true });
-        console.log(`Updated ${event} with ID: ${issueOrPR.id}`);
     } else {
         // Create new item
         const newItem = new Item({
@@ -91,7 +133,6 @@ const processWebhookEvent = async (event, payload) => {
         });
 
         await newItem.save();
-        console.log(`Saved new ${event} with ID: ${issueOrPR.id}`);
     }
 };
 
