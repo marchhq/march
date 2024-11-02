@@ -2,15 +2,10 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import {
-  CalendarIcon,
-  MoveIcon,
-  GithubIcon,
-  MailsIcon,
-  XIcon,
-} from "lucide-react"
+import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
+import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import BoxIcon from "@/public/icons/box.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -23,6 +18,11 @@ export const InboxItems: React.FC = () => {
   const { session } = useAuth()
 
   const [isControlHeld, setIsControlHeld] = useState(false)
+  const [dateChanged, setDateChanged] = useState(false)
+  const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
+    null
+  )
+  const [date, setDate] = React.useState<Date | string | null>(new Date())
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 
@@ -53,6 +53,14 @@ export const InboxItems: React.FC = () => {
       window.removeEventListener("keyup", handleKeyUp)
     }
   }, [])
+
+  useEffect(() => {
+    if (dateChanged && reschedulingItemId && date) {
+      updateItem(session, { dueDate: date }, reschedulingItemId)
+      setReschedulingItemId(null)
+      setDateChanged(false)
+    }
+  }, [date, updateItem, session, reschedulingItemId, dateChanged])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
@@ -121,6 +129,17 @@ export const InboxItems: React.FC = () => {
 
   const filteredItems = items.filter((item) => item.status !== "done")
 
+  const handleRescheduleCalendar = (
+    e: React.MouseEvent,
+    id: string,
+    dueDate: Date | string | null
+  ) => {
+    e.stopPropagation()
+
+    setReschedulingItemId(id)
+    setDate(dueDate)
+  }
+
   return (
     <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       {filteredItems.length === 0 ? (
@@ -172,7 +191,9 @@ export const InboxItems: React.FC = () => {
                   <CalendarIcon
                     size={14}
                     className="hover-text"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) =>
+                      handleRescheduleCalendar(e, item._id, item.dueDate)
+                    }
                   />
                   <MoveIcon
                     size={14}
@@ -182,6 +203,30 @@ export const InboxItems: React.FC = () => {
                 </div>
               </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {reschedulingItemId !== null && (
+        <div>
+          <div
+            className="fixed inset-0 z-50 cursor-default bg-black/80"
+            role="button"
+            onClick={() => setReschedulingItemId(null)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape" || e.key === "Esc") {
+                setReschedulingItemId(null)
+              }
+            }}
+            tabIndex={0}
+          ></div>
+          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded-md bg-background shadow-lg">
+            <RescheduleCalendar
+              date={date}
+              setDate={setDate}
+              dateChanged={dateChanged}
+              setDateChanged={setDateChanged}
+            />
           </div>
         </div>
       )}
