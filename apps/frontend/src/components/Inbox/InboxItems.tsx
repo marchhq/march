@@ -56,7 +56,7 @@ export const InboxItems: React.FC = () => {
 
   useEffect(() => {
     if (dateChanged && reschedulingItemId && date) {
-      updateItem(session, { dueDate: date }, reschedulingItemId)
+      updateItem(session, { dueDate: date, status: "todo" }, reschedulingItemId)
       setReschedulingItemId(null)
       setDateChanged(false)
     }
