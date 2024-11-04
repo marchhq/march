@@ -82,7 +82,7 @@ export const InboxItems: React.FC = () => {
       setReschedulingItemId(null)
       setDateChanged(false)
     }
-  }, [date, updateItem, session, reschedulingItemId, dateChanged])
+  }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
