@@ -1,6 +1,6 @@
 import { format } from "path"
 
-import React from "react"
+import React, { useEffect } from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
@@ -56,6 +56,9 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   onToggleComplete,
   isOverdue,
 }) => {
+  useEffect(() => {
+    console.log("item", item)
+  }, [item])
   return (
     <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
@@ -93,7 +96,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
               <TooltipContent>
-                {getOverdueText(item.dueDate?.toISOString() || "") ?? ""}
+                {getOverdueText(item.dueDate) ?? ""}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

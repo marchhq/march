@@ -85,14 +85,13 @@ export function getTodayISODate(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export const getOverdueText = (dueDate: string | null): string => {
+export const getOverdueText = (dueDate: Date | null): string => {
   if (!dueDate) {
     return "" // or some default text like "No due date"
   }
 
-  const due = new Date(dueDate)
   const now = new Date()
-  const diffInDays = differenceInDays(now, due)
+  const diffInDays = differenceInDays(now, dueDate)
 
   return `since ${diffInDays} ${diffInDays === 1 ? "day" : "days"}`
 }
