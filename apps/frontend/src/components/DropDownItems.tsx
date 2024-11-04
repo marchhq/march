@@ -96,11 +96,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
               <TooltipContent>
-                {getOverdueText(
-                  item.dueDate instanceof Date
-                    ? item.dueDate.toISOString()
-                    : item.dueDate
-                ) ?? ""}
+                {getOverdueText(item.dueDate) ?? ""}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
