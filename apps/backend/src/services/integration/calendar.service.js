@@ -5,15 +5,6 @@ import { OauthCalClient } from "../../loaders/google.loader.js";
 import { Meeting } from "../../models/page/meetings.model.js";
 import { environment } from "../../loaders/environment.loader.js";
 
-const getGoogleCalendarOAuthAuthorizationUrl = () => {
-    const authUrl = OauthCalClient.generateAuthUrl({
-        access_type: 'offline',
-        scope: ['https://www.googleapis.com/auth/calendar'],
-        response_type: 'code'
-    });
-    return authUrl;
-};
-
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
     OauthCalClient.setCredentials(tokens);
@@ -239,7 +230,7 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
     }
 };
 
-const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
+const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl, user) => {
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
 
@@ -256,6 +247,11 @@ const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
         calendarId,
         requestBody
     });
+
+    user.integration.googleCalendar.metadata = user.integration.googleCalendar.metadata || {};
+    user.integration.googleCalendar.metadata.channelId = response.data.id;
+    user.integration.googleCalendar.metadata.resourceId = response.data.resourceId;
+    await user.save();
 
     return response.data;
 };
@@ -325,8 +321,41 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
     }
 };
 
+const revokeGoogleCalendarAccess = async (user) => {
+    const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
+    const accessToken = user.integration.googleCalendar.accessToken;
+
+    await axios.post(revokeTokenUrl, null, {
+        params: {
+            token: accessToken
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+
+    user.integration.googleCalendar.accessToken = null;
+    user.integration.googleCalendar.refreshToken = null;
+    user.integration.googleCalendar.connected = false;
+    user.integration.googleCalendar.metadata = {};
+    await user.save();
+};
+
+const removeGoogleCalendarWebhook = async (channelId, resourceId, accessToken) => {
+    const stopWebhookUrl = 'https://www.googleapis.com/calendar/v3/channels/stop';
+
+    await axios.post(stopWebhookUrl, {
+        id: channelId,
+        resourceId
+    }, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export {
-    getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
     checkAccessTokenValidity,
@@ -338,5 +367,7 @@ export {
     getGoogleCalendarupComingMeetings,
     saveUpcomingMeetingsToDatabase,
     setUpCalendarWatch,
-    handleCalendarWebhookService
+    handleCalendarWebhookService,
+    revokeGoogleCalendarAccess,
+    removeGoogleCalendarWebhook
 }
