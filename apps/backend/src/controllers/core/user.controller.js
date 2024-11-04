@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getUserOverdueItems, getUserItemsByDate, getOverdueItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
+import { getUserOverdueItems, getUserItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
