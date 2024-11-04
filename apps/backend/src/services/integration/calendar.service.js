@@ -337,6 +337,7 @@ const revokeGoogleCalendarAccess = async (user) => {
     user.integration.googleCalendar.accessToken = null;
     user.integration.googleCalendar.refreshToken = null;
     user.integration.googleCalendar.connected = false;
+    user.integration.googleCalendar.metadata = {};
     await user.save();
 };
 
