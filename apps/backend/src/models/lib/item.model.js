@@ -100,7 +100,7 @@ const ItemSchema = new Schema(
             type: Boolean,
             default: false
         },
-        deletedAt: {
+        completedAt: {
             type: Date,
             default: null
         }
@@ -117,8 +117,8 @@ ItemSchema.pre("save", function (next) {
         this.isCompleted = false;
     }
 
-    if (this.isDeleted && !this.deletedAt) {
-        this.deletedAt = new Date();
+    if (this.isCompleted && !this.completedAt) {
+        this.completedAt = new Date();
     }
 
     next();
@@ -130,10 +130,11 @@ ItemSchema.pre("findOneAndUpdate", function (next) {
         update.$set.isCompleted = true;
     } else if (update.$set && update.$set.status) {
         update.$set.isCompleted = false;
+        this.completedAt = null;
     }
 
-    if (update.$set && update.$set.isDeleted === true) {
-        update.$set.deletedAt = new Date();
+    if (update.$set && update.$set.isCompleted === true) {
+        update.$set.completedAt = new Date();
     }
     next();
 });

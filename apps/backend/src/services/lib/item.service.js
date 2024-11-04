@@ -104,9 +104,11 @@ const getUserTodayItems = async (me) => {
 
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lt: endOfDay }
+        $or: [
+            { dueDate: { $gte: startOfDay, $lt: endOfDay } },
+            { completedAt: { $gte: startOfDay, $lt: endOfDay } }
+        ]
     });
-
     return items;
 }
 
@@ -125,7 +127,6 @@ const getUserOverdueItems = async (me) => {
 
     return items;
 }
-
 const getUserItemsByDate = async (me, date) => {
     const startOfDay = new Date(date);
     startOfDay.setUTCHours(0, 0, 0, 0);
@@ -135,11 +136,12 @@ const getUserItemsByDate = async (me, date) => {
 
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lte: endOfDay },
         isArchived: false,
-        isDeleted: false
-    })
-        .sort({ createdAt: -1 });
+        $or: [
+            { dueDate: { $gte: startOfDay, $lte: endOfDay } },
+            { completedAt: { $gte: startOfDay, $lte: endOfDay } }
+        ]
+    }).sort({ createdAt: -1 });
 
     return items;
 };
