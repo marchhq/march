@@ -42,7 +42,7 @@ const getNotionPageController = async (req, res, next) => {
                 }
             }
         );
-        console.log("sajds: ", response.data);
+
         return response.data;
     } catch (err) {
         console.error("Error fetching databases:", err.response?.data || err.message);

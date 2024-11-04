@@ -3,6 +3,19 @@ import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
 import { Item } from '../models/lib/item.model.js';
 
+const getPreviousWeekDateRange = () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const startOfPreviousWeek = new Date(now);
+    startOfPreviousWeek.setDate(now.getDate() - dayOfWeek - 7);
+    startOfPreviousWeek.setHours(0, 0, 0, 0);
+    const endOfPreviousWeek = new Date(startOfPreviousWeek);
+    endOfPreviousWeek.setDate(startOfPreviousWeek.getDate() + 6);
+    endOfPreviousWeek.setHours(23, 59, 59, 999);
+
+    return { startOfPreviousWeek, endOfPreviousWeek };
+};
+
 const getCurrentWeekDateRange = () => {
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -22,33 +35,27 @@ const cycleWorker = new Worker('cycleQueue', async job => {
     console.log('Processing job to move overdue items to the next cycle...');
 
     try {
+        const { startOfPreviousWeek, endOfPreviousWeek } = getPreviousWeekDateRange();
         const { startOfWeek, endOfWeek } = getCurrentWeekDateRange();
-        console.log("Start of Week: ", startOfWeek);
-        console.log("End of Week: ", endOfWeek);
 
         const overdueItems = await Item.find({
-            cycleDate: { $gte: startOfWeek, $lte: endOfWeek },
+            "cycle.startsAt": { $gte: startOfPreviousWeek, $lte: endOfPreviousWeek },
             isCompleted: false,
             isArchived: false,
             isDeleted: false
         });
 
         if (overdueItems.length === 0) {
-            console.log("No overdue items found for this week.");
+            console.log("No overdue items found for the previous week.");
             return;
         }
 
-        const startOfNextWeek = new Date(endOfWeek);
-        startOfNextWeek.setDate(endOfWeek.getDate() + 5);
-        startOfNextWeek.setHours(0, 0, 0, 0);
-        console.log("Start of Next Week: ", startOfNextWeek);
-
         await Item.updateMany(
             { _id: { $in: overdueItems.map(item => item._id) } },
-            { $set: { cycleDate: startOfNextWeek } }
+            { $set: { "cycle.startsAt": startOfWeek, "cycle.endsAt": endOfWeek } }
         );
 
-        console.log(`Processed ${overdueItems.length} overdue items.`);
+        console.log(`Processed ${overdueItems.length} overdue items and moved them to the current week's cycle.`);
     } catch (error) {
         console.error('Error processing job:', error);
         throw error;
@@ -62,7 +69,7 @@ const addCycleJob = async () => {
     await cycleQueue.add('moveOverdueItems', {}, {
         jobId: 'moveOverdueItemsJob',
         repeat: {
-            cron: '59 23 * * 6' // Runs every Saturday at 11:59 PM
+            cron: '0 0 * * 0' // Runs every Sunday at 12:00 AM
         },
         removeOnComplete: true,
         attempts: 3,
