@@ -77,10 +77,12 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
         isArchived: false,
         isDeleted: false,
         spaces: { $exists: true, $eq: [] },
-        "cycle.startsAt": { $gte: startDate },
-        "cycle.endsAt": { $lte: endDate }
-    })
-        .sort({ createdAt: 1 });
+        $or: [
+            { "cycle.startsAt": { $gte: startDate, $lte: endDate } },
+            { "cycle.endsAt": { $gte: startDate, $lte: endDate } },
+            { dueDate: { $gte: startDate, $lte: endDate } }
+        ]
+    }).sort({ createdAt: 1 });
 
     return items;
 };
