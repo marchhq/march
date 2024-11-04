@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getGoogleCalendarAccessTokenController, getGoogleCalendarEventsController, addGoogleCalendarEventController, updateGoogleCalendarEventController, deleteGoogleCalendarEventController, getGoogleCalendarMeetingsController, getGoogleCalendarupComingMeetingsController } from "../../controllers/integration/calendar.controller.js";
+import { getGoogleCalendarAccessTokenController, getGoogleCalendarEventsController, addGoogleCalendarEventController, updateGoogleCalendarEventController, deleteGoogleCalendarEventController, getGoogleCalendarMeetingsController, getGoogleCalendarupComingMeetingsController, revokeGoogleCalendarAccessController } from "../../controllers/integration/calendar.controller.js";
 
 const router = Router();
 
@@ -8,6 +8,7 @@ router.route("/events/").get(getGoogleCalendarEventsController)
 router.route("/events/").post(addGoogleCalendarEventController)
 router.route("/events/:eventId/").patch(updateGoogleCalendarEventController)
 router.route("/events/:eventId/").delete(deleteGoogleCalendarEventController)
+router.route("/revoke-access/").get(revokeGoogleCalendarAccessController)
 
 // get meeting
 router.route("/meetings/").get(getGoogleCalendarMeetingsController)

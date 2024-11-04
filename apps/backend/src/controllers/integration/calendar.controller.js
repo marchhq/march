@@ -9,7 +9,9 @@ import {
     checkAccessTokenValidity,
     refreshGoogleCalendarAccessToken,
     setUpCalendarWatch,
-    handleCalendarWebhookService
+    handleCalendarWebhookService,
+    removeGoogleCalendarWebhook,
+    revokeGoogleCalendarAccess
 } from "../..//services/integration/calendar.service.js";
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
 import { environment } from "../../loaders/environment.loader.js";
@@ -162,6 +164,28 @@ const handleCalendarWebhook = async (req, res, next) => {
     }
 };
 
+const revokeGoogleCalendarAccessController = async (req, res, next) => {
+    const user = req.user;
+    const { accessToken, metadata } = user.integration.googleCalendar || {};
+
+    try {
+        if (metadata && metadata.channelId && metadata.resourceId) {
+            await removeGoogleCalendarWebhook(metadata.channelId, metadata.resourceId, accessToken);
+        }
+
+        if (accessToken) {
+            await revokeGoogleCalendarAccess(user);
+        }
+
+        res.status(200).json({
+            message: 'Google Calendar access revoked and webhook removed successfully.'
+        });
+    } catch (err) {
+        console.error('Error revoking Google Calendar access:', err);
+        next(err);
+    }
+};
+
 export {
     getGoogleCalendarAccessTokenController,
     getGoogleCalendarEventsController,
@@ -170,5 +194,6 @@ export {
     deleteGoogleCalendarEventController,
     getGoogleCalendarMeetingsController,
     getGoogleCalendarupComingMeetingsController,
-    handleCalendarWebhook
+    handleCalendarWebhook,
+    revokeGoogleCalendarAccessController
 };
