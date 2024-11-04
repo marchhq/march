@@ -3,7 +3,7 @@ import { redirectNotionAuthUrlController, getNotionAccessTokenController, trigge
 
 const router = Router();
 
-router.route("/connect/").get(redirectNotionAuthUrlController);
+router.route("/connect/").get(redirectNotionAuthUrlController); // no need
 router.route("/getAccessToken/").post(getNotionAccessTokenController);
 router.route("/getPage/").get(triggerNotionSyncController);
 
