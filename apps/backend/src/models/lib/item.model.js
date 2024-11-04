@@ -72,6 +72,10 @@ const ItemSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User"
         },
+        parent: {
+            type: Schema.Types.ObjectId,
+            ref: 'Item'
+        },
         labels: [
             {
                 type: Schema.Types.ObjectId,
