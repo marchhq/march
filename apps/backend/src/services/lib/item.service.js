@@ -104,19 +104,21 @@ const getUserTodayItems = async (me) => {
 
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lt: endOfDay }
+        $or: [
+            { dueDate: { $gte: startOfDay, $lt: endOfDay } },
+            { completedAt: { $gte: startOfDay, $lt: endOfDay } }
+        ]
     });
-
     return items;
 }
 
 const getUserOverdueItems = async (me) => {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
     const items = await Item.find({
         user: me,
-        dueDate: { $lt: startOfDay },
+        dueDate: { $lt: endOfDay },
         isCompleted: false,
         isArchived: false,
         isDeleted: false
@@ -135,26 +137,15 @@ const getUserItemsByDate = async (me, date) => {
 
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lte: endOfDay },
         isArchived: false,
-        isDeleted: false
-    })
-        .sort({ createdAt: -1 });
+        $or: [
+            { dueDate: { $gte: startOfDay, $lte: endOfDay } },
+            { completedAt: { $gte: startOfDay, $lte: endOfDay } }
+        ]
+    }).sort({ createdAt: -1 });
 
     return items;
 };
-
-const getOverdueItemsByDate = async (me, date) => {
-    const items = await Item.find({
-        user: me,
-        dueDate: { $lt: date },
-        isCompleted: false,
-        isDeleted: false,
-        isArchived: false
-    })
-
-    return items;
-}
 
 const createItem = async (user, itemData, space, block) => {
     if (!space || !block) {
@@ -379,7 +370,6 @@ export {
     getItem,
     getUserOverdueItems,
     getUserItemsByDate,
-    getOverdueItemsByDate,
     moveItemtoDate,
     getUserTodayItems,
     getAllitems,
