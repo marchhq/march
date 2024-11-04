@@ -361,6 +361,22 @@ const getUserFavoriteItems = async (user) => {
     return items;
 };
 
+const getSubItems = async (user, parentId) => {
+    const subItems = await Item.find({
+        parentItem: parentId,
+        user,
+        isArchived: false,
+        isDeleted: false,
+        isCompleted: false
+    });
+    if (!subItems.length) {
+        const error = new Error("No sub-items found for this parent item.");
+        error.statusCode = 404;
+        throw error;
+    }
+    return subItems;
+};
+
 export {
     getInboxItems,
     getInboxItem,
@@ -380,5 +396,6 @@ export {
     createInboxItem,
     getThisWeekItems,
     getThisWeekItemsByDateRange,
-    getUserFavoriteItems
+    getUserFavoriteItems,
+    getSubItems
 }
