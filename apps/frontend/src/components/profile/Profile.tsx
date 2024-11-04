@@ -12,7 +12,7 @@ import useUserStore from "@/src/lib/store/user.store"
 
 const ProfilePage: React.FC = () => {
   const { session } = useAuth()
-  const { user, isLoading, error, fetchUser } = useUserStore()
+  const { user, isLoading, fetchUser } = useUserStore()
   const { logout } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = React.useState(false)
 
@@ -23,7 +23,7 @@ const ProfilePage: React.FC = () => {
   }, [session, fetchUser])
 
   if (isLoading) return <div>Loading...</div>
-  if (error) return <div className="text-red-500">{error}</div>
+  // if (error) return <div className="text-red-500">{error}</div>
   if (!user) return <div>User not found</div>
 
   const handleLogout = async () => {
