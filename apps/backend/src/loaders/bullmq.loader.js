@@ -16,9 +16,6 @@ const notionQueue = new Queue('notionQueue', {
 const spaceQueue = new Queue('spaceQueue', {
     connection: redisConnection
 });
-const itemQueue = new Queue('itemQueue', {
-    connection: redisConnection
-});
 
 const cycleQueue = new Queue('cycleQueue', {
     connection: redisConnection
@@ -31,6 +28,5 @@ export {
     calendarQueue,
     notionQueue,
     spaceQueue,
-    itemQueue,
     cycleQueue
 };
