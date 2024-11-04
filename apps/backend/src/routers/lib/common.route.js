@@ -23,7 +23,7 @@ router.route("/inbox/").get(getInboxItemsController);
 router.route("/inbox/").post(createInboxItemController);
 router.route("/inbox/:item/").put(updateInboxItemController);
 router.route("/inbox/:item/").get(getInboxItemController);
-router.get('/inbox/:item/sub-items', getSubItemsController);
+router.get('/inbox/:item/sub-items/', getSubItemsController);
 router.route("/this-week/").get(getThisWeekItemsByDateRangeController);
 router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);

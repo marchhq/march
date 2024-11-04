@@ -363,7 +363,7 @@ const getUserFavoriteItems = async (user) => {
 
 const getSubItems = async (user, parentId) => {
     const subItems = await Item.find({
-        parentItem: parentId,
+        parent: parentId,
         user,
         isArchived: false,
         isDeleted: false,
