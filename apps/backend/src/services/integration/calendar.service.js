@@ -316,6 +316,25 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
     }
 };
 
+const revokeGoogleCalendarAccess = async (user) => {
+    const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
+    const accessToken = user.integration.googleCalendar.accessToken;
+
+    await axios.post(revokeTokenUrl, null, {
+        params: {
+            token: accessToken
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+
+    user.integration.googleCalendar.accessToken = null;
+    user.integration.googleCalendar.refreshToken = null;
+    user.integration.googleCalendar.connected = false;
+    await user.save();
+};
+
 export {
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
@@ -328,5 +347,6 @@ export {
     getGoogleCalendarupComingMeetings,
     saveUpcomingMeetingsToDatabase,
     setUpCalendarWatch,
-    handleCalendarWebhookService
+    handleCalendarWebhookService,
+    revokeGoogleCalendarAccess
 }
