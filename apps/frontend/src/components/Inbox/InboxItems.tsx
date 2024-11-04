@@ -22,7 +22,7 @@ export const InboxItems: React.FC = () => {
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
     null
   )
-  const [date, setDate] = useState<Date | null>(null) // Change to Date | null
+  const [date, setDate] = React.useState<Date | null>(new Date())
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 
@@ -88,7 +88,7 @@ export const InboxItems: React.FC = () => {
           session,
           {
             status: newStatus,
-            dueDate: today.toISOString(),
+            dueDate: today,
             cycle: {
               startsAt: startDate,
               endsAt: endDate,
@@ -131,7 +131,7 @@ export const InboxItems: React.FC = () => {
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
-    dueDate: Date | string | null
+    dueDate: Date | null
   ) => {
     e.stopPropagation()
 
