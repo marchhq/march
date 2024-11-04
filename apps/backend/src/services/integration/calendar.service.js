@@ -335,6 +335,20 @@ const revokeGoogleCalendarAccess = async (user) => {
     await user.save();
 };
 
+const removeGoogleCalendarWebhook = async (channelId, resourceId, accessToken) => {
+    const stopWebhookUrl = 'https://www.googleapis.com/calendar/v3/channels/stop';
+
+    await axios.post(stopWebhookUrl, {
+        id: channelId,
+        resourceId
+    }, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export {
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
@@ -348,5 +362,6 @@ export {
     saveUpcomingMeetingsToDatabase,
     setUpCalendarWatch,
     handleCalendarWebhookService,
-    revokeGoogleCalendarAccess
+    revokeGoogleCalendarAccess,
+    removeGoogleCalendarWebhook
 }
