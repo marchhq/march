@@ -5,15 +5,6 @@ import { OauthCalClient } from "../../loaders/google.loader.js";
 import { Meeting } from "../../models/page/meetings.model.js";
 import { environment } from "../../loaders/environment.loader.js";
 
-const getGoogleCalendarOAuthAuthorizationUrl = () => {
-    const authUrl = OauthCalClient.generateAuthUrl({
-        access_type: 'offline',
-        scope: ['https://www.googleapis.com/auth/calendar'],
-        response_type: 'code'
-    });
-    return authUrl;
-};
-
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
     OauthCalClient.setCredentials(tokens);
@@ -326,7 +317,6 @@ const handleCalendarWebhookService = async (accessToken, refreshToken, userId) =
 };
 
 export {
-    getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
     checkAccessTokenValidity,
