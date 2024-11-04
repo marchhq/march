@@ -128,14 +128,12 @@ ItemSchema.pre("findOneAndUpdate", function (next) {
     const update = this.getUpdate();
     if (update.$set && update.$set.status === "done") {
         update.$set.isCompleted = true;
+        update.$set.completedAt = new Date();
     } else if (update.$set && update.$set.status) {
         update.$set.isCompleted = false;
-        this.completedAt = null;
+        update.$set.completedAt = null;
     }
 
-    if (update.$set && update.$set.isCompleted === true) {
-        update.$set.completedAt = new Date();
-    }
     next();
 });
 
