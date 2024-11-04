@@ -76,7 +76,7 @@ const Column = ({ title, items, column, icon }) => {
   }
 
   const onDragEnd = (itemId: string, newStatus: Partial<CycleItem>) => {
-    const today = new Date().toISOString()
+    const today = new Date()
 
     const data: Partial<CycleItem> = {
       status: newStatus.status,
@@ -283,7 +283,7 @@ const AddCard = ({ column, createItem, totalItems = 0 }) => {
       }
 
       if (column === "done") {
-        data.dueDate = new Date().toISOString()
+        data.dueDate = new Date()
       }
 
       createItem(session, data)

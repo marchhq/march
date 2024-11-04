@@ -395,6 +395,17 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     id: string
   ) => {
     set((state) => {
+      const updateItemsInViewInbox = (items: CycleItem[]) => {
+        // remove item from inbox if dueDate is set (not null)
+        if (updates.dueDate) {
+          return items.filter((item) => item._id !== id)
+        }
+        // otherwise, just update the item in inbox
+        return items.map((item) =>
+          item._id === id ? { ...item, ...updates } : item
+        )
+      }
+
       const updateItemsInView = (items: CycleItem[], isOverdue = false) => {
         // Only filter out done items from overdue list
         if (isOverdue && updates.status === "done") {
@@ -408,7 +419,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       }
 
       return {
-        inbox: { ...state.inbox, items: updateItemsInView(state.inbox.items) },
+        inbox: {
+          ...state.inbox,
+          items: updateItemsInViewInbox(state.inbox.items),
+        },
         today: { ...state.today, items: updateItemsInView(state.today.items) }, // No filtering
         overdue: {
           ...state.overdue,
