@@ -22,7 +22,7 @@ export const InboxItems: React.FC = () => {
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
     null
   )
-  const [date, setDate] = React.useState<Date | string | null>(new Date())
+  const [date, setDate] = useState<Date | null>(null) // Change to Date | null
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 
@@ -106,7 +106,6 @@ export const InboxItems: React.FC = () => {
       case "gmail":
         return <MailsIcon size={14} />
       case "githubIssue":
-        return <GithubIcon size={14} />
       case "githubPullRequest":
         return <GithubIcon size={14} />
       case "linear":
@@ -136,8 +135,14 @@ export const InboxItems: React.FC = () => {
   ) => {
     e.stopPropagation()
 
+    const newDate = dueDate
+      ? typeof dueDate === "string"
+        ? new Date(dueDate)
+        : dueDate
+      : null
+
     setReschedulingItemId(id)
-    setDate(dueDate)
+    setDate(newDate) // Ensure this is a Date or null
   }
 
   return (
