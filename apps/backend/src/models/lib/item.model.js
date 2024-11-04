@@ -99,6 +99,10 @@ const ItemSchema = new Schema(
         isDeleted: {
             type: Boolean,
             default: false
+        },
+        completedAt: {
+            type: Date,
+            default: null
         }
     },
     {
@@ -112,6 +116,11 @@ ItemSchema.pre("save", function (next) {
     } else {
         this.isCompleted = false;
     }
+
+    if (this.isCompleted && !this.completedAt) {
+        this.completedAt = new Date();
+    }
+
     next();
 });
 
@@ -119,8 +128,10 @@ ItemSchema.pre("findOneAndUpdate", function (next) {
     const update = this.getUpdate();
     if (update.$set && update.$set.status === "done") {
         update.$set.isCompleted = true;
+        update.$set.completedAt = new Date();
     } else if (update.$set && update.$set.status) {
         update.$set.isCompleted = false;
+        update.$set.completedAt = null;
     }
 
     next();

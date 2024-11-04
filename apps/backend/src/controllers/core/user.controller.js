@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getUserOverdueItems, getUserItemsByDate, getOverdueItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
+import { getUserOverdueItems, getUserItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
@@ -163,7 +163,7 @@ const getUserItemsByDateController = async (req, res, next) => {
         const me = req.user.id;
         const { date } = req.params;
         const today = await getUserItemsByDate(me, date);
-        const overdue = await getOverdueItemsByDate(me, date);
+        const overdue = await getUserOverdueItems(me);
         res.json({
             response: {
                 today,
