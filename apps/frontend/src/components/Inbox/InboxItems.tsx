@@ -57,27 +57,29 @@ export const InboxItems: React.FC = () => {
 
   useEffect(() => {
     if (dateChanged) {
-      if (reschedulingItemId && date) {
-        updateItem(
-          session,
-          { status: "todo", dueDate: date },
-          reschedulingItemId
-        )
-      }
-      if (reschedulingItemId && cycleDate) {
-        const { startDate, endDate } = getWeekDates(cycleDate)
-        updateItem(
-          session,
-          {
-            status: "todo",
-            dueDate: date,
-            cycle: {
-              startsAt: startDate,
-              endsAt: endDate,
+      if (reschedulingItemId) {
+        if (date) {
+          updateItem(
+            session,
+            { status: "todo", dueDate: date },
+            reschedulingItemId
+          )
+        }
+        if (cycleDate) {
+          const { startDate, endDate } = getWeekDates(cycleDate)
+          updateItem(
+            session,
+            {
+              status: "todo",
+              dueDate: date,
+              cycle: {
+                startsAt: startDate,
+                endsAt: endDate,
+              },
             },
-          },
-          reschedulingItemId
-        )
+            reschedulingItemId
+          )
+        }
       }
       setReschedulingItemId(null)
       setDateChanged(false)
