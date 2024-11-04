@@ -1,5 +1,4 @@
 import {
-    getGoogleCalendarOAuthAuthorizationUrl,
     getGoogleCalendarAccessToken,
     getGoogleCalendarEvents,
     addGoogleCalendarEvent,
@@ -15,18 +14,6 @@ import {
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
-// import { listener } from "../../../index.js";
-
-const redirectGoogleCalendarOAuthLoginController = async (req, res, next) => {
-    try {
-        const authUrl = getGoogleCalendarOAuthAuthorizationUrl();
-        console.log("auth: ", authUrl);
-        res.redirect(authUrl);
-    } catch (err) {
-        console.error("Error in redirectGoogleCalendarOAuthLoginController:", err);
-        next(err);
-    }
-};
 
 const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
@@ -176,7 +163,6 @@ const handleCalendarWebhook = async (req, res, next) => {
 };
 
 export {
-    redirectGoogleCalendarOAuthLoginController,
     getGoogleCalendarAccessTokenController,
     getGoogleCalendarEventsController,
     addGoogleCalendarEventController,
