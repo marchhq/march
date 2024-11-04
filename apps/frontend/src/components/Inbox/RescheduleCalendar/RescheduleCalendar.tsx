@@ -3,7 +3,6 @@
 import React, { useState } from "react"
 
 import { addDays, startOfWeek, endOfWeek, format } from "date-fns"
-import { Calendar as CalendarIcon, SquareChevronRightIcon } from "lucide-react"
 
 import { Calendar } from "@/src/components/Inbox/RescheduleCalendar/Calendar"
 import DateSelectionButton from "@/src/components/Inbox/RescheduleCalendar/DateSelectionButton"
