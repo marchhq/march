@@ -163,7 +163,7 @@ const getUserItemsByDateController = async (req, res, next) => {
         const me = req.user.id;
         const { date } = req.params;
         const today = await getUserItemsByDate(me, date);
-        const overdue = await getOverdueItemsByDate(me, date);
+        const overdue = await getUserOverdueItems(me);
         res.json({
             response: {
                 today,
