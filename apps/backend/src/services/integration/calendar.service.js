@@ -230,7 +230,7 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
     }
 };
 
-const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
+const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl, user) => {
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
 
@@ -247,6 +247,11 @@ const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl) => {
         calendarId,
         requestBody
     });
+
+    user.integration.googleCalendar.metadata = user.integration.googleCalendar.metadata || {};
+    user.integration.googleCalendar.metadata.channelId = response.data.id;
+    user.integration.googleCalendar.metadata.resourceId = response.data.resourceId;
+    await user.save();
 
     return response.data;
 };
