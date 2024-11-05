@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React from "react"
 
 import { DateCycle } from "@/src/components/atoms/Date"
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
@@ -9,7 +9,7 @@ import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
 import usePersistedState from "@/src/hooks/usePersistedState"
 
-const TodayPage: React.FC = () => {
+export const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = usePersistedState("showAgenda", false)
   const [selectedDate, setSelectedDate] = React.useState(new Date())
 
@@ -18,10 +18,10 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="h-full bg-background p-10">
-      <section className="flex justify-between">
-        <div className="">
-          <header className="flex items-center justify-start">
+    <main className="h-full bg-background p-10 pl-5">
+      <section className="flex gap-10">
+        <div className="flex-1">
+          <header className="flex w-full items-center justify-start">
             <DateCycle
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
@@ -51,5 +51,3 @@ const TodayPage: React.FC = () => {
     </main>
   )
 }
-
-export default TodayPage
