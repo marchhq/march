@@ -527,8 +527,6 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     })
 
     try {
-      console.log("Line 519 triggered", updates)
-      return
       const { data } = await api.put(`/api/inbox/${id}`, updates, {
         headers: { Authorization: `Bearer ${session}` },
       })
