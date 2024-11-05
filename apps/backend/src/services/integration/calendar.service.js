@@ -355,6 +355,47 @@ const removeGoogleCalendarWebhook = async (channelId, resourceId, accessToken) =
     });
 };
 
+const getGoogleCalendarMeetingsByDate = async (user, date) => {
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const refreshToken = user.integration.googleCalendar.refreshToken;
+
+    const isValid = await checkAccessTokenValidity(accessToken);
+
+    if (!isValid) {
+        accessToken = await refreshGoogleCalendarAccessToken(user);
+    }
+
+    OauthCalClient.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
+
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const res = await calendar.events.list({
+        calendarId: 'primary',
+        singleEvents: true,
+        orderBy: 'startTime',
+        timeMin: startOfDay.toISOString(),
+        timeMax: endOfDay.toISOString()
+    });
+
+    const events = res.data.items;
+
+    if (events.length) {
+        const meetings = events.filter(event => event.attendees && event.attendees.length > 0);
+
+        return meetings;
+    } else {
+        console.log('No meetings found for the specified date.');
+    }
+};
+
 export {
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
@@ -369,5 +410,6 @@ export {
     setUpCalendarWatch,
     handleCalendarWebhookService,
     revokeGoogleCalendarAccess,
-    removeGoogleCalendarWebhook
+    removeGoogleCalendarWebhook,
+    getGoogleCalendarMeetingsByDate
 }
