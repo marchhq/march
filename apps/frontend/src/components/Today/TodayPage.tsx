@@ -20,17 +20,13 @@ export const TodayPage: React.FC = () => {
 
   return (
     <main className="h-full bg-background p-10 pl-5">
-      <section className="flex gap-10">
+      <section className="flex items-start gap-10">
         <div className="flex flex-1 flex-col gap-5">
-          <header className="flex items-start justify-start gap-10">
+          <header>
             <DateCycle
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
             />
-            <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
-              <span className="truncate">show agenda</span>
-              <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
-            </div>
           </header>
           <section className="no-scrollbar h-[30vh] max-w-[700px] overflow-y-scroll pl-5">
             <TodayTextArea selectedDate={selectedDate} />
@@ -38,6 +34,10 @@ export const TodayPage: React.FC = () => {
           <section className="max-w-[700px] space-y-8 overflow-y-auto text-[16px] text-secondary-foreground">
             <TodayItems selectedDate={selectedDate} />
           </section>
+        </div>
+        <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
+          <span className="truncate">show agenda</span>
+          <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
         </div>
         {/*
         <section className="w-[96%] max-w-[400px]">
