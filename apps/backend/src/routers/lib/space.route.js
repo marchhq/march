@@ -13,7 +13,8 @@ import {
     getAllItemsByBloackController,
     updateItemController,
     getItemController,
-    getItemFilterByLabelController
+    getItemFilterByLabelController,
+    getSubItemsController
 } from "../../controllers/lib/item.controller.js";
 
 import {
@@ -64,6 +65,7 @@ router.route("/:space/blocks/:block/items/").post(createItemController);
 router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
 router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
+router.route("/:space/blocks/:block/items/:item/sub-items/").get(getSubItemsController);
 
 // Meeting controllers
 router.route("/meetings/overview/").get(getMeetingsController);
