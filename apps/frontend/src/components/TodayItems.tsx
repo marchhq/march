@@ -189,7 +189,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
       : null
 
     setReschedulingItemId(id)
-    setDate(newDate) // Ensure this is a Date or null
+    setDate(newDate)
   }
 
   if (byDateIsLoading) {
@@ -201,7 +201,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   return (
     <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       {byDateItems.length === 0 ? (
-        <span className="pl-5">inbox empty</span>
+        <span className="pl-5 text-secondary-foreground">inbox empty</span>
       ) : (
         <div>
           {byDateError && (
