@@ -18,7 +18,7 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="h-full overflow-y-hidden bg-background p-10">
+    <main className="h-full bg-background p-10">
       <section className="flex justify-between">
         <div className="">
           <header className="flex items-center justify-start">
@@ -27,14 +27,14 @@ const TodayPage: React.FC = () => {
               onDateChange={setSelectedDate}
             />
           </header>
-          <section className="my-3">
+          <section className="no-scrollbar my-3 h-[30vh] max-w-[700px] overflow-y-scroll">
             <TodayTextArea selectedDate={selectedDate} />
           </section>
-          <section className="space-y-8 text-[16px] text-secondary-foreground">
+          <section className="max-w-[700px] space-y-8 overflow-y-auto text-[16px] text-secondary-foreground">
             <TodayItems selectedDate={selectedDate} />
           </section>
         </div>
-        <section className="w-[96%] max-w-[300px]">
+        <section className="w-[96%] max-w-[400px]">
           <div className="flex items-center justify-end gap-4">
             <span className="mt-2 text-[11px] font-medium text-foreground">
               show agenda
@@ -42,7 +42,7 @@ const TodayPage: React.FC = () => {
             <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
           </div>
           {showAgenda && (
-            <div className="my-4 text-secondary-foreground">
+            <div className="no-scrollbar h-[90vh] overflow-y-scroll text-secondary-foreground">
               <TodayMeetings selectedDate={selectedDate} />
             </div>
           )}
