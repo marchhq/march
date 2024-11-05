@@ -44,6 +44,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   thisWeek: { ...initialViewState },
   favorites: { ...initialViewState },
   items: [],
+  subItems: [],
   currentItem: null,
   isLoading: false,
   error: null,
@@ -314,6 +315,33 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           ? error.response?.data?.message || error.message
           : "unknown: failed to fetch item by date"
       set({ error: errorMessage, isLoading: false })
+    }
+  },
+
+  fetchSubItems: async (session: string, parentId: string) => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const { data } = await api.get(`/api/inbox/${parentId}/sub-items`, {
+        headers: { Authorization: `Bearer ${session}` },
+      })
+
+      set((state) => ({
+        subItems: data.response || [],
+        isLoading: false,
+        error: null,
+      }))
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "unknown: failed to fetch sub-items"
+
+      set((state) => ({
+        error: errorMessage,
+        isLoading: false,
+      }))
+      throw error
     }
   },
 
