@@ -57,14 +57,6 @@ const MeetingIcon = ({ type, isActive }) => {
   }
 }
 
-const isSameDay = (date1: Date, date2: Date): boolean => {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  )
-}
-
 const formatTime = (date: Date): string => {
   return date
     .toLocaleTimeString([], {
@@ -84,15 +76,19 @@ interface TodayAgendaProps {
   selectedDate: Date
 }
 
+interface AgendaItem {
+  title: string
+  link: string
+  time: string
+  duration: number
+  meetingType: string
+}
+
 export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
-  const { meetings, isLoading } = useMeetings()
+  const { meetings, isLoading } = useMeetings(selectedDate.toISOString())
 
-  const todayMeetings = meetings?.meetings.filter((meeting) =>
-    isSameDay(new Date(meeting.start.dateTime), selectedDate)
-  )
-
-  const agendaItems =
-    todayMeetings?.map((meeting) => {
+  const agendaItems: AgendaItem[] =
+    meetings?.map((meeting: Meeting) => {
       const startTime = new Date(meeting.start.dateTime)
       const endTime = new Date(meeting.end.dateTime)
 
