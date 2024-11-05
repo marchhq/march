@@ -3,17 +3,6 @@ import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues,
 import { linearQueue } from "../../loaders/bullmq.loader.js";
 import * as crypto from "crypto";
 
-// const redirectLinearOAuthLoginController = (req, res, next) => {
-//     try {
-//         const authUrl = `https://linear.app/oauth/authorize?client_id=${environment.LINEAR_CLIENT_ID}&redirect_uri=${environment.LINEAR_REDIRECT_URL}&response_type=code`;
-//         console.log("hey: ", authUrl);
-//         res.redirect(authUrl);
-//     } catch (err) {
-//         console.error("Error in redirectLinearOAuthLoginController:", err);
-//         next(err);
-//     }
-// };
-
 const redirectLinearOAuthLoginController = (req, res, next) => {
     try {
         const scopes = "read write";
