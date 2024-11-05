@@ -192,7 +192,6 @@ const getGoogleCalendarMeetingsByDateController = async (req, res, next) => {
     const date = req.params.date;
     try {
         const events = await getGoogleCalendarMeetingsByDate(user, date);
-        console.log("hey");
         res.status(200).json({
             events
         });
