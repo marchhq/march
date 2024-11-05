@@ -60,5 +60,5 @@ export interface Meeting {
 }
 
 export interface Meetings {
-  meetings: Meeting[]
+  events: Meeting[]
 }
