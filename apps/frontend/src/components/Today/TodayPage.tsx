@@ -21,7 +21,7 @@ export const TodayPage: React.FC = () => {
   return (
     <main className="h-full bg-background p-10 pl-5">
       <section className="flex items-start gap-10">
-        <div className="flex flex-1 flex-col gap-5">
+        <div className="flex flex-1 flex-col gap-5 text-sm">
           <header>
             <DateCycle
               selectedDate={selectedDate}
@@ -31,9 +31,7 @@ export const TodayPage: React.FC = () => {
           <section className="no-scrollbar h-[30vh] max-w-[700px] overflow-y-scroll pl-5">
             <TodayTextArea selectedDate={selectedDate} />
           </section>
-          <section className="max-w-[700px] space-y-8 overflow-y-auto text-[16px] text-secondary-foreground">
-            <TodayItems selectedDate={selectedDate} />
-          </section>
+          <TodayItems selectedDate={selectedDate} />
         </div>
         <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
           <span className="truncate">show agenda</span>

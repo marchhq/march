@@ -14,14 +14,14 @@ export const DateCycle: React.FC<DateCycleProps> = ({
   selectedDate,
   onDateChange,
 }) => {
-  const { today, overdue } = useCycleItemStore()
-  const { items: todayItems } = today
+  const { byDate, overdue } = useCycleItemStore()
+  const { items: byDateItems } = byDate
   const { items: overdueItems } = overdue
 
-  const totalTodayItems = todayItems.length
+  const totalByDateItems = byDateItems.length
   const totalOverdueItems = overdueItems.length
 
-  const totalItems = totalTodayItems + totalOverdueItems
+  const totalItems = totalByDateItems + totalOverdueItems
 
   const goToPreviousDay = () => {
     const newDate = new Date(selectedDate)
