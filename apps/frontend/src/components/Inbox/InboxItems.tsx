@@ -23,6 +23,7 @@ export const InboxItems: React.FC = () => {
     null
   )
   const [date, setDate] = React.useState<Date | null>(new Date())
+  const [cycleDate, setCycleDate] = React.useState<Date | null>(new Date())
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 
@@ -55,12 +56,35 @@ export const InboxItems: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (dateChanged && reschedulingItemId && date) {
-      updateItem(session, { dueDate: date, status: "todo" }, reschedulingItemId)
+    if (dateChanged) {
+      if (reschedulingItemId) {
+        if (date) {
+          updateItem(
+            session,
+            { status: "todo", dueDate: date },
+            reschedulingItemId
+          )
+        }
+        if (cycleDate) {
+          const { startDate, endDate } = getWeekDates(cycleDate)
+          updateItem(
+            session,
+            {
+              status: "todo",
+              dueDate: date,
+              cycle: {
+                startsAt: startDate,
+                endsAt: endDate,
+              },
+            },
+            reschedulingItemId
+          )
+        }
+      }
       setReschedulingItemId(null)
       setDateChanged(false)
     }
-  }, [date, updateItem, session, reschedulingItemId, dateChanged])
+  }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
@@ -225,10 +249,12 @@ export const InboxItems: React.FC = () => {
             }}
             tabIndex={0}
           ></div>
-          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded-md bg-background shadow-lg">
+          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
             <RescheduleCalendar
               date={date}
               setDate={setDate}
+              cycleDate={cycleDate}
+              setCycleDate={setCycleDate}
               dateChanged={dateChanged}
               setDateChanged={setDateChanged}
             />

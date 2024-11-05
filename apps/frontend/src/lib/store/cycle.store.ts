@@ -400,6 +400,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         if (updates.dueDate) {
           return items.filter((item) => item._id !== id)
         }
+
+        if (updates.cycle) {
+          return items.filter((item) => item._id !== id)
+        }
         // otherwise, just update the item in inbox
         return items.map((item) =>
           item._id === id ? { ...item, ...updates } : item
