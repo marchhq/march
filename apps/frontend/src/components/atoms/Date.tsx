@@ -1,18 +1,9 @@
-import React, { useState } from "react"
+import React from "react"
 
-import { addDays, startOfWeek, endOfWeek, format } from "date-fns"
-import { ListFilter } from "lucide-react"
+import { format } from "date-fns"
 
 import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-
-const formatDate = (date: Date) => {
-  const weekday = date.toLocaleDateString("en-US", { weekday: "long" })
-  const month = date.toLocaleDateString("en-US", { month: "short" })
-  const day = date.getDate()
-
-  return `${weekday}, ${month} ${day}`.toLowerCase()
-}
 
 interface DateCycleProps {
   selectedDate: Date
@@ -40,12 +31,7 @@ export const DateCycle: React.FC<DateCycleProps> = ({
 
   const goToToday = () => {
     const today = new Date()
-    const localToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )
-    onDateChange(localToday)
+    onDateChange(today)
   }
 
   const goToNextDay = () => {
@@ -54,15 +40,17 @@ export const DateCycle: React.FC<DateCycleProps> = ({
     onDateChange(newDate)
   }
 
+  const formatedDateHeader = format(selectedDate, "eeee, MMMM dd").toLowerCase()
   const formatedDateTitle = format(selectedDate, "eee").toLowerCase()
 
-  const isToday = selectedDate.toDateString() === new Date().toDateString()
+  const isToday =
+    String(selectedDate.getDate()) === String(new Date().getDate())
 
   return (
-    <div className="flex w-full flex-col gap-4 pl-5 text-sm">
+    <div className="flex flex-1 flex-col gap-4 pl-5 text-sm">
       <div className="flex w-full items-center justify-between gap-5">
         <div className="flex items-center gap-2 text-secondary-foreground">
-          <span className="text-sm">{formatDate(selectedDate)}</span>
+          <span className="text-sm">{formatedDateHeader}</span>
         </div>
         <div className="flex items-center gap-2 text-secondary-foreground">
           <button onClick={goToPreviousDay} className="px-1">
