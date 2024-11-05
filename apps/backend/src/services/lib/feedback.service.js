@@ -58,55 +58,47 @@
 // };
 
 // export { sendFeedbackEmail };
-
-import axios from "axios";
 import { upload } from "../../loaders/s3.loader.js";
 import { environment } from "../../loaders/environment.loader.js";
+import axios from "axios";
 
 const sendFeedbackEmail = async (req, res) => {
     try {
-        // Handle file uploads using Multer
         await handleFileUpload(req, res);
 
-        const { title, feedback, email } = req.body;
-        const attachments = req.files || []; // Default to an empty array if no files
+        const { title } = req.body;
+        const attachments = req.files; // The uploaded files
 
-        // Prepare the data for Loop's API request
-        const emailData = {
-            transactionalId: "cm34je93z00q011c1ku9u1jb5", // Replace with your actual transactionalId from Loop
-            email: environment.FEEDBACK_RECEIVER_EMAIL, // Feedback receiver email
+        const transactionalId = "cm34je93z00q011c1ku9u1jb5";
+        // const confirmationUrl = "https://myapp.com/confirm/12345/";
+
+        const requestBody = {
+            transactionalId: transactionalId,
+            email: environment.FEEDBACK_RECEIVER_EMAIL,
             dataVariables: {
-                FirstName: email.split("@")[0], // Example: extracting the first part of the email
-                body: `Title: ${title}\n\nFeedback: ${feedback}`
-            },
-            attachment: attachments.map((file) => ({
-                filename: file.originalname,
-                url: file.location // File location from S3
-            })),
-            useremail: email // This could be the user's email for the reply-to
-        };
-        console.log("Sending email data to Loop:", emailData);
-
-        // Make the request to Loop's transactional email service
-        const response = await axios.post(
-            "https://app.loops.so/api/v1/transactional",
-            emailData,
-            {
-                headers: {
-                    Authorization: "Bearer 9930375ef8c0c1d13f39d7ef66bef953", // Use your Loop API key
-                    "Content-Type": "application/json"
-                }
+                body: title,
+                // feedback: feedback,
+                attachment: attachments
             }
-        );
+        };
 
+        const response = await axios.post("https://smtp.loops.so/send", requestBody, {
+            auth: {
+                username: "loops",
+                password: environment.SMTP_PASS
+            },
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         if (response.status === 200) {
-            return { status: 200, message: "Feedback sent successfully via Loop" };
+            return res.status(200).json({ message: "Feedback sent successfully" });
         } else {
-            throw new Error("Error sending feedback with Loop");
+            throw new Error("Failed to send feedback");
         }
     } catch (error) {
         console.error("Error during email sending:", error);
-        throw new Error("Error sending feedback");
+        return res.status(500).json({ error: "Error sending feedback" });
     }
 };
 
