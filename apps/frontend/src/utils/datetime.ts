@@ -104,3 +104,7 @@ export const getWeekDates = (date: Date) => {
     endDate: format(end, "yyyy-MM-dd"),
   }
 }
+
+export const toUtcDate = (date: Date): Date => {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+}
