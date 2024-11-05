@@ -30,7 +30,7 @@ const TodayPage: React.FC = () => {
           <section className="no-scrollbar my-3 h-[30vh] max-w-[700px] overflow-y-scroll">
             <TodayTextArea selectedDate={selectedDate} />
           </section>
-          <section className="no-scrollbar h-[30vh] max-w-[700px] space-y-8 overflow-y-scroll text-[16px] text-secondary-foreground">
+          <section className="max-w-[700px] space-y-8 overflow-y-auto text-[16px] text-secondary-foreground">
             <TodayItems selectedDate={selectedDate} />
           </section>
         </div>
