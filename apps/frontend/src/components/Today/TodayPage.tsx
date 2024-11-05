@@ -42,7 +42,7 @@ const TodayPage: React.FC = () => {
             <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
           </div>
           {showAgenda && (
-            <div className="h-[90vh] overflow-y-scroll text-secondary-foreground">
+            <div className="no-scrollbar h-[90vh] overflow-y-scroll text-secondary-foreground">
               <TodayMeetings selectedDate={selectedDate} />
             </div>
           )}
