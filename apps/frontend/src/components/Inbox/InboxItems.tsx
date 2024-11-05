@@ -22,8 +22,8 @@ export const InboxItems: React.FC = () => {
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
     null
   )
-  const [date, setDate] = React.useState<Date | null>(new Date())
-  const [cycleDate, setCycleDate] = React.useState<Date | null>(new Date())
+  const [date, setDate] = useState<Date | null>(new Date())
+  const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 

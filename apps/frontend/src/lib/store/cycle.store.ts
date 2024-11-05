@@ -27,12 +27,12 @@ const initialViewState: ViewState = {
 
 interface ExtendedCycleItemStore extends CycleItemStore {
   inbox: ViewState
-  today: ViewState
+  byDate: ViewState
   overdue: ViewState
   thisWeek: ViewState
   favorites: ViewState
   setViewItems: (
-    view: "inbox" | "today" | "overdue" | "thisWeek",
+    view: "inbox" | "byDate" | "overdue" | "thisWeek",
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
@@ -40,7 +40,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   inbox: { ...initialViewState },
-  today: { ...initialViewState },
+  byDate: { ...initialViewState },
   overdue: { ...initialViewState },
   thisWeek: { ...initialViewState },
   favorites: { ...initialViewState },
@@ -101,9 +101,9 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     }
   },
 
-  fetchToday: async (session: string, date: string) => {
+  fetchByDate: async (session: string, date: string) => {
     set((state) => ({
-      today: { ...state.today, isLoading: true, error: null },
+      byDate: { ...state.byDate, isLoading: true, error: null },
       isLoading: true,
       error: null,
     }))
@@ -114,7 +114,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       })
 
       set((state) => ({
-        today: {
+        byDate: {
           items: data.response.today || [],
           isLoading: false,
           error: null,
@@ -125,11 +125,11 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       const errorMessage =
         error instanceof AxiosError
           ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch today"
+          : "unknow: failed to fetch by date"
 
       set((state) => ({
-        today: {
-          ...state.today,
+        byDate: {
+          ...state.byDate,
           error: errorMessage,
           isLoading: false,
         },
@@ -411,6 +411,36 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         )
       }
 
+      const updateItemsInViewByDate = (items: CycleItem[]) => {
+        if (updates.dueDate === null) {
+          return items.filter((item) => item._id !== id)
+        }
+
+        const newDueDate = updates.dueDate
+        const todayDate = new Date()
+
+        const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
+        const formattedTodayDate = todayDate.toISOString().split("T")[0]
+
+        console.log("newDueDate", newDueDate)
+        console.log("todayDate", todayDate)
+
+        console.log("formattedNewDueDate", formattedNewDueDate)
+        console.log("formattedTodayDate", formattedTodayDate)
+
+        if (formattedNewDueDate !== formattedTodayDate) {
+          return items.filter((item) => item._id !== id)
+        }
+
+        if (updates.cycle) {
+          return items.filter((item) => item._id !== id)
+        }
+        // otherwise, just update the item in by date view
+        return items.map((item) =>
+          item._id === id ? { ...item, ...updates } : item
+        )
+      }
+
       const updateItemsInView = (items: CycleItem[], isOverdue = false) => {
         // Only filter out done items from overdue list
         if (isOverdue && updates.status === "done") {
@@ -428,7 +458,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           ...state.inbox,
           items: updateItemsInViewInbox(state.inbox.items),
         },
-        today: { ...state.today, items: updateItemsInView(state.today.items) }, // No filtering
+        byDate: {
+          ...state.byDate,
+          items: updateItemsInViewByDate(state.byDate.items),
+        }, // No filtering
         overdue: {
           ...state.overdue,
           items: updateItemsInView(state.overdue.items, true),
@@ -462,6 +495,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         }
       )
 
+      console.log("data.response", data.response)
+
       // Update with server response
       set((state) => {
         const updateItemsInView = (items: CycleItem[]) =>
@@ -474,9 +509,9 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             ...state.inbox,
             items: updateItemsInView(state.inbox.items),
           },
-          today: {
-            ...state.today,
-            items: updateItemsInView(state.today.items),
+          byDate: {
+            ...state.byDate,
+            items: updateItemsInView(state.byDate.items),
           },
           overdue: {
             ...state.overdue,
@@ -516,7 +551,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
 
       return {
         inbox: { ...state.inbox, items: deleteItemsInView(state.inbox.items) },
-        today: { ...state.today, items: deleteItemsInView(state.today.items) },
+        byDate: {
+          ...state.byDate,
+          items: deleteItemsInView(state.byDate.items),
+        },
         overdue: {
           ...state.overdue,
           items: deleteItemsInView(state.overdue.items),
@@ -546,9 +584,9 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             ...state.inbox,
             items: updateItemsInView(state.inbox.items),
           },
-          today: {
-            ...state.today,
-            items: updateItemsInView(state.today.items),
+          byDate: {
+            ...state.byDate,
+            items: updateItemsInView(state.byDate.items),
           },
           overdue: {
             ...state.overdue,

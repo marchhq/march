@@ -36,7 +36,7 @@ export interface CycleItemStore {
   error: string | null
   setCurrentItem: (item: CycleItem | null) => void
   fetchInbox: (session: string) => Promise<void>
-  fetchToday: (session: string, date: string) => Promise<void>
+  fetchByDate: (session: string, date: string) => Promise<void>
   fetchOverdue: (session: string, date: string) => Promise<void>
   fetchThisWeek: (
     session: string,
