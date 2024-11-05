@@ -11,7 +11,8 @@ import {
     setUpCalendarWatch,
     handleCalendarWebhookService,
     removeGoogleCalendarWebhook,
-    revokeGoogleCalendarAccess
+    revokeGoogleCalendarAccess,
+    getGoogleCalendarMeetingsByDate
 } from "../..//services/integration/calendar.service.js";
 import { calendarQueue } from "../../loaders/bullmq.loader.js";
 import { environment } from "../../loaders/environment.loader.js";
@@ -186,6 +187,19 @@ const revokeGoogleCalendarAccessController = async (req, res, next) => {
     }
 };
 
+const getGoogleCalendarMeetingsByDateController = async (req, res, next) => {
+    const user = req.user;
+    const date = req.params.date;
+    try {
+        const events = await getGoogleCalendarMeetingsByDate(user, date);
+        res.status(200).json({
+            events
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     getGoogleCalendarAccessTokenController,
     getGoogleCalendarEventsController,
@@ -195,5 +209,6 @@ export {
     getGoogleCalendarMeetingsController,
     getGoogleCalendarupComingMeetingsController,
     handleCalendarWebhook,
-    revokeGoogleCalendarAccessController
+    revokeGoogleCalendarAccessController,
+    getGoogleCalendarMeetingsByDateController
 };
