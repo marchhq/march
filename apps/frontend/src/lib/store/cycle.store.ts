@@ -3,6 +3,7 @@ import { create } from "zustand"
 
 import { CycleItem, CycleItemStore } from "../@types/Items/Cycle"
 import { BACKEND_URL } from "../constants/urls"
+import { toUtcDate } from "@/src/utils/datetime"
 
 const api = axios.create({
   baseURL: BACKEND_URL,
@@ -441,9 +442,21 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     })
 
     try {
-      const { data } = await api.put(`/api/inbox/${id}`, updates, {
-        headers: { Authorization: `Bearer ${session}` },
-      })
+      // Adjust dueDate to UTC if it's a Date object
+      if (updates.dueDate instanceof Date) {
+        updates.dueDate = toUtcDate(updates.dueDate)
+      }
+
+      const { data } = await api.put(
+        `/api/inbox/${id}`,
+        {
+          ...updates,
+          dueDate: updates.dueDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${session}` },
+        }
+      )
 
       // Update with server response
       set((state) => {
@@ -514,6 +527,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     })
 
     try {
+      console.log("Line 519 triggered", updates)
+      return
       const { data } = await api.put(`/api/inbox/${id}`, updates, {
         headers: { Authorization: `Bearer ${session}` },
       })
