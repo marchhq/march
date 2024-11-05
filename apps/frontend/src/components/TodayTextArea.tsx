@@ -96,7 +96,7 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   }, [content, hasUnsavedChanges, isLoading])
 
   return (
-    <div className="text-foreground">
+    <div className="overflow-scroll text-foreground">
       <TextEditor editor={editor} minH="30vh" />
     </div>
   )
