@@ -18,9 +18,6 @@ import { linkPreviewGeneratorController } from "../../controllers/lib/linkPrevie
 
 const router = Router();
 
-// Feedback controller
-router.route("/feedback/").post(feedbackController);
-
 // inbox
 router.route("/inbox/").get(getInboxItemsController);
 router.route("/inbox/").post(createInboxItemController);
@@ -51,6 +48,9 @@ router.route("/items/filter/").get(filterItemsController);
 router
     .route("/file-assets/upload/")
     .post(upload.single("file"), uploadFileController);
+
+// Feedback controller
+router.route("/feedback/").post(feedbackController);
 
 // Link preview controller
 router.route("/get-link-preview/").post(linkPreviewGeneratorController);
