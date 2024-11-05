@@ -31,3 +31,12 @@ export const isIntegrationConnected = (
 ): boolean => {
   return user?.integrations?.[integrationType]?.connected === true
 }
+
+export interface Integration {
+  key: IntegrationType
+  icon: JSX.Element
+  name: string
+  description: string
+  handleConnect: () => void
+  handleRevoke: () => void
+}
