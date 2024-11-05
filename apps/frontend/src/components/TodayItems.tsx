@@ -67,7 +67,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="no-scrollbar max-h-[90vh] space-y-2 overflow-y-auto">
       {optimisticTodayItems.length > 0 && (
         <ul className="space-y-2">
           {optimisticTodayItems.map((item) => (

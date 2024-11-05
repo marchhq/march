@@ -124,7 +124,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
       {agendaItems.length === 0 ? (
         <li className="list-none">No agenda items</li>
       ) : (
-        <ol className="relative min-h-[150px] border-s border-border">
+        <ol className="relative ml-10 min-h-[150px] border-s border-border">
           {agendaItems.map((item, index) => (
             <li key={index} className="mb-8 ms-4">
               {index === 0 && (
