@@ -14,6 +14,7 @@ interface UserStoreActions {
   fetchUser: (session: string) => Promise<User | null>
   setUser: (user: User | null) => void
   clearUser: () => void
+  updateIntegrationStatus: (key: string, status: boolean) => void
 }
 
 type UserStoreType = UserStoreState & UserStoreActions
@@ -22,6 +23,22 @@ const useUserStore = create<UserStoreType>((set) => ({
   user: null,
   isLoading: false,
   error: null,
+
+  updateIntegrationStatus: (key: string, status: boolean) =>
+    set((state) => ({
+      user: state.user
+        ? {
+            ...state.user,
+            integrations: {
+              ...state.user.integrations,
+              [key]: {
+                ...(state.user.integrations?.[key] || {}),
+                connected: status,
+              },
+            },
+          }
+        : null,
+    })),
 
   fetchUser: async (session: string) => {
     set({ isLoading: true, error: null })
