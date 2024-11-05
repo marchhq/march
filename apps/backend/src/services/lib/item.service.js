@@ -114,11 +114,10 @@ const getUserTodayItems = async (me) => {
 
 const getUserOverdueItems = async (me) => {
     const now = new Date();
-    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
     const items = await Item.find({
         user: me,
-        dueDate: { $lt: endOfDay },
+        dueDate: { $lt: startOfToday },
         isCompleted: false,
         isArchived: false,
         isDeleted: false
