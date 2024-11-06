@@ -11,6 +11,10 @@ const getGoogleCalendarAccessToken = async (code, user) => {
     user.integration.googleCalendar.accessToken = tokens.access_token;
     user.integration.googleCalendar.refreshToken = tokens.refresh_token;
     user.integration.googleCalendar.connected = true;
+    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
+    const { data } = await calendar.settings.get({ setting: 'timezone' });
+    const userTimezone = data.value;
+    user.timezone = userTimezone
     await user.save();
 
     return tokens;
