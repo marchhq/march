@@ -30,14 +30,6 @@ const getMeetingById = async (user, id) => {
     return meeting;
 };
 
-const getUpcomingMeetings = async (user, currentDateTime) => {
-    const upcomingMeetings = await Meeting.find({
-        user,
-        'metadata.start.dateTime': { $gt: currentDateTime.toISOString() }
-    });
-    return upcomingMeetings;
-};
-
 const updateMeeting = async (id, updateData) => {
     const updatedBlock = await Meeting.findOneAndUpdate({
         _id: id
@@ -60,7 +52,6 @@ const deleteMeeting = async (id) => {
 
 export {
     getMeeting,
-    getUpcomingMeetings,
     recentUpcomingMeeting,
     updateMeeting,
     deleteMeeting,
