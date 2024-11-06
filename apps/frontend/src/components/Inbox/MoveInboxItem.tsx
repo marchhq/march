@@ -10,10 +10,10 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { useToast } from "@/src/hooks/use-toast"
 
 type Props = {
-  itemId: string
+  inboxItemId: string
 }
 
-const MoveInboxItem = (props: Props) => {
+const MoveInboxItem = ({ inboxItemId }: Props) => {
   const { session } = useAuth()
   const {hideModal} = useModal()
   const inputRef = React.useRef<HTMLInputElement>(null) // Create a ref for the input field
@@ -38,7 +38,7 @@ const MoveInboxItem = (props: Props) => {
 
   const handleSpaceClick = async (spaceId: string) => {
     try {
-      await updateItem(session, { spaces: [spaceId] }, props.itemId)
+      await updateItem(session, { spaces: [spaceId] },inboxItemId)
       await fetchInbox(session)
       toast({title: "🚀 Moved successfully!",})
       hideModal()
@@ -71,9 +71,7 @@ const MoveInboxItem = (props: Props) => {
       </DialogTitle>
       </DialogHeader>
       <div
-        className="flex items-center gap-5 bg-transparent text-secondary-foreground"
-        {...props}
-      >
+        className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 text-sm">
        
           <div className="flex flex-col gap-1.5 max-h-96 overflow-y-auto">
