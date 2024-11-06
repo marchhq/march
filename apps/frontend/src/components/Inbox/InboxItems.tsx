@@ -173,9 +173,11 @@ export const InboxItems: React.FC = () => {
   }
 
 
-  const handleMoveItem = ()=>{
-    showModal(<MoveInboxItem/>)
+  const handleMoveItem = (itemId: string)=>{
+    showModal(<MoveInboxItem itemId={itemId}/>)
   }
+
+  console.log(filteredItems)
 
   return (
     <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
@@ -235,10 +237,7 @@ export const InboxItems: React.FC = () => {
                   <MoveIcon
                     size={14}
                     className="hover-text"
-                    onClick={(e) => {e.stopPropagation()
-                     
-                      handleMoveItem()
-                    }}
+                    onClick={() => showModal(<MoveInboxItem itemId={item._id}/>)}
                   />
                 </div>
               </button>
@@ -272,7 +271,6 @@ export const InboxItems: React.FC = () => {
           </div>
         </div>
       )}
-    
     </div>
   )
 }
