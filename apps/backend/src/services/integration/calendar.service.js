@@ -1,7 +1,6 @@
 import { google } from "googleapis";
 import axios from 'axios';
 import { OauthCalClient } from "../../loaders/google.loader.js";
-import { Meeting } from "../../models/page/meetings.model.js";
 
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
@@ -214,39 +213,6 @@ const deleteGoogleCalendarEvent = async (user, eventId) => {
     return { success: true };
 };
 
-const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
-    try {
-        for (const meeting of meetings) {
-            const existingMeeting = await Meeting.findOne({ id: meeting.id, user: userId });
-
-            if (!existingMeeting) {
-                const newMeeting = new Meeting({
-                    title: meeting.summary,
-                    source: 'calendar',
-                    id: meeting.id,
-                    user: userId,
-                    metadata: {
-                        status: meeting.status,
-                        location: meeting.location,
-                        attendees: meeting.attendees,
-                        hangoutLink: meeting.hangoutLink,
-                        conferenceData: meeting.conferenceData,
-                        start: meeting.start,
-                        end: meeting.end,
-                        creator: meeting.creator
-                    },
-                    createdAt: meeting.createdAt,
-                    updatedAt: meeting.updatedAt
-                });
-                await newMeeting.save();
-            }
-        }
-    } catch (error) {
-        console.error('Error saving meeting to database:', error);
-        throw error;
-    }
-};
-
 const revokeGoogleCalendarAccess = async (user) => {
     const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
     const accessToken = user.integration.googleCalendar.accessToken;
@@ -318,7 +284,6 @@ export {
     deleteGoogleCalendarEvent,
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
-    saveUpcomingMeetingsToDatabase,
     revokeGoogleCalendarAccess,
     getGoogleCalendarMeetingsByDate
 }
