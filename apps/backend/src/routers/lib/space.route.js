@@ -39,9 +39,9 @@ const router = Router();
 // space controllers
 router.route("/").post(createSpaceController);
 router.route("/").get(getSpacesController);
+router.route("/name/:space").get(getSpaceByNameController);
 router.route("/:space/").get(getSpaceController);
 router.route("/:space/").put(updateSpaceController);
-router.route("/name/:space").get(getSpaceByNameController);
 
 // items filter by label name
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)

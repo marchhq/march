@@ -4,8 +4,7 @@ const getMeeting = async (user) => {
     const meetings = await Meeting.find({
         user
     })
-        .sort({ 'metadata.start.dateTime': 1 });
-
+        .sort({ created_at: -1 });
     return meetings;
 };
 
