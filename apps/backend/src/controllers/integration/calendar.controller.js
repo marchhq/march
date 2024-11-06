@@ -8,12 +8,9 @@ import {
     getGoogleCalendarupComingMeetings,
     checkAccessTokenValidity,
     refreshGoogleCalendarAccessToken,
-    handleCalendarWebhookService,
     revokeGoogleCalendarAccess,
     getGoogleCalendarMeetingsByDate
 } from "../..//services/integration/calendar.service.js";
-import { environment } from "../../loaders/environment.loader.js";
-import { User } from "../../models/core/user.model.js";
 
 const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
@@ -117,39 +114,6 @@ const deleteGoogleCalendarEventController = async (req, res, next) => {
     }
 };
 
-const handleCalendarWebhook = async (req, res, next) => {
-    const channelToken = req.headers["x-goog-channel-token"];
-    const resourceState = req.headers["x-goog-resource-state"];
-    const userId = req.query.user;
-    if (channelToken !== environment.CALENDAR_WEBHOOK_SECRET) {
-        return res.status(403).send("Invalid webhook token");
-    }
-
-    if (resourceState === "sync") {
-        return res.status(200).send();
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-        return res.status(404).send("User not found");
-    }
-
-    try {
-        let accessToken = user.integration.googleCalendar.accessToken;
-        const refreshToken = user.integration.googleCalendar.refreshToken;
-
-        const isValid = await checkAccessTokenValidity(accessToken);
-
-        if (!isValid) {
-            accessToken = await refreshGoogleCalendarAccessToken(user);
-        }
-        await handleCalendarWebhookService(accessToken, refreshToken, userId);
-        res.status(200).send("Webhook event processed");
-    } catch (err) {
-        next(err);
-    }
-};
-
 const revokeGoogleCalendarAccessController = async (req, res, next) => {
     const user = req.user;
     const { accessToken } = user.integration.googleCalendar || {};
@@ -189,7 +153,6 @@ export {
     deleteGoogleCalendarEventController,
     getGoogleCalendarMeetingsController,
     getGoogleCalendarupComingMeetingsController,
-    handleCalendarWebhook,
     revokeGoogleCalendarAccessController,
     getGoogleCalendarMeetingsByDateController
 };
