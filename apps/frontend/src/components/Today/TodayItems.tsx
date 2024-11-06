@@ -211,17 +211,9 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     setToggleOverdue(!toggleOverdue)
   }
 
-  if (byDateIsLoading) {
+  if (byDateItems.length + overdueItems.length > 0) {
     return (
-      <span className="pl-5 text-sm text-secondary-foreground">loading...</span>
-    )
-  }
-
-  return (
-    <div className="no-scrollbar flex h-full flex-col gap-4 pb-5">
-      {byDateItems.length === 0 ? (
-        <span className="pl-5 text-secondary-foreground">today empty</span>
-      ) : (
+      <div className="no-scrollbar flex h-full flex-col gap-4 pb-5">
         <div>
           {byDateError && (
             <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
@@ -292,129 +284,137 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             ))}
           </div>
         </div>
-      )}
-      <div className="flex flex-col gap-2 pl-5 text-secondary-foreground">
-        <button
-          className="flex min-h-5 items-center gap-2 font-medium outline-none"
-          onClick={handleOverdue}
-        >
-          <span>overdue</span>
-          {toggleOverdue ? (
-            <Image
-              src={ChevronDownIcon}
-              alt="chevron down icon"
-              width={12}
-              height={12}
-              className="mt-0.5 opacity-50"
-            />
-          ) : (
-            <Image
-              src={ChevronRightIcon}
-              alt="chevron right icon"
-              width={12}
-              height={12}
-              className="mt-0.5 opacity-50"
-            />
-          )}
-        </button>
-        {toggleOverdue && (
-          <div>
-            {overdueItems.length === 0 ? (
-              <span className="pl-5 text-secondary-foreground">
-                no overdue items
-              </span>
+        <div className="flex flex-col gap-2 pl-5 text-secondary-foreground">
+          <button
+            className="flex min-h-5 items-center gap-2 font-medium outline-none"
+            onClick={handleOverdue}
+          >
+            <span>overdue</span>
+            {toggleOverdue ? (
+              <Image
+                src={ChevronDownIcon}
+                alt="chevron down icon"
+                width={12}
+                height={12}
+                className="mt-0.5 opacity-50"
+              />
             ) : (
-              <div className="mt-1">
-                {overdueError && (
-                  <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
-                    <span>{overdueError}</span>
-                  </div>
-                )}
-                <div className="flex flex-col gap-2.5">
-                  {overdueItems.map((item) => (
-                    <button
-                      key={item._id}
-                      className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
-                      onClick={() => handleExpand(item)}
-                      data-item-id={item._id}
-                    >
-                      <div className="flex items-start gap-2 truncate">
-                        <Image
-                          src={BoxIcon}
-                          alt="checkbox icon"
-                          width={12}
-                          height={12}
-                          onClick={(e) => handleDone(e, item._id, item.status)}
-                          className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
-                        />
-                        <span
-                          className={classNames(
-                            "flex gap-1 text-left truncate",
-                            item.type === "link" && "group-hover:underline"
-                          )}
-                        >
-                          {item.title}
-                          <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
-                        </span>
-                        {item.source !== "march" && (
-                          <div className="mt-[3px] flex items-center text-secondary-foreground">
-                            {getSourceIcon(item.source)}
-                          </div>
-                        )}
-                      </div>
-                      <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
-                        <CalendarIcon
-                          size={14}
-                          className="hover-text"
-                          onClick={(e) =>
-                            handleRescheduleCalendar(e, item._id, item.dueDate)
-                          }
-                        />
-                        <MoveIcon
-                          size={14}
-                          className="hover-text"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <XIcon
-                          size={14}
-                          className="hover-text"
-                          onClick={(e) => handleDelete(e, item._id)}
-                        />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <Image
+                src={ChevronRightIcon}
+                alt="chevron right icon"
+                width={12}
+                height={12}
+                className="mt-0.5 opacity-50"
+              />
             )}
+          </button>
+          {toggleOverdue && (
+            <div>
+              {overdueItems.length === 0 ? (
+                <span className="pl-5 text-secondary-foreground">
+                  no overdue items
+                </span>
+              ) : (
+                <div className="mt-1">
+                  {overdueError && (
+                    <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+                      <span>{overdueError}</span>
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-2.5">
+                    {overdueItems.map((item) => (
+                      <button
+                        key={item._id}
+                        className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
+                        onClick={() => handleExpand(item)}
+                        data-item-id={item._id}
+                      >
+                        <div className="flex items-start gap-2 truncate">
+                          <Image
+                            src={BoxIcon}
+                            alt="checkbox icon"
+                            width={12}
+                            height={12}
+                            onClick={(e) =>
+                              handleDone(e, item._id, item.status)
+                            }
+                            className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+                          />
+                          <span
+                            className={classNames(
+                              "flex gap-1 text-left truncate",
+                              item.type === "link" && "group-hover:underline"
+                            )}
+                          >
+                            {item.title}
+                            <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
+                          </span>
+                          {item.source !== "march" && (
+                            <div className="mt-[3px] flex items-center text-secondary-foreground">
+                              {getSourceIcon(item.source)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
+                          <CalendarIcon
+                            size={14}
+                            className="hover-text"
+                            onClick={(e) =>
+                              handleRescheduleCalendar(
+                                e,
+                                item._id,
+                                item.dueDate
+                              )
+                            }
+                          />
+                          <MoveIcon
+                            size={14}
+                            className="hover-text"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <XIcon
+                            size={14}
+                            className="hover-text"
+                            onClick={(e) => handleDelete(e, item._id)}
+                          />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {reschedulingItemId !== null && (
+          <div>
+            <div
+              className="fixed inset-0 z-50 cursor-default bg-black/80"
+              role="button"
+              onClick={() => setReschedulingItemId(null)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape" || e.key === "Esc") {
+                  setReschedulingItemId(null)
+                }
+              }}
+              tabIndex={0}
+            ></div>
+            <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
+              <RescheduleCalendar
+                date={date}
+                setDate={setDate}
+                cycleDate={cycleDate}
+                setCycleDate={setCycleDate}
+                dateChanged={dateChanged}
+                setDateChanged={setDateChanged}
+              />
+            </div>
           </div>
         )}
       </div>
+    )
+  }
 
-      {reschedulingItemId !== null && (
-        <div>
-          <div
-            className="fixed inset-0 z-50 cursor-default bg-black/80"
-            role="button"
-            onClick={() => setReschedulingItemId(null)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape" || e.key === "Esc") {
-                setReschedulingItemId(null)
-              }
-            }}
-            tabIndex={0}
-          ></div>
-          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
-            <RescheduleCalendar
-              date={date}
-              setDate={setDate}
-              cycleDate={cycleDate}
-              setCycleDate={setCycleDate}
-              dateChanged={dateChanged}
-              setDateChanged={setDateChanged}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  )
+  return <div></div>
 }

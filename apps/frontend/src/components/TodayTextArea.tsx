@@ -27,7 +27,6 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   const [isSaved, setIsSaved] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
   const [toggle, setToggle] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const formattedDate = formatDate(selectedDate)
