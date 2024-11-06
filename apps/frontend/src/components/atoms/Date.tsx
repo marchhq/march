@@ -68,7 +68,12 @@ export const DateCycle: React.FC<DateCycleProps> = ({
         <h1 className="font-semibold text-foreground">
           {isToday ? "today" : formatedDateTitle}
         </h1>
-        <p className="text-secondary-foreground">{totalItems}</p>
+        <div className="flex gap-1 text-secondary-foreground">
+          <span title={`total items by ${selectedDate}`}>
+            {totalByDateItems}
+          </span>
+          <span title="total items by date + overdue">[{totalItems}]</span>
+        </div>
       </div>
     </div>
   )

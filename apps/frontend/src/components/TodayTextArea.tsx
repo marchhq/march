@@ -1,13 +1,17 @@
 "use client"
+
 import { useEffect, useState, useCallback, useRef } from "react"
 
 import axios from "axios"
+import Image from "next/image"
 
 import TextEditor from "./atoms/Editor"
 import { useAuth } from "../contexts/AuthContext"
 import useEditorHook from "../hooks/useEditor.hook"
 import { useJournal } from "../hooks/useJournal"
 import { BACKEND_URL } from "../lib/constants/urls"
+import ChevronDownIcon from "@/public/icons/chevrondown.svg"
+import ChevronRightIcon from "@/public/icons/chevronright.svg"
 
 interface JournalProps {
   selectedDate: Date
@@ -23,6 +27,8 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   const [isSaved, setIsSaved] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const [toggle, setToggle] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const formattedDate = formatDate(selectedDate)
   const { journal, fetchJournal } = useJournal(formattedDate)
@@ -82,7 +88,8 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
       setHasUnsavedChanges(false)
       lastSavedContent.current = content
     } catch (error) {
-      setError("Failed to save journal. Please try again.")
+      console.error("failed to save journal", error)
+      setError("failed to save journal")
     } finally {
       setIsLoading(false)
     }
@@ -95,9 +102,47 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
     }
   }, [content, hasUnsavedChanges, isLoading])
 
+  const handleToggle = () => {
+    setToggle(!toggle)
+  }
+
   return (
-    <div className="overflow-scroll text-foreground">
-      <TextEditor editor={editor} minH="30vh" />
+    <div className="flex flex-col gap-2 pl-5">
+      <button
+        className="flex min-h-5 items-center gap-2 font-medium text-secondary-foreground outline-none"
+        onClick={handleToggle}
+      >
+        <span>journal</span>
+        {toggle ? (
+          <Image
+            src={ChevronDownIcon}
+            alt="chevron down icon"
+            width={12}
+            height={12}
+            className="mt-0.5 opacity-50"
+          />
+        ) : (
+          <Image
+            src={ChevronRightIcon}
+            alt="chevron right icon"
+            width={12}
+            height={12}
+            className="mt-0.5 opacity-50"
+          />
+        )}
+      </button>
+      {toggle && (
+        <section className="no-scrollbar min-h-[30vh] max-w-[700px] overflow-y-scroll">
+          {error && (
+            <div className="mb-2.5 truncate text-xs text-danger-foreground">
+              <span>{error}</span>
+            </div>
+          )}
+          <div className="text-foreground">
+            <TextEditor editor={editor} minH="30vh" />
+          </div>
+        </section>
+      )}
     </div>
   )
 }
