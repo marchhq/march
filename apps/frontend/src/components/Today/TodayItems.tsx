@@ -4,16 +4,17 @@ import React, { useState, useEffect, useCallback } from "react"
 
 import { format } from "date-fns"
 import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
+import { XIcon } from "lucide-react"
 import Image from "next/image"
 
-import { useAuth } from "../../contexts/AuthContext"
-import { CycleItem } from "../../lib/@types/Items/Cycle"
-import { useCycleItemStore } from "../../lib/store/cycle.store"
 import BoxIcon from "@/public/icons/box.svg"
 import ChevronDownIcon from "@/public/icons/chevrondown.svg"
 import ChevronRightIcon from "@/public/icons/chevronright.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
+import { useAuth } from "@/src/contexts/AuthContext"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { getWeekDates } from "@/src/utils/datetime"
 
@@ -33,7 +34,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   )
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const [toggleOverdue, setToggleOverdue] = useState(true)
+  const [toggleOverdue, setToggleOverdue] = useState(false)
   const {
     byDate,
     overdue,
@@ -43,6 +44,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     error,
     currentItem,
     setCurrentItem,
+    deleteItem,
   } = useCycleItemStore()
 
   const {
@@ -195,6 +197,16 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     setDate(newDate)
   }
 
+  const handleDelete = useCallback(
+    (event: React.MouseEvent, id: string) => {
+      event.stopPropagation()
+      if (id) {
+        deleteItem(session, id)
+      }
+    },
+    [deleteItem, session]
+  )
+
   const handleOverdue = () => {
     setToggleOverdue(!toggleOverdue)
   }
@@ -206,7 +218,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }
 
   return (
-    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
+    <div className="no-scrollbar flex h-full flex-col gap-4 pb-5">
       {byDateItems.length === 0 ? (
         <span className="pl-5 text-secondary-foreground">today empty</span>
       ) : (
@@ -225,7 +237,12 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             {byDateItems.map((item) => (
               <button
                 key={item._id}
-                className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
+                className={classNames(
+                  "group flex items-start gap-2 py-1 outline-none",
+                  item.status === "done"
+                    ? "line-through text-secondary-foreground focus:text-secondary-foreground"
+                    : "text-primary-foreground hover-text-foreground hover:text-foreground focus:text-foreground"
+                )}
                 onClick={() => handleExpand(item)}
                 data-item-id={item._id}
               >
@@ -265,13 +282,18 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
                     className="hover-text"
                     onClick={(e) => e.stopPropagation()}
                   />
+                  <XIcon
+                    size={14}
+                    className="hover-text"
+                    onClick={(e) => handleDelete(e, item._id)}
+                  />
                 </div>
               </button>
             ))}
           </div>
         </div>
       )}
-      <div className="mt-2 pl-5 text-secondary-foreground">
+      <div className="flex flex-col gap-2 pl-5 text-secondary-foreground">
         <button
           className="flex min-h-5 items-center gap-2 font-medium outline-none"
           onClick={handleOverdue}
@@ -296,13 +318,13 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
           )}
         </button>
         {toggleOverdue && (
-          <div className="mt-1">
+          <div>
             {overdueItems.length === 0 ? (
               <span className="pl-5 text-secondary-foreground">
                 no overdue items
               </span>
             ) : (
-              <div>
+              <div className="mt-1">
                 {overdueError && (
                   <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
                     <span>{overdueError}</span>
@@ -327,11 +349,12 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
                         />
                         <span
                           className={classNames(
-                            "text-left truncate",
+                            "flex gap-1 text-left truncate",
                             item.type === "link" && "group-hover:underline"
                           )}
                         >
                           {item.title}
+                          <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
                         </span>
                         {item.source !== "march" && (
                           <div className="mt-[3px] flex items-center text-secondary-foreground">

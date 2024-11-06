@@ -432,9 +432,6 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           return items.filter((item) => item._id !== id)
         }
 
-        if (updates.cycle) {
-          return items.filter((item) => item._id !== id)
-        }
         // otherwise, just update the item in by date view
         return items.map((item) =>
           item._id === id ? { ...item, ...updates } : item
@@ -443,8 +440,30 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
 
       const updateItemsInView = (items: CycleItem[], isOverdue = false) => {
         // Only filter out done items from overdue list
-        if (isOverdue && updates.status === "done") {
-          return items.filter((item) => item._id !== id)
+        if (isOverdue) {
+          if (updates.dueDate === null) {
+            return items.filter((item) => item._id !== id)
+          }
+
+          const newDueDate = updates.dueDate
+          const todayDate = new Date()
+
+          const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
+          const formattedTodayDate = todayDate.toISOString().split("T")[0]
+
+          console.log("newDueDate", newDueDate)
+          console.log("todayDate", todayDate)
+
+          console.log("formattedNewDueDate", formattedNewDueDate)
+          console.log("formattedTodayDate", formattedTodayDate)
+
+          if (formattedNewDueDate !== formattedTodayDate) {
+            return items.filter((item) => item._id !== id)
+          }
+
+          if (updates.status === "done") {
+            return items.filter((item) => item._id !== id)
+          }
         }
 
         // For all other lists, just update the item
@@ -572,6 +591,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       const { data } = await api.put(`/api/inbox/${id}`, updates, {
         headers: { Authorization: `Bearer ${session}` },
       })
+
+      console.log("data.response", data.response)
 
       set((state) => {
         const updateItemsInView = (items: CycleItem[]) =>
