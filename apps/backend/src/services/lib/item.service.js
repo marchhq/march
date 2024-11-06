@@ -137,6 +137,7 @@ const getUserItemsByDate = async (me, date) => {
     const items = await Item.find({
         user: me,
         isArchived: false,
+        isDeleted: false,
         $or: [
             { dueDate: { $gte: startOfDay, $lte: endOfDay } },
             { completedAt: { $gte: startOfDay, $lte: endOfDay } }
