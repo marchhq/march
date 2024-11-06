@@ -375,6 +375,11 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
                           className="hover-text"
                           onClick={(e) => e.stopPropagation()}
                         />
+                        <XIcon
+                          size={14}
+                          className="hover-text"
+                          onClick={(e) => handleDelete(e, item._id)}
+                        />
                       </div>
                     </button>
                   ))}

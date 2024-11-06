@@ -84,10 +84,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch inbox"
+      const errorMessage = "unknow: failed to fetch inbox"
+      console.error(errorMessage, error)
 
       set((state) => ({
         inbox: {
@@ -122,10 +120,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch by date"
+      const errorMessage = "unknow: failed to fetch by date"
+      console.error(errorMessage, error)
 
       set((state) => ({
         byDate: {
@@ -160,10 +156,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch overdue"
+      const errorMessage = "unknow: failed to fetch overdue"
+      console.error(errorMessage, error)
 
       set((state) => ({
         overdue: {
@@ -229,10 +223,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch this week"
+      const errorMessage = "unknow: failed to fetch this week"
+      console.error(errorMessage, error)
 
       set((state) => ({
         thisWeek: {
@@ -267,10 +259,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to fetch favorites"
+      const errorMessage = "unknown: failed to fetch favorites"
+      console.error(errorMessage, error)
 
       set((state) => ({
         favorites: {
@@ -292,10 +282,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       })
       set({ currentItem: data.response, isLoading: false })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to fetch item"
+      const errorMessage = "unknown: failed to fetch item"
+      console.error(errorMessage, error)
       set({ error: errorMessage, isLoading: false })
     }
   },
@@ -310,10 +298,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         data.response && data.response.length > 0 ? data.response[0] : null
       set({ currentItem: item, isLoading: false })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to fetch item by date"
+      const errorMessage = "unknown: failed to fetch item by date"
+      console.error(errorMessage, error)
       set({ error: errorMessage, isLoading: false })
     }
   },
@@ -367,10 +353,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
 
       return data.response
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to create item"
+      const errorMessage = "unknown: failed to create item"
+      console.error(errorMessage, error)
 
       set((state) => ({
         inbox: {
@@ -549,10 +533,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         }
       })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to update item"
+      const errorMessage = "unknown: failed to update item"
+      console.error(errorMessage, error)
 
       set((state) => ({
         ...state,
@@ -622,10 +604,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         }
       })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to delete item"
+      const errorMessage = "unknown: failed to delete item"
+      console.error(errorMessage, error)
 
       set((state) => ({
         ...state,
