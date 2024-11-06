@@ -172,13 +172,6 @@ export const InboxItems: React.FC = () => {
     setDate(newDate) // Ensure this is a Date or null
   }
 
-
-  const handleMoveItem = (itemId: string)=>{
-    showModal(<MoveInboxItem itemId={itemId}/>)
-  }
-
-  console.log(filteredItems)
-
   return (
     <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       {filteredItems.length === 0 ? (
@@ -237,7 +230,10 @@ export const InboxItems: React.FC = () => {
                   <MoveIcon
                     size={14}
                     className="hover-text"
-                    onClick={() => showModal(<MoveInboxItem itemId={item._id}/>)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      showModal(<MoveInboxItem inboxItemId={item._id}/>)}
+                    }
                   />
                 </div>
               </button>
