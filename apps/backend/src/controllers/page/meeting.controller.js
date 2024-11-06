@@ -1,4 +1,4 @@
-import { getMeeting, updateMeeting, deleteMeeting, getMeetingById } from "../../services/page/meeting.service.js";
+import { createMeeting, getMeeting, updateMeeting, deleteMeeting, getMeetingById } from "../../services/page/meeting.service.js";
 
 const createMeetingController = async (req, res, next) => {
     try {

@@ -1,5 +1,21 @@
 import { Meeting } from "../../models/page/meetings.model.js";
 
+const createMeeting = async (user, meetingData) => {
+    const newMeeting = new Meeting({
+        ...meetingData,
+        user
+    });
+    if (!newMeeting) {
+        const error = new Error("Failed to create the item")
+        error.statusCode = 500
+        throw error
+    }
+
+    const meeting = await newMeeting.save()
+
+    return meeting;
+};
+
 const getMeeting = async (user) => {
     const meetings = await Meeting.find({
         user
@@ -39,6 +55,7 @@ const deleteMeeting = async (id) => {
 };
 
 export {
+    createMeeting,
     getMeeting,
     updateMeeting,
     deleteMeeting,
