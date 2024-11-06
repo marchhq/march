@@ -1,6 +1,6 @@
 import {
     getGoogleCalendarAccessToken,
-    getGoogleCalendarEvents,
+    getGoogleCalendarEventsByDate,
     addGoogleCalendarEvent,
     updateGoogleCalendarEvent,
     deleteGoogleCalendarEvent,
@@ -44,10 +44,11 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     }
 };
 
-const getGoogleCalendarEventsController = async (req, res, next) => {
+const getGoogleCalendarEventsByDateController = async (req, res, next) => {
     const user = req.user;
+    const { date } = req.params;
     try {
-        const events = await getGoogleCalendarEvents(user);
+        const events = await getGoogleCalendarEventsByDate(user, date);
         res.status(200).json({
             events
         });
@@ -202,7 +203,7 @@ const getGoogleCalendarMeetingsByDateController = async (req, res, next) => {
 
 export {
     getGoogleCalendarAccessTokenController,
-    getGoogleCalendarEventsController,
+    getGoogleCalendarEventsByDateController,
     addGoogleCalendarEventController,
     updateGoogleCalendarEventController,
     deleteGoogleCalendarEventController,

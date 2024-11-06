@@ -49,9 +49,10 @@ const checkAccessTokenValidity = async (accessToken) => {
     return false;
 };
 
-const getGoogleCalendarEvents = async (user) => {
+const getGoogleCalendarEventsByDate = async (user, date) => {
     let accessToken = user.integration.googleCalendar.accessToken;
-    const refreshToken = user.integration.googleCalendar.refreshToken
+    const refreshToken = user.integration.googleCalendar.refreshToken;
+    const timeZone = user.timezone;
 
     const isValid = await checkAccessTokenValidity(accessToken);
 
@@ -65,8 +66,22 @@ const getGoogleCalendarEvents = async (user) => {
     });
 
     const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
+
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999);
+
+    const timeMin = startDate.toISOString();
+    const timeMax = endDate.toISOString();
+
     const events = await calendar.events.list({
-        calendarId: 'primary'
+        calendarId: 'primary',
+        timeMin,
+        timeMax,
+        timeZone,
+        singleEvents: true,
+        orderBy: 'startTime'
     });
 
     return events.data.items;
@@ -404,7 +419,7 @@ export {
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
     checkAccessTokenValidity,
-    getGoogleCalendarEvents,
+    getGoogleCalendarEventsByDate,
     addGoogleCalendarEvent,
     updateGoogleCalendarEvent,
     deleteGoogleCalendarEvent,
