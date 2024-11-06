@@ -16,7 +16,6 @@ type Props = {
 const MoveInboxItem = ({ inboxItemId }: Props) => {
   const { session } = useAuth()
   const {hideModal} = useModal()
-  const inputRef = React.useRef<HTMLInputElement>(null) // Create a ref for the input field
   const [searchTerm, setSearchTerm] = React.useState("") // State for the search term
   const { spaces, fetchSpaces } = useSpaceStore()
   const { updateItem, fetchInbox } = useCycleItemStore()
@@ -28,13 +27,6 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       void fetchSpaces(session)
     }
   }, [fetchSpaces, session, spaces])
-
-  // Focus the input field when the modal opens
-  React.useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
 
   const handleSpaceClick = async (spaceId: string) => {
     try {
@@ -54,12 +46,13 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
 
   return (
     <>
-    <DialogHeader>
-      <DialogTitle className="pl-4 py-2">
-      <div className="flex justify-between gap-2 text-xs text-secondary-foreground">
+    <DialogHeader className="p-0 h-0 hidden">
+      <DialogTitle className="p-0 hidden">
+      </DialogTitle>
+      </DialogHeader>
+      <div className="flex justify-between gap-2 text-xs text-secondary-foreground px-4 pt-1">
             <span className="flex-1 truncate text-primary-foreground">
             <Input
-                ref={inputRef} // Attach the ref to the input
                 autoFocus
                 className="border-none outline-none w-full px-0 text-primary-foreground placeholder:text-secondary-foreground"
                 placeholder="Specify the target item: todo, note, event etc"
@@ -68,8 +61,6 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
               />
             </span>
           </div>
-      </DialogTitle>
-      </DialogHeader>
       <div
         className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 text-sm">
