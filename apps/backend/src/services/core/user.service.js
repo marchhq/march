@@ -1,5 +1,5 @@
 import { User } from "../../models/core/user.model.js";
-import { generateHash, verifyPasswordHash } from "../../utils/helper.service.js";
+import { verifyPasswordHash } from "../../utils/helper.service.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { OauthClient } from "../../loaders/google.loader.js";
 import axios from 'axios';
@@ -23,32 +23,6 @@ const getUserByEmail = async (email) => {
 
     })
     return user
-}
-
-const createEmailUser = async ({
-    fullName,
-    userName,
-    email,
-    password
-}) => {
-    let user = await getUserByEmail(email);
-    if (user) {
-        const error = new Error("User already exists");
-        error.statusCode = 400;
-        throw error;
-    }
-    const hash = await generateHash(password);
-    user = await User.create({
-        fullName,
-        userName,
-        accounts: {
-            local: {
-                email,
-                password: hash
-            }
-        }
-    })
-    return user;
 }
 
 const validateEmailUser = async (email, password) => {
@@ -233,7 +207,6 @@ const updateUser = async (user, data) => {
 
 export {
     getUserByEmail,
-    createEmailUser,
     validateEmailUser,
     getUserById,
     validateGoogleUser,
