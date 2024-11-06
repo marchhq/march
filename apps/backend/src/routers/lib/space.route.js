@@ -26,7 +26,6 @@ import {
 } from "../../controllers/lib/block.controller.js";
 import {
     getMeetingsController,
-    getUpcomingMeetingsController,
     updateMeetingController,
     deleteMeetingController,
     getMeetingByIdController,
