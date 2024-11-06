@@ -5,16 +5,16 @@ import React, { useEffect, useCallback, useState } from "react"
 import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
+import MoveInboxItem from "./MoveInboxItem"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import BoxIcon from "@/public/icons/box.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useModal } from "@/src/contexts/ModalProvider"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { getWeekDates } from "@/src/utils/datetime"
-import MoveInboxItem from "./MoveInboxItem"
-import { useModal } from "@/src/contexts/ModalProvider"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -26,7 +26,7 @@ export const InboxItems: React.FC = () => {
   )
   const [date, setDate] = React.useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = React.useState<Date | null>(new Date())
-  const { showModal} = useModal()
+  const { showModal } = useModal()
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 
@@ -232,8 +232,8 @@ export const InboxItems: React.FC = () => {
                     className="hover-text"
                     onClick={(e) => {
                       e.stopPropagation()
-                      showModal(<MoveInboxItem inboxItemId={item._id}/>)}
-                    }
+                      showModal(<MoveInboxItem inboxItemId={item._id} />)
+                    }}
                   />
                 </div>
               </button>
