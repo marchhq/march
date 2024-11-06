@@ -107,7 +107,7 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col gap-2 pl-5">
+    <div className="flex flex-col gap-3 pl-5">
       <button
         className="flex min-h-5 items-center gap-2 font-medium text-secondary-foreground outline-none"
         onClick={handleToggle}
