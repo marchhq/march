@@ -8,13 +8,10 @@ import {
     getGoogleCalendarupComingMeetings,
     checkAccessTokenValidity,
     refreshGoogleCalendarAccessToken,
-    setUpCalendarWatch,
     handleCalendarWebhookService,
-    removeGoogleCalendarWebhook,
     revokeGoogleCalendarAccess,
     getGoogleCalendarMeetingsByDate
 } from "../..//services/integration/calendar.service.js";
-import { calendarQueue } from "../../loaders/bullmq.loader.js";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
 
@@ -23,19 +20,6 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const user = req.user;
     try {
         const tokenInfo = await getGoogleCalendarAccessToken(code, user);
-        const url = `${environment.CALENDAR_WEBHOOK_URL}/calendar/webhook/?user=${user._id}`;
-
-        await setUpCalendarWatch(tokenInfo.access_token, "primary", url, user);
-
-        await calendarQueue.add("calendarQueue", {
-            accessToken: tokenInfo.access_token,
-            refreshToken: tokenInfo.refresh_token,
-            userId: user._id
-        }, {
-            attempts: 3,
-            backoff: 1000,
-            timeout: 30000
-        });
         res.status(200).json({
             tokenInfo
         });
@@ -168,19 +152,15 @@ const handleCalendarWebhook = async (req, res, next) => {
 
 const revokeGoogleCalendarAccessController = async (req, res, next) => {
     const user = req.user;
-    const { accessToken, metadata } = user.integration.googleCalendar || {};
+    const { accessToken } = user.integration.googleCalendar || {};
 
     try {
-        if (metadata && metadata.channelId && metadata.resourceId) {
-            await removeGoogleCalendarWebhook(metadata.channelId, metadata.resourceId, accessToken);
-        }
-
         if (accessToken) {
             await revokeGoogleCalendarAccess(user);
         }
 
         res.status(200).json({
-            message: 'Google Calendar access revoked and webhook removed successfully.'
+            message: 'Google Calendar access revoked successfully.'
         });
     } catch (err) {
         console.error('Error revoking Google Calendar access:', err);

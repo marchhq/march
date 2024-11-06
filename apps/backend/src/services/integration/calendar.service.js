@@ -1,9 +1,7 @@
-import { v4 as uuid } from "uuid";
 import { google } from "googleapis";
 import axios from 'axios';
 import { OauthCalClient } from "../../loaders/google.loader.js";
 import { Meeting } from "../../models/page/meetings.model.js";
-import { environment } from "../../loaders/environment.loader.js";
 
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
@@ -249,32 +247,6 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
     }
 };
 
-const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl, user) => {
-    const auth = new google.auth.OAuth2();
-    auth.setCredentials({ access_token: accessToken });
-
-    const requestBody = {
-        id: uuid(),
-        type: 'web_hook',
-        address: webhookUrl,
-        token: environment.CALENDAR_WEBHOOK_SECRET
-    };
-    const calendar = google.calendar({ version: 'v3' });
-
-    const response = await calendar.events.watch({
-        auth,
-        calendarId,
-        requestBody
-    });
-
-    user.integration.googleCalendar.metadata = user.integration.googleCalendar.metadata || {};
-    user.integration.googleCalendar.metadata.channelId = response.data.id;
-    user.integration.googleCalendar.metadata.resourceId = response.data.resourceId;
-    await user.save();
-
-    return response.data;
-};
-
 const handleCalendarWebhookService = async (accessToken, refreshToken, userId) => {
     OauthCalClient.setCredentials({
         access_token: accessToken,
@@ -360,20 +332,6 @@ const revokeGoogleCalendarAccess = async (user) => {
     await user.save();
 };
 
-const removeGoogleCalendarWebhook = async (channelId, resourceId, accessToken) => {
-    const stopWebhookUrl = 'https://www.googleapis.com/calendar/v3/channels/stop';
-
-    await axios.post(stopWebhookUrl, {
-        id: channelId,
-        resourceId
-    }, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-};
-
 const getGoogleCalendarMeetingsByDate = async (user, date) => {
     let accessToken = user.integration.googleCalendar.accessToken;
     const refreshToken = user.integration.googleCalendar.refreshToken;
@@ -426,9 +384,7 @@ export {
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
     saveUpcomingMeetingsToDatabase,
-    setUpCalendarWatch,
     handleCalendarWebhookService,
     revokeGoogleCalendarAccess,
-    removeGoogleCalendarWebhook,
     getGoogleCalendarMeetingsByDate
 }
