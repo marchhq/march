@@ -44,6 +44,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       toast({ title: "🚀 Moved successfully!" })
       hideModal()
     } catch (error) {
+      toast({title: "Oops something seems wrong!", variant: "destructive"})
       console.error("Failed to move item:", error)
     }
   }
