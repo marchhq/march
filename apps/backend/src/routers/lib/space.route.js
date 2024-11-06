@@ -25,11 +25,11 @@ import {
     updateBlockController
 } from "../../controllers/lib/block.controller.js";
 import {
+    createMeetingController,
     getMeetingsController,
     updateMeetingController,
     deleteMeetingController,
-    getMeetingByIdController,
-    recentUpcomingMeetingController
+    getMeetingByIdController
 } from "../../controllers/page/meeting.controller.js";
 import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
 
@@ -67,8 +67,8 @@ router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
 router.route("/:space/blocks/:block/items/:item/sub-items/").get(getSubItemsController);
 
 // Meeting controllers
+router.route("/meetings/create/").post(createMeetingController);
 router.route("/meetings/overview/").get(getMeetingsController);
-router.route("/meetings/recent-upcoming-meeting/").get(recentUpcomingMeetingController);
 router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
