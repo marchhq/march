@@ -1,25 +1,7 @@
-import { validateEmailUser, validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser, validateGithubUser } from "../../services/core/user.service.js";
+import { validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser, validateGithubUser } from "../../services/core/user.service.js";
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
-import { LoginPayload } from "../../payloads/core/auth.payload.js";
 import { BlackList } from "../../models/core/black-list.model.js";
 import { spaceQueue } from "../../loaders/bullmq.loader.js";
-
-const emailLoginController = async (req, res, next) => {
-    try {
-        const payload = await LoginPayload.validateAsync(req.body)
-        // TODO: Add 3 attempts and wait until next time
-        const user = await validateEmailUser(payload.email, payload.password)
-        const tokenPair = await generateJWTTokenPair(user)
-        res.status(200).json({
-            statusCode: 200,
-            response: tokenPair
-        })
-    } catch (err) {
-        const error = new Error(err);
-        error.statusCode = err.statusCode || 500;
-        next(err)
-    }
-}
 
 const authenticateWithGoogleController = async (req, res, next) => {
     try {
@@ -122,7 +104,6 @@ const logOutController = async (req, res, next) => {
 }
 
 export {
-    emailLoginController,
     authenticateWithGoogleController,
     authenticateWithGithubController,
     logOutController
