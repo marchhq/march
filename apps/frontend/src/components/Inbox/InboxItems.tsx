@@ -13,6 +13,8 @@ import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { getWeekDates } from "@/src/utils/datetime"
+import MoveInboxItem from "./MoveInboxItem"
+import { useModal } from "@/src/contexts/ModalProvider"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
@@ -24,6 +26,7 @@ export const InboxItems: React.FC = () => {
   )
   const [date, setDate] = React.useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = React.useState<Date | null>(new Date())
+  const { showModal} = useModal()
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
     useCycleItemStore()
 
@@ -169,6 +172,11 @@ export const InboxItems: React.FC = () => {
     setDate(newDate) // Ensure this is a Date or null
   }
 
+
+  const handleMoveItem = ()=>{
+    showModal(<MoveInboxItem/>)
+  }
+
   return (
     <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       {filteredItems.length === 0 ? (
@@ -227,7 +235,10 @@ export const InboxItems: React.FC = () => {
                   <MoveIcon
                     size={14}
                     className="hover-text"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {e.stopPropagation()
+                     
+                      handleMoveItem()
+                    }}
                   />
                 </div>
               </button>
@@ -261,6 +272,7 @@ export const InboxItems: React.FC = () => {
           </div>
         </div>
       )}
+    
     </div>
   )
 }
