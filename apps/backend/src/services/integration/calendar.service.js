@@ -247,71 +247,6 @@ const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
     }
 };
 
-const handleCalendarWebhookService = async (accessToken, refreshToken, userId) => {
-    OauthCalClient.setCredentials({
-        access_token: accessToken,
-        refresh_token: refreshToken
-    });
-
-    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
-
-    const eventsResponse = await calendar.events.list({
-        calendarId: 'primary',
-        timeMin: new Date().toISOString(),
-        maxResults: 10,
-        singleEvents: true,
-        orderBy: 'startTime'
-    });
-
-    const events = eventsResponse.data.items;
-    if (events && events.length > 0) {
-        for (const event of events) {
-            const existingMeeting = await Meeting.findOne({ id: event.id, user: userId });
-
-            if (existingMeeting) {
-                // Update existing meeting
-                existingMeeting.title = event.summary;
-                existingMeeting.metadata = {
-                    status: event.status,
-                    location: event.location,
-                    attendees: event.attendees,
-                    hangoutLink: event.hangoutLink,
-                    start: event.start,
-                    end: event.end,
-                    creator: event.creator,
-                    conferenceData: event.conferenceData
-                };
-                existingMeeting.updatedAt = event.updatedAt;
-
-                await existingMeeting.save();
-            } else {
-                // Create new meeting
-                const newMeeting = new Meeting({
-                    title: event.summary,
-                    source: 'calendar',
-                    id: event.id,
-                    user: userId,
-                    metadata: {
-                        status: event.status,
-                        description: event.description,
-                        location: event.location,
-                        attendees: event.attendees,
-                        hangoutLink: event.hangoutLink,
-                        start: event.start,
-                        end: event.end,
-                        creator: event.creator,
-                        conferenceData: event.conferenceData
-                    },
-                    createdAt: event.createdAt,
-                    updatedAt: event.updatedAt
-                });
-
-                await newMeeting.save();
-            }
-        }
-    }
-};
-
 const revokeGoogleCalendarAccess = async (user) => {
     const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
     const accessToken = user.integration.googleCalendar.accessToken;
@@ -384,7 +319,6 @@ export {
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
     saveUpcomingMeetingsToDatabase,
-    handleCalendarWebhookService,
     revokeGoogleCalendarAccess,
     getGoogleCalendarMeetingsByDate
 }
