@@ -69,7 +69,6 @@ router.route("/:space/blocks/:block/items/:item/sub-items/").get(getSubItemsCont
 
 // Meeting controllers
 router.route("/meetings/overview/").get(getMeetingsController);
-router.route("/meetings/upcomings/").get(getUpcomingMeetingsController);
 router.route("/meetings/recent-upcoming-meeting/").get(recentUpcomingMeetingController);
 router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);

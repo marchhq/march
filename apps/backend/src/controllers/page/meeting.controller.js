@@ -43,21 +43,6 @@ const getMeetingByIdController = async (req, res, next) => {
     }
 };
 
-const getUpcomingMeetingsController = async (req, res, next) => {
-    try {
-        const user = req.user._id;
-        const currentDateTime = new Date();
-
-        const upcomingMeetings = await getUpcomingMeetings(user, currentDateTime)
-
-        res.status(200).json({
-            upcomingMeetings
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
 const updateMeetingController = async (req, res, next) => {
     try {
         const updateData = req.body;
@@ -88,7 +73,6 @@ const deleteMeetingController = async (req, res, next) => {
 
 export {
     getMeetingsController,
-    getUpcomingMeetingsController,
     recentUpcomingMeetingController,
     getMeetingByIdController,
     updateMeetingController,
