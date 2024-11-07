@@ -5,7 +5,7 @@ import React, { useState } from "react"
 import { DateCycle } from "@/src/components/atoms/Date"
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayItems } from "@/src/components/Today/TodayItems"
-import { TodayMeetings } from "@/src/components/TodayMeetings"
+import { TodayMeetings } from "@/src/components/Today/TodayMeetings"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
 import usePersistedState from "@/src/hooks/usePersistedState"
 
@@ -30,10 +30,18 @@ export const TodayPage: React.FC = () => {
           <TodayTextArea selectedDate={selectedDate} />
           <TodayItems selectedDate={selectedDate} />
         </div>
-        <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
-          <span className="truncate">show agenda</span>
-          <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
+        <div className="flex w-[250px] max-w-[250px] flex-col gap-4 text-sm text-secondary-foreground">
+          <div className="flex items-center justify-end gap-2 truncate">
+            <span className="truncate">show agenda</span>
+            <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
+          </div>
+          {showAgenda && (
+            <div className="no-scrollbar h-[90vh] overflow-y-scroll text-secondary-foreground">
+              <TodayMeetings selectedDate={selectedDate} />
+            </div>
+          )}
         </div>
+
         {/*
         <section className="w-[96%] max-w-[400px]">
           <div className="flex items-center justify-end gap-4">

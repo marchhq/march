@@ -400,20 +400,16 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           return items.filter((item) => item._id !== id)
         }
 
-        const newDueDate = updates.dueDate
-        const todayDate = new Date()
+        if (updates.dueDate) {
+          const newDueDate = updates.dueDate
+          const todayDate = new Date()
 
-        const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
-        const formattedTodayDate = todayDate.toISOString().split("T")[0]
+          const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
+          const formattedTodayDate = todayDate.toISOString().split("T")[0]
 
-        console.log("newDueDate", newDueDate)
-        console.log("todayDate", todayDate)
-
-        console.log("formattedNewDueDate", formattedNewDueDate)
-        console.log("formattedTodayDate", formattedTodayDate)
-
-        if (formattedNewDueDate !== formattedTodayDate) {
-          return items.filter((item) => item._id !== id)
+          if (formattedNewDueDate !== formattedTodayDate) {
+            return items.filter((item) => item._id !== id)
+          }
         }
 
         // otherwise, just update the item in by date view
@@ -429,20 +425,16 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             return items.filter((item) => item._id !== id)
           }
 
-          const newDueDate = updates.dueDate
-          const todayDate = new Date()
+          if (updates.dueDate) {
+            const newDueDate = updates.dueDate
+            const todayDate = new Date()
 
-          const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
-          const formattedTodayDate = todayDate.toISOString().split("T")[0]
+            const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
+            const formattedTodayDate = todayDate.toISOString().split("T")[0]
 
-          console.log("newDueDate", newDueDate)
-          console.log("todayDate", todayDate)
-
-          console.log("formattedNewDueDate", formattedNewDueDate)
-          console.log("formattedTodayDate", formattedTodayDate)
-
-          if (formattedNewDueDate !== formattedTodayDate) {
-            return items.filter((item) => item._id !== id)
+            if (formattedNewDueDate !== formattedTodayDate) {
+              return items.filter((item) => item._id !== id)
+            }
           }
 
           if (updates.status === "done") {

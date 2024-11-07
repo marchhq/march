@@ -5,7 +5,7 @@ import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import { SkeletonCard } from "./atoms/SkeletonCard"
 import { useMeetings } from "../hooks/useMeetings"
 import { Event } from "../lib/@types/Items/event"
-import { Link, Link as LinkIcon } from "../lib/icons/Link"
+import { Link as LinkIcon } from "../lib/icons/Link"
 import { MeetMuted, ZoomMuted } from "../lib/icons/Meet"
 
 const getEventType = (event: Event): "google-meet" | "zoom" | "other" => {
@@ -51,7 +51,7 @@ const MeetingIcon = ({ type, isActive }) => {
     default:
       return (
         <div className={`mt-[6px]`}>
-          <Link />
+          <LinkIcon />
         </div>
       )
   }
