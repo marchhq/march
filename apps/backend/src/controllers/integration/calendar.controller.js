@@ -116,12 +116,8 @@ const deleteGoogleCalendarEventController = async (req, res, next) => {
 
 const revokeGoogleCalendarAccessController = async (req, res, next) => {
     const user = req.user;
-    const { accessToken } = user.integration.googleCalendar || {};
-
     try {
-        if (accessToken) {
-            await revokeGoogleCalendarAccess(user);
-        }
+        await revokeGoogleCalendarAccess(user);
 
         res.status(200).json({
             message: 'Google Calendar access revoked successfully.'
