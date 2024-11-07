@@ -26,6 +26,7 @@ const exchangeCodeForAccessToken = async (code) => {
 };
 
 const processWebhookEvent = async (event, payload) => {
+    console.log("payload: ", payload);
     const installationId = payload.installation.id;
     const repository = payload.repository;
 
