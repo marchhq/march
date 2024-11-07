@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { createAppAuth } from "@octokit/auth-app";
 import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
@@ -120,7 +121,37 @@ const processWebhookEvent = async (event, payload) => {
     }
 };
 
+const uninstallGithubApp = async (user) => {
+    const appId = environment.GITHUB_APP_ID;
+    const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+    const installationId = user.integration.github.installationId;
+
+    const auth = createAppAuth({
+        appId,
+        privateKey
+    });
+
+    const { token: appToken } = await auth({ type: "app" });
+
+    const response = await axios.delete(`https://api.github.com/app/installations/${installationId}`, {
+        headers: {
+            Authorization: `Bearer ${appToken}`,
+            Accept: 'application/vnd.github.v3+json'
+        }
+    });
+    user.integration.github = {
+        installationId: null,
+        userName: null,
+        connected: false
+    };
+
+    await user.save();
+
+    return response.data;
+};
+
 export {
     exchangeCodeForAccessToken,
-    processWebhookEvent
+    processWebhookEvent,
+    uninstallGithubApp
 };
