@@ -1,40 +1,41 @@
 "use client"
 
-import * as React from "react"
+import React, { useState } from "react"
 
 import { DateCycle } from "@/src/components/atoms/Date"
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
-import { TodayItems } from "@/src/components/TodayItems"
+import { TodayItems } from "@/src/components/Today/TodayItems"
 import { TodayMeetings } from "@/src/components/TodayMeetings"
 import { TodayTextArea } from "@/src/components/TodayTextArea"
 import usePersistedState from "@/src/hooks/usePersistedState"
 
-const TodayPage: React.FC = () => {
+export const TodayPage: React.FC = () => {
   const [showAgenda, setShowAgenda] = usePersistedState("showAgenda", false)
-  const [selectedDate, setSelectedDate] = React.useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(new Date())
 
   const handleToggleAgenda = () => {
     setShowAgenda(!showAgenda)
   }
 
   return (
-    <main className="h-full overflow-y-hidden bg-background p-10">
-      <section className="flex justify-between">
-        <div className="">
-          <header className="flex items-center justify-start">
+    <main className="h-full bg-background p-10 pl-5">
+      <section className="flex h-full items-start gap-10">
+        <div className="no-scrollbar flex h-full flex-1 flex-col gap-5 overflow-y-scroll text-sm">
+          <header>
             <DateCycle
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
             />
           </header>
-          <section className="my-3">
-            <TodayTextArea selectedDate={selectedDate} />
-          </section>
-          <section className="space-y-8 text-[16px] text-secondary-foreground">
-            <TodayItems selectedDate={selectedDate} />
-          </section>
+          <TodayTextArea selectedDate={selectedDate} />
+          <TodayItems selectedDate={selectedDate} />
         </div>
-        <section className="w-[96%] max-w-[300px]">
+        <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
+          <span className="truncate">show agenda</span>
+          <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
+        </div>
+        {/*
+        <section className="w-[96%] max-w-[400px]">
           <div className="flex items-center justify-end gap-4">
             <span className="mt-2 text-[11px] font-medium text-foreground">
               show agenda
@@ -42,14 +43,13 @@ const TodayPage: React.FC = () => {
             <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
           </div>
           {showAgenda && (
-            <div className="my-4 text-secondary-foreground">
+            <div className="no-scrollbar h-[90vh] overflow-y-scroll text-secondary-foreground">
               <TodayMeetings selectedDate={selectedDate} />
             </div>
           )}
         </section>
+        */}
       </section>
     </main>
   )
 }
-
-export default TodayPage
