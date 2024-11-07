@@ -30,16 +30,13 @@ export const TodayPage: React.FC = () => {
           <TodayTextArea selectedDate={selectedDate} />
           <TodayItems selectedDate={selectedDate} />
         </div>
-        <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
+        {/* <div className="flex items-center gap-2 truncate text-sm text-secondary-foreground">
           <span className="truncate">show agenda</span>
           <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
-        </div>
-        {/*
+        </div> */}
         <section className="w-[96%] max-w-[400px]">
-          <div className="flex items-center justify-end gap-4">
-            <span className="mt-2 text-[11px] font-medium text-foreground">
-              show agenda
-            </span>
+          <div className="flex items-center justify-end gap-2 text-sm text-secondary-foreground">
+            <span className="truncate">show agenda</span>
             <ShowAgenda toggle={showAgenda} onToggle={handleToggleAgenda} />
           </div>
           {showAgenda && (
@@ -48,7 +45,6 @@ export const TodayPage: React.FC = () => {
             </div>
           )}
         </section>
-        */}
       </section>
     </main>
   )

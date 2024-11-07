@@ -123,7 +123,7 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
     let meet: Meet | null = null
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/spaces/meetings/recent-upcoming-meeting/`,
+        `${BACKEND_URL}/spaces/meetings/overview/`,
         {
           headers: {
             Authorization: `Bearer ${session}`,
