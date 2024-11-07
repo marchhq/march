@@ -3,12 +3,12 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 import { useAuth } from "../contexts/AuthContext"
-import { Meeting, Meetings } from "../lib/@types/Items/calendar"
+import { Event, Events } from "../lib/@types/Items/event"
 import { BACKEND_URL } from "../lib/constants/urls"
 import useUserStore from "../lib/store/user.store"
 
 export const useMeetings = (selectedDate: string) => {
-  const [meetings, setMeetings] = useState<Meeting[]>([])
+  const [meetings, setMeetings] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { user, fetchUser } = useUserStore()
   const { session } = useAuth()
@@ -16,7 +16,7 @@ export const useMeetings = (selectedDate: string) => {
   const fetchMeetings = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get<Meetings>(
+      const response = await axios.get<Events>(
         `${BACKEND_URL}/calendar/events/${selectedDate}/`,
         {
           headers: {
