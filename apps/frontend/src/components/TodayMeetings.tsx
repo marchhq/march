@@ -4,14 +4,14 @@ import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
 import { SkeletonCard } from "./atoms/SkeletonCard"
 import { useMeetings } from "../hooks/useMeetings"
-import { Meeting } from "../lib/@types/Items/calendar"
+import { Event } from "../lib/@types/Items/event"
 import { Link, Link as LinkIcon } from "../lib/icons/Link"
 import { MeetMuted, ZoomMuted } from "../lib/icons/Meet"
 
-const getMeetingType = (meeting: Meeting): "google-meet" | "zoom" | "other" => {
+const getEventType = (event: Event): "google-meet" | "zoom" | "other" => {
   if (
-    meeting.conferenceData?.conferenceSolution?.name === "Google Meet" ||
-    meeting.conferenceData?.entryPoints.some((entry) =>
+    event.conferenceData?.conferenceSolution?.name === "Google Meet" ||
+    event.conferenceData?.entryPoints.some((entry) =>
       entry.uri.includes("meet.google.com")
     )
   ) {
@@ -19,11 +19,11 @@ const getMeetingType = (meeting: Meeting): "google-meet" | "zoom" | "other" => {
   }
 
   if (
-    meeting.conferenceData?.conferenceSolution?.name === "Zoom meeting" ||
-    meeting.conferenceData?.entryPoints.some((entry) =>
+    event.conferenceData?.conferenceSolution?.name === "Zoom meeting" ||
+    event.conferenceData?.entryPoints.some((entry) =>
       entry.uri.includes("zoom.us")
     ) ||
-    meeting.location.includes("zoom.us")
+    event.location?.includes("zoom.us")
   ) {
     return "zoom"
   }
@@ -88,24 +88,24 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
   const { meetings, isLoading } = useMeetings(selectedDate.toISOString())
 
   const agendaItems: AgendaItem[] =
-    meetings?.map((meeting: Meeting) => {
-      const startTime = new Date(meeting.start.dateTime)
-      const endTime = new Date(meeting.end.dateTime)
+    meetings?.map((event: Event) => {
+      const startTime = new Date(event.start.dateTime)
+      const endTime = new Date(event.end.dateTime)
 
       const meetingLink =
-        meeting.conferenceData?.entryPoints.find(
+        event.conferenceData?.entryPoints.find(
           (entry) => entry.entryPointType === "video"
         )?.uri ||
-        meeting.conferenceData?.entryPoints[0]?.uri ||
-        meeting.location ||
-        meeting.htmlLink
+        event.conferenceData?.entryPoints[0]?.uri ||
+        event.location ||
+        event.htmlLink
 
       return {
-        title: meeting.summary,
+        title: event.summary,
         link: meetingLink,
         time: `${formatTime(startTime)}`,
         duration: calculateDuration(startTime, endTime),
-        meetingType: getMeetingType(meeting),
+        meetingType: getEventType(event),
       }
     }) || []
 
