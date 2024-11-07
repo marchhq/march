@@ -2,12 +2,9 @@ import { processWebhookEvent, exchangeCodeForAccessToken } from "../../services/
 
 const handleGithubCallbackController = async (req, res, next) => {
     try {
-        console.log("hey");
         const { installation_id: installationId, code } = req.query;
         const user = req.user;
-        console.log("codeL: ", code);
         const profile = await exchangeCodeForAccessToken(code);
-        console.log("profile: ", profile);
 
         user.integration.github.installationId = installationId;
         user.integration.github.userName = profile.login;
