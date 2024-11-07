@@ -18,7 +18,8 @@ const createMeeting = async (user, meetingData) => {
 
 const getMeeting = async (user) => {
     const meetings = await Meeting.find({
-        user
+        user,
+        isDeleted: false
     })
         .sort({ created_at: -1 });
     return meetings;
@@ -27,16 +28,17 @@ const getMeeting = async (user) => {
 const getMeetingById = async (user, id) => {
     const meeting = await Meeting.find({
         user,
-        _id: id
+        id
     })
         .sort({ created_at: -1 });
 
     return meeting;
 };
 
-const updateMeeting = async (id, updateData) => {
+const updateMeeting = async (id, updateData, user) => {
     const updatedBlock = await Meeting.findOneAndUpdate({
-        _id: id
+        id,
+        user
     },
     { $set: updateData },
     { new: true }
@@ -45,8 +47,8 @@ const updateMeeting = async (id, updateData) => {
     return updatedBlock;
 };
 
-const deleteMeeting = async (id) => {
-    const meeting = await Meeting.findOneAndDelete({ _id: id });
+const deleteMeeting = async (id, user) => {
+    const meeting = await Meeting.findOneAndDelete({ id, user });
 
     if (!meeting) {
         throw new Error('meeting not found');
