@@ -40,11 +40,23 @@ export const DateCycle: React.FC<DateCycleProps> = ({
     onDateChange(newDate)
   }
 
-  const formatedDateHeader = format(selectedDate, "eeee, MMMM dd").toLowerCase()
-  const formatedDateTitle = format(selectedDate, "eee").toLowerCase()
+  const formatedDateHeader = format(selectedDate, "dd, MMMM yy").toLowerCase()
+  const formatedDateTitle = format(selectedDate, "eeee").toLowerCase()
 
   const isToday =
     String(selectedDate.getDate()) === String(new Date().getDate())
+  const isTomorrow =
+    String(selectedDate.getDate()) === String(new Date().getDate() + 1)
+  const isYesterday =
+    String(selectedDate.getDate()) === String(new Date().getDate() - 1)
+
+  const displayDateTitle = isToday
+    ? "today"
+    : isTomorrow
+      ? "tomorrow"
+      : isYesterday
+        ? "yesterday"
+        : formatedDateTitle
 
   return (
     <div className="flex flex-1 flex-col gap-4 pl-5 text-sm">
@@ -65,9 +77,7 @@ export const DateCycle: React.FC<DateCycleProps> = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <h1 className="font-semibold text-foreground">
-          {isToday ? "today" : formatedDateTitle}
-        </h1>
+        <h1 className="font-semibold text-foreground">{displayDateTitle}</h1>
         <div className="flex gap-1 text-secondary-foreground">
           <span title={`total items by ${selectedDate}`}>
             {totalByDateItems}
