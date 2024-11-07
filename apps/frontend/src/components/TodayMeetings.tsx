@@ -1,10 +1,8 @@
-import React from "react"
+import React, { useCallback, useEffect } from "react"
 
-import Link from "next/link"
-
-import { SkeletonCard } from "./atoms/SkeletonCard"
-import { useMeetings } from "../hooks/useMeetings"
+import { useAuth } from "../contexts/AuthContext"
 import { Event } from "../lib/@types/Items/event"
+import { useEventsStore } from "../lib/store/events.store"
 
 interface TodayAgendaProps {
   selectedDate: Date
@@ -15,16 +13,16 @@ interface AgendaItem {
 }
 
 export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
-  const { meetings, isLoading } = useMeetings(selectedDate.toISOString())
+  const { session } = useAuth()
+  const { events, fetchEventsByDate, currentEvent, setCurrentEvent } =
+    useEventsStore()
 
-  const agendaItems: AgendaItem[] =
-    meetings?.map((event: Event) => {
-      return {
-        title: event.summary,
-      }
-    }) || []
+  useEffect(() => {
+    fetchEventsByDate(session, selectedDate.toISOString())
+  }, [fetchEventsByDate, selectedDate])
 
-  if (isLoading) {
+  {
+    /* if (isLoading) {
     return (
       <ol>
         <li className="text-lg font-medium text-[#DCDCDD]/80">
@@ -32,23 +30,27 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
         </li>
       </ol>
     )
+  } */
+  }
+
+  const handleExpand = (item: Event) => {
+    if (!currentEvent || currentEvent.id !== item.id) {
+      setCurrentEvent(item)
+    }
   }
 
   return (
     <div className="mt-2 flex flex-col">
-      {agendaItems.map((item, index) => (
-        <div
+      {events.map((item, index) => (
+        <button
           key={index}
-          className="border-l border-border pl-2 hover:border-l-secondary-foreground"
+          onClick={() => {
+            handleExpand(item)
+          }}
+          className="border-l border-border pl-2 text-start hover:border-l-secondary-foreground"
         >
-          <Link
-            href="/space/meetings/"
-            key={index}
-            className="hover-text cursor-pointer"
-          >
-            {item.title}
-          </Link>
-        </div>
+          {item.summary}
+        </button>
       ))}
     </div>
   )
