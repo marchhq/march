@@ -215,7 +215,12 @@ const deleteGoogleCalendarEvent = async (user, eventId) => {
 
 const revokeGoogleCalendarAccess = async (user) => {
     const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
-    const accessToken = user.integration.googleCalendar.accessToken;
+    let accessToken = user.integration.googleCalendar.accessToken;
+    const isValid = await checkAccessTokenValidity(accessToken);
+
+    if (!isValid) {
+        accessToken = await refreshGoogleCalendarAccessToken(user);
+    }
 
     await axios.post(revokeTokenUrl, null, {
         params: {
