@@ -1,9 +1,31 @@
 import { Octokit } from "@octokit/rest";
+import axios from 'axios';
 import { createAppAuth } from "@octokit/auth-app";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
+
+const exchangeCodeForAccessToken = async (code) => {
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+        client_id: "Iv23liSBfxn60eimiSgj",
+        client_secret: "2a27d86560893f546863b468c931652091d7b820",
+        code
+    }, {
+        headers: { accept: 'application/json' }
+    });
+    const accessToken = tokenResponse.data.access_token;
+
+    if (!accessToken) {
+        throw new Error('GitHub access token not received');
+    }
+    const profileResponse = await axios.get('https://api.github.com/user', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    })
+
+    const profile = profileResponse.data;
+    return profile;
+};
 
 const fetchInstallationDetails = async (installationId, user) => {
     try {
@@ -32,29 +54,10 @@ const fetchInstallationDetails = async (installationId, user) => {
         throw error;
     }
 };
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
     const repository = payload.repository;
-
-    if (payload.action === 'created' && payload.installation) {
-        const githubUsername = payload.installation.account.login;
-
-        await delay(1000);
-        const user = await User.findOne({ 'integration.github.installationId': installationId });
-
-        if (!user) {
-            console.log(`No user found for installation ID: ${installationId}`);
-            return
-        }
-
-        user.integration.github.userName = githubUsername;
-        await user.save();
-
-        console.log(`Linked GitHub installation to user: ${user._id}`);
-        return;
-    }
 
     const user = await User.findOne({ 'integration.github.installationId': installationId });
     if (!user) {
@@ -137,6 +140,7 @@ const processWebhookEvent = async (event, payload) => {
 };
 
 export {
+    exchangeCodeForAccessToken,
     fetchInstallationDetails,
     processWebhookEvent
 };
