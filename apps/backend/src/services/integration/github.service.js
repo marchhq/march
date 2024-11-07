@@ -27,34 +27,6 @@ const exchangeCodeForAccessToken = async (code) => {
     return profile;
 };
 
-const fetchInstallationDetails = async (installationId, user) => {
-    try {
-        const appId = environment.GITHUB_APP_ID;
-        const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
-        const auth = createAppAuth({
-            appId,
-            privateKey,
-            webhooks: {
-                secret: environment.GITHUB_WEBHOOK_SECRET
-            },
-            installationId
-        });
-        const installationAuthentication = await auth({ type: 'installation' });
-
-        const octokit = new Octokit({ auth: installationAuthentication.token });
-
-        await octokit.apps.listReposAccessibleToInstallation({
-            installation_id: installationId
-        });
-        user.integration.github.installationId = installationId
-        user.integration.github.connected = true
-        user.save();
-    } catch (error) {
-        console.error('Error fetching installation details:', error);
-        throw error;
-    }
-};
-
 const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
     const repository = payload.repository;
@@ -141,6 +113,5 @@ const processWebhookEvent = async (event, payload) => {
 
 export {
     exchangeCodeForAccessToken,
-    fetchInstallationDetails,
     processWebhookEvent
 };
