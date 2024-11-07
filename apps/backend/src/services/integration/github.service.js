@@ -26,7 +26,6 @@ const exchangeCodeForAccessToken = async (code) => {
 };
 
 const processWebhookEvent = async (event, payload) => {
-    console.log("payload: ", payload);
     const installationId = payload.installation.id;
     const repository = payload.repository;
 
@@ -48,6 +47,8 @@ const processWebhookEvent = async (event, payload) => {
         console.log('No issue or pull request found in the payload.');
         return;
     }
+    const userId = user._id;
+
     const githubUsername = user.integration.github.userName;
 
     // Check if the issue/PR is assigned to the user
@@ -63,7 +64,16 @@ const processWebhookEvent = async (event, payload) => {
         console.log(`PR not assigned to or created by user: ${githubUsername}. Skipping.`);
         return; // Return if the PR is not relevant to the user
     }
-    const userId = user._id;
+    const existingLinearItem = await Item.findOne({
+        title: issueOrPR.title,
+        source: 'linear',
+        user: userId
+    });
+
+    if (existingLinearItem) {
+        console.log('An item with the same title already exists. Skipping creation.');
+        return;
+    }
 
     const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
     const existingItem = await Item.findOne({
