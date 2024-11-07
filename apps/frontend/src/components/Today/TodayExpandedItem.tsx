@@ -78,7 +78,6 @@ export const TodayExpandedItem: React.FC = () => {
         await updateItem(
           session,
           {
-            ...item,
             title: editedItem.title,
           },
           item._id
@@ -101,11 +100,7 @@ export const TodayExpandedItem: React.FC = () => {
   const saveContent = useCallback(() => {
     if (!currentItem?._id || content === lastSavedContent.current) return
 
-    updateItem(
-      session,
-      { ...currentItem, description: content },
-      currentItem._id
-    )
+    updateItem(session, { description: content }, currentItem._id)
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
