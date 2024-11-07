@@ -17,7 +17,7 @@ export const useMeetings = (selectedDate: string) => {
     setIsLoading(true)
     try {
       const response = await axios.get<Meetings>(
-        `${BACKEND_URL}/calendar/meetings/${selectedDate}/`,
+        `${BACKEND_URL}/calendar/events/${selectedDate}/`,
         {
           headers: {
             Authorization: `Bearer ${session}`,
