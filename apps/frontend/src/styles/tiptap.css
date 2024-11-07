@@ -57,16 +57,16 @@
 
     li {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       /* Add some padding for spacing between list items */
 
       >label {
-        @apply flex items-center mr-2 mt-2;
+        @apply flex items-center mr-2 mt-2.5;
       }
 
       >div {
         @apply flex-grow;
-        margin-top: 0.3em;
+        margin-top: 0.2em;
       }
     }
 
