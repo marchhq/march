@@ -1,5 +1,5 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { processWebhookEvent, exchangeCodeForAccessToken } from "../../services/integration/github.service.js";
+import { processWebhookEvent, exchangeCodeForAccessToken, uninstallGithubApp } from "../../services/integration/github.service.js";
 import * as crypto from "crypto";
 
 const handleGithubCallbackController = async (req, res, next) => {
@@ -53,7 +53,22 @@ const handleGithubWebhook = async (req, res, next) => {
     }
 };
 
+const uninstallGithubAppController = async (req, res, next) => {
+    const user = req.user;
+    try {
+        await uninstallGithubApp(user);
+
+        res.status(200).json({
+            message: 'Github App uninstall successfully.'
+        });
+    } catch (err) {
+        console.error('Error uninstalling Github App:', err);
+        next(err);
+    }
+};
+
 export {
     handleGithubCallbackController,
-    handleGithubWebhook
+    handleGithubWebhook,
+    uninstallGithubAppController
 };

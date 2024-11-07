@@ -116,7 +116,6 @@ const deleteGoogleCalendarEventController = async (req, res, next) => {
 
 const revokeGoogleCalendarAccessController = async (req, res, next) => {
     const user = req.user;
-
     try {
         await revokeGoogleCalendarAccess(user);
 
