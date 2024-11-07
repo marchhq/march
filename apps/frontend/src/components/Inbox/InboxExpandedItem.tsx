@@ -12,6 +12,7 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
+import { processMarkdown } from "@/src/utils/markdown"
 
 interface EditedItem {
   title: string
@@ -45,29 +46,8 @@ export const InboxExpandedItem: React.FC = () => {
   const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-
-  const md = new Markdown({
-    html: true,
-    breaks: true,
-    linkify: true,
-  })
-
-  const processContent = useCallback((rawContent: string) => {
-    if (!rawContent) return "<p></p>"
-
-    // Replace specific formats and sanitize the content
-    const processedContent = rawContent
-      .replace(/\\n\\n/g, "\n\n")
-      .replace(/- \[ \]/g, "- [ ]") // Convert unchecked tasks
-      .replace(/- \[x\]/gi, "- [x]") // Convert checked tasks
-      .trim()
-
-    // Render markdown into HTML using the configured markdown-it instance
-    return md.render(processedContent)
-  }, [])
-
   const [content, setContent] = useState(
-    processContent(currentItem?.description || "<p></p>")
+    processMarkdown(currentItem?.description || "<p></p>")
   )
   // memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
@@ -155,7 +135,7 @@ export const InboxExpandedItem: React.FC = () => {
   useEffect(() => {
     if (!currentItem) return
 
-    const newContent = processContent(currentItem.description || "<p></p>")
+    const newContent = processMarkdown(currentItem.description || "<p></p>")
 
     if (currentItem._id !== editItemId) {
       setEditItemId(currentItem._id)
@@ -168,7 +148,7 @@ export const InboxExpandedItem: React.FC = () => {
         editor.commands.focus()
       }
     }
-  }, [currentItem, editItemId, editor, processContent])
+  }, [currentItem, editItemId, editor, processMarkdown])
 
   // effect to handle title auto-save
   useEffect(() => {
