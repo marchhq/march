@@ -1,15 +1,13 @@
-import { Octokit } from "@octokit/rest";
 import axios from 'axios';
-import { createAppAuth } from "@octokit/auth-app";
-import { environment } from "../../loaders/environment.loader.js";
+import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
 const exchangeCodeForAccessToken = async (code) => {
     const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
-        client_id: "Iv23liSBfxn60eimiSgj",
-        client_secret: "2a27d86560893f546863b468c931652091d7b820",
+        client_id: environment.GITHUB_APP_CLIENT_ID,
+        client_secret: environment.GITHUB_APP_CLIENT_SECRET,
         code
     }, {
         headers: { accept: 'application/json' }
