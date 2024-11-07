@@ -1,6 +1,8 @@
 "use client"
 import React, { useState, useEffect } from "react"
 
+import { format } from "date-fns"
+
 import { SkeletonCard } from "./atoms/SkeletonCard"
 import { DropdownItem } from "./DropDownItems"
 import { useAuth } from "../contexts/AuthContext"
@@ -28,10 +30,10 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   const { items: overdueItems } = overdue
 
   useEffect(() => {
-    const date = getTodayISODate(selectedDate)
+    const date = format(selectedDate, "yyyy-MM-dd").toLowerCase()
     fetchToday(session, date)
     fetchOverdue(session, date)
-  }, [session, selectedDate])
+  }, [session, selectedDate, fetchOverdue, fetchToday])
 
   useEffect(() => {
     setOptimisticTodayItems(todayItems)
@@ -67,7 +69,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="no-scrollbar max-h-[90vh] space-y-2 overflow-y-auto">
       {optimisticTodayItems.length > 0 && (
         <ul className="space-y-2">
           {optimisticTodayItems.map((item) => (
