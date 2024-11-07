@@ -26,7 +26,7 @@
   }
 
   a {
-    @apply underline cursor-pointer;
+    @apply underline cursor-pointer text-secondary-foreground;
   }
 
   p {
