@@ -490,8 +490,6 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         }
       )
 
-      console.log("data.response", data.response)
-
       // Update with server response
       set((state) => {
         const updateItemsInView = (items: CycleItem[]) =>
@@ -565,8 +563,6 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       const { data } = await api.put(`/api/inbox/${id}`, updates, {
         headers: { Authorization: `Bearer ${session}` },
       })
-
-      console.log("data.response", data.response)
 
       set((state) => {
         const updateItemsInView = (items: CycleItem[]) =>

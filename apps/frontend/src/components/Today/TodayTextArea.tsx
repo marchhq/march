@@ -5,11 +5,11 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import axios from "axios"
 import { ArrowUpLeftIcon, ArrowDownRightIcon } from "lucide-react"
 
-import { useAuth } from "../../contexts/AuthContext"
-import useEditorHook from "../../hooks/useEditor.hook"
-import { useJournal } from "../../hooks/useJournal"
-import { BACKEND_URL } from "../../lib/constants/urls"
-import TextEditor from "../atoms/Editor"
+import TextEditor from "@/src/components/atoms/Editor"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
+import { useJournal } from "@/src/hooks/useJournal"
+import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 interface JournalProps {
   selectedDate: Date

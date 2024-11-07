@@ -6,7 +6,7 @@ import { DateCycle } from "@/src/components/atoms/Date"
 import { ShowAgenda } from "@/src/components/atoms/ShowAgenda"
 import { TodayItems } from "@/src/components/Today/TodayItems"
 import { TodayMeetings } from "@/src/components/Today/TodayMeetings"
-import { TodayTextArea } from "@/src/components/TodayTextArea"
+import { TodayTextArea } from "@/src/components/Today/TodayTextArea"
 import usePersistedState from "@/src/hooks/usePersistedState"
 
 export const TodayPage: React.FC = () => {
