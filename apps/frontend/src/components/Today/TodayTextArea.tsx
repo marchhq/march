@@ -3,15 +3,13 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 
 import axios from "axios"
-import Image from "next/image"
+import { ArrowUpLeftIcon, ArrowDownRightIcon } from "lucide-react"
 
-import TextEditor from "./atoms/Editor"
-import { useAuth } from "../contexts/AuthContext"
-import useEditorHook from "../hooks/useEditor.hook"
-import { useJournal } from "../hooks/useJournal"
-import { BACKEND_URL } from "../lib/constants/urls"
-import ChevronDownIcon from "@/public/icons/chevrondown.svg"
-import ChevronRightIcon from "@/public/icons/chevronright.svg"
+import TextEditor from "@/src/components/atoms/Editor"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
+import { useJournal } from "@/src/hooks/useJournal"
+import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 interface JournalProps {
   selectedDate: Date
@@ -107,40 +105,34 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
 
   return (
     <div className="flex flex-col gap-3 pl-5">
-      <button
-        className="flex min-h-5 items-center gap-2 font-medium text-secondary-foreground outline-none"
-        onClick={handleToggle}
-      >
-        <span>journal</span>
-        {toggle ? (
-          <Image
-            src={ChevronDownIcon}
-            alt="chevron down icon"
-            width={12}
-            height={12}
-            className="mt-0.5 opacity-50"
-          />
-        ) : (
-          <Image
-            src={ChevronRightIcon}
-            alt="chevron right icon"
-            width={12}
-            height={12}
-            className="mt-0.5 opacity-50"
-          />
-        )}
-      </button>
       {toggle && (
-        <section className="no-scrollbar min-h-[30vh] max-w-[700px] overflow-y-scroll">
+        <section className="no-scrollbar min-h-[10vh] max-w-[700px] overflow-y-scroll">
           {error && (
             <div className="mb-2.5 truncate text-xs text-danger-foreground">
               <span>{error}</span>
             </div>
           )}
           <div className="text-foreground">
-            <TextEditor editor={editor} minH="30vh" />
+            <TextEditor editor={editor} minH="10vh" />
           </div>
         </section>
+      )}
+      {toggle ? (
+        <div className="flex justify-end text-secondary-foreground">
+          <ArrowUpLeftIcon
+            size={14}
+            className="hover-text mr-1"
+            onClick={handleToggle}
+          />
+        </div>
+      ) : (
+        <div className="flex justify-start text-secondary-foreground">
+          <ArrowDownRightIcon
+            size={14}
+            className="hover-text"
+            onClick={handleToggle}
+          />
+        </div>
       )}
     </div>
   )
