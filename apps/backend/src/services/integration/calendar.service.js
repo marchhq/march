@@ -1,9 +1,6 @@
-import { v4 as uuid } from "uuid";
 import { google } from "googleapis";
 import axios from 'axios';
 import { OauthCalClient } from "../../loaders/google.loader.js";
-import { Meeting } from "../../models/page/meetings.model.js";
-import { environment } from "../../loaders/environment.loader.js";
 
 const getGoogleCalendarAccessToken = async (code, user) => {
     const { tokens } = await OauthCalClient.getToken(code);
@@ -49,9 +46,10 @@ const checkAccessTokenValidity = async (accessToken) => {
     return false;
 };
 
-const getGoogleCalendarEvents = async (user) => {
+const getGoogleCalendarEventsByDate = async (user, date) => {
     let accessToken = user.integration.googleCalendar.accessToken;
-    const refreshToken = user.integration.googleCalendar.refreshToken
+    const refreshToken = user.integration.googleCalendar.refreshToken;
+    const timeZone = user.timezone;
 
     const isValid = await checkAccessTokenValidity(accessToken);
 
@@ -65,8 +63,22 @@ const getGoogleCalendarEvents = async (user) => {
     });
 
     const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
+
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999);
+
+    const timeMin = startDate.toISOString();
+    const timeMax = endDate.toISOString();
+
     const events = await calendar.events.list({
-        calendarId: 'primary'
+        calendarId: 'primary',
+        timeMin,
+        timeMax,
+        timeZone,
+        singleEvents: true,
+        orderBy: 'startTime'
     });
 
     return events.data.items;
@@ -201,130 +213,6 @@ const deleteGoogleCalendarEvent = async (user, eventId) => {
     return { success: true };
 };
 
-const saveUpcomingMeetingsToDatabase = async (meetings, userId) => {
-    try {
-        for (const meeting of meetings) {
-            const existingMeeting = await Meeting.findOne({ id: meeting.id, user: userId });
-
-            if (!existingMeeting) {
-                const newMeeting = new Meeting({
-                    title: meeting.summary,
-                    source: 'calendar',
-                    id: meeting.id,
-                    user: userId,
-                    metadata: {
-                        status: meeting.status,
-                        location: meeting.location,
-                        attendees: meeting.attendees,
-                        hangoutLink: meeting.hangoutLink,
-                        conferenceData: meeting.conferenceData,
-                        start: meeting.start,
-                        end: meeting.end,
-                        creator: meeting.creator
-                    },
-                    createdAt: meeting.createdAt,
-                    updatedAt: meeting.updatedAt
-                });
-                await newMeeting.save();
-            }
-        }
-    } catch (error) {
-        console.error('Error saving meeting to database:', error);
-        throw error;
-    }
-};
-
-const setUpCalendarWatch = async (accessToken, calendarId, webhookUrl, user) => {
-    const auth = new google.auth.OAuth2();
-    auth.setCredentials({ access_token: accessToken });
-
-    const requestBody = {
-        id: uuid(),
-        type: 'web_hook',
-        address: webhookUrl,
-        token: environment.CALENDAR_WEBHOOK_SECRET
-    };
-    const calendar = google.calendar({ version: 'v3' });
-
-    const response = await calendar.events.watch({
-        auth,
-        calendarId,
-        requestBody
-    });
-
-    user.integration.googleCalendar.metadata = user.integration.googleCalendar.metadata || {};
-    user.integration.googleCalendar.metadata.channelId = response.data.id;
-    user.integration.googleCalendar.metadata.resourceId = response.data.resourceId;
-    await user.save();
-
-    return response.data;
-};
-
-const handleCalendarWebhookService = async (accessToken, refreshToken, userId) => {
-    OauthCalClient.setCredentials({
-        access_token: accessToken,
-        refresh_token: refreshToken
-    });
-
-    const calendar = google.calendar({ version: 'v3', auth: OauthCalClient });
-
-    const eventsResponse = await calendar.events.list({
-        calendarId: 'primary',
-        timeMin: new Date().toISOString(),
-        maxResults: 10,
-        singleEvents: true,
-        orderBy: 'startTime'
-    });
-
-    const events = eventsResponse.data.items;
-    if (events && events.length > 0) {
-        for (const event of events) {
-            const existingMeeting = await Meeting.findOne({ id: event.id, user: userId });
-
-            if (existingMeeting) {
-                // Update existing meeting
-                existingMeeting.title = event.summary;
-                existingMeeting.metadata = {
-                    status: event.status,
-                    location: event.location,
-                    attendees: event.attendees,
-                    hangoutLink: event.hangoutLink,
-                    start: event.start,
-                    end: event.end,
-                    creator: event.creator,
-                    conferenceData: event.conferenceData
-                };
-                existingMeeting.updatedAt = event.updatedAt;
-
-                await existingMeeting.save();
-            } else {
-                // Create new meeting
-                const newMeeting = new Meeting({
-                    title: event.summary,
-                    source: 'calendar',
-                    id: event.id,
-                    user: userId,
-                    metadata: {
-                        status: event.status,
-                        description: event.description,
-                        location: event.location,
-                        attendees: event.attendees,
-                        hangoutLink: event.hangoutLink,
-                        start: event.start,
-                        end: event.end,
-                        creator: event.creator,
-                        conferenceData: event.conferenceData
-                    },
-                    createdAt: event.createdAt,
-                    updatedAt: event.updatedAt
-                });
-
-                await newMeeting.save();
-            }
-        }
-    }
-};
-
 const revokeGoogleCalendarAccess = async (user) => {
     const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
     const accessToken = user.integration.googleCalendar.accessToken;
@@ -343,20 +231,6 @@ const revokeGoogleCalendarAccess = async (user) => {
     user.integration.googleCalendar.connected = false;
     user.integration.googleCalendar.metadata = {};
     await user.save();
-};
-
-const removeGoogleCalendarWebhook = async (channelId, resourceId, accessToken) => {
-    const stopWebhookUrl = 'https://www.googleapis.com/calendar/v3/channels/stop';
-
-    await axios.post(stopWebhookUrl, {
-        id: channelId,
-        resourceId
-    }, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
 };
 
 const getGoogleCalendarMeetingsByDate = async (user, date) => {
@@ -404,16 +278,12 @@ export {
     getGoogleCalendarAccessToken,
     refreshGoogleCalendarAccessToken,
     checkAccessTokenValidity,
-    getGoogleCalendarEvents,
+    getGoogleCalendarEventsByDate,
     addGoogleCalendarEvent,
     updateGoogleCalendarEvent,
     deleteGoogleCalendarEvent,
     getGoogleCalendarMeetings,
     getGoogleCalendarupComingMeetings,
-    saveUpcomingMeetingsToDatabase,
-    setUpCalendarWatch,
-    handleCalendarWebhookService,
     revokeGoogleCalendarAccess,
-    removeGoogleCalendarWebhook,
     getGoogleCalendarMeetingsByDate
 }
