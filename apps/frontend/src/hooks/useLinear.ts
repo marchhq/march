@@ -1,8 +1,10 @@
 import { useCallback, useState } from "react"
 
 import axios from "axios"
+import { headers } from "next/headers"
 
 import { useAuth } from "../contexts/AuthContext"
+import { BACKEND_URL } from "../lib/constants/urls"
 
 const LINEAR_CLIENT_ID = process.env.NEXT_PUBLIC_LINEAR_CLIENT_ID
 const LINEAR_REDIRECT_URL = process.env.NEXT_PUBLIC_LINEAR_REDIRECT_URL
@@ -69,6 +71,23 @@ const useLinear = () => {
     }
   }, [])
 
+  const handleRevoke = useCallback(async () => {
+    try {
+      await axios.post(
+        `${BACKEND_URL}/linear/revoke-access/`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+    } catch (error) {
+      console.error("Failed to revoke: ", error)
+      setError("Failed to revoke linear")
+    }
+  }, [session])
+
   const getAccessToken = useCallback(
     async (code: string) => {
       if (!LINEAR_CLIENT_ID || !LINEAR_REDIRECT_URL) {
@@ -116,6 +135,7 @@ const useLinear = () => {
 
   return {
     handleLogin,
+    handleRevoke,
     getAccessToken,
     fetchMyIssues: () => fetchIssues("my"),
     fetchTodayIssues: () => fetchIssues("today"),
