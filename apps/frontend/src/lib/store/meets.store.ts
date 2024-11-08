@@ -13,6 +13,8 @@ export interface MeetsStoreType {
    * Upcoming Meets array
    */
   upcomingMeetings: Meet[]
+  currentMeeting: Meet | null
+  setCurrentMeeting: (meet: Meet | null) => void
   /**
    * Fetch Meets from the server
    * @param session - The session of the user
@@ -27,7 +29,7 @@ export interface MeetsStoreType {
    * Fetch meeting by id
    * @param session and meet _id
    */
-  fetchMeetByid: (session: string, id: string) => Promise<Meet | null>
+  fetchMeetByid: (session: string, id: string) => Promise<void>
   /**
    * Fetch meeting by id
    * @param session and meet _id
@@ -58,10 +60,17 @@ export interface MeetsStoreType {
   ) => Promise<void>
 }
 
-const useMeetsStore = create<MeetsStoreType>((set) => ({
+export const useMeetsStore = create<MeetsStoreType>((set) => ({
   meets: [],
   upcomingMeetings: [],
 
+  currentMeeting: null,
+  setCurrentMeeting: (event: Meet | null) => {
+    set((state: any) => ({
+      ...state,
+      currentMeeting: event,
+    }))
+  },
   fetchMeets: async (session: string) => {
     try {
       const { data } = await axios.get(
@@ -107,17 +116,21 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
   fetchMeetByid: async (session: string, id: string) => {
     let meet: Meet | null = null
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/${id}`, {
+      const { data } = await axios.get(`${BACKEND_URL}/spaces/meetings/${id}`, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
       })
+      console.log("data", data)
       meet = data.meeting[0]
+      set((state: any) => ({
+        ...state,
+        currentMeeting: meet,
+      }))
     } catch (error) {
       const e = error as AxiosError
       console.log(e.cause)
     }
-    return meet
   },
 
   fetchLatestMeet: async (session: string): Promise<Meet | null> => {
@@ -205,5 +218,3 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
     }
   },
 }))
-
-export default useMeetsStore
