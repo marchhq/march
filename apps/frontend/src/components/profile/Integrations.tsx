@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown"
+import { useAuth } from "@/src/contexts/AuthContext"
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import useGitHubLogin from "@/src/hooks/useGithubLogin"
 import installGitHub from "@/src/hooks/useInstallGitHub"
@@ -111,11 +112,12 @@ interface IntegrationsProps {
 }
 
 const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
+  const { session } = useAuth()
   const { handleLogin: handleCalLogin, handleRevoke: handleCalRevoke } =
     useGoogleCalendarLogin("/profile")
   const { handleLogin: handleLinearLogin, handleRevoke: handleLinearRevoke } =
     useLinear()
-  const { handleRevoke: handleGithubRevoke } = useGitHubLogin()
+  const { handleRevoke: handleGithubRevoke } = useGitHubLogin(session)
 
   const integrations: Integration[] = useMemo(
     () => [
@@ -156,7 +158,13 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         handleRevoke: () => console.log("Notion revoke not implemented yet"),
       },
     ],
-    [handleCalLogin, handleCalRevoke, handleLinearLogin]
+    [
+      handleCalLogin,
+      handleCalRevoke,
+      handleLinearLogin,
+      handleLinearRevoke,
+      handleGithubRevoke,
+    ]
   )
 
   return (
