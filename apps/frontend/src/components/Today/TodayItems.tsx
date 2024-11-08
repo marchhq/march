@@ -3,20 +3,13 @@
 import React, { useState, useEffect, useCallback } from "react"
 
 import { format } from "date-fns"
-import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
-import { XIcon } from "lucide-react"
-import Image from "next/image"
 
-import BoxIcon from "@/public/icons/box.svg"
-import ChevronDownIcon from "@/public/icons/chevrondown.svg"
-import ChevronRightIcon from "@/public/icons/chevronright.svg"
-import LinearIcon from "@/public/icons/linear.svg"
+import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { TodayExpandedItem } from "@/src/components/Today/TodayExpandedItem"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import classNames from "@/src/utils/classNames"
 import { getWeekDates } from "@/src/utils/datetime"
 
 interface TodayEventsProps {
@@ -35,7 +28,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   )
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const [toggleOverdue, setToggleOverdue] = useState(false)
   const {
     byDate,
     overdue,
@@ -155,31 +147,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     [updateItem, session]
   )
 
-  const getSourceIcon = (source: string) => {
-    switch (source) {
-      case "gmail":
-        return <MailsIcon size={14} />
-      case "githubIssue":
-      case "githubPullRequest":
-        return <GithubIcon size={14} />
-      case "linear":
-        return (
-          <Image
-            src={LinearIcon}
-            alt="linear icon"
-            width={14}
-            height={14}
-            className="opacity-50"
-          />
-        )
-      case "march":
-      case "marchClipper":
-        return null
-      default:
-        return null
-    }
-  }
-
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
@@ -212,123 +179,33 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             </div>
           )}
           <div className="flex flex-col gap-2.5">
-            {byDateItems.map((item) => (
-              <button
-                key={item._id}
-                className={classNames(
-                  "group flex items-start gap-2 py-1 outline-none",
-                  item.status === "done"
-                    ? "line-through text-secondary-foreground focus:text-secondary-foreground"
-                    : "text-primary-foreground hover-text-foreground hover:text-foreground focus:text-foreground"
-                )}
-                onClick={() => handleExpand(item)}
-                data-item-id={item._id}
-              >
-                <div className="flex items-start gap-2 truncate">
-                  <Image
-                    src={BoxIcon}
-                    alt="checkbox icon"
-                    width={12}
-                    height={12}
-                    onClick={(e) => handleDone(e, item._id, item.status)}
-                    className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
-                  />
-                  <span
-                    className={classNames(
-                      "text-left truncate",
-                      item.type === "link" && "group-hover:underline"
-                    )}
-                  >
-                    {item.title}
-                  </span>
-                  {item.source !== "march" && (
-                    <div className="mt-[3px] flex items-center text-secondary-foreground">
-                      {getSourceIcon(item.source)}
-                    </div>
-                  )}
-                </div>
-                <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
-                  <CalendarIcon
-                    size={14}
-                    className="hover-text"
-                    onClick={(e) =>
-                      handleRescheduleCalendar(e, item._id, item.dueDate)
-                    }
-                  />
-                  <MoveIcon
-                    size={14}
-                    className="hover-text"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              </button>
-            ))}
+            <ItemList
+              items={byDateItems}
+              handleExpand={handleExpand}
+              handleDone={handleDone}
+              handleRescheduleCalendar={handleRescheduleCalendar}
+              doneLine={true}
+            />
           </div>
         </div>
         <div className="flex flex-col gap-2 text-secondary-foreground">
           <div>
-            {overdueItems.length === 0 ? (
-              <span className="pl-5 text-secondary-foreground">
-                no overdue items
-              </span>
-            ) : (
-              <div className="mt-1">
-                {overdueError && (
-                  <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
-                    <span>{overdueError}</span>
-                  </div>
-                )}
-                <div className="flex flex-col gap-2.5">
-                  {overdueItems.map((item) => (
-                    <button
-                      key={item._id}
-                      className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
-                      onClick={() => handleExpand(item)}
-                      data-item-id={item._id}
-                    >
-                      <div className="flex items-start gap-2 truncate">
-                        <Image
-                          src={BoxIcon}
-                          alt="checkbox icon"
-                          width={12}
-                          height={12}
-                          onClick={(e) => handleDone(e, item._id, item.status)}
-                          className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
-                        />
-                        <span
-                          className={classNames(
-                            "flex gap-1 text-left truncate",
-                            item.type === "link" && "group-hover:underline"
-                          )}
-                        >
-                          {item.title}
-                          <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
-                        </span>
-                        {item.source !== "march" && (
-                          <div className="mt-[3px] flex items-center text-secondary-foreground">
-                            {getSourceIcon(item.source)}
-                          </div>
-                        )}
-                      </div>
-                      <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
-                        <CalendarIcon
-                          size={14}
-                          className="hover-text"
-                          onClick={(e) =>
-                            handleRescheduleCalendar(e, item._id, item.dueDate)
-                          }
-                        />
-                        <MoveIcon
-                          size={14}
-                          className="hover-text"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
-                    </button>
-                  ))}
+            <div className="mt-1">
+              {overdueError && (
+                <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+                  <span>{overdueError}</span>
                 </div>
+              )}
+              <div className="flex flex-col gap-2.5">
+                <ItemList
+                  items={overdueItems}
+                  handleExpand={handleExpand}
+                  handleDone={handleDone}
+                  handleRescheduleCalendar={handleRescheduleCalendar}
+                  isOverdue={true}
+                />
               </div>
-            )}
+            </div>
           </div>
         </div>
 
