@@ -5,7 +5,7 @@ import { Icon } from "@iconify-icon/react"
 import useGitHubLogin from "@/src/hooks/useGithubLogin"
 
 export const GithubLogin = (): JSX.Element => {
-  const handleLogin = useGitHubLogin()
+  const { handleLogin } = useGitHubLogin()
 
   return (
     <button
