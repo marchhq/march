@@ -139,6 +139,8 @@ export const TodayExpandedAgenda: React.FC = () => {
 
   useEffect(() => {
     if (!isFetched) return
+
+    // this is for create a meeting if not exist
     if (isFetched && !currentMeeting && currentEvent) {
       const meetData = {
         title: currentEvent.summary,
