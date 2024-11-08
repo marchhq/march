@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react"
 
+import { TodayExpandedAgenda } from "./TodayExpandedAgenda"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { Event } from "@/src/lib/@types/Items/event"
 import { useEventsStore } from "@/src/lib/store/events.store"
@@ -42,6 +43,7 @@ export const TodayMeetings: React.FC<TodayAgendaProps> = ({ selectedDate }) => {
           </button>
         ))}
       </div>
+      <TodayExpandedAgenda />
     </div>
   )
 }
