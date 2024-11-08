@@ -1,4 +1,4 @@
-export interface Meeting {
+export interface Event {
   kind: string
   etag: string
   id: string
@@ -21,22 +21,22 @@ export interface Meeting {
     dateTime: string
     timeZone: string
   }
-  recurringEventId: string
-  originalStartTime: {
+  recurringEventId?: string
+  originalStartTime?: {
     dateTime: string
     timeZone: string
   }
   iCalUID: string
   sequence: number
-  attendees: Array<{
+  attendees?: Array<{
     email: string
     self?: boolean
     organizer?: boolean
     responseStatus: "accepted" | "needsAction" | "declined" | "tentative"
   }>
-  location: string
-  hangoutLink: string
-  conferenceData: {
+  location?: string
+  hangoutLink?: string
+  conferenceData?: {
     entryPoints: Array<{
       entryPointType: "video" | "more" | "phone"
       uri: string
@@ -59,6 +59,6 @@ export interface Meeting {
   eventType: string
 }
 
-export interface Meetings {
-  events: Meeting[]
+export interface Events {
+  events: Event[]
 }

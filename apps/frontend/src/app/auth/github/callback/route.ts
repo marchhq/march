@@ -4,7 +4,17 @@ import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
-  const redirectDomain = FRONTEND_URL
+
+  const fullUrl = request.nextUrl.toString()
+  console.log("Full redirect URL from GitHub:", fullUrl)
+
+  const code = searchParams.get("code")
+  if (!code) {
+    return NextResponse.json(
+      { error: "Authorization code not found in URL" },
+      { status: 400 }
+    )
+  }
 
   const installation_id = searchParams.get("installation_id")
   if (!installation_id) {
@@ -13,6 +23,7 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     )
   }
+
   const cookies = request.cookies
   const session = cookies.get("__MARCH_ACCESS_TOKEN__")
   const token = session?.value
@@ -26,7 +37,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `${BACKEND_URL}/github/callback?installation_id=${installation_id}`,
+      `${BACKEND_URL}/github/callback?installation_id=${installation_id}&code=${code}`,
       {
         method: "GET",
         headers: {
@@ -36,10 +47,9 @@ export async function GET(request: NextRequest) {
     )
 
     if (response.ok) {
-      const res = NextResponse.redirect(new URL("/profile", redirectDomain))
+      const res = NextResponse.redirect(new URL("/profile", FRONTEND_URL))
       return res
     } else {
-      // Handle non-200 responses
       const errorData = await response.json()
       console.error("GitHub callback error:", errorData)
       return NextResponse.json(
