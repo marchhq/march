@@ -13,6 +13,10 @@ export interface MeetsStoreType {
    * Upcoming Meets array
    */
   upcomingMeetings: Meet[]
+  currentMeeting: Meet | null
+  setCurrentMeeting: (meet: Meet | null) => void
+  isFetched: boolean
+  setIsFetched: (status: boolean) => void
   /**
    * Fetch Meets from the server
    * @param session - The session of the user
@@ -27,24 +31,24 @@ export interface MeetsStoreType {
    * Fetch meeting by id
    * @param session and meet _id
    */
-  fetchMeetByid: (session: string, id: string) => Promise<Meet | null>
+  fetchMeetByid: (session: string, id: string) => Promise<void>
   /**
    * Fetch meeting by id
    * @param session and meet _id
    */
   fetchLatestMeet: (session: string) => Promise<Meet | null>
-  createMeet: (meet: any, session: string) => Promise<void>
+  createMeet: (session: string, meet: any) => Promise<void>
   /**
    * Update a Meet in local
    * @param meet - The Meet to update
    */
-  updateMeet: (meet: Meet, session: string) => Promise<void>
+  updateMeet: (session: string, meet: any, id: string) => Promise<void>
   /**
    * Save a Meet to the server
    * @param meet - The Meet to save
    * @param session - The session of the user
    */
-  saveMeet: (meet: any, session: string) => Promise<void>
+  saveMeet: (session: string, meet: any) => Promise<void>
   /**
    * Delete a Meet from the server and local state
    * @param uuid - The uuid of the Meet to delete
@@ -58,10 +62,24 @@ export interface MeetsStoreType {
   ) => Promise<void>
 }
 
-const useMeetsStore = create<MeetsStoreType>((set) => ({
+export const useMeetsStore = create<MeetsStoreType>((set) => ({
   meets: [],
   upcomingMeetings: [],
 
+  currentMeeting: null,
+  setCurrentMeeting: (event: Meet | null) => {
+    set((state: any) => ({
+      ...state,
+      currentMeeting: event,
+    }))
+  },
+  isFetched: false,
+  setIsFetched: (status: boolean) => {
+    set((state: any) => ({
+      ...state,
+      isFetched: status,
+    }))
+  },
   fetchMeets: async (session: string) => {
     try {
       const { data } = await axios.get(
@@ -105,19 +123,22 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
   },
 
   fetchMeetByid: async (session: string, id: string) => {
-    let meet: Meet | null = null
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/meetings/${id}`, {
+      const { data } = await axios.get(`${BACKEND_URL}/spaces/meetings/${id}`, {
         headers: {
           Authorization: `Bearer ${session}`,
         },
       })
-      meet = data.meeting[0]
+      const meet = data.meeting[0]
+      set((state: any) => ({
+        ...state,
+        currentMeeting: meet,
+        isFetched: true,
+      }))
     } catch (error) {
       const e = error as AxiosError
       console.log(e.cause)
     }
-    return meet
   },
 
   fetchLatestMeet: async (session: string): Promise<Meet | null> => {
@@ -138,38 +159,57 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
     }
     return meet
   },
-  updateMeet: async (meet: Meet, session: string) => {
+
+  updateMeet: async (session: string, meet: any, id: string) => {
     try {
-      await axios.put(`${BACKEND_URL}/spaces/meetings/${meet._id}`, meet, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
+      const { data } = await axios.put(
+        `${BACKEND_URL}/spaces/meetings/${id}`,
+        meet,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      set((state: any) => ({
+        ...state,
+        currentMeeting: data.meeting,
+      }))
       set((state: MeetsStoreType) => ({
         ...state,
         upcomingMeetings: state.upcomingMeetings.map((m) =>
-          m.uuid === meet.uuid ? meet : m
+          m._id === meet._id ? meet : m
         ),
-        meets: state.meets.map((m) => (m.uuid === meet.uuid ? meet : m)),
+        meets: state.meets.map((m) => (m._id === meet._id ? meet : m)),
       }))
     } catch (error) {
       const e = error as AxiosError
       console.error(e.response?.data)
     }
   },
-  createMeet: async (meet: any, session: string) => {
+  createMeet: async (session: string, meet: any) => {
     try {
-      await axios.post(`${BACKEND_URL}/spaces/meetings/create/`, meet, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
+      const { data } = await axios.post(
+        `${BACKEND_URL}/spaces/meetings/create/`,
+        meet.meetData,
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      meet = data.meetings
+      set((state: any) => ({
+        ...state,
+        currentMeeting: meet,
+      }))
     } catch (error) {
       const e = error as AxiosError
       console.error(e.response?.data)
     }
   },
-  saveMeet: async (meet: Meet, session: string) => {
+
+  saveMeet: async (session: string, meet: any) => {
     try {
       await axios.put(`${BACKEND_URL}/spaces/meetings/${meet._id}`, meet, {
         headers: {
@@ -205,5 +245,3 @@ const useMeetsStore = create<MeetsStoreType>((set) => ({
     }
   },
 }))
-
-export default useMeetsStore
