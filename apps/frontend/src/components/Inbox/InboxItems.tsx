@@ -2,7 +2,7 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
+import { CalendarIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
@@ -223,11 +223,6 @@ export const InboxItems: React.FC = () => {
                     onClick={(e) =>
                       handleRescheduleCalendar(e, item._id, item.dueDate)
                     }
-                  />
-                  <MoveIcon
-                    size={14}
-                    className="hover-text"
-                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               </button>
