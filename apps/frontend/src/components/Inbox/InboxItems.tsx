@@ -169,11 +169,9 @@ export const InboxItems: React.FC = () => {
     setDate(newDate) // Ensure this is a Date or null
   }
 
-  return (
-    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
-      {filteredItems.length === 0 ? (
-        <span className="pl-5">inbox empty</span>
-      ) : (
+  if (filteredItems.length > 0) {
+    return (
+      <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
         <div>
           {inboxError && (
             <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
@@ -229,33 +227,35 @@ export const InboxItems: React.FC = () => {
             ))}
           </div>
         </div>
-      )}
 
-      {reschedulingItemId !== null && (
-        <div>
-          <div
-            className="fixed inset-0 z-50 cursor-default bg-black/80"
-            role="button"
-            onClick={() => setReschedulingItemId(null)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape" || e.key === "Esc") {
-                setReschedulingItemId(null)
-              }
-            }}
-            tabIndex={0}
-          ></div>
-          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
-            <RescheduleCalendar
-              date={date}
-              setDate={setDate}
-              cycleDate={cycleDate}
-              setCycleDate={setCycleDate}
-              dateChanged={dateChanged}
-              setDateChanged={setDateChanged}
-            />
+        {reschedulingItemId !== null && (
+          <div>
+            <div
+              className="fixed inset-0 z-50 cursor-default bg-black/80"
+              role="button"
+              onClick={() => setReschedulingItemId(null)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape" || e.key === "Esc") {
+                  setReschedulingItemId(null)
+                }
+              }}
+              tabIndex={0}
+            ></div>
+            <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
+              <RescheduleCalendar
+                date={date}
+                setDate={setDate}
+                cycleDate={cycleDate}
+                setCycleDate={setCycleDate}
+                dateChanged={dateChanged}
+                setDateChanged={setDateChanged}
+              />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  )
+        )}
+      </div>
+    )
+  }
+
+  return null
 }
