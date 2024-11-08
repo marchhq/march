@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react"
 
 import axios from "axios"
-import { headers } from "next/headers"
 
 import { useAuth } from "../contexts/AuthContext"
 import { BACKEND_URL } from "../lib/constants/urls"
