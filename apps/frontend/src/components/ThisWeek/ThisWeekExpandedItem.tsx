@@ -10,6 +10,7 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
+import { processMarkdown } from "@/src/utils/markdown"
 
 interface EditedItem {
   title: string
@@ -27,10 +28,9 @@ const SAVE_DELAY = {
 
 export const ThisWeekExpandedItem: React.FC = () => {
   const { session } = useAuth()
-  const { currentItem, setCurrentItem, updateItem, deleteItem } =
+  const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
     useCycleItemStore()
 
-  // Refs
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutRefs = useRef<TimeoutRefs>({
@@ -39,14 +39,15 @@ export const ThisWeekExpandedItem: React.FC = () => {
   })
   const lastSavedContent = useRef(currentItem?.description || "<p></p>")
 
-  // State
+  // state
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
-  const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-
-  // Memoized handlers
+  const [content, setContent] = useState(
+    processMarkdown(currentItem?.description || "<p></p>")
+  )
+  // memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
     const hasChanged = newContent !== lastSavedContent.current
@@ -90,14 +91,14 @@ export const ThisWeekExpandedItem: React.FC = () => {
     [session, updateItem, editItemId, editedItem.title]
   )
 
-  // Editor setup
+  // editor setup
   const editor = useEditorHook({
     content,
     setContent: handleContentChange,
     setIsSaved,
   })
 
-  // Handle editor content updates with debounce
+  // handle editor content updates with debounce
   const saveContent = useCallback(() => {
     if (!currentItem?._id || content === lastSavedContent.current) return
 
@@ -111,7 +112,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     setIsSaved(true)
   }, [content, currentItem, session, updateItem])
 
-  // Effect to handle content auto-save
+  // effect to handle content auto-save
   useEffect(() => {
     if (!hasUnsavedChanges) return
 
@@ -128,11 +129,11 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [hasUnsavedChanges, saveContent])
 
-  // Effect to initialize editor when currentItem changes
+  // effect to initialize editor when currentItem changes
   useEffect(() => {
     if (!currentItem) return
 
-    const newContent = currentItem.description || "<p></p>"
+    const newContent = processMarkdown(currentItem.description || "<p></p>")
 
     if (currentItem._id !== editItemId) {
       setEditItemId(currentItem._id)
@@ -145,9 +146,9 @@ export const ThisWeekExpandedItem: React.FC = () => {
         editor.commands.focus()
       }
     }
-  }, [currentItem, editItemId, editor])
+  }, [currentItem, editItemId, editor, processMarkdown])
 
-  // Effect to handle title auto-save
+  // effect to handle title auto-save
   useEffect(() => {
     if (!currentItem || editedItem.title === currentItem.title) return
 
@@ -166,7 +167,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.title, currentItem, handleSaveEditedItem])
 
-  // Effect to handle textarea auto-resize
+  // effect to handle textarea auto-resize
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
@@ -175,7 +176,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.title])
 
-  // Effect to handle click outside
+  // effect to handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -198,7 +199,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [handleClose])
 
-  // Memoized handler for textarea keydown
+  // memoized handler for textarea keydown
   const handleTextareaKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key !== "Enter") return
@@ -236,6 +237,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     },
     []
   )
+
   return (
     <div
       ref={divRef}
