@@ -1,20 +1,31 @@
 "use client"
 
-import React, { useEffect, useCallback, useState } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 
+import { format } from "date-fns"
 import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
+import { XIcon } from "lucide-react"
 import Image from "next/image"
 
-import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import BoxIcon from "@/public/icons/box.svg"
+import ChevronDownIcon from "@/public/icons/chevrondown.svg"
+import ChevronRightIcon from "@/public/icons/chevronright.svg"
 import LinearIcon from "@/public/icons/linear.svg"
+import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
+import { TodayExpandedItem } from "@/src/components/Today/TodayExpandedItem"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { getWeekDates } from "@/src/utils/datetime"
 
-export const InboxItems: React.FC = () => {
+interface TodayEventsProps {
+  selectedDate: Date
+}
+
+export const TodayItems: React.FC<TodayEventsProps> = ({
+  selectedDate,
+}): JSX.Element => {
   const { session } = useAuth()
 
   const [isControlHeld, setIsControlHeld] = useState(false)
@@ -24,14 +35,34 @@ export const InboxItems: React.FC = () => {
   )
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
-    useCycleItemStore()
+  const [toggleOverdue, setToggleOverdue] = useState(false)
+  const {
+    byDate,
+    overdue,
+    fetchByDate,
+    fetchOverdue,
+    updateItem,
+    error,
+    currentItem,
+    setCurrentItem,
+  } = useCycleItemStore()
 
-  const { items, error: inboxError } = inbox
+  const {
+    items: byDateItems,
+    error: byDateError,
+    isLoading: byDateIsLoading,
+  } = byDate
+  const {
+    items: overdueItems,
+    error: overdueError,
+    isLoading: overdueIsLoading,
+  } = overdue
 
   useEffect(() => {
-    fetchInbox(session)
-  }, [fetchInbox, session])
+    const date = format(selectedDate, "yyyy-MM-dd").toLowerCase()
+    fetchByDate(session, date)
+    fetchOverdue(session, date)
+  }, [session, selectedDate, fetchOverdue, fetchByDate])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -58,13 +89,6 @@ export const InboxItems: React.FC = () => {
   useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
-        if (date) {
-          updateItem(
-            session,
-            { status: "todo", dueDate: date },
-            reschedulingItemId
-          )
-        }
         if (cycleDate) {
           const { startDate, endDate } = getWeekDates(cycleDate)
           updateItem(
@@ -77,6 +101,12 @@ export const InboxItems: React.FC = () => {
                 endsAt: endDate,
               },
             },
+            reschedulingItemId
+          )
+        } else {
+          updateItem(
+            session,
+            { status: date ? "todo" : "null", dueDate: date },
             reschedulingItemId
           )
         }
@@ -150,8 +180,6 @@ export const InboxItems: React.FC = () => {
     }
   }
 
-  const filteredItems = items.filter((item) => item.status !== "done")
-
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
@@ -166,18 +194,16 @@ export const InboxItems: React.FC = () => {
       : null
 
     setReschedulingItemId(id)
-    setDate(newDate) // Ensure this is a Date or null
+    setDate(newDate)
   }
 
-  return (
-    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
-      {filteredItems.length === 0 ? (
-        <span className="pl-5">inbox empty</span>
-      ) : (
+  if (byDateItems.length + overdueItems.length > 0) {
+    return (
+      <div className="no-scrollbar flex h-full flex-col gap-4 pb-5">
         <div>
-          {inboxError && (
+          {byDateError && (
             <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
-              <span>{inboxError}</span>
+              <span>{byDateError}</span>
             </div>
           )}
           {error && (
@@ -186,10 +212,15 @@ export const InboxItems: React.FC = () => {
             </div>
           )}
           <div className="flex flex-col gap-2.5">
-            {filteredItems.map((item) => (
+            {byDateItems.map((item) => (
               <button
                 key={item._id}
-                className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
+                className={classNames(
+                  "group flex items-start gap-2 py-1 outline-none",
+                  item.status === "done"
+                    ? "line-through text-secondary-foreground focus:text-secondary-foreground"
+                    : "text-primary-foreground hover-text-foreground hover:text-foreground focus:text-foreground"
+                )}
                 onClick={() => handleExpand(item)}
                 data-item-id={item._id}
               >
@@ -234,33 +265,102 @@ export const InboxItems: React.FC = () => {
             ))}
           </div>
         </div>
-      )}
-
-      {reschedulingItemId !== null && (
-        <div>
-          <div
-            className="fixed inset-0 z-50 cursor-default bg-black/80"
-            role="button"
-            onClick={() => setReschedulingItemId(null)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape" || e.key === "Esc") {
-                setReschedulingItemId(null)
-              }
-            }}
-            tabIndex={0}
-          ></div>
-          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
-            <RescheduleCalendar
-              date={date}
-              setDate={setDate}
-              cycleDate={cycleDate}
-              setCycleDate={setCycleDate}
-              dateChanged={dateChanged}
-              setDateChanged={setDateChanged}
-            />
+        <div className="flex flex-col gap-2 text-secondary-foreground">
+          <div>
+            {overdueItems.length === 0 ? (
+              <span className="pl-5 text-secondary-foreground">
+                no overdue items
+              </span>
+            ) : (
+              <div className="mt-1">
+                {overdueError && (
+                  <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+                    <span>{overdueError}</span>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2.5">
+                  {overdueItems.map((item) => (
+                    <button
+                      key={item._id}
+                      className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
+                      onClick={() => handleExpand(item)}
+                      data-item-id={item._id}
+                    >
+                      <div className="flex items-start gap-2 truncate">
+                        <Image
+                          src={BoxIcon}
+                          alt="checkbox icon"
+                          width={12}
+                          height={12}
+                          onClick={(e) => handleDone(e, item._id, item.status)}
+                          className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+                        />
+                        <span
+                          className={classNames(
+                            "flex gap-1 text-left truncate",
+                            item.type === "link" && "group-hover:underline"
+                          )}
+                        >
+                          {item.title}
+                          <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
+                        </span>
+                        {item.source !== "march" && (
+                          <div className="mt-[3px] flex items-center text-secondary-foreground">
+                            {getSourceIcon(item.source)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
+                        <CalendarIcon
+                          size={14}
+                          className="hover-text"
+                          onClick={(e) =>
+                            handleRescheduleCalendar(e, item._id, item.dueDate)
+                          }
+                        />
+                        <MoveIcon
+                          size={14}
+                          className="hover-text"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
-    </div>
-  )
+
+        {reschedulingItemId !== null && (
+          <div>
+            <div
+              className="fixed inset-0 z-50 cursor-default bg-black/80"
+              role="button"
+              onClick={() => setReschedulingItemId(null)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape" || e.key === "Esc") {
+                  setReschedulingItemId(null)
+                }
+              }}
+              tabIndex={0}
+            ></div>
+            <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
+              <RescheduleCalendar
+                date={date}
+                setDate={setDate}
+                cycleDate={cycleDate}
+                setCycleDate={setCycleDate}
+                dateChanged={dateChanged}
+                setDateChanged={setDateChanged}
+              />
+            </div>
+          </div>
+        )}
+        <TodayExpandedItem />
+      </div>
+    )
+  }
+
+  return <div></div>
 }
