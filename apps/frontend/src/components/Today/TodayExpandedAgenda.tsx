@@ -2,18 +2,14 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
-import { Description } from "@radix-ui/react-dialog"
 import Image from "next/image"
 
 import TextEditor from "../atoms/Editor"
 import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
-import { type Meet } from "@/src/lib/@types/Items/Meet"
 import { useEventsStore } from "@/src/lib/store/events.store"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
-import classNames from "@/src/utils/classNames"
-import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
@@ -145,6 +141,19 @@ export const TodayExpandedAgenda: React.FC = () => {
       const meetData = {
         title: currentEvent.summary,
         id: currentEvent.id,
+        metadata: {
+          status: currentEvent.status,
+
+          location: currentEvent.location,
+          attendees: currentEvent.attendees,
+          hangoutLink: currentEvent.hangoutLink,
+          start: currentEvent.start,
+          end: currentEvent.end,
+          creator: currentEvent.creator,
+          conferenceData: currentEvent.conferenceData,
+        },
+        createdAt: currentEvent.created,
+        updatedAt: currentEvent.updated,
       }
       createMeet(session, { meetData })
     }
@@ -265,7 +274,7 @@ export const TodayExpandedAgenda: React.FC = () => {
     []
   )
 
-  if (currentEvent && currentMeeting) {
+  if (currentEvent) {
     return (
       <div>
         <div
