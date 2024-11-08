@@ -29,10 +29,10 @@ const SidebarNav: React.FC = () => {
   return (
     <nav
       className={classNames(
-        "flex w-full relative flex-col justify-between bg-background p-10 text-sm text-secondary-foreground group",
+        "flex w-full relative flex-col justify-between bg-background p-10 pr-0 text-sm text-secondary-foreground group",
         isCollapsed
           ? "min-w-fit max-w-fit"
-          : "min-w-[calc(min(-40px+100vw,250px))] max-w-[calc(min(-40px+100vw,250px))]"
+          : "min-w-[calc(min(-20px+100vw,230px))] max-w-[calc(min(-20px+100vw,230px))]"
       )}
     >
       <div className="flex flex-col gap-7">
