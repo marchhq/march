@@ -28,7 +28,7 @@ export const InboxPage: React.FC = () => {
             <p className="text-sm text-secondary-foreground">{totalItems}</p>
           </div>
         </header>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <InboxAddItem />
           <InboxItems />
         </div>
