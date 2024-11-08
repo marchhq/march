@@ -1,23 +1,26 @@
 import { Meeting } from "../../models/page/meetings.model.js";
 
+const createMeeting = async (user, meetingData) => {
+    const newMeeting = new Meeting({
+        ...meetingData,
+        user
+    });
+    if (!newMeeting) {
+        const error = new Error("Failed to create the item")
+        error.statusCode = 500
+        throw error
+    }
+
+    const meeting = await newMeeting.save()
+
+    return meeting;
+};
+
 const getMeeting = async (user) => {
     const meetings = await Meeting.find({
         user
     })
-        .sort({ 'metadata.start.dateTime': 1 });
-
-    return meetings;
-};
-
-const recentUpcomingMeeting = async (user) => {
-    const now = new Date().toISOString();
-    const meetings = await Meeting.find({
-        user,
-        'metadata.start.dateTime': { $gte: now }
-    })
-        .sort({ 'metadata.start': 1 })
-        .limit(1);
-
+        .sort({ created_at: -1 });
     return meetings;
 };
 
@@ -29,14 +32,6 @@ const getMeetingById = async (user, id) => {
         .sort({ created_at: -1 });
 
     return meeting;
-};
-
-const getUpcomingMeetings = async (user, currentDateTime) => {
-    const upcomingMeetings = await Meeting.find({
-        user,
-        'metadata.start.dateTime': { $gt: currentDateTime.toISOString() }
-    });
-    return upcomingMeetings;
 };
 
 const updateMeeting = async (id, updateData) => {
@@ -60,9 +55,8 @@ const deleteMeeting = async (id) => {
 };
 
 export {
+    createMeeting,
     getMeeting,
-    getUpcomingMeetings,
-    recentUpcomingMeeting,
     updateMeeting,
     deleteMeeting,
     getMeetingById

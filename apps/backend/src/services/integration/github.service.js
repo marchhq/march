@@ -1,60 +1,34 @@
-import { Octokit } from "@octokit/rest";
+import axios from 'axios';
 import { createAppAuth } from "@octokit/auth-app";
-import { environment } from "../../loaders/environment.loader.js";
+import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
-const fetchInstallationDetails = async (installationId, user) => {
-    try {
-        const appId = environment.GITHUB_APP_ID;
-        const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
-        const auth = createAppAuth({
-            appId,
-            privateKey,
-            webhooks: {
-                secret: environment.GITHUB_WEBHOOK_SECRET
-            },
-            installationId
-        });
-        const installationAuthentication = await auth({ type: 'installation' });
+const exchangeCodeForAccessToken = async (code) => {
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+        client_id: environment.GITHUB_APP_CLIENT_ID,
+        client_secret: environment.GITHUB_APP_CLIENT_SECRET,
+        code
+    }, {
+        headers: { accept: 'application/json' }
+    });
+    const accessToken = tokenResponse.data.access_token;
 
-        const octokit = new Octokit({ auth: installationAuthentication.token });
-
-        await octokit.apps.listReposAccessibleToInstallation({
-            installation_id: installationId
-        });
-        user.integration.github.installationId = installationId
-        user.integration.github.connected = true
-        user.save();
-    } catch (error) {
-        console.error('Error fetching installation details:', error);
-        throw error;
+    if (!accessToken) {
+        throw new Error('GitHub access token not received');
     }
+    const profileResponse = await axios.get('https://api.github.com/user', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    })
+
+    const profile = profileResponse.data;
+    return profile;
 };
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const processWebhookEvent = async (event, payload) => {
     const installationId = payload.installation.id;
     const repository = payload.repository;
-
-    if (payload.action === 'created' && payload.installation) {
-        const githubUsername = payload.installation.account.login;
-
-        await delay(1000);
-        const user = await User.findOne({ 'integration.github.installationId': installationId });
-
-        if (!user) {
-            console.log(`No user found for installation ID: ${installationId}`);
-            return
-        }
-
-        user.integration.github.userName = githubUsername;
-        await user.save();
-
-        console.log(`Linked GitHub installation to user: ${user._id}`);
-        return;
-    }
 
     const user = await User.findOne({ 'integration.github.installationId': installationId });
     if (!user) {
@@ -74,6 +48,8 @@ const processWebhookEvent = async (event, payload) => {
         console.log('No issue or pull request found in the payload.');
         return;
     }
+    const userId = user._id;
+
     const githubUsername = user.integration.github.userName;
 
     // Check if the issue/PR is assigned to the user
@@ -89,7 +65,16 @@ const processWebhookEvent = async (event, payload) => {
         console.log(`PR not assigned to or created by user: ${githubUsername}. Skipping.`);
         return; // Return if the PR is not relevant to the user
     }
-    const userId = user._id;
+    const existingLinearItem = await Item.findOne({
+        title: issueOrPR.title,
+        source: 'linear',
+        user: userId
+    });
+
+    if (existingLinearItem) {
+        console.log('An item with the same title already exists. Skipping creation.');
+        return;
+    }
 
     const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
     const existingItem = await Item.findOne({
@@ -136,7 +121,37 @@ const processWebhookEvent = async (event, payload) => {
     }
 };
 
+const uninstallGithubApp = async (user) => {
+    const appId = environment.GITHUB_APP_ID;
+    const privateKey = environment.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n');
+    const installationId = user.integration.github.installationId;
+
+    const auth = createAppAuth({
+        appId,
+        privateKey
+    });
+
+    const { token: appToken } = await auth({ type: "app" });
+
+    const response = await axios.delete(`https://api.github.com/app/installations/${installationId}`, {
+        headers: {
+            Authorization: `Bearer ${appToken}`,
+            Accept: 'application/vnd.github.v3+json'
+        }
+    });
+    user.integration.github = {
+        installationId: null,
+        userName: null,
+        connected: false
+    };
+
+    await user.save();
+
+    return response.data;
+};
+
 export {
-    fetchInstallationDetails,
-    processWebhookEvent
+    exchangeCodeForAccessToken,
+    processWebhookEvent,
+    uninstallGithubApp
 };
