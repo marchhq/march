@@ -3,12 +3,10 @@ import { useCallback } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 
-import { useAuth } from "../contexts/AuthContext"
 import { BACKEND_URL } from "../lib/constants/urls"
 
-const useGitHubLogin = () => {
+const useGitHubLogin = (session?: string) => {
   const router = useRouter()
-  const { session } = useAuth()
 
   const handleLogin = useCallback(async () => {
     try {
