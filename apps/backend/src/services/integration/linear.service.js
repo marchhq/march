@@ -419,6 +419,23 @@ const handleWebhookEvent = async (payload) => {
     }
 };
 
+const revokeLinearAccess = async (accessToken) => {
+    try {
+        await axios.post('https://api.linear.app/oauth/revoke', {
+            token: accessToken
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+        console.log('Linear access revoked successfully');
+    } catch (error) {
+        console.error('Error revoking Linear token:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
@@ -428,5 +445,6 @@ export {
     getTodayLinearIssues,
     getOverdueLinearIssues,
     getLinearIssuesByDate,
-    handleWebhookEvent
+    handleWebhookEvent,
+    revokeLinearAccess
 }
