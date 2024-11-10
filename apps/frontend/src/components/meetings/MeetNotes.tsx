@@ -7,21 +7,8 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
-import useMeetsStore from "@/src/lib/store/meets.store"
-
-const formatDate = (date: Date) => {
-  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
-  const day = date.getDate()
-  return `${weekday}, ${day.toString().padStart(2, "0")}`
-}
-
-const formatTime = (date: Date): string => {
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  })
-}
+import { useMeetsStore } from "@/src/lib/store/meets.store"
+import { formatMeetDate, formatMeetTime } from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
@@ -71,11 +58,12 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
 
       try {
         await updateMeet(
+          session,
           {
             ...item,
             title: editedItem.title,
           },
-          session
+          item.id
         )
       } catch (error) {
         console.error("Error updating item:", error)
@@ -95,7 +83,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   const saveContent = useCallback(() => {
     if (!meetData?._id || content === lastSavedContent.current) return
 
-    updateMeet({ ...meetData, description: content }, session)
+    updateMeet(session, { ...meetData, description: content }, meetData.id)
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
@@ -209,14 +197,14 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
         <div className="mr-4 size-4 rounded-sm bg-[#E34136]/80"></div>
         <p>
           {meetData.metadata.start.dateTime
-            ? formatDate(new Date(meetData.metadata.start.dateTime))
+            ? formatMeetDate(new Date(meetData.metadata.start.dateTime))
             : "Date not available"}
         </p>
         <p>.</p>
         <p>
           {meetData?.metadata.start?.dateTime &&
           meetData?.metadata.end?.dateTime
-            ? `${formatTime(new Date(meetData.metadata.start.dateTime))}: ${formatTime(new Date(meetData.metadata.end.dateTime))}`
+            ? `${formatMeetTime(new Date(meetData.metadata.start.dateTime))}: ${formatMeetTime(new Date(meetData.metadata.end.dateTime))}`
             : "Time not available"}
         </p>
         <a
