@@ -142,16 +142,6 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         handleConnect: handleLinearLogin,
         handleRevoke: () => console.log("Linear revoke not implemented yet"),
       },
-      {
-        key: "notion",
-        icon: <NotionDark />,
-        name: "Notion",
-        description:
-          " Pull notion database items into march to actually add in your daily action plan.",
-        handleConnect: () =>
-          console.log("Notion connection not implemented yet"),
-        handleRevoke: () => console.log("Notion revoke not implemented yet"),
-      },
     ],
     [handleCalLogin, handleCalRevoke, handleLinearLogin]
   )
