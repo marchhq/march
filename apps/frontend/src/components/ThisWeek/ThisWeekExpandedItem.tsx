@@ -4,38 +4,170 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Icon } from "@iconify-icon/react"
 
+import TextEditor from "../atoms/Editor"
 import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
+import { processMarkdown } from "@/src/utils/markdown"
+
+interface EditedItem {
+  title: string
+}
+
+interface TimeoutRefs {
+  title: ReturnType<typeof setTimeout> | null
+  editor: ReturnType<typeof setTimeout> | null
+}
+
+const SAVE_DELAY = {
+  TITLE: 500,
+  CONTENT: 500,
+} as const
 
 export const ThisWeekExpandedItem: React.FC = () => {
   const { session } = useAuth()
+  const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
+    useCycleItemStore()
+
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
-  const textareaRefDescription = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
-  const timeoutId = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRefs = useRef<TimeoutRefs>({
+    title: null,
+    editor: null,
+  })
+  const lastSavedContent = useRef(currentItem?.description || "<p></p>")
+
+  // state
   const [editItemId, setEditItemId] = useState<string | null>(null)
-  const [editedItem, setEditedItem] = useState<{
-    title: string
-    description: string
-  }>({
-    title: "",
-    description: "",
+  const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
+  const [isSaved, setIsSaved] = useState(true)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [content, setContent] = useState(
+    processMarkdown(currentItem?.description || "<p></p>")
+  )
+  // memoized handlers
+  const handleContentChange = useCallback((newContent: string) => {
+    setContent(newContent)
+    const hasChanged = newContent !== lastSavedContent.current
+    setHasUnsavedChanges(hasChanged)
+    setIsSaved(!hasChanged)
+  }, [])
+
+  const handleClose = useCallback(() => {
+    setCurrentItem(null)
+    setEditItemId(null)
+    setEditedItem({ title: "" })
+  }, [setCurrentItem])
+
+  const handleDelete = useCallback(
+    (event: React.MouseEvent, id: string) => {
+      event.stopPropagation()
+      if (id) {
+        deleteItem(session, id)
+      }
+    },
+    [deleteItem, session]
+  )
+
+  const handleSaveEditedItem = useCallback(
+    async (item: typeof currentItem) => {
+      if (!item?._id || !editItemId) return
+
+      try {
+        await updateItem(
+          session,
+          {
+            ...item,
+            title: editedItem.title,
+          },
+          item._id
+        )
+      } catch (error) {
+        console.error("Error updating item:", error)
+      }
+    },
+    [session, updateItem, editItemId, editedItem.title]
+  )
+
+  // editor setup
+  const editor = useEditorHook({
+    content,
+    setContent: handleContentChange,
+    setIsSaved,
   })
 
-  const { currentItem, setCurrentItem, updateItem } = useCycleItemStore()
+  // handle editor content updates with debounce
+  const saveContent = useCallback(() => {
+    if (!currentItem?._id || content === lastSavedContent.current) return
 
+    updateItem(
+      session,
+      { ...currentItem, description: content },
+      currentItem._id
+    )
+    lastSavedContent.current = content
+    setHasUnsavedChanges(false)
+    setIsSaved(true)
+  }, [content, currentItem, session, updateItem])
+
+  // effect to handle content auto-save
   useEffect(() => {
-    if (currentItem && currentItem._id !== editItemId) {
-      setEditItemId(currentItem._id || "")
-      setEditedItem({
-        title: currentItem.title || "",
-        description: currentItem.description || "",
-      })
-    }
-  }, [currentItem, editItemId])
+    if (!hasUnsavedChanges) return
 
+    if (timeoutRefs.current.editor) {
+      clearTimeout(timeoutRefs.current.editor)
+    }
+
+    timeoutRefs.current.editor = setTimeout(saveContent, SAVE_DELAY.CONTENT)
+
+    return () => {
+      if (timeoutRefs.current.editor) {
+        clearTimeout(timeoutRefs.current.editor)
+      }
+    }
+  }, [hasUnsavedChanges, saveContent])
+
+  // effect to initialize editor when currentItem changes
+  useEffect(() => {
+    if (!currentItem) return
+
+    const newContent = processMarkdown(currentItem.description || "<p></p>")
+
+    if (currentItem._id !== editItemId) {
+      setEditItemId(currentItem._id)
+      setEditedItem({ title: currentItem.title || "" })
+      setContent(newContent)
+      lastSavedContent.current = newContent
+
+      if (editor?.commands) {
+        editor.commands.setContent(newContent)
+        editor.commands.focus()
+      }
+    }
+  }, [currentItem, editItemId, editor, processMarkdown])
+
+  // effect to handle title auto-save
+  useEffect(() => {
+    if (!currentItem || editedItem.title === currentItem.title) return
+
+    if (timeoutRefs.current.title) {
+      clearTimeout(timeoutRefs.current.title)
+    }
+
+    timeoutRefs.current.title = setTimeout(() => {
+      handleSaveEditedItem(currentItem)
+    }, SAVE_DELAY.TITLE)
+
+    return () => {
+      if (timeoutRefs.current.title) {
+        clearTimeout(timeoutRefs.current.title)
+      }
+    }
+  }, [editedItem.title, currentItem, handleSaveEditedItem])
+
+  // effect to handle textarea auto-resize
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
@@ -44,85 +176,67 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.title])
 
-  useEffect(() => {
-    const textarea = textareaRefDescription.current
-    if (textarea) {
-      textarea.style.height = "auto"
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-  }, [editedItem.description])
-
-  const handleSaveEditedItem = async (item: any) => {
-    try {
-      if (editItemId && editedItem) {
-        updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-            description: editedItem.description,
-          },
-          item._id
-        )
-      }
-    } catch (error) {
-      console.error("error updating item:", error)
-    }
-  }
-
-  useEffect(() => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current)
-    }
-
-    const isEdited =
-      editedItem.title !== (currentItem?.title || "") ||
-      editedItem.description !== (currentItem?.description || "")
-
-    if (isEdited) {
-      timeoutId.current = setTimeout(() => {
-        if (currentItem) {
-          handleSaveEditedItem(currentItem)
-        }
-      }, 1000)
-    }
-
-    return () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current)
-      }
-    }
-  }, [editedItem, currentItem, timeoutId])
-
-  const handleClose = useCallback(() => {
-    setCurrentItem(null)
-    handleCancelEditItem()
-  }, [setCurrentItem])
-
+  // effect to handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const isClickOnItem =
-        (event.target as HTMLElement).closest("[data-item-id]") !== null
+      const target = event.target as HTMLElement
+      const isClickOnItem = target.closest("[data-item-id]") !== null
+      const isTipTapClick = [".tippy-box", ".tiptap", "[data-tippy-root]"].some(
+        (selector) => target.closest(selector) !== null
+      )
 
       if (
         divRef.current &&
-        !divRef.current.contains(event.target as Node) &&
-        !isClickOnItem
+        !divRef.current.contains(target) &&
+        !isClickOnItem &&
+        !isTipTapClick
       ) {
         handleClose()
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [handleClose])
 
-  const handleCancelEditItem = () => {
-    setEditItemId(null)
-    setEditedItem({ title: "", description: "" })
-  }
+  // memoized handler for textarea keydown
+  const handleTextareaKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key !== "Enter") return
+
+      e.preventDefault()
+
+      if (e.shiftKey) {
+        const textarea = e.currentTarget
+        const cursorPosition = textarea.selectionStart
+        const newValue =
+          editedItem.title.slice(0, cursorPosition) +
+          "\n" +
+          editedItem.title.slice(cursorPosition)
+
+        setEditedItem((prev) => ({ ...prev, title: newValue }))
+
+        requestAnimationFrame(() => {
+          textarea.selectionStart = cursorPosition + 1
+          textarea.selectionEnd = cursorPosition + 1
+        })
+      } else if (editor) {
+        editor.commands.focus()
+        editor.commands.setTextSelection(0)
+      }
+    },
+    [editedItem.title, editor]
+  )
+
+  const handleTitleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setEditedItem((prev) => ({
+        ...prev,
+        title: e.target.value,
+      }))
+    },
+    []
+  )
 
   return (
     <div
@@ -164,23 +278,14 @@ export const ThisWeekExpandedItem: React.FC = () => {
                 title: e.target.value,
               }))
             }
+            onKeyDown={handleTextareaKeyDown}
             placeholder="title"
             className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
             rows={1}
           />
-          <textarea
-            ref={textareaRefDescription}
-            value={editedItem.description}
-            onChange={(e) => {
-              setEditedItem((prev) => ({
-                ...prev,
-                description: e.target.value,
-              }))
-            }}
-            placeholder="description"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-transparent text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-            rows={1}
-          />
+          <div className="text-foreground">
+            <TextEditor editor={editor} />
+          </div>
         </div>
       </div>
     </div>

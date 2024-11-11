@@ -1,5 +1,4 @@
 import { Item } from "../../models/lib/item.model.js";
-import moment from 'moment-timezone';
 import { getLabelByName } from "./label.service.js";
 
 const getInboxItems = async (me) => {
@@ -11,9 +10,9 @@ const getInboxItems = async (me) => {
         spaces: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
-        cycleDate: null
-    })
-        .sort({ createdAt: -1 });
+        "cycle.startsAt": null,
+        "cycle.endsAt": null
+    }).sort({ createdAt: -1 });
 
     return items;
 }
@@ -54,9 +53,39 @@ const getThisWeekItems = async (me) => {
         ],
         cycleDate: { $ne: null }
     })
-
+        .sort({ createdAt: -1 });
     return items;
 }
+
+const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+    if (!me || !startDate || !endDate) {
+        throw new Error('Missing required parameters: me, startDate, endDate');
+    }
+
+    if (startDate > endDate) {
+        throw new Error('startDate must be before or equal to endDate');
+    }
+
+    startDate = new Date(startDate);
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    endDate = new Date(endDate);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    const items = await Item.find({
+        user: me,
+        isArchived: false,
+        isDeleted: false,
+        spaces: { $exists: true, $eq: [] },
+        $or: [
+            { "cycle.startsAt": { $gte: startDate, $lte: endDate } },
+            { "cycle.endsAt": { $gte: startDate, $lte: endDate } },
+            { dueDate: { $gte: startDate, $lte: endDate } }
+        ]
+    }).sort({ createdAt: 1 });
+
+    return items;
+};
 
 const getAllitems = async (me) => {
     const items = await Item.find({
@@ -69,21 +98,26 @@ const getAllitems = async (me) => {
 }
 
 const getUserTodayItems = async (me) => {
-    // const today = new Date();
-    const startOfDay = moment().startOf('day');
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
     const items = await Item.find({
         user: me,
-        dueDate: { $gte: startOfDay, $lt: moment().endOf('day') }
-    })
-
+        $or: [
+            { dueDate: { $gte: startOfDay, $lt: endOfDay } },
+            { completedAt: { $gte: startOfDay, $lt: endOfDay } }
+        ]
+    });
     return items;
 }
 
 const getUserOverdueItems = async (me) => {
-    const startOfDay = moment().startOf('day');
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
     const items = await Item.find({
         user: me,
-        dueDate: { $lt: startOfDay },
+        dueDate: { $lt: startOfToday },
         isCompleted: false,
         isArchived: false,
         isDeleted: false
@@ -94,16 +128,24 @@ const getUserOverdueItems = async (me) => {
 }
 
 const getUserItemsByDate = async (me, date) => {
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const items = await Item.find({
         user: me,
-        dueDate: date,
         isArchived: false,
-        isDeleted: false
-    })
-        .sort({ createdAt: -1 });
+        isDeleted: false,
+        $or: [
+            { dueDate: { $gte: startOfDay, $lte: endOfDay } },
+            { completedAt: { $gte: startOfDay, $lte: endOfDay } }
+        ]
+    }).sort({ createdAt: -1 });
 
     return items;
-}
+};
 
 const createItem = async (user, itemData, space, block) => {
     if (!space || !block) {
@@ -308,6 +350,33 @@ const searchItemsByTitle = async (title, user) => {
     return items;
 };
 
+const getUserFavoriteItems = async (user) => {
+    const items = await Item.find({
+        isFavorite: true,
+        isArchived: false,
+        isDeleted: false,
+        user
+    })
+
+    return items;
+};
+
+const getSubItems = async (user, parentId) => {
+    const subItems = await Item.find({
+        parent: parentId,
+        user,
+        isArchived: false,
+        isDeleted: false,
+        isCompleted: false
+    });
+    if (!subItems.length) {
+        const error = new Error("No sub-items found for this parent item.");
+        error.statusCode = 404;
+        throw error;
+    }
+    return subItems;
+};
+
 export {
     getInboxItems,
     getInboxItem,
@@ -325,5 +394,8 @@ export {
     updateInboxItem,
     searchItemsByTitle,
     createInboxItem,
-    getThisWeekItems
+    getThisWeekItems,
+    getThisWeekItemsByDateRange,
+    getUserFavoriteItems,
+    getSubItems
 }

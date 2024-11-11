@@ -5,13 +5,12 @@ import { environment } from "./loaders/environment.loader.js";
 import { initRoutes } from "./routers/index.js";
 import { handlePushNotification } from "./controllers/integration/email.controller.js";
 import { handleWebhook } from "./controllers/integration/linear.controller.js";
-import { handleCalendarWebhook } from "./controllers/integration/calendar.controller.js";
 import { handleGithubWebhook } from "./controllers/integration/github.controller.js";
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
-import { linearWorker } from "./jobs/linear.job.js";
-import { calendaWorker } from "./jobs/calendar.job.js";
 import { spaceWorker } from "./jobs/space.job.js";
+import { linearWorker } from "./jobs/linear.job.js"
+import { addCycleJob } from "./jobs/cycle.job.js";
 
 const { ValidationError } = Joi;
 const app = express();
@@ -27,13 +26,13 @@ app.use(
 );
 
 app.post("/linear/webhook", handleWebhook);
-app.post("/calendar/webhook", handleCalendarWebhook);
 app.post("/gmail/webhook", handlePushNotification);
 app.post("/github/webhook", handleGithubWebhook);
 
 app.post("/sms", handleSmsItemCreation);
 
 initRoutes(app);
+addCycleJob();
 // Express error handler
 app.use((err, req, res, next) => {
     console.log(err);

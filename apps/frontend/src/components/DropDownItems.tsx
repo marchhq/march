@@ -1,4 +1,6 @@
-import React from "react"
+import { format } from "path"
+
+import React, { useEffect } from "react"
 
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 
@@ -13,6 +15,8 @@ import { CycleItem } from "../lib/@types/Items/Cycle"
 import { Box, CheckedBox } from "../lib/icons/Box"
 import { LinearDark } from "../lib/icons/LinearCircle"
 import { Link } from "../lib/icons/Link"
+import { getOverdueText } from "../utils/datetime"
+import { truncateString } from "../utils/helpers"
 
 interface DropdownItemProps {
   item: CycleItem
@@ -50,7 +54,11 @@ const getSourceIcon = (source) => {
 export const DropdownItem: React.FC<DropdownItemProps> = ({
   item,
   onToggleComplete,
+  isOverdue,
 }) => {
+  useEffect(() => {
+    console.log("item", item)
+  }, [item])
   return (
     <div className="group relative flex items-center gap-2">
       <button onClick={() => onToggleComplete(item)}>
@@ -66,24 +74,33 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
             rel="noopener noreferrer"
             className="flex items-center gap-3 truncate"
           >
-            <span className="truncate">{item.title}</span>
+            <span className="truncate">
+              {truncateString(
+                item.title.replace(/^https?:\/\/(www\.)?/, ""),
+                25
+              )}
+            </span>
             <span className="shrink-0">
               {getSourceIcon(item.source) || <Link />}
             </span>
           </a>
         ) : (
-          <span className="truncate">{item.title}</span>
+          <span className="truncate">
+            {truncateString(item.title.replace(/^https?:\/\/(www\.)?/, ""), 25)}
+          </span>
         )}
-        {/*       {isOverdue && (
+        {isOverdue && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <span className="inline-block size-2 shrink-0 rounded-full bg-[#E34136]/80"></span>
               </TooltipTrigger>
-              <TooltipContent>{getOverdueText()}</TooltipContent>
+              <TooltipContent>
+                {getOverdueText(item.dueDate) ?? ""}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )} */}
+        )}
       </li>
       <div className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <AddToSpace itemId={item._id} />

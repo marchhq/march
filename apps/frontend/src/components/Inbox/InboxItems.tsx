@@ -2,69 +2,100 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import { Icon } from "@iconify-icon/react"
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-} from "@radix-ui/react-context-menu"
+import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
+import Image from "next/image"
 
+import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
+import BoxIcon from "@/public/icons/box.svg"
+import LinearIcon from "@/public/icons/linear.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
+import classNames from "@/src/utils/classNames"
+import { getWeekDates } from "@/src/utils/datetime"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
-  const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set())
-  const [optimisticDoneItems, setOptimisticDoneItems] = useState<Set<string>>(
-    new Set()
+
+  const [isControlHeld, setIsControlHeld] = useState(false)
+  const [dateChanged, setDateChanged] = useState(false)
+  const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
+    null
   )
+  const [date, setDate] = React.useState<Date | null>(new Date())
+  const [cycleDate, setCycleDate] = React.useState<Date | null>(new Date())
+  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
+    useCycleItemStore()
 
-  const {
-    items,
-    currentItem,
-    setCurrentItem,
-    fetchItems,
-    updateItem,
-    isLoading,
-  } = useCycleItemStore()
+  const { items, error: inboxError } = inbox
 
-  const fetchInbox = useCallback(async () => {
-    console.log("Fetching inbox...")
-    try {
-      await fetchItems(session)
-    } catch (error) {
-      console.error("Error fetching inbox:", error)
+  useEffect(() => {
+    fetchInbox(session)
+  }, [fetchInbox, session])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Control" && event.location === 1) {
+        setIsControlHeld(true)
+      }
     }
-  }, [session, fetchItems])
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Control" && event.location === 1) {
+        setIsControlHeld(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keyup", handleKeyUp)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [])
 
   useEffect(() => {
-    fetchInbox()
-  }, [fetchInbox])
-
-  useEffect(() => {
-    console.log("Current Items:", items)
-  }, [items])
+    if (dateChanged) {
+      if (reschedulingItemId) {
+        if (date) {
+          updateItem(
+            session,
+            { status: "todo", dueDate: date },
+            reschedulingItemId
+          )
+        }
+        if (cycleDate) {
+          const { startDate, endDate } = getWeekDates(cycleDate)
+          updateItem(
+            session,
+            {
+              status: "todo",
+              dueDate: date,
+              cycle: {
+                startsAt: startDate,
+                endsAt: endDate,
+              },
+            },
+            reschedulingItemId
+          )
+        }
+      }
+      setReschedulingItemId(null)
+      setDateChanged(false)
+    }
+  }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
 
   const handleExpand = useCallback(
     (item: CycleItem) => {
-      // Only update the current item if it's not already the selected item
-      if (!currentItem || currentItem._id !== item._id) {
+      if (isControlHeld && item.type === "link") {
+        window.open(item.metadata?.url, "_blank")
+      } else if (!currentItem || currentItem._id !== item._id) {
         setCurrentItem(item)
       }
     },
-    [currentItem, setCurrentItem]
+    [currentItem, setCurrentItem, isControlHeld]
   )
-
-  /* const handleDelete = useCallback(
-    (id: string) => {
-      if (id) {
-        deleteItem(session, id)
-      }
-    },
-    [deleteItem, session]
-  ) */
 
   const handleDone = useCallback(
     (
@@ -75,160 +106,160 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        setAnimatingItems((prev) => new Set(prev).add(id))
-        setOptimisticDoneItems((prev) => {
-          const newSet = new Set(prev)
-          if (newStatus === "done") {
-            newSet.add(id)
-          } else {
-            newSet.delete(id)
-          }
-          return newSet
-        })
-
-        setTimeout(() => {
-          updateItem(session, { status: newStatus }, id)
-          setAnimatingItems((prev) => {
-            const newSet = new Set(prev)
-            newSet.delete(id)
-            return newSet
-          })
-        }, 400)
+        const today = new Date()
+        const { startDate, endDate } = getWeekDates(today)
+        updateItem(
+          session,
+          {
+            status: newStatus,
+            dueDate: today,
+            cycle: {
+              startsAt: startDate,
+              endsAt: endDate,
+            },
+          },
+          id
+        )
       }
     },
     [updateItem, session]
   )
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4">
-        <p>loading...</p>
-      </div>
-    )
+  const getSourceIcon = (source: string) => {
+    switch (source) {
+      case "gmail":
+        return <MailsIcon size={14} />
+      case "githubIssue":
+      case "githubPullRequest":
+        return <GithubIcon size={14} />
+      case "linear":
+        return (
+          <Image
+            src={LinearIcon}
+            alt="linear icon"
+            width={14}
+            height={14}
+            className="opacity-50"
+          />
+        )
+      case "march":
+      case "marchClipper":
+        return null
+      default:
+        return null
+    }
   }
 
-  const menuItems = (item: CycleItem) => [
-    {
-      name: "Expand",
-      icon: "ri:expand-diagonal-s-line",
-      onClick: () => handleExpand(item),
-    },
-    {
-      name: "Mark as done",
-      icon: "weui:done-outlined",
-      onClick: (event: React.MouseEvent) =>
-        handleDone(event, item._id!, item.status),
-    },
-    { name: "Plan", icon: "humbleicons:clock", onClick: () => {} },
-    { name: "Move", icon: "mingcute:move-line", onClick: () => {} },
-    {
-      name: "Delete",
-      icon: "weui:delete-outlined",
-      color: "#C45205",
-      //     onClick: () => handleDelete(item._id!),
-    },
-  ]
-
   const filteredItems = items.filter((item) => item.status !== "done")
-  console.log("Filtered items:", filteredItems)
+
+  const handleRescheduleCalendar = (
+    e: React.MouseEvent,
+    id: string,
+    dueDate: Date | null
+  ) => {
+    e.stopPropagation()
+
+    const newDate = dueDate
+      ? typeof dueDate === "string"
+        ? new Date(dueDate)
+        : dueDate
+      : null
+
+    setReschedulingItemId(id)
+    setDate(newDate) // Ensure this is a Date or null
+  }
 
   return (
-    <div className="flex h-full flex-col gap-2 overflow-hidden overflow-y-auto pr-1">
+    <div className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       {filteredItems.length === 0 ? (
-        <p>inbox empty</p>
+        <span className="pl-5">inbox empty</span>
       ) : (
-        filteredItems.map((item) => (
-          <ContextMenu key={item._id}>
-            <ContextMenuTrigger asChild>
-              <div
-                className={`group relative flex justify-between gap-1 rounded-lg border p-4 text-left transition-all duration-300 hover:border-border focus:outline-none focus:ring-0 ${
-                  animatingItems.has(item._id!)
-                    ? "transform-none opacity-100 sm:translate-x-full sm:opacity-0 sm:blur-lg"
-                    : ""
-                } ${
-                  currentItem && currentItem._id === item._id
-                    ? "border-border"
-                    : "border-transparent"
-                }`}
+        <div>
+          {inboxError && (
+            <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+              <span>{inboxError}</span>
+            </div>
+          )}
+          {error && (
+            <div className="mb-2.5 truncate pl-5 text-xs text-danger-foreground">
+              <span>{error}</span>
+            </div>
+          )}
+          <div className="flex flex-col gap-2.5">
+            {filteredItems.map((item) => (
+              <button
+                key={item._id}
+                className="hover-text group flex items-start gap-2 py-1 text-primary-foreground outline-none hover:text-foreground focus:text-foreground"
                 onClick={() => handleExpand(item)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleExpand(item)
-                  }
-                }}
-                tabIndex={0}
-                role="button"
-                style={{
-                  WebkitTapHighlightColor: "transparent",
-                  outline: "none",
-                }}
                 data-item-id={item._id}
               >
-                <div className="flex w-full flex-col truncate">
-                  <div className="flex justify-between text-foreground">
-                    <div className="flex w-full items-start gap-2">
-                      <button
-                        onClick={(e) => handleDone(e, item._id!, item.status)}
-                        aria-label={
-                          optimisticDoneItems.has(item._id!)
-                            ? "Mark as not done"
-                            : "Mark as done"
-                        }
-                        className="focus:outline-none focus:ring-0"
-                      >
-                        <Icon
-                          icon={
-                            optimisticDoneItems.has(item._id!)
-                              ? "weui:done2-filled"
-                              : "material-symbols:circle-outline"
-                          }
-                          className="mt-0.5 text-[18px]"
-                        />
-                      </button>
-                      <p className="mr-1">{item.title}</p>
-                      <div className="flex items-center gap-2 text-xs text-secondary-foreground">
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
-                          <Icon
-                            icon="humbleicons:clock"
-                            className="mt-0.5 text-[18px]"
-                          />
-                        </button>
-                        <button className="invisible focus:outline-none focus:ring-0 group-hover:visible">
-                          <Icon
-                            icon="mingcute:move-line"
-                            className="mt-0.5 text-[18px]"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="ml-[18px] pl-2 text-xs">
-                    <p className="max-w-full truncate">{item.description}</p>
-                  </div>
-                </div>
-              </div>
-            </ContextMenuTrigger>
-            <ContextMenuContent className="rounded-md border border-border">
-              {menuItems(item).map((menuItem) => (
-                <ContextMenuItem
-                  key={menuItem.name}
-                  className="hover-bg rounded-md px-2 py-0.5"
-                >
-                  <button
-                    className="my-1 flex w-full items-center gap-3 text-primary-foreground"
-                    style={{ color: menuItem.color }}
-                    onClick={menuItem.onClick}
+                <div className="flex items-start gap-2 truncate">
+                  <Image
+                    src={BoxIcon}
+                    alt="checkbox icon"
+                    width={12}
+                    height={12}
+                    onClick={(e) => handleDone(e, item._id, item.status)}
+                    className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+                  />
+                  <span
+                    className={classNames(
+                      "text-left truncate",
+                      item.type === "link" && "group-hover:underline"
+                    )}
                   >
-                    <Icon icon={menuItem.icon} className="text-[18px]" />
-                    <span className="flex-1 text-left text-[15px]">
-                      {menuItem.name}
-                    </span>
-                  </button>
-                </ContextMenuItem>
-              ))}
-            </ContextMenuContent>
-          </ContextMenu>
-        ))
+                    {item.title}
+                  </span>
+                  {item.source !== "march" && (
+                    <div className="mt-[3px] flex items-center text-secondary-foreground">
+                      {getSourceIcon(item.source)}
+                    </div>
+                  )}
+                </div>
+                <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
+                  <CalendarIcon
+                    size={14}
+                    className="hover-text"
+                    onClick={(e) =>
+                      handleRescheduleCalendar(e, item._id, item.dueDate)
+                    }
+                  />
+                  <MoveIcon
+                    size={14}
+                    className="hover-text"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {reschedulingItemId !== null && (
+        <div>
+          <div
+            className="fixed inset-0 z-50 cursor-default bg-black/80"
+            role="button"
+            onClick={() => setReschedulingItemId(null)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape" || e.key === "Esc") {
+                setReschedulingItemId(null)
+              }
+            }}
+            tabIndex={0}
+          ></div>
+          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
+            <RescheduleCalendar
+              date={date}
+              setDate={setDate}
+              cycleDate={cycleDate}
+              setCycleDate={setCycleDate}
+              dateChanged={dateChanged}
+              setDateChanged={setDateChanged}
+            />
+          </div>
+        </div>
       )}
     </div>
   )

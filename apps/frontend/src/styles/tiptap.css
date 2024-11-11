@@ -26,7 +26,7 @@
   }
 
   a {
-    @apply underline cursor-pointer;
+    @apply underline cursor-pointer text-secondary-foreground;
   }
 
   p {
@@ -45,41 +45,37 @@
     @apply list-disc ml-4;
   }
 
+  /* Task list specific styles */
   ul[data-type="taskList"] {
-    @apply list-none mr-10 space-y-1 text-lg;
+    list-style: none;
+    margin-left: 0;
+    padding: 0;
 
     li[data-checked="true"] {
       @apply line-through text-zinc-500;
     }
 
-    &>li {
-      @apply flex items-start;
+    li {
+      display: flex;
+      align-items: flex-start;
+      /* Add some padding for spacing between list items */
 
-      &>label {
-        @apply flex items-center mr-2;
-
-        &>span {
-          @apply flex-shrink-0 bg-zinc-700 rounded-md;
-          width: 1.25em;
-          height: 1.25em;
-          margin-top: 0.50em;
-        }
-
-        &>input {
-          @apply hidden;
-        }
-
-        &>input:checked~span {
-          background-image: url("/icons/check.svg");
-          background-size: calc(100% - 5px) calc(100% - 5px);
-          @apply bg-center bg-no-repeat;
-        }
+      >label {
+        @apply flex items-center mr-2 mt-2.5;
       }
 
-      &>div {
+      >div {
         @apply flex-grow;
-        margin-top: 0.30em;
+        margin-top: 0.2em;
       }
+    }
+
+    input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    ul[data-type="taskList"] {
+      margin: 0;
     }
   }
 
@@ -106,5 +102,29 @@
     height: 0;
     pointer-events: none;
     @apply text-secondary-foreground;
+  }
+
+  [data-type="taskList"] input[type="checkbox"] {
+    @apply cursor-pointer appearance-none w-4 h-4 border-2 border-primary-foreground rounded inline-flex items-center justify-center;
+  }
+
+  [data-type="taskList"] input[type="checkbox"]:checked {
+    @apply bg-[#272727] border-[#272727] rounded-sm;
+  }
+
+  [data-type="taskList"] input[type="checkbox"]:checked::after {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    /* increase height for the vertical part of the checkmark */
+    height: 9px;
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    position: relative;
+    top: -1px;
+    /* adjust the vertical alignment */
+    left: 0.5px;
+    /* adjust the horizontal alignment */
   }
 }

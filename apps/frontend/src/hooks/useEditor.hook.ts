@@ -1,5 +1,6 @@
 import { useRef } from "react"
 
+import Bold from "@tiptap/extension-bold"
 import Link from "@tiptap/extension-link"
 import { Placeholder } from "@tiptap/extension-placeholder"
 import TaskItem from "@tiptap/extension-task-item"
@@ -27,6 +28,7 @@ const useEditorHook = ({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({}),
+      Bold,
       TaskList,
       TaskItem.configure({
         nested: true,
@@ -45,7 +47,7 @@ const useEditorHook = ({
       }),
     ],
     content,
-    autofocus: "end",
+    autofocus: false,
     onUpdate: ({ editor }) => {
       setIsSaved(false)
       setContent(editor.getHTML())

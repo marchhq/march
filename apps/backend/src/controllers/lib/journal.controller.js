@@ -1,7 +1,6 @@
 import Joi from "joi";
 import { createUpdateJournal, getUserJournal, getUserAllJournals, getUserTodayJournal } from "../../services/lib/journal.service.js";
 import { CreateUpdateJournalPayload } from "../../payloads/lib/journal.payload.js";
-import moment from "moment-timezone";
 
 const { ValidationError } = Joi;
 
@@ -39,8 +38,7 @@ const getUserJournalByDateController = async (req, res, next) => {
     try {
         const { date } = req.params;
         const user = req.user._id;
-        const journalDate = moment(date).startOf('day').toDate();
-        const journal = await getUserJournal(journalDate, user)
+        const journal = await getUserJournal(date, user)
         res.json({
             journal
         });

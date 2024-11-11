@@ -4,19 +4,42 @@ import { create } from "zustand"
 import { BACKEND_URL } from "../constants/urls"
 import { User } from "@/src/lib/@types/auth/user"
 
-interface UserStoreType {
+interface UserStoreState {
   user: User | null
   isLoading: boolean
   error: string | null
+}
+
+interface UserStoreActions {
   fetchUser: (session: string) => Promise<User | null>
   setUser: (user: User | null) => void
   clearUser: () => void
+  updateIntegrationStatus: (key: string, status: boolean) => void
 }
+
+type UserStoreType = UserStoreState & UserStoreActions
 
 const useUserStore = create<UserStoreType>((set) => ({
   user: null,
   isLoading: false,
   error: null,
+
+  updateIntegrationStatus: (key: string, status: boolean) =>
+    set((state) => ({
+      user: state.user
+        ? {
+            ...state.user,
+            integrations: {
+              ...state.user.integrations,
+              [key]: {
+                ...(state.user.integrations?.[key] || {}),
+                connected: status,
+              },
+            },
+          }
+        : null,
+    })),
+
   fetchUser: async (session: string) => {
     set({ isLoading: true, error: null })
     try {
@@ -34,6 +57,7 @@ const useUserStore = create<UserStoreType>((set) => ({
       return null
     }
   },
+
   setUser: (user: User | null) => set({ user }),
   clearUser: () => set({ user: null, error: null }),
 }))

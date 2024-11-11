@@ -15,7 +15,7 @@ const ItemSchema = new Schema(
         },
         type: {
             type: String,
-            default: "Issue"
+            default: "issue"
         },
         source: {
             type: String,
@@ -29,9 +29,15 @@ const ItemSchema = new Schema(
             type: Date,
             default: null
         },
-        cycleDate: {
-            type: Date,
-            default: null
+        cycle: {
+            startsAt: {
+                type: Date,
+                default: null
+            },
+            endsAt: {
+                type: Date,
+                default: null
+            }
         },
         status: {
             type: String,
@@ -66,6 +72,10 @@ const ItemSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User"
         },
+        parent: {
+            type: Schema.Types.ObjectId,
+            ref: 'Item'
+        },
         labels: [
             {
                 type: Schema.Types.ObjectId,
@@ -74,8 +84,13 @@ const ItemSchema = new Schema(
         ],
         lastVisitedSpace: {
             type: Schema.Types.ObjectId,
-            ref: 'Space',
+            ref: "Space",
             default: null
+        },
+        isFavorite: {
+            type: Boolean,
+            default: false,
+            index: true
         },
         isCompleted: {
             type: Boolean,
@@ -88,6 +103,10 @@ const ItemSchema = new Schema(
         isDeleted: {
             type: Boolean,
             default: false
+        },
+        completedAt: {
+            type: Date,
+            default: null
         }
     },
     {
@@ -101,11 +120,27 @@ ItemSchema.pre("save", function (next) {
     } else {
         this.isCompleted = false;
     }
+
+    if (this.isCompleted && !this.completedAt) {
+        this.completedAt = new Date();
+    }
+
+    next();
+});
+
+ItemSchema.pre("findOneAndUpdate", function (next) {
+    const update = this.getUpdate();
+    if (update.$set && update.$set.status === "done") {
+        update.$set.isCompleted = true;
+        update.$set.completedAt = new Date();
+    } else if (update.$set && update.$set.status) {
+        update.$set.isCompleted = false;
+        update.$set.completedAt = null;
+    }
+
     next();
 });
 
 const Item = db.model("Item", ItemSchema, "items");
 
-export {
-    Item
-}
+export { Item };

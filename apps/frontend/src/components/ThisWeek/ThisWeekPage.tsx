@@ -12,6 +12,7 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import {
   getCurrentWeek,
   getFormattedDateRange,
+  getWeekDates,
   getWeeksInMonth,
 } from "@/src/utils/datetime"
 
@@ -36,8 +37,10 @@ export const ThisWeekPage: React.FC = () => {
     })
   }
 
+  const { startDate, endDate } = getWeekDates(currentDate)
+
   return (
-    <div className="ml-[160px] flex h-full w-[calc(100%-360px)] p-16">
+    <div className="flex h-full w-[calc(100%-160px)] p-10">
       <div className="relative flex flex-auto flex-col gap-12">
         <div className="flex items-center gap-8 text-sm">
           <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
@@ -55,7 +58,7 @@ export const ThisWeekPage: React.FC = () => {
           </div>
           <ThisWeekArrows onChangeWeek={handleWeekChange} />
         </div>
-        <CustomKanban />
+        <CustomKanban startDate={startDate} endDate={endDate} />
         {currentItem && <ThisWeekExpandedItem />}
       </div>
     </div>
