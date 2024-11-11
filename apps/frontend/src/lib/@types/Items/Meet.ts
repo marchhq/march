@@ -45,7 +45,7 @@ export interface Metadata {
 export interface Meet {
   _id: string
   title: string
-  content: string
+  description: string
   metadata: Metadata
   id: string
   createdAt: string
