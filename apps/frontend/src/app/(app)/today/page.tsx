@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 
-import TodayPage from "@/src/components/Today/TodayPage"
+import { TodayPage } from "@/src/components/Today/TodayPage"
 import generateMetadataHelper from "@/src/utils/seo"
 
 export const metadata: Metadata = generateMetadataHelper({

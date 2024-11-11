@@ -8,7 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown"
+import { useAuth } from "@/src/contexts/AuthContext"
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
+import useGitHubLogin from "@/src/hooks/useGithubLogin"
 import installGitHub from "@/src/hooks/useInstallGitHub"
 import useLinear from "@/src/hooks/useLinear"
 import { Integration, User } from "@/src/lib/@types/auth/user"
@@ -110,9 +112,12 @@ interface IntegrationsProps {
 }
 
 const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
+  const { session } = useAuth()
   const { handleLogin: handleCalLogin, handleRevoke: handleCalRevoke } =
     useGoogleCalendarLogin("/profile")
-  const { handleLogin: handleLinearLogin } = useLinear()
+  const { handleLogin: handleLinearLogin, handleRevoke: handleLinearRevoke } =
+    useLinear()
+  const { handleRevoke: handleGithubRevoke } = useGitHubLogin(session)
 
   const integrations: Integration[] = useMemo(
     () => [
@@ -132,7 +137,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         description:
           "Link your github account to pull assigned issues, PR to your workflow.",
         handleConnect: installGitHub,
-        handleRevoke: () => console.log("Github revoke not implemented yet"),
+        handleRevoke: handleGithubRevoke,
       },
       {
         key: "linear",
@@ -140,7 +145,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         name: "Linear",
         description: "Bring all your assigned linear issues to march inbox.",
         handleConnect: handleLinearLogin,
-        handleRevoke: () => console.log("Linear revoke not implemented yet"),
+        handleRevoke: handleLinearRevoke,
       },
       {
         key: "notion",
@@ -153,7 +158,13 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         handleRevoke: () => console.log("Notion revoke not implemented yet"),
       },
     ],
-    [handleCalLogin, handleCalRevoke, handleLinearLogin]
+    [
+      handleCalLogin,
+      handleCalRevoke,
+      handleLinearLogin,
+      handleLinearRevoke,
+      handleGithubRevoke,
+    ]
   )
 
   return (
