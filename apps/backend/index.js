@@ -1,12 +1,16 @@
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
+import http from 'http';
+import { initWebSocketServer } from './src/loaders/websocket.loader.js';
 
 (async function init () {
-    app.listen(environment.PORT, () => {
-        console.log(`Server listening on port ${environment.PORT}`)
-    })
-})()
+    const server = http.createServer(app);
+    initWebSocketServer(server);
 
+    server.listen(environment.PORT, () => {
+        console.log(`Server listening on port ${environment.PORT}`);
+    });
+})();
 // for webhook testing in local
 // import { app } from "./src/index.js";
 // import { environment } from "./src/loaders/environment.loader.js";
