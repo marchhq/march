@@ -62,6 +62,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",
+    "ws": "^8.18.0",
     "zustand": "^4.5.5"
   },
   "devDependencies": {

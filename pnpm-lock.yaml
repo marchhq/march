@@ -292,6 +292,9 @@ importers:
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
+      ws:
+        specifier: ^8.18.0
+        version: 8.18.0
       zustand:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.3)(react@18.3.1)
