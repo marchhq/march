@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
+import Markdown from "markdown-it"
 import Image from "next/image"
 
 import TextEditor from "../atoms/Editor"
@@ -11,6 +12,7 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
+import { processMarkdown } from "@/src/utils/markdown"
 
 interface EditedItem {
   title: string
@@ -42,10 +44,11 @@ export const InboxExpandedItem: React.FC = () => {
   // state
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
-  const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-
+  const [content, setContent] = useState(
+    processMarkdown(currentItem?.description || "<p></p>")
+  )
   // memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
@@ -132,7 +135,7 @@ export const InboxExpandedItem: React.FC = () => {
   useEffect(() => {
     if (!currentItem) return
 
-    const newContent = currentItem.description || "<p></p>"
+    const newContent = processMarkdown(currentItem.description || "<p></p>")
 
     if (currentItem._id !== editItemId) {
       setEditItemId(currentItem._id)
@@ -145,7 +148,7 @@ export const InboxExpandedItem: React.FC = () => {
         editor.commands.focus()
       }
     }
-  }, [currentItem, editItemId, editor])
+  }, [currentItem, editItemId, editor, processMarkdown])
 
   // effect to handle title auto-save
   useEffect(() => {
