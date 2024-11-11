@@ -4,6 +4,7 @@ import { CalendarIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
 import BoxIcon from "@/public/icons/box.svg"
+import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import classNames from "@/src/utils/classNames"
@@ -71,14 +72,25 @@ export const ItemList: React.FC<ItemListProps> = ({
           data-item-id={item._id}
         >
           <div className="flex items-start gap-2 truncate">
-            <Image
-              src={BoxIcon}
-              alt="checkbox icon"
-              width={12}
-              height={12}
-              onClick={(e) => handleDone(e, item._id, item.status)}
-              className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
-            />
+            {item.status === "done" ? (
+              <Image
+                src={BoxFilledIcon}
+                alt="checkbox filled icon"
+                width={12}
+                height={12}
+                onClick={(e) => handleDone(e, item._id, item.status)}
+                className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+              />
+            ) : (
+              <Image
+                src={BoxIcon}
+                alt="checkbox icon"
+                width={12}
+                height={12}
+                onClick={(e) => handleDone(e, item._id, item.status)}
+                className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+              />
+            )}
             <span
               className={classNames(
                 `truncate text-left ${
