@@ -34,7 +34,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     // TODO:: Can have a better way to adjust the layout(left margin) using flex
-    <div className="w-1/2  bg-background p-10 text-foreground">
+    <div className="mt-8  w-1/2 bg-background p-10 text-foreground">
       <UserInfo user={user} />
       <Integrations user={user} />
       <footer className="text-muted-foreground mb-28 mt-24 text-[16px]">
