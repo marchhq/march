@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { isIntegrationConnected } from "@/src/lib/@types/auth/user"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
+import { useMeetsStore, MeetsStoreType } from "@/src/lib/store/meets.store"
 import useUserStore from "@/src/lib/store/user.store"
 
 export default function InitialMeetings() {

@@ -1,24 +1,36 @@
-export const LeftChevron = (): JSX.Element => {
+type Props = {
+  className?: string
+}
+
+export const LeftChevron = ({ className }: Props): JSX.Element => {
   return (
     <svg
-      width="8"
-      height="12"
-      viewBox="0 0 8 12"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      className={`${className} fill-current`}
     >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M0.988671 6.79398C0.549344 6.35464 0.54935 5.64234 0.988685 5.20301L5.45353 0.738163C5.77525 0.416437 6.2591 0.320176 6.67947 0.494263C7.09983 0.668348 7.37396 1.0785 7.37402 1.53349L7.37533 10.4646C7.3754 10.9197 7.10132 11.33 6.68092 11.5041C6.26051 11.6783 5.77659 11.5821 5.45482 11.2603L0.988671 6.79398Z"
-        fill="white"
-        fillOpacity="0.5"
-      />
+      <path d="M14.47 18.53a.75.75 0 0 0 1.06 0V5.47a.75.75 0 0 0-1.06 0l-6 6a.75.75 0 0 0 0 1.06z" />
     </svg>
   )
 }
 
-export const RightChevron = (): JSX.Element => {
+export const RightChevron = ({ className }: Props): JSX.Element => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      className={`${className} fill-current`}
+    >
+      <path d="M9.53 5.47a.75.75 0 0 0-1.06 0v13.06a.75.75 0 0 0 1.06 0l6-6a.75.75 0 0 0 0-1.06z" />
+    </svg>
+  )
+}
+
+export const RightChevron2 = (): JSX.Element => {
   return (
     <svg
       width="8"
