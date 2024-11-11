@@ -602,4 +602,14 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       throw error
     }
   },
+  setInboxItems: (items) => {
+    set((state) => ({
+      inbox: {
+        ...state.inbox,
+        items,
+        isLoading: false,
+        error: null,
+      },
+    }))
+  },
 }))

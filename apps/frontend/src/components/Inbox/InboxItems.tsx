@@ -5,12 +5,14 @@ import React, { useEffect, useCallback, useState } from "react"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/hooks/useWebSocket"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { getWeekDates } from "@/src/utils/datetime"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
+  const { sendMessage } = useWebSocket()
 
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
@@ -26,7 +28,8 @@ export const InboxItems: React.FC = () => {
 
   useEffect(() => {
     fetchInbox(session)
-  }, [fetchInbox, session])
+    sendMessage({ type: "subscribe_inbox" })
+  }, [fetchInbox, session, sendMessage])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
