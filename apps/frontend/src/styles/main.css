@@ -34,7 +34,9 @@
 
     --border: 219, 215, 216;
     /* DBD7D8 */
-    --radius: 0.5rem;
+
+    --danger: ;
+    --danger-foreground: 239 68 68;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -61,6 +63,9 @@
 
       --border: 34, 34, 34;
       /* 222 */
+
+      --danger: ;
+      --danger-foreground: 239 68 68;
     }
   }
 }
@@ -226,7 +231,8 @@ button {
 /* for firefox */
 
 html {
-  scrollbar-width: thin; /* auto, thin or none */
+  scrollbar-width: thin;
+  /* auto, thin or none */
 }
 
 html::-webkit-scrollbar-thumb:hover {
@@ -235,6 +241,17 @@ html::-webkit-scrollbar-thumb:hover {
 
 html::-webkit-scrollbar-track:hover {
   scrollbar-color: #27272a rgba(253, 253, 253, 0);
+}
+
+/* chrome, etc */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* firefox, etc */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 [data-theme="slash-command"] {

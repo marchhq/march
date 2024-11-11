@@ -1,16 +1,18 @@
 import axios from "axios"
 import { NextRequest, NextResponse } from "next/server"
 
-import { LINEAR_ACCESS_TOKEN } from "@/src/lib/constants/cookie"
-import { BACKEND_URL } from "@/src/lib/constants/urls"
+import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get("code")
+  const redirectDomain = FRONTEND_URL
 
   if (!code) {
     console.error("No code received from Linear")
-    return NextResponse.redirect(new URL("/login?error=no_code", request.url))
+    return NextResponse.redirect(
+      new URL("/login?error=no_code", redirectDomain)
+    )
   }
 
   const cookies = request.cookies
@@ -25,16 +27,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const { accessToken } = response.data
-
-    const res = NextResponse.redirect(new URL("/profile", request.url))
-    res.cookies.set(LINEAR_ACCESS_TOKEN, accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: "/",
-    })
+    const res = NextResponse.redirect(new URL("/profile", redirectDomain))
 
     return res
   } catch (error) {
@@ -43,7 +36,7 @@ export async function GET(request: NextRequest) {
       console.error("Axios error details:", error.response?.data)
     }
     return NextResponse.redirect(
-      new URL("/login?error=linear_authentication_failed", request.url)
+      new URL("/login?error=linear_authentication_failed", redirectDomain)
     )
   }
 }

@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 import { Link as LinkIcon, Trash } from "@phosphor-icons/react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { Textarea } from "../ui/textarea"
 import {
@@ -13,11 +14,14 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useModal } from "@/src/contexts/ModalProvider"
 import { useToast } from "@/src/hooks/use-toast"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 import { TwitterIcon } from "@/src/lib/icons/TwitterIcon"
+import useUserStore from "@/src/lib/store/user.store"
 
 type Inputs = {
+  email: string
   title: string
   feedback: string
   attachment?: FileList
@@ -28,6 +32,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const FeedbackModal = () => {
   const {
     register,
+    setValue,
     handleSubmit,
     reset,
     formState: { errors },
@@ -37,6 +42,9 @@ const FeedbackModal = () => {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const { user } = useUserStore()
+  const { hideModal } = useModal()
+  const router = useRouter()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -71,10 +79,10 @@ const FeedbackModal = () => {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       setIsLoading(true)
-      // Prepare form data for API submission
       const formData = new FormData()
       formData.append("title", data.title)
       formData.append("feedback", data.feedback)
+      formData.append("email", data.email)
 
       selectedFiles.forEach((file) => formData.append("attachment", file))
 
@@ -90,24 +98,46 @@ const FeedbackModal = () => {
         toast({
           title: "Submitted successfully!",
         })
-
+        hideModal()
         // Clear the form fields and selected files after successful submission
         reset() // reset method from useForm
         setSelectedFiles([]) // clear the selected files
         console.log("Feedback submitted successfully!")
       } else {
+        // Handle response errors
+        if (response.status === 401) {
+          router.push("/") // Redirect to home if not authenticated
+          return
+        }
+
+        const errorData = await response.json() // Get error details if available
         toast({
           title: "Uh oh! Error while submitting feedback.",
+          description: errorData.message || "An unexpected error occurred.",
           variant: "destructive",
         })
-        console.error("Error submitting feedback:", response.statusText)
+        console.error(
+          "Error submitting feedback:",
+          response.statusText,
+          errorData
+        )
       }
       setIsLoading(false)
-    } catch (error) {
+    } catch (error: unknown) {
       setIsLoading(false)
       console.error("An error occurred while submitting feedback:", error)
+      toast({
+        title: "Network error",
+        description: "Please check your connection and try again.",
+        variant: "destructive",
+      })
     }
   }
+
+  useEffect(() => {
+    // Pre-fill user email
+    setValue("email", user?.accounts.google?.email || "")
+  }, [])
 
   return (
     <div className="rounded-lg border border-border">
@@ -120,7 +150,7 @@ const FeedbackModal = () => {
         <div className="px-4">
           <input
             placeholder="Title"
-            className="mt-2 w-full border-none bg-transparent px-2 py-4 text-xl placeholder:text-secondary-foreground focus:outline-none"
+            className="mt-2 w-full border-none bg-transparent px-2 py-3 text-xl placeholder:text-secondary-foreground focus:outline-none"
             {...register("title", { required: true })}
           />
           {errors.title && (
@@ -180,12 +210,12 @@ const FeedbackModal = () => {
             <Link
               href={"https://x.com/_marchhq"}
               target="_blank"
-              className="flex items-center gap-2 text-sm text-secondary-foreground"
+              className="flex items-center gap-2 rounded-lg p-1 text-sm text-secondary-foreground hover:bg-background-active"
             >
               <TwitterIcon /> <span>_marchhq</span>
             </Link>
             <button
-              className="hover-bg cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground disabled:cursor-not-allowed"
+              className="cursor-pointer rounded-lg px-4 py-1 text-sm text-secondary-foreground hover:bg-background-active disabled:cursor-not-allowed"
               disabled={isLoading}
               type="submit"
             >

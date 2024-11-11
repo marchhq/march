@@ -1,5 +1,4 @@
-// import { itemQueue } from "../../loaders/bullmq.loader.js";
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -56,7 +55,18 @@ const createInboxItemController = async (req, res, next) => {
         const user = req.user._id;
 
         const requestedData = req.body;
-        const items = await createInboxItem(user, requestedData);
+        const { type } = requestedData;
+
+        let itemData = requestedData;
+
+        if (type === 'link' || type === 'text') {
+            const updatedData = await generateLinkPreview(requestedData);
+            if (updatedData) {
+                itemData = updatedData;
+            }
+        }
+
+        const items = await createInboxItem(user, itemData);
 
         res.status(200).json({
             response: items
@@ -153,6 +163,56 @@ const searchItemsByTitleController = async (req, res, next) => {
     }
 };
 
+const getThisWeekItemsByDateRangeController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { startDate, endDate } = req.query;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({
+                message: "Please provide both startDate and endDate."
+            });
+        }
+
+        const items = await getThisWeekItemsByDateRange(me, new Date(startDate), new Date(endDate));
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getUserFavoriteItemsController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+
+        const items = await getUserFavoriteItems(user);
+
+        res.status(200).json({
+            response: items
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getSubItemsController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { item: parentId } = req.params;
+
+        const subItems = await getSubItems(user, parentId);
+
+        res.status(200).json({
+            response: subItems
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export {
     createItemController,
     filterItemsController,
@@ -161,5 +221,8 @@ export {
     getItemFilterByLabelController,
     searchItemsByTitleController,
     getAllItemsByBloackController,
-    createInboxItemController
+    createInboxItemController,
+    getThisWeekItemsByDateRangeController,
+    getUserFavoriteItemsController,
+    getSubItemsController
 }

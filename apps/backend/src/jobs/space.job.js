@@ -1,4 +1,5 @@
 import { Worker } from "bullmq";
+import { spaceQueue } from "../loaders/bullmq.loader.js";
 import { redisConnection } from "../loaders/redis.loader.js";
 import { createSpace } from "../services/lib/space.service.js";
 import { createBlock } from "../services/lib/block.service.js";
@@ -6,6 +7,7 @@ import { createLabels } from '../services/lib/label.service.js';
 
 const processSpaceJob = async (job) => {
     const { user } = job.data;
+
     const spaces = [
         { name: "Notes", icon: "note" },
         { name: "Meetings", icon: "meeting" },
@@ -14,8 +16,8 @@ const processSpaceJob = async (job) => {
 
     try {
         const spaceIds = [];
-
         let readingSpace;
+
         for (const spaceData of spaces) {
             const space = await createSpace(user, spaceData);
             spaceIds.push(space._id);
@@ -36,12 +38,13 @@ const processSpaceJob = async (job) => {
 
         if (readingSpace) {
             const labelsData = [
-                { "name": "liked", "color": "rgba(227, 65, 54, 0.8)" },
-                { "name": "archive", "color": "rgba(109, 112, 119, 1)" }
+                { name: "liked", color: "rgba(227, 65, 54, 0.8)" },
+                { name: "archive", color: "rgba(109, 112, 119, 1)" }
             ];
-
             await createLabels(labelsData, readingSpace._id, user);
         }
+
+        console.log("Job completed successfully for user:", user);
     } catch (error) {
         console.error('Error processing Spaces, Blocks, and Labels:', error);
         throw error;
@@ -51,18 +54,30 @@ const processSpaceJob = async (job) => {
 const spaceWorker = new Worker('spaceQueue', async (job) => {
     await processSpaceJob(job);
 }, {
-    connection: redisConnection
+    connection: redisConnection,
+    concurrency: 5
 });
 
+// Worker Event Listeners
 spaceWorker.on('completed', async (job) => {
-    console.log(`Job with id ${job.id} has been completed`);
+    console.log(`Job with ID ${job.id} has been completed`);
     await job.remove();
 });
 
 spaceWorker.on('failed', (job, err) => {
-    console.error(`Job with id ${job.id} has failed with error ${err.message}`);
+    console.error(`Job with ID ${job.id} has failed with error: ${err.message}`);
+    if (job.attemptsMade < job.opts.attempts) {
+        console.log(`Retrying job ${job.id} (${job.attemptsMade}/${job.opts.attempts})`);
+    } else {
+        console.log(`Job ${job.id} failed permanently after ${job.opts.attempts} attempts`);
+    }
+});
+
+spaceWorker.on('error', (err) => {
+    console.error('Redis connection error in worker:', err);
 });
 
 export {
-    spaceWorker
-}
+    spaceWorker,
+    spaceQueue
+};

@@ -1,13 +1,21 @@
 import { useCallback } from "react"
 
+import axios from "axios"
 import { useRouter } from "next/navigation"
 
-import { FRONTEND_URL } from "../lib/constants/urls"
+import { useAuth } from "../contexts/AuthContext"
+import { BACKEND_URL, FRONTEND_URL } from "../lib/constants/urls"
+
+interface GoogleCalendarHooks {
+  handleLogin: () => Promise<void>
+  handleRevoke: () => Promise<void>
+}
 
 const useGoogleCalendarLogin = (
   redirectAfterAuth: string
-): (() => Promise<void>) => {
+): GoogleCalendarHooks => {
   const router = useRouter()
+  const { session } = useAuth()
 
   const handleLogin = useCallback(async () => {
     try {
@@ -24,14 +32,27 @@ const useGoogleCalendarLogin = (
       )
 
       const calAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=${GOOGLE_SCOPE}&access_type=offline&state=${state}`
-
       router.push(calAuthUrl)
     } catch (error) {
       console.error("Failed to initiate Google Calendar login:", error)
     }
   }, [router, redirectAfterAuth])
 
-  return handleLogin
+  const handleRevoke = useCallback(async () => {
+    try {
+      await axios.get(`${BACKEND_URL}/calendar/revoke-access/`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+      router.push(redirectAfterAuth)
+    } catch (error) {
+      console.error("Failed to revoke Google Calendar access:", error)
+      throw error
+    }
+  }, [router, redirectAfterAuth, session])
+
+  return { handleLogin, handleRevoke }
 }
 
 export default useGoogleCalendarLogin

@@ -52,10 +52,6 @@ export function AddToSpace({ itemId }) {
     }
   }
 
-  if (!spaces?.length) {
-    return <div>Loading...</div>
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
