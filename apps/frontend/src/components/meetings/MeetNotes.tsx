@@ -7,7 +7,7 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
-import useMeetsStore from "@/src/lib/store/meets.store"
+import { useMeetsStore } from "@/src/lib/store/meets.store"
 
 const formatDate = (date: Date) => {
   const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
@@ -71,11 +71,12 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
 
       try {
         await updateMeet(
+          session,
           {
             ...item,
             title: editedItem.title,
           },
-          session
+          item.id
         )
       } catch (error) {
         console.error("Error updating item:", error)
@@ -95,7 +96,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   const saveContent = useCallback(() => {
     if (!meetData?._id || content === lastSavedContent.current) return
 
-    updateMeet({ ...meetData, description: content }, session)
+    updateMeet(session, { ...meetData, description: content }, meetData.id)
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
