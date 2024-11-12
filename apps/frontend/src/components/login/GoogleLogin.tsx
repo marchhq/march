@@ -5,6 +5,7 @@ import React from "react"
 import { Icon } from "@iconify-icon/react"
 import { useGoogleLogin } from "@react-oauth/google"
 
+import { Button } from "../button/Button"
 import { FRONTEND_URL } from "@/src/lib/constants/urls"
 
 const GoogleLogin = (): JSX.Element => {
@@ -18,13 +19,10 @@ const GoogleLogin = (): JSX.Element => {
   })
 
   return (
-    <button
-      onClick={LoginWithGoogle}
-      className="hover-text flex w-fit items-center justify-center gap-2 bg-transparent p-1 font-semibold text-secondary-foreground"
-    >
-      <Icon icon="flat-color-icons:google" className="text-[20px]" />
-      continue with google
-    </button>
+    <Button onClick={LoginWithGoogle}>
+      <Icon icon="flat-color-icons:google" className="text-[14px]" />
+      Continue with Google
+    </Button>
   )
 }
 
