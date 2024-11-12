@@ -46,9 +46,10 @@ const getMeetingByIdController = async (req, res, next) => {
 const updateMeetingController = async (req, res, next) => {
     try {
         const updateData = req.body;
+        const user = req.user._id;
         const { meeting: id } = req.params;
 
-        const meeting = await updateMeeting(id, updateData);
+        const meeting = await updateMeeting(id, updateData, user);
 
         res.status(200).json({
             meeting
@@ -61,7 +62,8 @@ const updateMeetingController = async (req, res, next) => {
 const deleteMeetingController = async (req, res, next) => {
     try {
         const { meeting: id } = req.params;
-        await deleteMeeting(id);
+        const user = req.user._id;
+        await deleteMeeting(id, user);
 
         res.status(200).json({
             ok: 'ok'

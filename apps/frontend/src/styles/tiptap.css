@@ -26,18 +26,18 @@
   }
 
   a {
-    @apply underline cursor-pointer text-secondary-foreground;
+    @apply underline cursor-pointer;
   }
 
   p {
-    @apply text-inherit;
+    @apply text-sm;
   }
 
   pre {
     @apply bg-zinc-900 rounded-lg py-3 px-5 text-sm;
   }
 
-  p>code {
+  p > code {
     @apply bg-zinc-900 text-sm px-1 py-0.5 rounded-md;
   }
 
@@ -57,16 +57,16 @@
 
     li {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       /* Add some padding for spacing between list items */
 
-      >label {
-        @apply flex items-center mr-2 mt-2.5;
+      > label {
+        @apply flex items-center mr-2 mt-2;
       }
 
-      >div {
+      > div {
         @apply flex-grow;
-        margin-top: 0.2em;
+        margin-top: 0.3em;
       }
     }
 
@@ -113,7 +113,7 @@
   }
 
   [data-type="taskList"] input[type="checkbox"]:checked::after {
-    content: '';
+    content: "";
     display: inline-block;
     width: 5px;
     /* increase height for the vertical part of the checkmark */
