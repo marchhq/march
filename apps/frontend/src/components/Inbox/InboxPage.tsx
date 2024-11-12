@@ -25,7 +25,7 @@ export const InboxPage: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 text-sm">
             <h1 className="font-semibold">inbox</h1>
-            <p className="text-secondary-foreground">{totalItems}</p>
+            <span className="text-secondary-foreground">{totalItems}</span>
           </div>
         </header>
         <div className="flex flex-col gap-5">
