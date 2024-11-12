@@ -1,5 +1,6 @@
 import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
+import { broadcastUpdate } from "../../services/lib/websocket.service.js";
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -50,10 +51,35 @@ const createItemController = async (req, res, next) => {
     }
 };
 
+// const createInboxItemController = async (req, res, next) => {
+//     try {
+//         const user = req.user._id;
+
+//         const requestedData = req.body;
+//         const { type } = requestedData;
+
+//         let itemData = requestedData;
+
+//         if (type === 'link' || type === 'text') {
+//             const updatedData = await generateLinkPreview(requestedData);
+//             if (updatedData) {
+//                 itemData = updatedData;
+//             }
+//         }
+
+//         const items = await createInboxItem(user, itemData);
+
+//         res.status(200).json({
+//             response: items
+//         });
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
 const createInboxItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
-
         const requestedData = req.body;
         const { type } = requestedData;
 
@@ -66,10 +92,16 @@ const createInboxItemController = async (req, res, next) => {
             }
         }
 
-        const items = await createInboxItem(user, itemData);
+        const item = await createInboxItem(user, itemData);
+
+        // Broadcast update after creating item
+        broadcastUpdate({
+            type: 'INBOX_UPDATE',
+            item: item
+        });
 
         res.status(200).json({
-            response: items
+            response: item
         });
     } catch (err) {
         next(err);
