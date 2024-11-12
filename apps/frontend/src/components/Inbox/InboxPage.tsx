@@ -12,7 +12,7 @@ export const InboxPage: React.FC = () => {
   const totalItems = items.length
 
   return (
-    <div className="flex h-full flex-1 gap-8">
+    <div className="flex h-full flex-1 gap-8 overflow-y-auto">
       <div
         className={classNames(
           "flex size-full max-w-[800px] flex-col gap-5 text-sm",
@@ -28,7 +28,7 @@ export const InboxPage: React.FC = () => {
             <p className="text-secondary-foreground">{totalItems}</p>
           </div>
         </header>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <InboxAddItem />
           <InboxItems />
         </div>
