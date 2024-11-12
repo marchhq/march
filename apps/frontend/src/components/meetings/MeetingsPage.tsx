@@ -6,7 +6,7 @@ import { MeetNotes } from "./MeetNotes"
 import { Stack } from "./Stack"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import useMeetsStore, { MeetsStoreType } from "@/src/lib/store/meets.store"
+import { useMeetsStore, MeetsStoreType } from "@/src/lib/store/meets.store"
 import { getCurrentWeekMeets } from "@/src/utils/meet"
 
 interface MeetingPageProps {
