@@ -1,11 +1,25 @@
+// import { app } from "./src/index.js";
+// import { environment } from "./src/loaders/environment.loader.js";
+
+// (async function init () {
+//     app.listen(environment.PORT, () => {
+//         console.log(`Server listening on port ${environment.PORT}`)
+//     })
+// })()
+
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
+import { initializeWebSocketServer } from './src/services/lib/websocket.service.js';
+import http from 'http';
 
 (async function init () {
-    app.listen(environment.PORT, () => {
-        console.log(`Server listening on port ${environment.PORT}`)
-    })
-})()
+    const server = http.createServer(app);
+    initializeWebSocketServer(server);
+
+    server.listen(environment.PORT, () => {
+        console.log(`Server listening on port ${environment.PORT}`);
+    });
+})();
 
 // for webhook testing in local
 // import { app } from "./src/index.js";
