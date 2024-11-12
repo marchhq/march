@@ -19,8 +19,8 @@ export const metadata: Metadata = generateMetadata({
 const Home: React.FC = () => {
   return (
     <section className="h-screen">
-      <div className="p-8">
-        <LogoDark />
+      <div className="p-9">
+        <LogoDark size={44} />
       </div>
       <main className="grid h-[calc(100vh-350px)] place-items-center bg-background text-center text-muted">
         <div className="flex w-full max-w-7xl flex-col items-center justify-between">
