@@ -23,7 +23,7 @@ export const StackItems = ({ integration, connected, onConnect }) => {
             )}
           </div>
         </section>
-        <section className="pb-8">
+        <section className="pb-6">
           <p className="text-start text-xs font-semibold text-secondary-foreground">
             {integration.description}
           </p>
