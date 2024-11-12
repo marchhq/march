@@ -8,6 +8,7 @@ import { ThisWeekArrows } from "./ThisWeekArrows"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
+import { ThisWeekItems } from "@/src/components/ThisWeek/ThisWeekItems"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -208,42 +209,7 @@ export const ThisWeekPage: React.FC = () => {
             </div>
           </div>
         </header>
-        <div className="flex flex-col gap-2.5 text-sm">
-          <ItemList
-            items={items}
-            handleExpand={handleExpand}
-            handleInProgress={handleInProgress}
-            handleDone={handleDone}
-            handleRescheduleCalendar={handleRescheduleCalendar}
-            doneLine={true}
-            inProgressAction={true}
-          />
-        </div>
-        {reschedulingItemId !== null && (
-          <div>
-            <div
-              className="fixed inset-0 z-50 cursor-default bg-black/80"
-              role="button"
-              onClick={() => setReschedulingItemId(null)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape" || e.key === "Esc") {
-                  setReschedulingItemId(null)
-                }
-              }}
-              tabIndex={0}
-            ></div>
-            <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 shadow-lg">
-              <RescheduleCalendar
-                date={date}
-                setDate={setDate}
-                cycleDate={cycleDate}
-                setCycleDate={setCycleDate}
-                dateChanged={dateChanged}
-                setDateChanged={setDateChanged}
-              />
-            </div>
-          </div>
-        )}
+        <ThisWeekItems startDate={startDate} endDate={endDate} />
         <ThisWeekExpandedItem />
       </div>
     </div>

@@ -13,16 +13,17 @@ import classNames from "@/src/utils/classNames"
 interface ItemListProps {
   items: CycleItem[]
   handleExpand: (item: CycleItem) => void
-  handleInProgress: (
-    event: React.MouseEvent,
-    id: string,
-    status: string
-  ) => void
   handleDone: (event: React.MouseEvent, id: string, status: string) => void
   handleRescheduleCalendar: (
     event: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | null,
+    currentStatus?: string
+  ) => void
+  handleInProgress?: (
+    event: React.MouseEvent,
+    id: string,
+    status: string
   ) => void
   isOverdue?: boolean
   doneLine?: boolean
@@ -128,10 +129,10 @@ export const ItemList: React.FC<ItemListProps> = ({
               size={14}
               className="hover-text"
               onClick={(e) =>
-                handleRescheduleCalendar(e, item._id, item.dueDate)
+                handleRescheduleCalendar(e, item._id, item.dueDate, item.status)
               }
             />
-            {inProgressAction && (
+            {inProgressAction && handleInProgress && (
               <Image
                 src={BoxDashed}
                 alt="checkbox dashed icon"
