@@ -238,56 +238,61 @@ export const ThisWeekExpandedItem: React.FC = () => {
     []
   )
 
-  return (
-    <div
-      ref={divRef}
-      className={classNames(
-        `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`
-      )}
-    >
-      <div className="flex w-full flex-col gap-4 p-4">
-        <div className="flex items-center justify-between text-xs text-secondary-foreground">
-          <div className="flex gap-4">
-            <button
-              className="hover-text flex items-center"
-              onClick={handleClose}
-            >
-              <Icon icon="ep:back" className="text-[18px]" />
-            </button>
-            <p className="flex items-center">
-              {formatDateYear(currentItem?.createdAt || "")}
-            </p>
-            <p>edited {fromNow(currentItem?.updatedAt || "")}</p>
+  if (currentItem) {
+    return (
+      <div
+        ref={divRef}
+        className={classNames(
+          `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`
+        )}
+      >
+        <div className="flex w-full flex-col gap-4 p-4">
+          <div className="flex items-center justify-between text-xs text-secondary-foreground">
+            <div className="flex gap-4">
+              <button
+                className="hover-text flex items-center"
+                onClick={handleClose}
+              >
+                <Icon icon="ep:back" className="text-[18px]" />
+              </button>
+              <p className="flex items-center">
+                {formatDateYear(currentItem.createdAt || "")}
+              </p>
+              <p>edited {fromNow(currentItem.updatedAt || "")}</p>
+            </div>
+            <div className="flex gap-4">
+              <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
+                <span>reschedule</span>
+              </button>
+              <button
+                className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground"
+                onClick={(e) => handleDelete(e, currentItem._id)}
+              >
+                <span>del</span>
+              </button>
+            </div>
           </div>
-          <div className="flex gap-4">
-            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>reschedule</span>
-            </button>
-            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>del</span>
-            </button>
-          </div>
-        </div>
-        <div>
-          <textarea
-            ref={textareaRefTitle}
-            value={editedItem.title}
-            onChange={(e) =>
-              setEditedItem((prev) => ({
-                ...prev,
-                title: e.target.value,
-              }))
-            }
-            onKeyDown={handleTextareaKeyDown}
-            placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-            rows={1}
-          />
-          <div className="text-foreground">
-            <TextEditor editor={editor} />
+          <div>
+            <textarea
+              ref={textareaRefTitle}
+              value={editedItem.title}
+              onChange={(e) =>
+                setEditedItem((prev) => ({
+                  ...prev,
+                  title: e.target.value,
+                }))
+              }
+              onKeyDown={handleTextareaKeyDown}
+              placeholder="title"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              rows={1}
+            />
+            <div className="text-foreground">
+              <TextEditor editor={editor} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
