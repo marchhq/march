@@ -1,15 +1,12 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState } from "react"
 
 import { addWeeks } from "date-fns"
 
 import { ThisWeekArrows } from "./ThisWeekArrows"
-import { ItemList } from "@/src/components/atoms/ItemList"
-import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
 import { ThisWeekItems } from "@/src/components/ThisWeek/ThisWeekItems"
-import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import {
@@ -23,22 +20,13 @@ export const ThisWeekPage: React.FC = () => {
   const today = new Date()
 
   const [currentDate, setCurrentDate] = useState(today)
-  const [dateChanged, setDateChanged] = useState(false)
-  const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
-    null
-  )
-  const [date, setDate] = useState<Date | null>(new Date())
-  const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
 
   const weekNumber = getCurrentWeek(currentDate)
   const totalWeeks = getWeeksInMonth(currentDate)
   const formattedDateRange = getFormattedDateRange(currentDate).toLowerCase()
 
-  const { thisWeek, setCurrentItem, updateItem, setWeekDates, fetchThisWeek } =
-    useCycleItemStore()
+  const { thisWeek } = useCycleItemStore()
   const { items } = thisWeek
-
-  const { session } = useAuth()
 
   const nullItems = items.filter((item: CycleItem) => item.status === "null")
   const todoItems = items.filter((item: CycleItem) => item.status === "todo")
@@ -47,77 +35,6 @@ export const ThisWeekPage: React.FC = () => {
     (item: CycleItem) => item.status === "in progress"
   )
   const doneItems = items.filter((item: CycleItem) => item.status === "done")
-
-  const handleExpand = (item: CycleItem) => {
-    setCurrentItem(item)
-  }
-
-  const handleDone = useCallback(
-    (
-      event: React.MouseEvent,
-      id: string,
-      currentStatus: string | undefined
-    ) => {
-      event.stopPropagation()
-      if (id) {
-        const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date()
-        const { startDate, endDate } = getWeekDates(today)
-        updateItem(
-          session,
-          {
-            status: newStatus,
-            dueDate: today,
-            cycle: {
-              startsAt: startDate,
-              endsAt: endDate,
-            },
-          },
-          id
-        )
-      }
-    },
-    [updateItem, session]
-  )
-
-  const handleInProgress = useCallback(
-    (
-      event: React.MouseEvent,
-      id: string,
-      currentStatus: string | undefined
-    ) => {
-      event.stopPropagation()
-      if (id) {
-        const newStatus =
-          currentStatus === "in progress" ? "todo" : "in progress"
-        updateItem(
-          session,
-          {
-            status: newStatus,
-          },
-          id
-        )
-      }
-    },
-    [updateItem, session]
-  )
-
-  const handleRescheduleCalendar = (
-    e: React.MouseEvent,
-    id: string,
-    dueDate: Date | null
-  ) => {
-    e.stopPropagation()
-
-    const newDate = dueDate
-      ? typeof dueDate === "string"
-        ? new Date(dueDate)
-        : dueDate
-      : null
-
-    setReschedulingItemId(id)
-    setDate(newDate) // Ensure this is a Date or null
-  }
 
   const handleWeekChange = (direction: "left" | "right" | "this") => {
     setCurrentDate((prevDate) => {
@@ -137,48 +54,7 @@ export const ThisWeekPage: React.FC = () => {
     })
   }
 
-  useEffect(() => {
-    if (dateChanged) {
-      if (reschedulingItemId) {
-        if (date) {
-          updateItem(
-            session,
-            { status: "todo", dueDate: date },
-            reschedulingItemId
-          )
-        }
-        if (cycleDate) {
-          const { startDate, endDate } = getWeekDates(cycleDate)
-          updateItem(
-            session,
-            {
-              status: "todo",
-              dueDate: date,
-              cycle: {
-                startsAt: startDate,
-                endsAt: endDate,
-              },
-            },
-            reschedulingItemId
-          )
-        }
-      }
-      setReschedulingItemId(null)
-      setDateChanged(false)
-    }
-  }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
-
   const { startDate, endDate } = getWeekDates(currentDate)
-
-  useEffect(() => {
-    setWeekDates(startDate, endDate)
-  }, [startDate, endDate, setWeekDates])
-
-  useEffect(() => {
-    fetchThisWeek(session, startDate, endDate)
-  }, [session, fetchThisWeek, startDate, endDate])
-
-  useEffect(() => {}, [items])
 
   return (
     <div className="flex h-full w-[calc(100%-160px)]">
