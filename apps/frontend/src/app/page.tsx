@@ -6,7 +6,6 @@ import Link from "next/link"
 
 import { GithubLogin } from "../components/login/GithubLogin"
 import GoogleLogin from "../components/login/GoogleLogin"
-import Line from "@/src/lib/icons/Line"
 import { LogoDark } from "@/src/lib/icons/Logo"
 import generateMetadata from "@/src/utils/seo"
 
@@ -20,7 +19,7 @@ const Home: React.FC = () => {
   return (
     <section className="h-screen">
       <div className="p-9">
-        <LogoDark size={44} />
+        <LogoDark size={40} />
       </div>
       <main className="grid h-[calc(100vh-350px)] place-items-center bg-background text-center text-muted">
         <div className="flex w-full max-w-7xl flex-col items-center justify-between">
