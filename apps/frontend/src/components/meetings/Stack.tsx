@@ -36,12 +36,12 @@ export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
   }, [])
 
   const stackItems = meetings.map((meet) => {
-    const startTime = new Date(meet.metadata.start.dateTime)
-    const endTime = new Date(meet.metadata.end.dateTime)
+    const startTime = new Date(meet.metadata?.start?.dateTime)
+    const endTime = new Date(meet.metadata?.end?.dateTime)
     return {
       id: meet.id,
       title: meet.title,
-      url: meet.metadata.hangoutLink,
+      url: meet.metadata?.hangoutLink,
       time: formatMeetTime(startTime, endTime),
       duration: calculateMeetDuration(startTime, endTime),
     }
