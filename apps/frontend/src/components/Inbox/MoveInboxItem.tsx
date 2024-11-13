@@ -81,8 +81,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       )
 
  //Remove the item from the main list
-      // await updateItem(session, { isDeleted: true }, inboxItemId)
-      // await fetchInbox(session)
+      await updateItem(session, { isDeleted: true }, inboxItemId)
+      await fetchInbox(session)
       toast({ title: "🚀 Moved successfully!" })
       hideModal()
     } catch (error) {
