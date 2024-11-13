@@ -21,7 +21,12 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchTerm, setSearchTerm] = useState<string>("")
   const { spaces, fetchSpaces, loading: isSpaceLoading } = useSpaceStore()
-  const { updateItem, fetchInbox, items, isLoading: isInboxItemsLoading } = useCycleItemStore()
+  const {
+    updateItem,
+    fetchInbox,
+    items,
+    isLoading: isInboxItemsLoading,
+  } = useCycleItemStore()
   const [modalItems, setModalItems] = useState<CycleItem[]>(items)
   const { toast } = useToast()
 
@@ -128,7 +133,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 py-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
-          {isInboxItemsLoading && <div>Loading Inbox Items...</div>}
+            {isInboxItemsLoading && <div>Loading Inbox Items...</div>}
             {filteredItems.length > 0 ? (
               filteredItems?.map((item) => (
                 <button
@@ -160,7 +165,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pt-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
-          {isSpaceLoading && <div>Loading spaces...</div>}
+            {isSpaceLoading && <div>Loading spaces...</div>}
             {filteredSpaces.length > 0 ? (
               filteredSpaces.map((space) => (
                 <button
