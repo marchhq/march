@@ -153,7 +153,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
                 </button>
               ))
             ) : (
-              <div>No matching results found!</div>
+              <div>{modalItems.length === 0 && searchTerm.length === 0 && !isInboxItemsLoading ? "No items avaiable" : "No matching results found!"}</div>
             )}
           </div>
         </div>
@@ -185,7 +185,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
                 </button>
               ))
             ) : (
-              <div>No matching results found!</div>
+              <div>{!isSpaceLoading && "No matching results found!"}</div>
             )}
           </div>
         </div>
