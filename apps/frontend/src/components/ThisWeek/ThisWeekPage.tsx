@@ -65,8 +65,7 @@ export const ThisWeekPage: React.FC = () => {
             <div className="flex w-full items-center justify-between gap-5">
               <div className="flex items-center gap-2 text-secondary-foreground">
                 <span className="text-secondary-foreground">
-                  {todoAndNullItemsLength} todo / {inProgressItems.length} in
-                  progress / {doneItems.length} done / {items.length} total
+                  {todoAndNullItemsLength} / {items.length} completed
                 </span>
                 <span>
                   {items.length > 0
