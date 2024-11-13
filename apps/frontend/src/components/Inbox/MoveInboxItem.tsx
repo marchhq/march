@@ -20,8 +20,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   const { hideModal } = useModal()
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchTerm, setSearchTerm] = useState<string>("")
-  const { spaces, fetchSpaces } = useSpaceStore()
-  const { updateItem, fetchInbox, items } = useCycleItemStore()
+  const { spaces, fetchSpaces, loading: isSpaceLoading } = useSpaceStore()
+  const { updateItem, fetchInbox, items, isLoading: isInboxItemsLoading } = useCycleItemStore()
   const [modalItems, setModalItems] = useState<CycleItem[]>(items)
   const { toast } = useToast()
 
@@ -109,8 +109,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
 
   return (
     <>
-      <DialogHeader className="hidden h-0 p-0">
-        <DialogTitle className="hidden p-0"></DialogTitle>
+      <DialogHeader className="sr-only h-0 p-0">
+        <DialogTitle className="sr-only p-0"></DialogTitle>
       </DialogHeader>
       <div className="flex justify-between gap-2 px-4 pt-1 text-xs text-secondary-foreground">
         <span className="flex-1 truncate text-primary-foreground">
@@ -118,14 +118,17 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
             ref={inputRef}
             className="w-full border-none px-0 text-primary-foreground outline-none placeholder:text-secondary-foreground"
             placeholder="Specify the target item: todo, note, event etc"
+            aria-label="Search spaces or items"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            disabled={isSpaceLoading || isInboxItemsLoading}
           />
         </span>
       </div>
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 py-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
+          {isInboxItemsLoading && <div>Loading Inbox Items...</div>}
             {filteredItems.length > 0 ? (
               filteredItems?.map((item) => (
                 <button
@@ -138,6 +141,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
                     }
                   }}
                   type="button"
+                  disabled={isInboxItemsLoading}
+                  aria-label={`Move to ${item.title}`}
                 >
                   {item.title}
                 </button>
@@ -155,6 +160,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pt-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
+          {isSpaceLoading && <div>Loading spaces...</div>}
             {filteredSpaces.length > 0 ? (
               filteredSpaces.map((space) => (
                 <button
@@ -166,6 +172,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
                       handleSpaceClick(space._id)
                     }
                   }}
+                  disabled={isSpaceLoading}
+                  aria-label={`Move to ${space.name}`}
                   type="button"
                 >
                   {space.name}

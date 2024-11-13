@@ -124,6 +124,10 @@ export const ItemList: React.FC<ItemListProps> = ({
             <MoveIcon
               size={14}
               className="hover-text"
+              aria-label="Move item to different space"
+              role="button"
+              data-tooltip-id="item-actions"
+              data-tooltip-content="Move to space"
               onClick={(e) => {
                 e.stopPropagation()
                 showModal(<MoveInboxItem inboxItemId={item._id} />)
