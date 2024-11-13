@@ -24,8 +24,6 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   const { updateItem, fetchInbox, items, deleteItem } = useCycleItemStore()
   const { toast } = useToast()
 
-  console.log("ITEMS::", items)
-
   // Fetch spaces if they don't exist
   useEffect(() => {
     if (!spaces) {
@@ -95,6 +93,11 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
     space.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  //Filter items based on search term
+  const filteredItems = items.filter((item) =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <>
       <DialogHeader className="hidden h-0 p-0">
@@ -114,8 +117,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pb-0 text-sm">
           <div className="flex max-h-96 flex-col gap-1.5 overflow-y-auto">
-            {items.length > 0 ? (
-              items?.map((item) => (
+            {filteredItems.length > 0 ? (
+              filteredItems?.map((item) => (
                 <button
                   key={item._id}
                   className="cursor-pointer text-left hover:text-primary-foreground"
