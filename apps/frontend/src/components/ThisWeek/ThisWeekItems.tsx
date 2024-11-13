@@ -35,6 +35,16 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
 
   const { session } = useAuth()
 
+  useEffect(() => {
+    setWeekDates(startDate, endDate)
+  }, [startDate, endDate, setWeekDates])
+
+  useEffect(() => {
+    fetchThisWeek(session, startDate, endDate)
+  }, [session, fetchThisWeek, startDate, endDate])
+
+  useEffect(() => {}, [items])
+
   const handleExpand = (item: CycleItem) => {
     setCurrentItem(item)
   }
@@ -148,16 +158,6 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
     reschedulingItemStatus,
     dateChanged,
   ])
-
-  useEffect(() => {
-    setWeekDates(startDate, endDate)
-  }, [startDate, endDate, setWeekDates])
-
-  useEffect(() => {
-    fetchThisWeek(session, startDate, endDate)
-  }, [session, fetchThisWeek, startDate, endDate])
-
-  useEffect(() => {}, [items])
 
   return (
     <div>
