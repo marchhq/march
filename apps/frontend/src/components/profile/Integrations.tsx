@@ -17,7 +17,6 @@ import { Integration, User } from "@/src/lib/@types/auth/user"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
-import { NotionDark } from "@/src/lib/icons/Notion"
 import useUserStore from "@/src/lib/store/user.store"
 
 interface IntegrationItemProps {
@@ -147,16 +146,6 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         handleConnect: handleLinearLogin,
         handleRevoke: handleLinearRevoke,
       },
-      {
-        key: "notion",
-        icon: <NotionDark />,
-        name: "Notion",
-        description:
-          " Pull notion database items into march to actually add in your daily action plan.",
-        handleConnect: () =>
-          console.log("Notion connection not implemented yet"),
-        handleRevoke: () => console.log("Notion revoke not implemented yet"),
-      },
     ],
     [
       handleCalLogin,
@@ -172,7 +161,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       <h3 className="mb-4 text-xl font-semibold text-foreground">
         Connect your stack
       </h3>
-      <div className="-ml-8 space-y-4">
+      <div className="-ml-8 space-y-1">
         {integrations.map((integration) => (
           <IntegrationItem
             key={integration.key}

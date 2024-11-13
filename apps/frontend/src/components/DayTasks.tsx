@@ -6,7 +6,7 @@ import { getDate } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
 
 // import Editor from "./atoms/Editor"
-import Button from "@/src/components/atoms/Button"
+import Button from "./atoms/Button"
 import {
   getOrdinalSuffix,
   getMonthName,
