@@ -37,7 +37,7 @@
     @apply bg-zinc-900 rounded-lg py-3 px-5 text-sm;
   }
 
-  p > code {
+  p>code {
     @apply bg-zinc-900 text-sm px-1 py-0.5 rounded-md;
   }
 
@@ -60,11 +60,11 @@
       align-items: center;
       /* Add some padding for spacing between list items */
 
-      > label {
-        @apply flex items-center mr-2 mt-2;
+      >label {
+        @apply flex items-center mr-2 mt-2.5;
       }
 
-      > div {
+      >div {
         @apply flex-grow;
         margin-top: 0.3em;
       }
