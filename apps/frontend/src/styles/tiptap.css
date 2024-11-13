@@ -127,4 +127,8 @@
     left: 0.5px;
     /* adjust the horizontal alignment */
   }
+
+   [data-indent="true"] {
+    padding-left: 2em; /* Adjust as needed */
+  }
 }
