@@ -7,9 +7,9 @@ import { Input } from "../ui/input"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useModal } from "@/src/contexts/ModalProvider"
 import { useToast } from "@/src/hooks/use-toast"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import useSpaceStore from "@/src/lib/store/space.store"
-import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 
 type Props = {
   inboxItemId: string
@@ -29,11 +29,11 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
     if (!spaces || spaces.length === 0) {
       void fetchSpaces(session)
     }
-    if(!items || items.length === 0){
+    if (!items || items.length === 0) {
       void fetchInbox(session)
     }
-    // Filter out the selected inbox item from the list 
-    const availableInboxItems = items.filter(item => item._id !== inboxItemId)
+    // Filter out the selected inbox item from the list
+    const availableInboxItems = items.filter((item) => item._id !== inboxItemId)
     setModalItems(availableInboxItems)
   }, [fetchSpaces, session, spaces, items])
 
@@ -56,7 +56,10 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
     }
   }
 
-  const handleItemClick = async (destiantionItemID: string, destinationItemDescription: string)=>{
+  const handleItemClick = async (
+    destiantionItemID: string,
+    destinationItemDescription: string
+  ) => {
     try {
       const sourceItem: CycleItem[] = items.filter(
         (item) => item._id === inboxItemId
@@ -76,11 +79,11 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
           </ul>
           <span data-indent="true">${sourceItem[0].description}</span>
         `,
-           },
+        },
         destiantionItemID
       )
 
- //Remove the item from the main list
+      //Remove the item from the main list
       await updateItem(session, { isDeleted: true }, inboxItemId)
       await fetchInbox(session)
       toast({ title: "🚀 Moved successfully!" })
@@ -145,7 +148,10 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 w-full text-secondary-foreground px-2"><span>Spaces</span><span className="w-full h-[1px] bg-secondary-foreground"></span></div>
+      <div className="flex w-full items-center gap-2 px-2 text-secondary-foreground">
+        <span>Spaces</span>
+        <span className="h-px w-full bg-secondary-foreground"></span>
+      </div>
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pt-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
