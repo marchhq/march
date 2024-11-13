@@ -7,21 +7,8 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
-import useMeetsStore from "@/src/lib/store/meets.store"
-
-const formatDate = (date: Date) => {
-  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
-  const day = date.getDate()
-  return `${weekday}, ${day.toString().padStart(2, "0")}`
-}
-
-const formatTime = (date: Date): string => {
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  })
-}
+import { useMeetsStore } from "@/src/lib/store/meets.store"
+import { formatMeetDate, formatMeetTime } from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
@@ -38,9 +25,10 @@ const SAVE_DELAY = {
 } as const
 
 export const MeetNotes = ({ meetData }): JSX.Element => {
+  // Hooks must be called unconditionally
   const { session } = useAuth()
-
   const { updateMeet } = useMeetsStore()
+
   // Refs
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
@@ -71,11 +59,12 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
 
       try {
         await updateMeet(
+          session,
           {
             ...item,
             title: editedItem.title,
           },
-          session
+          item.id
         )
       } catch (error) {
         console.error("Error updating item:", error)
@@ -95,7 +84,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   const saveContent = useCallback(() => {
     if (!meetData?._id || content === lastSavedContent.current) return
 
-    updateMeet({ ...meetData, description: content }, session)
+    updateMeet(session, { ...meetData, description: content }, meetData.id)
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
@@ -203,36 +192,39 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
     },
     []
   )
+
+  if (!meetData) {
+    return <div>No meeting data available</div>
+  }
+
   return (
     <>
       <div className="flex items-center gap-1 text-sm">
         <div className="mr-4 size-4 rounded-sm bg-[#E34136]/80"></div>
         <p>
-          {meetData.metadata.start.dateTime
-            ? formatDate(new Date(meetData.metadata.start.dateTime))
+          {meetData?.metadata?.start?.dateTime
+            ? formatMeetDate(new Date(meetData.metadata.start.dateTime))
             : "Date not available"}
         </p>
         <p>.</p>
         <p>
-          {meetData?.metadata.start?.dateTime &&
-          meetData?.metadata.end?.dateTime
-            ? `${formatTime(new Date(meetData.metadata.start.dateTime))}: ${formatTime(new Date(meetData.metadata.end.dateTime))}`
+          {meetData?.metadata?.start?.dateTime &&
+          meetData?.metadata?.end?.dateTime
+            ? `${formatMeetTime(new Date(meetData.metadata.start.dateTime))} - ${formatMeetTime(new Date(meetData.metadata.end.dateTime))}`
             : "Time not available"}
         </p>
-        <a
-          href={meetData.metadata.hangoutLink}
-          target="_blank"
-          className="flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
-        >
-          {meetData.metadata.hangoutLink && (
-            <>
-              <span>
-                <LinkIcon />
-              </span>
-              {meetData.metadata.hangoutLink}
-            </>
-          )}
-        </a>
+        {meetData?.metadata?.hangoutLink && (
+          <a
+            href={meetData.metadata.hangoutLink}
+            target="_blank"
+            className="flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
+          >
+            <span>
+              <LinkIcon />
+            </span>
+            {meetData.metadata.hangoutLink}
+          </a>
+        )}
       </div>
       <div>
         <textarea
