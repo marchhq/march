@@ -1,15 +1,9 @@
 "use client"
 
 import React, { useEffect, useCallback, useState } from "react"
-
-import { CalendarIcon, MoveIcon, GithubIcon, MailsIcon } from "lucide-react"
-import Image from "next/image"
-
-import MoveInboxItem from "./MoveInboxItem"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useModal } from "@/src/contexts/ModalProvider"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { getWeekDates } from "@/src/utils/datetime"
@@ -22,9 +16,6 @@ export const InboxItems: React.FC = () => {
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
     null
   )
-  const [date, setDate] = React.useState<Date | null>(new Date())
-  const [cycleDate, setCycleDate] = React.useState<Date | null>(new Date())
-  const { showModal } = useModal()
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
   const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
