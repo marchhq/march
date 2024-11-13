@@ -9,6 +9,7 @@ import { useModal } from "@/src/contexts/ModalProvider"
 import { useToast } from "@/src/hooks/use-toast"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import useSpaceStore from "@/src/lib/store/space.store"
+import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 
 type Props = {
   inboxItemId: string
@@ -20,13 +21,18 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const { spaces, fetchSpaces } = useSpaceStore()
-  const { updateItem, fetchInbox } = useCycleItemStore()
+  const { updateItem, fetchInbox, items, deleteItem } = useCycleItemStore()
   const { toast } = useToast()
+
+  console.log("ITEMS::", items)
 
   // Fetch spaces if they don't exist
   useEffect(() => {
     if (!spaces) {
       void fetchSpaces(session)
+    }//fetch inbox items id not available
+    if(!items){
+      void fetchInbox(session)
     }
   }, [fetchSpaces, session, spaces])
 
@@ -46,6 +52,48 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
     } catch (error) {
       toast({ title: "Oops something seems wrong!", variant: "destructive" })
       console.error("Failed to move item:", error)
+    }
+  }
+
+  const handleItemClick = async (destiantionItemID: string, destinationItemDescription: string)=>{
+    try {
+      //Take the destiantionItemID, destinationDescription as input
+      //Find source item
+      //Move the inboxItemId (title + description) to destination item's description
+      //Remove item from the main itemsArray
+      //Show a toast
+
+      const sourceItem: CycleItem[] = items.filter(
+        (item) => item._id === inboxItemId
+      )
+      console.log( "TItle Item::", sourceItem)
+      await updateItem(
+        session,
+        {
+          description: `
+          ${destinationItemDescription}
+          <ul data-type="taskList">
+            <li data-checked="false" data-type="taskItem">
+              <label><input type="checkbox"><span></span></label>
+              <div data-indent="true">
+                <p>${sourceItem[0].title}</p>
+              </div>
+            </li>
+          </ul>
+          <span data-indent="true">${sourceItem[0].description}</span>
+        `,    },
+        destiantionItemID
+      )
+      //Remove the item from the main list
+      // await updateItem(session, { isDeleted: true }, inboxItemId)
+      toast({ title: "🚀 Moved successfully!" })
+      hideModal()
+    } catch (error) {
+      console.error(
+        "Error file moving item to another item description::",
+        error
+      )
+      toast({ title: "Oops something seems wrong!", variant: "destructive" })
     }
   }
 
@@ -69,6 +117,31 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </span>
+      </div>
+      <div className="flex items-center gap-5 bg-transparent text-secondary-foreground border-b">
+        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 text-sm">
+          <div className="flex max-h-96 flex-col gap-1.5 overflow-y-auto">
+            {items.length > 0 ? (
+              items?.map((item) => (
+                <button
+                  key={item._id}
+                  className="cursor-pointer text-left hover:text-primary-foreground"
+                  onClick={() => handleItemClick(item._id, item.description)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleItemClick(item._id, item.description)
+                    }
+                  }}
+                  type="button"
+                >
+                  {item.title}
+                </button>
+              ))
+            ) : (
+              <div>No matching results found!</div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 text-sm">
