@@ -11,7 +11,7 @@ export const StackItems = ({ integration, connected, onConnect }) => {
 
   return (
     <Card onClick={handleConnect}>
-      <main className="flex flex-1 flex-col gap-6">
+      <main className="flex flex-1 flex-col gap-4">
         <section className="flex justify-start gap-2">
           <div className="size-4">{integration.icon}</div>
           <div>
