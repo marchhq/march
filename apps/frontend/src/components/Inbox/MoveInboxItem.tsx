@@ -57,16 +57,9 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
 
   const handleItemClick = async (destiantionItemID: string, destinationItemDescription: string)=>{
     try {
-      //Take the destiantionItemID, destinationDescription as input
-      //Find source item
-      //Move the inboxItemId (title + description) to destination item's description
-      //Remove item from the main itemsArray
-      //Show a toast
-
       const sourceItem: CycleItem[] = items.filter(
         (item) => item._id === inboxItemId
       )
-      console.log( "TItle Item::", sourceItem)
       await updateItem(
         session,
         {
@@ -85,7 +78,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
         destiantionItemID
       )
       //Remove the item from the main list
-      // await updateItem(session, { isDeleted: true }, inboxItemId)
+      await updateItem(session, { isDeleted: true }, inboxItemId)
       toast({ title: "🚀 Moved successfully!" })
       hideModal()
     } catch (error) {
