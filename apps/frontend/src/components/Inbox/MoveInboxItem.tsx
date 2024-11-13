@@ -34,7 +34,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
     if(!items){
       void fetchInbox(session)
     }
-  }, [fetchSpaces, session, spaces])
+  }, [fetchSpaces, session, spaces, items])
 
   // Focus the input field when the modal opens
   useEffect(() => {
@@ -111,8 +111,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
           />
         </span>
       </div>
-      <div className="flex items-center gap-5 bg-transparent text-secondary-foreground border-b">
-        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 text-sm">
+      <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
+        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pb-0 text-sm">
           <div className="flex max-h-96 flex-col gap-1.5 overflow-y-auto">
             {items.length > 0 ? (
               items?.map((item) => (
@@ -136,8 +136,9 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
           </div>
         </div>
       </div>
+      <div className="flex items-center gap-2 w-full text-secondary-foreground px-2"><span>Spaces</span><span className="w-full h-[1px] bg-secondary-foreground"></span></div>
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
-        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 text-sm">
+        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pt-0 text-sm">
           <div className="flex max-h-96 flex-col gap-1.5 overflow-y-auto">
             {filteredSpaces.length > 0 ? (
               filteredSpaces.map((space) => (
