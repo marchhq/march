@@ -8,7 +8,13 @@ import { usePathname } from "next/navigation"
 
 import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 import classNames from "@/src/utils/classNames"
-import { getCurrentWeek } from "@/src/utils/datetime"
+
+function getWeekNumber(date: Date) {
+  const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1)
+  const dayOfMonth = date.getDate()
+  const dayOfWeek = startOfMonth.getDay()
+  return Math.ceil((dayOfMonth + dayOfWeek) / 7)
+}
 
 const SidebarMainLink = ({
   href,
@@ -41,11 +47,10 @@ const SidebarMainLink = ({
 export const SidebarMain: React.FC = () => {
   const pathname = usePathname()
 
-  const weekNumber = getCurrentWeek(new Date())
-
   const { isCollapsed } = useSidebarCollapse()
 
   const today = String(new Date().getDate()).padStart(2, "0")
+  const currentWeek = getWeekNumber(new Date())
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -66,7 +71,7 @@ export const SidebarMain: React.FC = () => {
       <SidebarMainLink
         href="/this-week"
         icon={<Calendar size={16} />}
-        label={`week ${weekNumber}`}
+        label={`week ${currentWeek}`}
         isActive={pathname.includes("/this-week")}
         isCollapsed={isCollapsed}
       />

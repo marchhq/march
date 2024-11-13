@@ -4,9 +4,9 @@ import React, { useState, useEffect, useCallback } from "react"
 
 import { format } from "date-fns"
 
-import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
+import { TodayExpandedItem } from "@/src/components/Today/TodayExpandedItem"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -234,7 +234,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             </div>
           </div>
         )}
-        <ItemExpandModal />
+        <TodayExpandedItem />
       </div>
     )
   }

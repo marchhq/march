@@ -4,9 +4,9 @@ import React, { useState } from "react"
 
 import { addWeeks } from "date-fns"
 
+import { CustomKanban } from "./CustomKanban"
 import { ThisWeekArrows } from "./ThisWeekArrows"
-import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
-import { ThisWeekItems } from "@/src/components/ThisWeek/ThisWeekItems"
+import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import {
@@ -18,34 +18,17 @@ import {
 
 export const ThisWeekPage: React.FC = () => {
   const today = new Date()
-
   const [currentDate, setCurrentDate] = useState(today)
-
   const weekNumber = getCurrentWeek(currentDate)
   const totalWeeks = getWeeksInMonth(currentDate)
-  const formattedDateRange = getFormattedDateRange(currentDate).toLowerCase()
+  const formattedDateRange = getFormattedDateRange(currentDate)
 
-  const { thisWeek } = useCycleItemStore()
-  const { items } = thisWeek
+  const { items, currentItem } = useCycleItemStore()
 
-  const nullItems = items.filter((item: CycleItem) => item.status === "null")
-  const todoItems = items.filter((item: CycleItem) => item.status === "todo")
-  const todoAndNullItemsLength = nullItems.length + todoItems.length
-  const inProgressItems = items.filter(
-    (item: CycleItem) => item.status === "in progress"
-  )
   const doneItems = items.filter((item: CycleItem) => item.status === "done")
 
-  const handleWeekChange = (direction: "left" | "right" | "this") => {
+  const handleWeekChange = (direction: "left" | "right") => {
     setCurrentDate((prevDate) => {
-      if (direction === "this") {
-        const currentDate = new Date()
-        const currentWeekNumber = getCurrentWeek(currentDate)
-        return currentWeekNumber >= 1 && currentWeekNumber <= totalWeeks
-          ? currentDate
-          : prevDate
-      }
-
       const newDate = addWeeks(prevDate, direction === "left" ? -1 : 1)
       const newWeekNumber = getCurrentWeek(newDate)
       return newWeekNumber >= 1 && newWeekNumber <= totalWeeks
@@ -57,36 +40,26 @@ export const ThisWeekPage: React.FC = () => {
   const { startDate, endDate } = getWeekDates(currentDate)
 
   return (
-    <div className="flex h-full w-[calc(100%-160px)]">
+    <div className="flex h-full w-[calc(100%-160px)] p-10">
       <div className="relative flex flex-auto flex-col gap-12">
-        <header>
-          <div className="flex flex-1 flex-col gap-4 pl-5 text-sm text-foreground">
-            <div className="flex w-full items-center justify-between gap-5">
-              <div className="flex items-center gap-2 text-secondary-foreground">
-                <span className="text-secondary-foreground">
-                  {todoAndNullItemsLength} todo / {inProgressItems.length} in
-                  progress / {doneItems.length} done / {items.length} total
-                </span>
-                <span>
-                  {items.length > 0
-                    ? ((doneItems.length / items.length) * 100).toFixed(0)
-                    : 0}
-                  %
-                </span>
-                <span>{formattedDateRange}</span>
-              </div>
-              <ThisWeekArrows onChangeWeek={handleWeekChange} />
-            </div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-semibold">week {weekNumber}</h1>
-              <span className="text-secondary-foreground">
-                {doneItems.length}/{items.length}
-              </span>
-            </div>
+        <div className="flex items-center gap-8 text-sm">
+          <h1 className="text-2xl text-foreground">Week {weekNumber}</h1>
+          <div className="flex gap-4">
+            <p>
+              {doneItems.length}/{items.length} completed
+            </p>
+            <p>
+              {items.length > 0
+                ? ((doneItems.length / items.length) * 100).toFixed(0)
+                : 0}
+              %
+            </p>
+            <p>{formattedDateRange}</p>
           </div>
-        </header>
-        <ThisWeekItems startDate={startDate} endDate={endDate} />
-        <ItemExpandModal />
+          <ThisWeekArrows onChangeWeek={handleWeekChange} />
+        </div>
+        <CustomKanban startDate={startDate} endDate={endDate} />
+        {currentItem && <ThisWeekExpandedItem />}
       </div>
     </div>
   )

@@ -2,25 +2,28 @@
 
 import React from "react"
 
-import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
+import { Icon } from "@iconify-icon/react"
 
 interface ThisWeekArrowsProps {
-  onChangeWeek: (direction: "left" | "right" | "this") => void
+  onChangeWeek: (direction: "left" | "right") => void
 }
 
 export const ThisWeekArrows: React.FC<ThisWeekArrowsProps> = ({
   onChangeWeek,
 }) => {
   return (
-    <div className="flex items-center gap-2 text-secondary-foreground">
-      <button className="px-1" onClick={() => onChangeWeek("left")}>
-        <LeftChevron className="hover-text" />
+    <div className="flex items-center justify-between gap-2">
+      <button
+        onClick={() => onChangeWeek("left")}
+        className="hover-text flex items-center rounded-lg p-1"
+      >
+        <Icon icon="eva:arrow-left-fill" className="text-[20px]" />
       </button>
-      <button onClick={() => onChangeWeek("this")}>
-        <span className="hover-text">this week</span>
-      </button>
-      <button className="px-1" onClick={() => onChangeWeek("right")}>
-        <RightChevron className="hover-text" />
+      <button
+        onClick={() => onChangeWeek("right")}
+        className="hover-text flex items-center rounded-lg p-1"
+      >
+        <Icon icon="eva:arrow-right-fill" className="text-[20px]" />
       </button>
     </div>
   )
