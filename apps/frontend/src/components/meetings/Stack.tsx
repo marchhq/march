@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import classNames from "@/src/utils/classNames"
@@ -13,6 +14,7 @@ interface StackProps {
 }
 
 export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
+  const router = useRouter()
   const [closeToggle, setCloseToggle] = useState(false)
   const [maxHeight, setMaxHeight] = useState("auto")
   const stackRef = useRef<HTMLDivElement>(null)
@@ -47,6 +49,11 @@ export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
     }
   })
 
+  const handleMeetingClick = (e: React.MouseEvent, meetId: string) => {
+    e.preventDefault()
+    router.push(`/space/meetings/${meetId}`, { scroll: false })
+  }
+
   return (
     <div className="flex w-full flex-col">
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -66,16 +73,20 @@ export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
       >
         <div className="mt-2 flex flex-col gap-2 border-l border-border">
           {stackItems.map((meet) => (
-            <Link key={meet.id} href={`/space/meetings/${meet.id}`}>
+            <Link 
+              key={meet.id} 
+              href={`/space/meetings/${meet.id}`}
+              onClick={(e) => handleMeetingClick(e, meet.id)}
+            >
               <button
-                className={`-ml-px truncate border-l border-border pl-2 text-start             ${
+                className={`-ml-px truncate border-l border-border pl-2 text-start ${
                   meet.id === currentMeetId
                     ? "border-l-secondary-foreground text-primary-foreground"
                     : "border-border hover:text-primary-foreground"
                 }`}
               >
                 {meet.title}
-              </button>{" "}
+              </button>
             </Link>
           ))}
         </div>

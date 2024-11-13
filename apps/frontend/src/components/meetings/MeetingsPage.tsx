@@ -15,33 +15,43 @@ interface MeetingPageProps {
 const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
   const { session } = useAuth()
   const { fetchMeets, meets, fetchMeetByid, currentMeeting } = useMeetsStore()
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
     const initializeMeeting = async () => {
+      if (meets.length === 0) {
+        setInitialLoading(true)
+      }
+      
       try {
-        // Fetch single meeting first
-        await fetchMeetByid(session, meetId)
-        // Then fetch all meetings for the stack
-        await fetchMeets(session)
+        await Promise.all([
+          !currentMeeting || currentMeeting.id !== meetId 
+            ? fetchMeetByid(session, meetId) 
+            : Promise.resolve(),
+          meets.length === 0 
+            ? fetchMeets(session) 
+            : Promise.resolve()
+        ])
       } finally {
-        setLoading(false)
+        setInitialLoading(false)
       }
     }
 
     if (session && meetId) {
       initializeMeeting()
     }
-  }, [fetchMeets, fetchMeetByid, session, meetId])
+  }, [fetchMeets, fetchMeetByid, session, meetId, currentMeeting, meets])
 
-  if (loading || !currentMeeting) {
+  if (initialLoading && meets.length === 0) {
     return <div>loading...</div>
   }
 
+  const displayMeeting = currentMeeting || meets.find(m => m.id === meetId)
+  
   return (
     <main className="flex h-full justify-between p-16 text-gray-color">
       <section>
-        <MeetNotes meetData={currentMeeting} />
+        {displayMeeting && <MeetNotes meetData={displayMeeting} />}
       </section>
       <section className="w-full max-w-[300px] text-sm text-secondary-foreground">
         <Stack meetings={meets} currentMeetId={meetId} />
