@@ -3,13 +3,13 @@ import React from "react"
 import { CalendarIcon, GithubIcon, MailsIcon, MoveIcon } from "lucide-react"
 import Image from "next/image"
 
+import MoveInboxItem from "../Inbox/MoveInboxItem"
 import BoxIcon from "@/public/icons/box.svg"
 import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
+import { useModal } from "@/src/contexts/ModalProvider"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import classNames from "@/src/utils/classNames"
-import MoveInboxItem from "../Inbox/MoveInboxItem"
-import { useModal } from "@/src/contexts/ModalProvider"
 
 interface ItemListProps {
   items: CycleItem[]
