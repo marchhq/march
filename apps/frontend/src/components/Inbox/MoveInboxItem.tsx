@@ -19,19 +19,22 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   const { session } = useAuth()
   const { hideModal } = useModal()
   const inputRef = useRef<HTMLInputElement>(null)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState<string>("")
   const { spaces, fetchSpaces } = useSpaceStore()
-  const { updateItem, fetchInbox, items, deleteItem } = useCycleItemStore()
+  const { updateItem, fetchInbox, items } = useCycleItemStore()
+  const [modalItems, setModalItems] = useState<CycleItem[]>(items)
   const { toast } = useToast()
 
-  // Fetch spaces if they don't exist
   useEffect(() => {
-    if (!spaces) {
+    if (!spaces || spaces.length === 0) {
       void fetchSpaces(session)
-    }//fetch inbox items id not available
-    if(!items){
+    }
+    if(!items || items.length === 0){
       void fetchInbox(session)
     }
+    // Filter out the selected inbox item from the list 
+    const availableInboxItems = items.filter(item => item._id !== inboxItemId)
+    setModalItems(availableInboxItems)
   }, [fetchSpaces, session, spaces, items])
 
   // Focus the input field when the modal opens
@@ -62,7 +65,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
         session,
         {
           description: `
-          ${destinationItemDescription}
+          <p>${destinationItemDescription}</p>
           <ul data-type="taskList">
             <li data-checked="false" data-type="taskItem">
               <label><input type="checkbox"><span></span></label>
@@ -72,11 +75,14 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
             </li>
           </ul>
           <span data-indent="true">${sourceItem[0].description}</span>
-        `,    },
+        `,
+           },
         destiantionItemID
       )
-      //Remove the item from the main list
-      await updateItem(session, { isDeleted: true }, inboxItemId)
+
+ //Remove the item from the main list
+      // await updateItem(session, { isDeleted: true }, inboxItemId)
+      // await fetchInbox(session)
       toast({ title: "🚀 Moved successfully!" })
       hideModal()
     } catch (error) {
@@ -94,7 +100,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   )
 
   //Filter items based on search term
-  const filteredItems = items.filter((item) =>
+  const filteredItems = modalItems.filter((item) =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -115,8 +121,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
         </span>
       </div>
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
-        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pb-0 text-sm">
-          <div className="flex max-h-96 flex-col gap-1.5 overflow-y-auto">
+        <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 py-0 text-sm">
+          <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
             {filteredItems.length > 0 ? (
               filteredItems?.map((item) => (
                 <button
@@ -142,7 +148,7 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       <div className="flex items-center gap-2 w-full text-secondary-foreground px-2"><span>Spaces</span><span className="w-full h-[1px] bg-secondary-foreground"></span></div>
       <div className="flex items-center gap-5 bg-transparent text-secondary-foreground">
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pt-0 text-sm">
-          <div className="flex max-h-96 flex-col gap-1.5 overflow-y-auto">
+          <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
             {filteredSpaces.length > 0 ? (
               filteredSpaces.map((space) => (
                 <button
