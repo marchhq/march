@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { isIntegrationConnected } from "@/src/lib/@types/auth/user"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import { useMeetsStore, MeetsStoreType } from "@/src/lib/store/meets.store"
+import { useMeetsStore } from "@/src/lib/store/meets.store"
 import useUserStore from "@/src/lib/store/user.store"
 
 export default function InitialMeetings() {
@@ -16,9 +16,7 @@ export default function InitialMeetings() {
   const [loading, setLoading] = useState(true)
   const [hasMeetings, setHasMeetings] = useState<boolean | null>(null)
   const router = useRouter()
-  const fetchLatestMeet = useMeetsStore(
-    (state: MeetsStoreType) => state.fetchLatestMeet
-  )
+  const { fetchLatestMeet } = useMeetsStore()
   const { user, isLoading: userLoading, fetchUser } = useUserStore()
 
   const isLoading = loading || userLoading
@@ -43,9 +41,10 @@ export default function InitialMeetings() {
         }
 
         const meet: Meet | null = await fetchLatestMeet(session)
+        console.log("single meet: ", meet)
 
-        if (meet && meet._id) {
-          router.push(`/space/meetings/${meet._id}`)
+        if (meet && meet.id) {
+          router.push(`/space/meetings/${meet.id}`)
         } else {
           setHasMeetings(false)
           setLoading(false)
@@ -65,7 +64,7 @@ export default function InitialMeetings() {
   }, [fetchLatestMeet, session, router, isCalendarConnected, userLoading, user])
 
   if (isLoading) {
-    return <p>loading...</p>
+    return <p className="text-primary-foreground">loading...</p>
   }
 
   // Only show calendar connection message when we have user data
