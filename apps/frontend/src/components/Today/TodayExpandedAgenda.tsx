@@ -8,8 +8,11 @@ import TextEditor from "../atoms/Editor"
 import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
+import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import { useEventsStore } from "@/src/lib/store/events.store"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
+import { formatMeetDate, formatMeetTime } from "@/src/utils/datetime"
+import { getMeetingLink } from "@/src/utils/meet"
 
 interface EditedItem {
   title: string
@@ -39,6 +42,7 @@ export const TodayExpandedAgenda: React.FC = () => {
     setIsFetched,
   } = useMeetsStore()
 
+  const link = getMeetingLink(currentEvent)
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutRefs = useRef<TimeoutRefs>({
@@ -294,7 +298,7 @@ export const TodayExpandedAgenda: React.FC = () => {
               ref={divRef}
               className="flex size-full flex-col gap-4 text-foreground"
             >
-              <div className="flex items-center gap-4 text-xs text-secondary-foreground">
+              <div className="flex items-center gap-1 text-xs text-secondary-foreground">
                 <button
                   className="group/button flex items-center"
                   onClick={handleClose}
@@ -307,6 +311,28 @@ export const TodayExpandedAgenda: React.FC = () => {
                     className="opacity-50 group-hover/button:opacity-100"
                   />
                 </button>
+                <div className="mx-4 size-4 rounded-sm bg-[#E34136]/80"></div>
+                <p>
+                  {currentEvent.start.dateTime
+                    ? formatMeetDate(new Date(currentEvent.start.dateTime))
+                    : "Date not available"}
+                </p>
+                <p>.</p>
+                <p>
+                  {currentEvent.start.dateTime && currentEvent.end.dateTime
+                    ? `${formatMeetTime(new Date(currentEvent.start.dateTime))}: ${formatMeetTime(new Date(currentEvent.end.dateTime))}`
+                    : "Time not available"}
+                </p>
+                <a
+                  href={link}
+                  target="_blank"
+                  className="flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
+                >
+                  <span>
+                    <LinkIcon />
+                  </span>
+                  {link}
+                </a>
               </div>
               <div className="flex items-center">
                 <textarea
