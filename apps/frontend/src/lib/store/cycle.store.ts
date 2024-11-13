@@ -27,12 +27,12 @@ const initialViewState: ViewState = {
 
 interface ExtendedCycleItemStore extends CycleItemStore {
   inbox: ViewState
-  today: ViewState
+  byDate: ViewState
   overdue: ViewState
   thisWeek: ViewState
   favorites: ViewState
   setViewItems: (
-    view: "inbox" | "today" | "overdue" | "thisWeek",
+    view: "inbox" | "byDate" | "overdue" | "thisWeek",
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
@@ -40,7 +40,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
   inbox: { ...initialViewState },
-  today: { ...initialViewState },
+  byDate: { ...initialViewState },
   overdue: { ...initialViewState },
   thisWeek: { ...initialViewState },
   favorites: { ...initialViewState },
@@ -84,10 +84,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch inbox"
+      const errorMessage = "unknow: failed to fetch inbox"
+      console.error(errorMessage, error)
 
       set((state) => ({
         inbox: {
@@ -101,9 +99,9 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     }
   },
 
-  fetchToday: async (session: string, date: string) => {
+  fetchByDate: async (session: string, date: string) => {
     set((state) => ({
-      today: { ...state.today, isLoading: true, error: null },
+      byDate: { ...state.byDate, isLoading: true, error: null },
       isLoading: true,
       error: null,
     }))
@@ -114,7 +112,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       })
 
       set((state) => ({
-        today: {
+        byDate: {
           items: data.response.today || [],
           isLoading: false,
           error: null,
@@ -122,14 +120,12 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch today"
+      const errorMessage = "unknow: failed to fetch by date"
+      console.error(errorMessage, error)
 
       set((state) => ({
-        today: {
-          ...state.today,
+        byDate: {
+          ...state.byDate,
           error: errorMessage,
           isLoading: false,
         },
@@ -160,10 +156,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch overdue"
+      const errorMessage = "unknow: failed to fetch overdue"
+      console.error(errorMessage, error)
 
       set((state) => ({
         overdue: {
@@ -229,10 +223,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknow: failed to fetch this week"
+      const errorMessage = "unknow: failed to fetch this week"
+      console.error(errorMessage, error)
 
       set((state) => ({
         thisWeek: {
@@ -267,10 +259,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         isLoading: false,
       }))
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to fetch favorites"
+      const errorMessage = "unknown: failed to fetch favorites"
+      console.error(errorMessage, error)
 
       set((state) => ({
         favorites: {
@@ -292,10 +282,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       })
       set({ currentItem: data.response, isLoading: false })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to fetch item"
+      const errorMessage = "unknown: failed to fetch item"
+      console.error(errorMessage, error)
       set({ error: errorMessage, isLoading: false })
     }
   },
@@ -310,10 +298,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         data.response && data.response.length > 0 ? data.response[0] : null
       set({ currentItem: item, isLoading: false })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to fetch item by date"
+      const errorMessage = "unknown: failed to fetch item by date"
+      console.error(errorMessage, error)
       set({ error: errorMessage, isLoading: false })
     }
   },
@@ -367,10 +353,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
 
       return data.response
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to create item"
+      const errorMessage = "unknown: failed to create item"
+      console.error(errorMessage, error)
 
       set((state) => ({
         inbox: {
@@ -411,10 +395,51 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         )
       }
 
+      const updateItemsInViewByDate = (items: CycleItem[]) => {
+        if (updates.dueDate === null) {
+          return items.filter((item) => item._id !== id)
+        }
+
+        if (updates.dueDate) {
+          const newDueDate = updates.dueDate
+          const todayDate = new Date()
+
+          const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
+          const formattedTodayDate = todayDate.toISOString().split("T")[0]
+
+          if (formattedNewDueDate !== formattedTodayDate) {
+            return items.filter((item) => item._id !== id)
+          }
+        }
+
+        // otherwise, just update the item in by date view
+        return items.map((item) =>
+          item._id === id ? { ...item, ...updates } : item
+        )
+      }
+
       const updateItemsInView = (items: CycleItem[], isOverdue = false) => {
         // Only filter out done items from overdue list
-        if (isOverdue && updates.status === "done") {
-          return items.filter((item) => item._id !== id)
+        if (isOverdue) {
+          if (updates.dueDate === null) {
+            return items.filter((item) => item._id !== id)
+          }
+
+          if (updates.dueDate) {
+            const newDueDate = updates.dueDate
+            const todayDate = new Date()
+
+            const formattedNewDueDate = newDueDate?.toISOString().split("T")[0]
+            const formattedTodayDate = todayDate.toISOString().split("T")[0]
+
+            if (formattedNewDueDate !== formattedTodayDate) {
+              return items.filter((item) => item._id !== id)
+            }
+          }
+
+          if (updates.status === "done") {
+            return items.filter((item) => item._id !== id)
+          }
         }
 
         // For all other lists, just update the item
@@ -428,7 +453,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           ...state.inbox,
           items: updateItemsInViewInbox(state.inbox.items),
         },
-        today: { ...state.today, items: updateItemsInView(state.today.items) }, // No filtering
+        byDate: {
+          ...state.byDate,
+          items: updateItemsInViewByDate(state.byDate.items),
+        }, // No filtering
         overdue: {
           ...state.overdue,
           items: updateItemsInView(state.overdue.items, true),
@@ -474,9 +502,9 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             ...state.inbox,
             items: updateItemsInView(state.inbox.items),
           },
-          today: {
-            ...state.today,
-            items: updateItemsInView(state.today.items),
+          byDate: {
+            ...state.byDate,
+            items: updateItemsInView(state.byDate.items),
           },
           overdue: {
             ...state.overdue,
@@ -495,10 +523,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         }
       })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to update item"
+      const errorMessage = "unknown: failed to update item"
+      console.error(errorMessage, error)
 
       set((state) => ({
         ...state,
@@ -516,7 +542,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
 
       return {
         inbox: { ...state.inbox, items: deleteItemsInView(state.inbox.items) },
-        today: { ...state.today, items: deleteItemsInView(state.today.items) },
+        byDate: {
+          ...state.byDate,
+          items: deleteItemsInView(state.byDate.items),
+        },
         overdue: {
           ...state.overdue,
           items: deleteItemsInView(state.overdue.items),
@@ -546,9 +575,9 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             ...state.inbox,
             items: updateItemsInView(state.inbox.items),
           },
-          today: {
-            ...state.today,
-            items: updateItemsInView(state.today.items),
+          byDate: {
+            ...state.byDate,
+            items: updateItemsInView(state.byDate.items),
           },
           overdue: {
             ...state.overdue,
@@ -563,10 +592,8 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         }
       })
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "unknown: failed to delete item"
+      const errorMessage = "unknown: failed to delete item"
+      console.error(errorMessage, error)
 
       set((state) => ({
         ...state,
