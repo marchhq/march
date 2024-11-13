@@ -22,15 +22,13 @@ const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
       if (meets.length === 0) {
         setInitialLoading(true)
       }
-      
+
       try {
         await Promise.all([
-          !currentMeeting || currentMeeting.id !== meetId 
-            ? fetchMeetByid(session, meetId) 
+          !currentMeeting || currentMeeting.id !== meetId
+            ? fetchMeetByid(session, meetId)
             : Promise.resolve(),
-          meets.length === 0 
-            ? fetchMeets(session) 
-            : Promise.resolve()
+          meets.length === 0 ? fetchMeets(session) : Promise.resolve(),
         ])
       } finally {
         setInitialLoading(false)
@@ -46,8 +44,8 @@ const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
     return <div>loading...</div>
   }
 
-  const displayMeeting = currentMeeting || meets.find(m => m.id === meetId)
-  
+  const displayMeeting = currentMeeting || meets.find((m) => m.id === meetId)
+
   return (
     <main className="flex h-full justify-between p-16 text-gray-color">
       <section>

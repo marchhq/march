@@ -73,8 +73,8 @@ export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
       >
         <div className="mt-2 flex flex-col gap-2 border-l border-border">
           {stackItems.map((meet) => (
-            <Link 
-              key={meet.id} 
+            <Link
+              key={meet.id}
               href={`/space/meetings/${meet.id}`}
               onClick={(e) => handleMeetingClick(e, meet.id)}
             >
