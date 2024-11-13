@@ -5,7 +5,7 @@ import React, { useState } from "react"
 import { addWeeks } from "date-fns"
 
 import { ThisWeekArrows } from "./ThisWeekArrows"
-import { ThisWeekExpandedItem } from "@/src/components/ThisWeek/ThisWeekExpandedItem"
+import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { ThisWeekItems } from "@/src/components/ThisWeek/ThisWeekItems"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -86,7 +86,7 @@ export const ThisWeekPage: React.FC = () => {
           </div>
         </header>
         <ThisWeekItems startDate={startDate} endDate={endDate} />
-        <ThisWeekExpandedItem />
+        <ItemExpandModal />
       </div>
     </div>
   )
