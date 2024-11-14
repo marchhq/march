@@ -18,7 +18,8 @@ interface ItemListProps {
   handleRescheduleCalendar: (
     event: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | null,
+    currentStatus?: string
   ) => void
   isOverdue?: boolean
   doneLine?: boolean
@@ -118,7 +119,7 @@ export const ItemList: React.FC<ItemListProps> = ({
               size={14}
               className="hover-text"
               onClick={(e) =>
-                handleRescheduleCalendar(e, item._id, item.dueDate)
+                handleRescheduleCalendar(e, item._id, item.dueDate, item.status)
               }
             />
             <MoveIcon

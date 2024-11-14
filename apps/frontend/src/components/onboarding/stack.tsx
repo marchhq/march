@@ -44,7 +44,7 @@ export const Stack = ({ user }): JSX.Element => {
     [handleCalLogin, handleCalRevoke, handleLinearLogin]
   )
   return (
-    <div className="ml-[200px] grid grid-cols-2 gap-4">
+    <div className="ml-[120px] grid grid-cols-2 gap-4">
       {integrations.map((integration) => (
         <StackItems
           key={integration.key}

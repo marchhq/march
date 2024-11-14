@@ -1,7 +1,7 @@
 "use client"
 
-import { InboxAddItem } from "@/src/components/Inbox/InboxAddItem"
-import { InboxExpandedItem } from "@/src/components/Inbox/InboxExpandedItem"
+import { ItemAdd } from "@/src/components/atoms/ItemAdd"
+import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { InboxItems } from "@/src/components/Inbox/InboxItems"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import classNames from "@/src/utils/classNames"
@@ -25,15 +25,15 @@ export const InboxPage: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 text-sm">
             <h1 className="font-semibold">inbox</h1>
-            <p className="text-secondary-foreground">{totalItems}</p>
+            <span className="text-secondary-foreground">{totalItems}</span>
           </div>
         </header>
         <div className="flex flex-col gap-5">
-          <InboxAddItem />
+          <ItemAdd />
           <InboxItems />
         </div>
       </div>
-      <InboxExpandedItem />
+      <ItemExpandModal />
     </div>
   )
 }
