@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/hooks/useWebSocket"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { isLink } from "@/src/utils/helpers"
@@ -14,7 +15,10 @@ export const InboxAddItem: React.FC = () => {
   const [addingItem, setAddingItem] = useState(false)
   const [title, setTitle] = useState("")
 
+  const { isConnected, messages, sendMessage } = useWebSocket(session)
   const { createItem, error } = useCycleItemStore()
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const textarea = textareaRefTitle.current
@@ -30,36 +34,39 @@ export const InboxAddItem: React.FC = () => {
   }
 
   const handleAddItemToInbox = async () => {
+    if (isSubmitting) return
+
     const trimmedTitle = title.trim()
+    if (!trimmedTitle) return
 
-    if (!trimmedTitle) {
-      return
-    }
+    try {
+      setIsSubmitting(true)
 
-    const linkDetected = isLink(trimmedTitle)
+      const linkDetected = isLink(trimmedTitle)
+      const finalTitle =
+        linkDetected && !/^https:\/\//i.test(trimmedTitle)
+          ? `https://${trimmedTitle}`
+          : trimmedTitle
 
-    // prepare the final URL if its a link
-    const finalTitle =
-      linkDetected && !/^https:\/\//i.test(trimmedTitle)
-        ? `https://${trimmedTitle}`
-        : trimmedTitle
-
-    // prepare the item data
-    const data: Partial<CycleItem> = {
-      title: finalTitle,
-      type: linkDetected ? "link" : "issue",
-    }
-
-    if (linkDetected) {
-      data.metadata = {
-        url: finalTitle,
+      const data: Partial<CycleItem> = {
+        title: finalTitle,
+        type: linkDetected ? "link" : "issue",
       }
+
+      if (linkDetected) {
+        data.metadata = {
+          url: finalTitle,
+        }
+      }
+
+      await createItem(session, data)
+      sendMessage({ type: "INBOX_UPDATE", data })
+
+      setAddingItem(false)
+      setTitle("")
+    } finally {
+      setIsSubmitting(false)
     }
-
-    await createItem(session, data)
-
-    setAddingItem(false)
-    setTitle("")
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
