@@ -5,6 +5,7 @@ import React, { useState } from "react"
 import { addWeeks } from "date-fns"
 
 import { ThisWeekArrows } from "./ThisWeekArrows"
+import { ItemAdd } from "@/src/components/atoms/ItemAdd"
 import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { ThisWeekItems } from "@/src/components/ThisWeek/ThisWeekItems"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
@@ -58,14 +59,13 @@ export const ThisWeekPage: React.FC = () => {
 
   return (
     <div className="flex h-full w-[calc(100%-160px)]">
-      <div className="relative flex flex-auto flex-col gap-12">
+      <div className="relative flex flex-auto flex-col gap-5">
         <header>
           <div className="flex flex-1 flex-col gap-4 pl-5 text-sm text-foreground">
             <div className="flex w-full items-center justify-between gap-5">
               <div className="flex items-center gap-2 text-secondary-foreground">
                 <span className="text-secondary-foreground">
-                  {todoAndNullItemsLength} todo / {inProgressItems.length} in
-                  progress / {doneItems.length} done / {items.length} total
+                  {todoAndNullItemsLength} / {items.length} completed
                 </span>
                 <span>
                   {items.length > 0
@@ -85,6 +85,7 @@ export const ThisWeekPage: React.FC = () => {
             </div>
           </div>
         </header>
+        <ItemAdd />
         <ThisWeekItems startDate={startDate} endDate={endDate} />
         <ItemExpandModal />
       </div>
