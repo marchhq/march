@@ -1,70 +1,49 @@
 import { useEffect, useState } from "react"
 
-import { useCycleItemStore } from "../lib/store/cycle.store"
+const WEBSOCKET_URL = "ws://localhost:8080"
 
-const WEBSOCKET_URL = "ws://localhost:8080" // Replace with backend WebSocket URL
-
-export const useWebSocket = (session) => {
+export const useWebSocket = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
-  const { updateStateWithNewItem } = useCycleItemStore()
-
-  // Separate effect for handling messages
-  useEffect(() => {
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      if (lastMessage.type === "INBOX_UPDATE") {
-        updateStateWithNewItem(session, lastMessage.data)
-      }
-    }
-  }, [messages, session, updateStateWithNewItem])
 
   useEffect(() => {
-    if (!session) return
+    const newSocket = new WebSocket(WEBSOCKET_URL)
 
-    let ws: WebSocket | null = null
-
-    const connect = () => {
-      ws = new WebSocket(WEBSOCKET_URL)
-
-      ws.onopen = () => {
-        setIsConnected(true)
-        console.log("WebSocket connection established")
-      }
-
-      ws.onmessage = (event) => {
-        const message = JSON.parse(event.data.toString())
-        console.log("Received message:", message)
-        setMessages((prev) => [...prev, message])
-      }
-
-      ws.onclose = () => {
-        setIsConnected(false)
-        console.log("WebSocket connection closed")
-        // Attempt to reconnect after a delay
-        setTimeout(connect, 3000)
-      }
-
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error)
-      }
-
-      setSocket(ws)
+    newSocket.onopen = () => {
+      setIsConnected(true)
+      console.log("WebSocket connection established")
     }
 
-    connect()
+    newSocket.onmessage = (event) => {
+      const message = JSON.parse(event.data.toString())
+      setMessages((prevMessages) => [...prevMessages, message])
+      console.log("Received message:", message)
+    }
+
+    newSocket.onclose = () => {
+      setIsConnected(false)
+      console.log("WebSocket connection closed")
+    }
+
+    newSocket.onerror = (error) => {
+      console.error("WebSocket error:", error)
+    }
+
+    setSocket(newSocket)
 
     return () => {
-      if (ws) {
-        ws.close()
+      if (newSocket) {
+        newSocket.close()
       }
     }
-  }, [session])
+  }, [])
 
   const sendMessage = (message: any) => {
-    if (socket?.readyState === WebSocket.OPEN) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(message))
+    } else {
+      console.warn("Cannot send message, WebSocket is not open")
     }
   }
 
