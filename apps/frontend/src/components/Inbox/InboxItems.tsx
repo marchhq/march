@@ -31,7 +31,7 @@ export const InboxItems: React.FC = () => {
   } = useCycleItemStore()
 
   const { items: fetchedItems, error: inboxError } = inbox
-  const { isConnected, messages } = useWebSocket()
+  const { messages } = useWebSocket()
 
   const [mergedItems, setMergedItems] = useState(fetchedItems || [])
 
@@ -47,13 +47,12 @@ export const InboxItems: React.FC = () => {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
-      console.log("Received WebSocket message:", lastMessage)
       if (lastMessage.type === "issue") {
         const newItem = {
           ...lastMessage,
           _id: lastMessage.id, // Map id to _id as per CycleItem interface
         }
-        console.log("New item:", newItem)
+        //update items state
         updateStateWithNewItem(newItem)
       } else {
         console.error(

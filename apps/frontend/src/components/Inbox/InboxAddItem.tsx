@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useWebSocket } from "@/src/hooks/useWebSocket"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { isLink } from "@/src/utils/helpers"
@@ -15,7 +14,6 @@ export const InboxAddItem: React.FC = () => {
   const [addingItem, setAddingItem] = useState(false)
   const [title, setTitle] = useState("")
 
-  const { isConnected, sendMessage } = useWebSocket()
   const { createItem, error } = useCycleItemStore()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -59,15 +57,7 @@ export const InboxAddItem: React.FC = () => {
         }
       }
 
-      const createdItem = await createItem(session, data)
-
-      if (isConnected && createdItem) {
-        sendMessage({
-          type: "INBOX_UPDATE",
-          data: createdItem, // Send the complete item returned from the API
-        })
-      }
-
+      await createItem(session, data)
       setAddingItem(false)
       setTitle("")
     } finally {
