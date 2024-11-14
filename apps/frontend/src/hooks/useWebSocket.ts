@@ -8,17 +8,17 @@ export const useWebSocket = (session) => {
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
-  const { createItem } = useCycleItemStore()
+  const { updateStateWithNewItem } = useCycleItemStore()
 
   // Separate effect for handling messages
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
       if (lastMessage.type === "INBOX_UPDATE") {
-        createItem(session, lastMessage.data)
+        updateStateWithNewItem(session, lastMessage.data)
       }
     }
-  }, [messages, session, createItem])
+  }, [messages, session, updateStateWithNewItem])
 
   useEffect(() => {
     if (!session) return

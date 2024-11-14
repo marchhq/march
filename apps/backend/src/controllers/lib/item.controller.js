@@ -1,6 +1,5 @@
 import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
-import { broadcastUpdate } from "../../services/lib/websocket.service.js";
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -93,12 +92,6 @@ const createInboxItemController = async (req, res, next) => {
         }
 
         const item = await createInboxItem(user, itemData);
-
-        // Broadcast update after creating item
-        broadcastUpdate({
-            type: 'INBOX_UPDATE',
-            item: item
-        });
 
         res.status(200).json({
             response: item
