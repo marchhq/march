@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 
+import { useCycleItemStore } from "../lib/store/cycle.store"
+
 const WEBSOCKET_URL = "ws://localhost:8080"
 
 export const useWebSocket = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
+  const { updateStateWithNewItem } = useCycleItemStore()
 
   useEffect(() => {
     const newSocket = new WebSocket(WEBSOCKET_URL)
@@ -16,9 +19,16 @@ export const useWebSocket = () => {
     }
 
     newSocket.onmessage = (event) => {
-      const message = JSON.parse(event.data.toString())
-      setMessages((prevMessages) => [...prevMessages, message])
-      console.log("Received message:", message)
+      try {
+        const message = JSON.parse(event.data.toString())
+        if (message.type === "linear" && message.item) {
+          setMessages((prevMessages) => [...prevMessages, message.item])
+          updateStateWithNewItem(message.item)
+        }
+        console.log("Received message:", message)
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error)
+      }
     }
 
     newSocket.onclose = () => {

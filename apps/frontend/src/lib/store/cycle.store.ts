@@ -36,6 +36,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
+  updateStateWithNewItem: (newItem: CycleItem) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({

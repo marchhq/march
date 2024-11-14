@@ -5,6 +5,7 @@ import React, { useEffect, useCallback, useState } from "react"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/hooks/useWebSocket"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { getWeekDates } from "@/src/utils/datetime"
@@ -19,14 +20,49 @@ export const InboxItems: React.FC = () => {
   )
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
-    useCycleItemStore()
+  const {
+    inbox,
+    currentItem,
+    setCurrentItem,
+    fetchInbox,
+    updateItem,
+    updateStateWithNewItem,
+    error,
+  } = useCycleItemStore()
 
-  const { items, error: inboxError } = inbox
+  const { items: fetchedItems, error: inboxError } = inbox
+  const { isConnected, messages } = useWebSocket()
+
+  const [mergedItems, setMergedItems] = useState(fetchedItems || [])
 
   useEffect(() => {
     fetchInbox(session)
   }, [fetchInbox, session])
+
+  useEffect(() => {
+    setMergedItems(fetchedItems)
+  }, [fetchedItems])
+
+  // Handle new WebSocket messages
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      console.log("Received WebSocket message:", lastMessage)
+      if (lastMessage.type === "issue") {
+        const newItem = {
+          ...lastMessage,
+          _id: lastMessage.id, // Map id to _id as per CycleItem interface
+        }
+        console.log("New item:", newItem)
+        updateStateWithNewItem(newItem)
+      } else {
+        console.error(
+          "Invalid message format or unsupported type:",
+          lastMessage
+        )
+      }
+    }
+  }, [messages, updateStateWithNewItem])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -120,7 +156,7 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
-  const filteredItems = items.filter((item) => item.status !== "done")
+  const filteredItems = mergedItems.filter((item) => item?.status !== "done")
 
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
