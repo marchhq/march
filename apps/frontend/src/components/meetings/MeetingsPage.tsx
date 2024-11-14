@@ -6,8 +6,7 @@ import { MeetNotes } from "./MeetNotes"
 import { Stack } from "./Stack"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import { useMeetsStore, MeetsStoreType } from "@/src/lib/store/meets.store"
-import { getCurrentWeekMeets } from "@/src/utils/meet"
+import { useMeetsStore } from "@/src/lib/store/meets.store"
 
 interface MeetingPageProps {
   meetId: string
@@ -15,37 +14,45 @@ interface MeetingPageProps {
 
 const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
   const { session } = useAuth()
-  const fetchUpcomingMeets = useMeetsStore(
-    (state: MeetsStoreType) => state.fetchUpcomingMeets
-  )
-  const upcomingMeets = useMeetsStore(
-    (state: MeetsStoreType) => state.upcomingMeetings
-  )
-  const [currentWeekMeets, setCurrentWeekMeets] = useState<Meet[]>([])
-  const [currentMeet, setCurrentMeet] = useState<Meet | null>(null)
+  const { fetchMeets, meets, fetchMeetByid, currentMeeting } = useMeetsStore()
+  const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
-    fetchUpcomingMeets(session)
-  }, [fetchUpcomingMeets, session])
+    const initializeMeeting = async () => {
+      if (meets.length === 0) {
+        setInitialLoading(true)
+      }
 
-  useEffect(() => {
-    const meets = getCurrentWeekMeets(upcomingMeets)
-    setCurrentWeekMeets(meets)
-    const current = meets.find((meet) => meet._id === meetId)
-    setCurrentMeet(current || null)
-  }, [upcomingMeets, meetId])
+      try {
+        await Promise.all([
+          !currentMeeting || currentMeeting.id !== meetId
+            ? fetchMeetByid(session, meetId)
+            : Promise.resolve(),
+          meets.length === 0 ? fetchMeets(session) : Promise.resolve(),
+        ])
+      } finally {
+        setInitialLoading(false)
+      }
+    }
 
-  if (currentWeekMeets.length === 0 || !currentMeet) {
+    if (session && meetId) {
+      initializeMeeting()
+    }
+  }, [fetchMeets, fetchMeetByid, session, meetId, currentMeeting, meets])
+
+  if (initialLoading && meets.length === 0) {
     return <div>loading...</div>
   }
+
+  const displayMeeting = currentMeeting || meets.find((m) => m.id === meetId)
 
   return (
     <main className="flex h-full justify-between p-16 text-gray-color">
       <section>
-        <MeetNotes meetData={currentMeet} />
+        {displayMeeting && <MeetNotes meetData={displayMeeting} />}
       </section>
       <section className="w-full max-w-[300px] text-sm text-secondary-foreground">
-        <Stack currentWeekMeets={currentWeekMeets} currentMeetId={meetId} />
+        <Stack meetings={meets} currentMeetId={meetId} />
       </section>
     </main>
   )

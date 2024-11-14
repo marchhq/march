@@ -13,7 +13,7 @@ export const metadata: Metadata = generateMetadataHelper({
 
 const ThisWeek: React.FC = () => {
   return (
-    <div className="h-full bg-background text-secondary-foreground">
+    <div className="h-full overflow-y-auto bg-background p-10 pl-5 text-secondary-foreground">
       <ThisWeekPage />
     </div>
   )
