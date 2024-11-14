@@ -15,7 +15,7 @@ export const InboxAddItem: React.FC = () => {
   const [addingItem, setAddingItem] = useState(false)
   const [title, setTitle] = useState("")
 
-  const { isConnected, messages, sendMessage } = useWebSocket(session)
+  const { isConnected, sendMessage } = useWebSocket()
   const { createItem, error } = useCycleItemStore()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -59,8 +59,14 @@ export const InboxAddItem: React.FC = () => {
         }
       }
 
-      await createItem(session, data)
-      sendMessage({ type: "INBOX_UPDATE", data })
+      const createdItem = await createItem(session, data)
+
+      if (isConnected && createdItem) {
+        sendMessage({
+          type: "INBOX_UPDATE",
+          data: createdItem, // Send the complete item returned from the API
+        })
+      }
 
       setAddingItem(false)
       setTitle("")
