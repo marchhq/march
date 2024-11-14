@@ -29,12 +29,6 @@ export const ThisWeekPage: React.FC = () => {
   const { thisWeek } = useCycleItemStore()
   const { items } = thisWeek
 
-  const nullItems = items.filter((item: CycleItem) => item.status === "null")
-  const todoItems = items.filter((item: CycleItem) => item.status === "todo")
-  const todoAndNullItemsLength = nullItems.length + todoItems.length
-  const inProgressItems = items.filter(
-    (item: CycleItem) => item.status === "in progress"
-  )
   const doneItems = items.filter((item: CycleItem) => item.status === "done")
 
   const handleWeekChange = (direction: "left" | "right" | "this") => {
@@ -64,15 +58,6 @@ export const ThisWeekPage: React.FC = () => {
           <div className="flex flex-1 flex-col gap-4 pl-5 text-sm text-foreground">
             <div className="flex w-full items-center justify-between gap-5">
               <div className="flex items-center gap-2 text-secondary-foreground">
-                <span className="text-secondary-foreground">
-                  {todoAndNullItemsLength} / {items.length} completed
-                </span>
-                <span>
-                  {items.length > 0
-                    ? ((doneItems.length / items.length) * 100).toFixed(0)
-                    : 0}
-                  %
-                </span>
                 <span>{formattedDateRange}</span>
               </div>
               <ThisWeekArrows onChangeWeek={handleWeekChange} />
@@ -80,7 +65,7 @@ export const ThisWeekPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <h1 className="font-semibold">week {weekNumber}</h1>
               <span className="text-secondary-foreground">
-                {doneItems.length}/{items.length}
+                {doneItems.length} [{items.length}]
               </span>
             </div>
           </div>
