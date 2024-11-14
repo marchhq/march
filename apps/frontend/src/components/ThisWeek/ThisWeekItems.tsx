@@ -77,28 +77,6 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
     [updateItem, session]
   )
 
-  const handleInProgress = useCallback(
-    (
-      event: React.MouseEvent,
-      id: string,
-      currentStatus: string | undefined
-    ) => {
-      event.stopPropagation()
-      if (id) {
-        const newStatus =
-          currentStatus === "in progress" ? "todo" : "in progress"
-        updateItem(
-          session,
-          {
-            status: newStatus,
-          },
-          id
-        )
-      }
-    },
-    [updateItem, session]
-  )
-
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
@@ -161,15 +139,13 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
 
   return (
     <div>
-      <div className="flex flex-col gap-2.5 text-sm">
+      <div className="flex flex-col gap-2.5 pb-10 text-sm">
         <ItemList
           items={items}
           handleExpand={handleExpand}
-          handleInProgress={handleInProgress}
           handleDone={handleDone}
           handleRescheduleCalendar={handleRescheduleCalendar}
           doneLine={true}
-          inProgressAction={true}
         />
       </div>
       {reschedulingItemId !== null && (
