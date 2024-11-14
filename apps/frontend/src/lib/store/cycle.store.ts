@@ -343,7 +343,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         },
         thisWeek: {
           ...state.thisWeek,
-          items: [...state.thisWeek.items, data.response],
+          items: [data.response, ...state.thisWeek.items],
           isLoading: false,
           error: null,
         },
@@ -419,6 +419,10 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       }
 
       const updateItemsInView = (items: CycleItem[], isOverdue = false) => {
+        if (updates.dueDate === null) {
+          return items.filter((item) => item._id !== id)
+        }
+
         // Only filter out done items from overdue list
         if (isOverdue) {
           if (updates.dueDate === null) {

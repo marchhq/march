@@ -4,6 +4,7 @@ import { CalendarIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
 import BoxIcon from "@/public/icons/box.svg"
+import BoxDashed from "@/public/icons/boxdashed.svg"
 import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
@@ -16,10 +17,17 @@ interface ItemListProps {
   handleRescheduleCalendar: (
     event: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | null,
+    currentStatus?: string
+  ) => void
+  handleInProgress?: (
+    event: React.MouseEvent,
+    id: string,
+    status: string
   ) => void
   isOverdue?: boolean
   doneLine?: boolean
+  inProgressAction?: boolean
 }
 
 const getSourceIcon = (source: string) => {
@@ -50,10 +58,12 @@ const getSourceIcon = (source: string) => {
 export const ItemList: React.FC<ItemListProps> = ({
   items,
   handleExpand,
+  handleInProgress,
   handleDone,
   handleRescheduleCalendar,
   isOverdue = false,
   doneLine = false,
+  inProgressAction = false,
 }) => {
   return (
     <>
@@ -96,10 +106,14 @@ export const ItemList: React.FC<ItemListProps> = ({
                 `truncate text-left ${
                   item.type === "link" ? "group-hover:underline" : ""
                 }`,
-                isOverdue && "flex gap-1"
+                isOverdue && "flex gap-1",
+                item.status === "in progress" && "flex gap-1"
               )}
             >
               {item.title}
+              {item.status === "in progress" && (
+                <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#FFD966]/80" />
+              )}
               {isOverdue && (
                 <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
               )}
@@ -115,9 +129,19 @@ export const ItemList: React.FC<ItemListProps> = ({
               size={14}
               className="hover-text"
               onClick={(e) =>
-                handleRescheduleCalendar(e, item._id, item.dueDate)
+                handleRescheduleCalendar(e, item._id, item.dueDate, item.status)
               }
             />
+            {inProgressAction && handleInProgress && (
+              <Image
+                src={BoxDashed}
+                alt="checkbox dashed icon"
+                width={12}
+                height={12}
+                onClick={(e) => handleInProgress(e, item._id, item.status)}
+                className="opacity-50 hover:opacity-100"
+              />
+            )}
           </div>
         </button>
       ))}
