@@ -64,13 +64,16 @@ export const initializeWebSocketServer = (server) => {
     return wss;
 };
 
-export const broadcastUpdate = (data) => {
-    console.log('Broadcasting update sa:', data);
+export const broadcastUpdate = (data, isBinary) => {
     if (!wss) return;
 
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(data));
+            if (data.type === 'INBOX_UPDATE') {
+                // client.send(JSON.stringify(data));
+                client.send(data, { binary: isBinary });
+                console.log("Sent data to client: ", data)
+            }
         }
     });
 };
