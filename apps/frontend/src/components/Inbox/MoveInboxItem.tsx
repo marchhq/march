@@ -38,7 +38,9 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
       void fetchInbox(session)
     }
     // Filter out the selected inbox item from the list
-    const availableInboxItems = items.filter((item) => item._id !== inboxItemId)
+    const availableInboxItems = items?.filter(
+      (item) => item?._id !== inboxItemId
+    )
     setModalItems(availableInboxItems)
   }, [fetchSpaces, session, spaces, items])
 
@@ -66,8 +68,8 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
     destinationItemDescription: string
   ) => {
     try {
-      const sourceItem: CycleItem[] = items.filter(
-        (item) => item._id === inboxItemId
+      const sourceItem: CycleItem[] = items?.filter(
+        (item) => item?._id === inboxItemId
       )
       await updateItem(
         session,
@@ -78,11 +80,11 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
             <li data-checked="false" data-type="taskItem">
               <label><input type="checkbox"><span></span></label>
               <div data-indent="true">
-                <p>${sourceItem[0].title}</p>
+                <p>${sourceItem[0]?.title}</p>
               </div>
             </li>
           </ul>
-          <span data-indent="true">${sourceItem[0].description}</span>
+          <span data-indent="true">${sourceItem[0]?.description}</span>
         `,
         },
         destiantionItemID
@@ -103,13 +105,13 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
   }
 
   // Filter spaces based on the search term
-  const filteredSpaces = spaces.filter((space) =>
-    space.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSpaces = spaces?.filter((space) =>
+    space?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
   )
 
   //Filter items based on search term
-  const filteredItems = modalItems.filter((item) =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredItems = modalItems?.filter((item) =>
+    item?.title?.toLowerCase()?.includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -134,26 +136,32 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 py-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
             {isInboxItemsLoading && <div>Loading Inbox Items...</div>}
-            {filteredItems.length > 0 ? (
+            {filteredItems?.length > 0 ? (
               filteredItems?.map((item) => (
                 <button
-                  key={item._id}
+                  key={item?._id}
                   className="cursor-pointer text-left hover:text-primary-foreground"
-                  onClick={() => handleItemClick(item._id, item.description)}
+                  onClick={() => handleItemClick(item?._id, item?.description)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      handleItemClick(item._id, item.description)
+                      handleItemClick(item?._id, item?.description)
                     }
                   }}
                   type="button"
                   disabled={isInboxItemsLoading}
-                  aria-label={`Move to ${item.title}`}
+                  aria-label={`Move to ${item?.title}`}
                 >
-                  {item.title}
+                  {item?.title}
                 </button>
               ))
             ) : (
-              <div>{modalItems.length === 0 && searchTerm.length === 0 && !isInboxItemsLoading ? "No items avaiable" : "No matching item found!"}</div>
+              <div>
+                {modalItems?.length === 0 &&
+                searchTerm?.length === 0 &&
+                !isInboxItemsLoading
+                  ? "No items avaiable"
+                  : "No matching item found!"}
+              </div>
             )}
           </div>
         </div>
@@ -166,22 +174,22 @@ const MoveInboxItem = ({ inboxItemId }: Props) => {
         <div className="flex h-fit min-w-[350px] flex-col gap-5 overflow-hidden rounded-lg bg-background p-5 pt-0 text-sm">
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto">
             {isSpaceLoading && <div>Loading spaces...</div>}
-            {filteredSpaces.length > 0 ? (
-              filteredSpaces.map((space) => (
+            {filteredSpaces?.length > 0 ? (
+              filteredSpaces?.map((space) => (
                 <button
-                  key={space._id}
+                  key={space?._id}
                   className="cursor-pointer text-left hover:text-primary-foreground"
-                  onClick={() => handleSpaceClick(space._id)}
+                  onClick={() => handleSpaceClick(space?._id)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      handleSpaceClick(space._id)
+                      handleSpaceClick(space?._id)
                     }
                   }}
                   disabled={isSpaceLoading}
-                  aria-label={`Move to ${space.name}`}
+                  aria-label={`Move to ${space?.name}`}
                   type="button"
                 >
-                  {space.name}
+                  {space?.name}
                 </button>
               ))
             ) : (
