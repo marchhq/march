@@ -42,6 +42,12 @@ interface ItemData {
   title?: string
   type?: string
   description?: string
+  status?: string
+  dueDate?: Date | null
+  cycle?: {
+    startsAt: string | null
+    endsAt: string | null
+  }
   metadata?: {
     url: string
   }
@@ -127,18 +133,20 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
     itemData: ItemData
   ) => {
     try {
+      console.log(`itemId: ${itemId}`)
       const updateResponse = await axios.put(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}`,
         itemData,
         { headers: { Authorization: `Bearer ${session}` } }
       )
       const updatedItem = updateResponse.data.item
-
-      set((state) => ({
-        readingItems: state.readingItems.map((item) =>
-          item._id === itemId ? updatedItem : item
-        ),
-      }))
+      if (updatedItem) {
+        set((state) => ({
+          readingItems: state.readingItems.map((item) =>
+            item._id === itemId ? updatedItem : item
+          ),
+        }))
+      }
     } catch (error) {
       console.error("Error updating item:", error)
     }
