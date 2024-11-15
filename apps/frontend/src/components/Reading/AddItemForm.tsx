@@ -155,7 +155,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
             disabled={isSaving}
           />
           {input && !isSaving && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-secondary-foreground">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-secondary-foreground">
               press ↵ to save
             </span>
           )}
