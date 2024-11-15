@@ -133,22 +133,27 @@ export const InboxExpandedItem: React.FC = () => {
 
   // effect to initialize editor when currentItem changes
   useEffect(() => {
-    if (!currentItem) return
-
-    const newContent = processMarkdown(currentItem.description || "<p></p>")
-
-    if (currentItem._id !== editItemId) {
-      setEditItemId(currentItem._id)
-      setEditedItem({ title: currentItem.title || "" })
-      setContent(newContent)
-      lastSavedContent.current = newContent
-
-      if (editor?.commands) {
-        editor.commands.setContent(newContent)
-        editor.commands.focus()
-      }
+    if (!currentItem) return;
+    
+    const newContent = processMarkdown(currentItem.description || "<p></p>");
+    setContent(newContent);
+    lastSavedContent.current = newContent;
+  
+    if (editor?.commands) {
+      editor.commands.setContent(newContent);
+      editor.commands.focus();
     }
-  }, [currentItem, editItemId, editor, processMarkdown])
+  
+    setEditItemId(currentItem._id);
+    setEditedItem({ title: currentItem.title || "" });
+    
+    return () => {
+      if (editor?.commands) {
+        editor.commands.clearContent();
+      }
+      lastSavedContent.current = "<p></p>";
+    };
+  }, [currentItem, editor]);
 
   // effect to handle title auto-save
   useEffect(() => {
