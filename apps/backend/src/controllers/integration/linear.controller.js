@@ -1,18 +1,7 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues, getOverdueLinearIssues, getLinearIssuesByDate, handleWebhookEvent } from "../../services/integration/linear.service.js";
+import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues, getOverdueLinearIssues, getLinearIssuesByDate, handleWebhookEvent, revokeLinearAccess } from "../../services/integration/linear.service.js";
 import { linearQueue } from "../../loaders/bullmq.loader.js";
 import * as crypto from "crypto";
-
-// const redirectLinearOAuthLoginController = (req, res, next) => {
-//     try {
-//         const authUrl = `https://linear.app/oauth/authorize?client_id=${environment.LINEAR_CLIENT_ID}&redirect_uri=${environment.LINEAR_REDIRECT_URL}&response_type=code`;
-//         console.log("hey: ", authUrl);
-//         res.redirect(authUrl);
-//     } catch (err) {
-//         console.error("Error in redirectLinearOAuthLoginController:", err);
-//         next(err);
-//     }
-// };
 
 const redirectLinearOAuthLoginController = (req, res, next) => {
     try {
@@ -125,6 +114,28 @@ const handleWebhook = async (req, res, next) => {
     }
 }
 
+const revokeLinearAccessController = async (req, res, next) => {
+    const user = req.user;
+
+    try {
+        await revokeLinearAccess(user.integration.linear.accessToken);
+
+        user.integration.linear = {
+            accessToken: null,
+            userId: null,
+            connected: false
+        };
+        await user.save();
+
+        res.status(200).json({
+            message: 'Linear access revoked successfully'
+        });
+    } catch (err) {
+        console.error('Error revoking Linear access:', err);
+        next(err);
+    }
+};
+
 export {
     redirectLinearOAuthLoginController,
     getAccessTokenController,
@@ -132,5 +143,6 @@ export {
     getTodayLinearIssuesController,
     getOverdueLinearIssuesController,
     getLinearIssuesByDateController,
-    handleWebhook
+    handleWebhook,
+    revokeLinearAccessController
 }

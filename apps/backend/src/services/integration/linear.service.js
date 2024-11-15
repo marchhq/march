@@ -360,6 +360,12 @@ const handleWebhookEvent = async (payload) => {
     }
 
     if (!issue.assignee || !issue.assignee.id) {
+        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
+        if (deletedIssue) {
+            console.log(`Unassigned issue with ID: ${issue.id} deleted from the database.`);
+        } else {
+            console.log(`Unassigned issue with ID: ${issue.id} not found in the database.`);
+        }
         return;
     }
 
@@ -413,6 +419,23 @@ const handleWebhookEvent = async (payload) => {
     }
 };
 
+const revokeLinearAccess = async (accessToken) => {
+    try {
+        await axios.post('https://api.linear.app/oauth/revoke', {
+            token: accessToken
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+        console.log('Linear access revoked successfully');
+    } catch (error) {
+        console.error('Error revoking Linear token:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
@@ -422,5 +445,6 @@ export {
     getTodayLinearIssues,
     getOverdueLinearIssues,
     getLinearIssuesByDate,
-    handleWebhookEvent
+    handleWebhookEvent,
+    revokeLinearAccess
 }

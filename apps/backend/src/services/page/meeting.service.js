@@ -1,47 +1,44 @@
 import { Meeting } from "../../models/page/meetings.model.js";
 
-const getMeeting = async (user) => {
-    const meetings = await Meeting.find({
+const createMeeting = async (user, meetingData) => {
+    const newMeeting = new Meeting({
+        ...meetingData,
         user
-    })
-        .sort({ 'metadata.start.dateTime': 1 });
+    });
+    if (!newMeeting) {
+        const error = new Error("Failed to create the item")
+        error.statusCode = 500
+        throw error
+    }
 
-    return meetings;
+    const meeting = await newMeeting.save()
+
+    return meeting;
 };
 
-const recentUpcomingMeeting = async (user) => {
-    const now = new Date().toISOString();
+const getMeeting = async (user) => {
     const meetings = await Meeting.find({
         user,
-        'metadata.start.dateTime': { $gte: now }
+        isDeleted: false
     })
-        .sort({ 'metadata.start': 1 })
-        .limit(1);
-
+        .sort({ created_at: -1 });
     return meetings;
 };
 
 const getMeetingById = async (user, id) => {
     const meeting = await Meeting.find({
         user,
-        _id: id
+        id
     })
         .sort({ created_at: -1 });
 
     return meeting;
 };
 
-const getUpcomingMeetings = async (user, currentDateTime) => {
-    const upcomingMeetings = await Meeting.find({
-        user,
-        'metadata.start.dateTime': { $gt: currentDateTime.toISOString() }
-    });
-    return upcomingMeetings;
-};
-
-const updateMeeting = async (id, updateData) => {
+const updateMeeting = async (id, updateData, user) => {
     const updatedBlock = await Meeting.findOneAndUpdate({
-        _id: id
+        id,
+        user
     },
     { $set: updateData },
     { new: true }
@@ -50,8 +47,8 @@ const updateMeeting = async (id, updateData) => {
     return updatedBlock;
 };
 
-const deleteMeeting = async (id) => {
-    const meeting = await Meeting.findOneAndDelete({ _id: id });
+const deleteMeeting = async (id, user) => {
+    const meeting = await Meeting.findOneAndDelete({ id, user });
 
     if (!meeting) {
         throw new Error('meeting not found');
@@ -60,9 +57,8 @@ const deleteMeeting = async (id) => {
 };
 
 export {
+    createMeeting,
     getMeeting,
-    getUpcomingMeetings,
-    recentUpcomingMeeting,
     updateMeeting,
     deleteMeeting,
     getMeetingById

@@ -9,7 +9,6 @@ import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface EditedItem {
@@ -26,7 +25,7 @@ const SAVE_DELAY = {
   CONTENT: 500,
 } as const
 
-export const InboxExpandedItem: React.FC = () => {
+export const ItemExpandModal: React.FC = () => {
   const { session } = useAuth()
   const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
     useCycleItemStore()
@@ -78,7 +77,6 @@ export const InboxExpandedItem: React.FC = () => {
         await updateItem(
           session,
           {
-            ...item,
             title: editedItem.title,
           },
           item._id
@@ -101,11 +99,7 @@ export const InboxExpandedItem: React.FC = () => {
   const saveContent = useCallback(() => {
     if (!currentItem?._id || content === lastSavedContent.current) return
 
-    updateItem(
-      session,
-      { ...currentItem, description: content },
-      currentItem._id
-    )
+    updateItem(session, { description: content }, currentItem._id)
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
@@ -237,53 +231,70 @@ export const InboxExpandedItem: React.FC = () => {
     []
   )
 
-  return (
-    <div className={classNames("", currentItem && "w-1/2")}>
-      {currentItem && (
+  if (currentItem) {
+    return (
+      <div>
         <div
-          ref={divRef}
-          className="flex size-full flex-col gap-4 border-l border-border px-4 text-foreground"
-        >
-          <div className="flex items-center gap-4 text-xs text-secondary-foreground">
-            <button
-              className="group/button flex items-center"
-              onClick={handleClose}
+          className="fixed inset-0 z-50 cursor-default bg-black/80"
+          role="button"
+          onClick={handleClose}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" || e.key === "Esc") {
+              handleClose()
+            }
+          }}
+          tabIndex={0}
+        ></div>
+        <div className="fixed left-1/2 top-1/2 z-50 h-4/5 w-3/5 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-lg bg-background p-10 shadow-lg">
+          <div>
+            <div
+              ref={divRef}
+              className="flex size-full flex-col gap-4 text-foreground"
             >
-              <Image
-                src={ChevronLeftIcon}
-                alt="chevron left icon"
-                width={16}
-                height={16}
-                className="opacity-50 group-hover/button:opacity-100"
-              />
-            </button>
-            <p className="flex items-center">
-              {formatDateYear(currentItem.createdAt)}
-            </p>
-            <p>edited {fromNow(currentItem.updatedAt)}</p>
-            <button
-              className="hover-text flex w-fit items-center"
-              onClick={(e) => handleDelete(e, currentItem._id)}
-            >
-              <span>del</span>
-            </button>
-          </div>
-          <div className="flex items-center">
-            <textarea
-              ref={textareaRefTitle}
-              value={editedItem.title}
-              onChange={(e) => handleTitleChange(e)}
-              onKeyDown={handleTextareaKeyDown}
-              placeholder="title"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-              rows={1}
-            />
-          </div>
-          <div className="mt-1 text-foreground">
-            <TextEditor editor={editor} />
+              <div className="flex items-center gap-4 text-xs text-secondary-foreground">
+                <button
+                  className="group/button flex items-center"
+                  onClick={handleClose}
+                >
+                  <Image
+                    src={ChevronLeftIcon}
+                    alt="chevron left icon"
+                    width={16}
+                    height={16}
+                    className="opacity-50 group-hover/button:opacity-100"
+                  />
+                </button>
+                <p className="flex items-center">
+                  {formatDateYear(currentItem.createdAt)}
+                </p>
+                <p>edited {fromNow(currentItem.updatedAt)}</p>
+                <button
+                  className="hover-text flex w-fit items-center"
+                  onClick={(e) => handleDelete(e, currentItem._id)}
+                >
+                  <span>del</span>
+                </button>
+              </div>
+              <div className="flex items-center">
+                <textarea
+                  ref={textareaRefTitle}
+                  value={editedItem.title}
+                  onChange={(e) => handleTitleChange(e)}
+                  onKeyDown={handleTextareaKeyDown}
+                  placeholder="title"
+                  className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+                  rows={1}
+                />
+              </div>
+              <div className="mt-1 text-foreground">
+                <TextEditor editor={editor} />
+              </div>
+            </div>
           </div>
         </div>
-      )}
-    </div>
-  )
+      </div>
+    )
+  }
+
+  return null
 }

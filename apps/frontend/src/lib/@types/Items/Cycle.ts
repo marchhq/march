@@ -8,7 +8,7 @@ export interface CycleItem {
   type: string
   source: string
   description: string
-  dueDate: string | null
+  dueDate: Date | null
   status: string
   spaces: string[]
   blocks: string[]
@@ -36,7 +36,7 @@ export interface CycleItemStore {
   error: string | null
   setCurrentItem: (item: CycleItem | null) => void
   fetchInbox: (session: string) => Promise<void>
-  fetchToday: (session: string, date: string) => Promise<void>
+  fetchByDate: (session: string, date: string) => Promise<void>
   fetchOverdue: (session: string, date: string) => Promise<void>
   fetchThisWeek: (
     session: string,
