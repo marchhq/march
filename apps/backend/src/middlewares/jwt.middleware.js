@@ -71,7 +71,12 @@ const checkUserVerificationController = async (req, res, next) => {
         if (!user) {
             return res.status(401).json({ isValidUser: false });
         }
-        return res.status(200).json({ isValidUser: true });
+
+        return res.status(200).json({
+            isValidUser: true,
+            userVerification: user.userVerification,
+            waitlist: user.waitlist
+        })
     } catch (err) {
         const error = new Error(err.message);
         error.statusCode = 401;
