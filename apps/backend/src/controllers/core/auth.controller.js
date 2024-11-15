@@ -2,6 +2,7 @@ import { validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser,
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { BlackList } from "../../models/core/black-list.model.js";
 import { spaceQueue } from "../../loaders/bullmq.loader.js";
+import { logsnag } from "../../loaders/logsnag.loader.js";
 
 const authenticateWithGoogleController = async (req, res, next) => {
     try {
@@ -24,11 +25,28 @@ const authenticateWithGoogleController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGoogleUser(payload);
+
+            // Log user event to LogSnag
+            await logsnag.track({
+                channel: "waitlist",
+                event: `${user.userName} is Waitlisted`,
+                user_id: user._id,
+                icon: "⏳",
+                notify: true,
+                tags: {
+                    method: "Google",
+                    email: user.accounts.google.email,
+                    name: user.fullName
+                }
+            });
+
+            // Add job to spaceQueue
             await spaceQueue.add('spaceQueue', { user: user._id }, {
                 attempts: 3,
                 backoff: 1000, // 1 second delay between retries
                 timeout: 30000 // Job timeout set to 30 seconds
             });
+
             console.log("Job added to spaceQueue");
         }
 
@@ -62,12 +80,29 @@ const authenticateWithGithubController = async (req, res, next) => {
         if (!user) {
             isNewUser = true;
             user = await createGithubUser(payload);
-            await spaceQueue.add('spaceQueue', {
-                user: user._id
-            }, {
-                attempts: 3,
-                backoff: 5000
+
+            // Log user event to LogSnag
+            await logsnag.track({
+                channel: "waitlist",
+                event: `${user.userName} is Waitlisted`,
+                user_id: user._id,
+                icon: "⏳",
+                notify: true,
+                tags: {
+                    method: "Github",
+                    email: user.accounts.github.email,
+                    name: user.fullName
+                }
             });
+
+            // Add job to spaceQueue
+            await spaceQueue.add('spaceQueue', { user: user._id }, {
+                attempts: 3,
+                backoff: 1000, // 1 second delay between retries
+                timeout: 30000 // Job timeout set to 30 seconds
+            });
+
+            console.log("Job added to spaceQueue");
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
