@@ -337,7 +337,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
                     {title || "Untitled"}
                   </p>
                 ) : (
-                  <p className="hover-text truncate py-0.5 pl-2 text-secondary-foreground hover:border-l hover:border-l-secondary-foreground">
+                  <p className="hover-text truncate py-0.5 pl-2 text-secondary-foreground">
                     {n.title || "Untitled"}
                   </p>
                 )}
