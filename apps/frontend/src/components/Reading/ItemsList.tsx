@@ -33,7 +33,7 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
   }
 
   return (
-    <div className="flex w-3/4 flex-col gap-4">
+    <div className="flex w-3/4 flex-col gap-2">
       {[...readingItems].reverse().map((item: ReadingItem) => {
         const url = item.metadata?.url
         const favicon = item.metadata?.favicon
@@ -50,45 +50,28 @@ const ItemsList: React.FC<ItemsListProps> = ({ blockId, spaceId }) => {
               className={`block ${url ? "cursor-pointer" : "cursor-default"}`}
             >
               <div className="flex items-center gap-2">
-                {favicon ? (
-                  <ImageWithFallback
-                    src={favicon}
-                    FallbackIcon={Link2Icon}
-                    alt="Favicon"
-                    width={16}
-                    height={16}
-                    className="size-5 shrink-0"
-                  />
-                ) : (
-                  <Icon
-                    icon="ph:circle-bold"
-                    className="ml-[3px] shrink-0 text-[16px] text-secondary-foreground"
-                  />
-                )}
                 <div className="grow overflow-hidden">
-                  <h3 className="flex flex-wrap items-center text-lg font-semibold text-foreground">
+                  <h3 className="flex flex-wrap items-center gap-2 text-xs font-semibold text-foreground">
                     <span className="break-all">
                       {truncateString(item.title, 50)}
+                    </span>
+                    <span>
+                      {favicon ? (
+                        <ImageWithFallback
+                          src={favicon}
+                          FallbackIcon={Link2Icon}
+                          alt="Favicon"
+                          width={16}
+                          height={16}
+                          className="size-3 shrink-0"
+                        />
+                      ) : (
+                        ""
+                      )}
                     </span>
                   </h3>
                 </div>
               </div>
-              {item.description && (
-                <p className="text-base text-secondary-foreground">
-                  {item.description}
-                </p>
-              )}
-              {item?.type === "link" && (
-                <p className="ml-7 text-sm text-secondary-foreground">
-                  {truncateString(
-                    (item?.metadata?.url || "").replace(
-                      /^https?:\/\/(www\.)?/,
-                      ""
-                    ),
-                    30
-                  )}
-                </p>
-              )}
             </a>
           </div>
         )
