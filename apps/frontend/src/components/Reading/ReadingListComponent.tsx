@@ -1,9 +1,10 @@
 "use client"
 
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useState } from "react"
 
 import { ReadingExpandModal } from "./ReadingExpandModal"
 import { ItemExpandModal } from "../atoms/ItemExpandModal"
+import { RescheduleCalendar } from "../Inbox/RescheduleCalendar/RescheduleCalendar"
 import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -11,6 +12,7 @@ import { useSpace } from "@/src/hooks/useSpace"
 import { ReadingItem } from "@/src/lib/@types/Items/Reading"
 import useBlockStore from "@/src/lib/store/block.store"
 import useReadingStore from "@/src/lib/store/reading.store"
+import { getWeekDates } from "@/src/utils/datetime"
 
 const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
@@ -18,8 +20,20 @@ const ReadingListComponent: React.FC = () => {
 
   const { blocks, blockId, isLoading, error, fetchBlocks, createBlock } =
     useBlockStore()
-  const { fetchReadingList, readingItems, currentItem, setCurrentItem } =
-    useReadingStore()
+  const {
+    fetchReadingList,
+    readingItems,
+    currentItem,
+    setCurrentItem,
+    updateItem,
+  } = useReadingStore()
+
+  const [date, setDate] = useState<Date | null>(new Date())
+  const [dateChanged, setDateChanged] = useState(false)
+  const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
+  const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
+    null
+  )
 
   // Load the reading list space and block
   const loadReadingList = useCallback(async () => {
@@ -97,7 +111,14 @@ const ReadingListComponent: React.FC = () => {
               />
             </div>
             <div className="flex-1">
-              <ItemsList items={readingItems} handleExpand={handleExpand} />
+              <ItemsList
+                blockId={blockId}
+                spaceId={
+                  blocks.find((block) => block._id === blockId)?.space || ""
+                }
+                items={readingItems}
+                handleExpand={handleExpand}
+              />
             </div>
           </div>
         )}
