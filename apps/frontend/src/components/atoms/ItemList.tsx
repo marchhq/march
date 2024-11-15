@@ -1,13 +1,11 @@
 import React from "react"
 
-import { CalendarIcon, GithubIcon, MailsIcon, MoveIcon } from "lucide-react"
+import { CalendarIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
 
-import MoveInboxItem from "../Inbox/MoveInboxItem"
 import BoxIcon from "@/public/icons/box.svg"
 import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
-import { useModal } from "@/src/contexts/ModalProvider"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import classNames from "@/src/utils/classNames"
 
@@ -58,7 +56,6 @@ export const ItemList: React.FC<ItemListProps> = ({
   isOverdue = false,
   doneLine = false,
 }) => {
-  const { showModal } = useModal()
   return (
     <>
       {items.map((item) => (
@@ -121,18 +118,6 @@ export const ItemList: React.FC<ItemListProps> = ({
               onClick={(e) =>
                 handleRescheduleCalendar(e, item._id, item.dueDate, item.status)
               }
-            />
-            <MoveIcon
-              size={14}
-              className="hover-text"
-              aria-label="Move item to different space"
-              role="button"
-              data-tooltip-id="item-actions"
-              data-tooltip-content="Move to space"
-              onClick={(e) => {
-                e.stopPropagation()
-                showModal(<MoveInboxItem inboxItemId={item._id} />)
-              }}
             />
           </div>
         </button>
