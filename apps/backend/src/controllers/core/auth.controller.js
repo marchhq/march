@@ -3,8 +3,6 @@ import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { BlackList } from "../../models/core/black-list.model.js";
 import { spaceQueue } from "../../loaders/bullmq.loader.js";
 import { logsnag } from "../../loaders/logsnag.loader.js";
-import axios from "axios";
-import { environment } from "../../loaders/environment.loader.js";
 
 const authenticateWithGoogleController = async (req, res, next) => {
     try {
@@ -39,20 +37,6 @@ const authenticateWithGoogleController = async (req, res, next) => {
                     method: "Google",
                     email: user.accounts.google.email,
                     name: user.fullName
-                }
-            });
-
-            // Send an event to Loops for email confirmation
-
-            await axios.post('https://app.loops.so/api/v1/events/send', {
-                email: user.accounts.google.email,
-                eventName: "user hits",
-                FirstName: user.userName
-
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${environment.LOOPS_TOKEN}`,
-                    'Content-Type': 'application/json'
                 }
             });
 
@@ -108,20 +92,6 @@ const authenticateWithGithubController = async (req, res, next) => {
                     method: "Github",
                     email: user.accounts.github.email,
                     name: user.fullName
-                }
-            });
-
-            // Send an event to Loops for email confirmation
-
-            await axios.post('https://app.loops.so/api/v1/events/send', {
-                email: user.accounts.google.email,
-                eventName: "user hits",
-                FirstName: user.userName
-
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${environment.LOOPS_TOKEN}`,
-                    'Content-Type': 'application/json'
                 }
             });
 
