@@ -85,14 +85,13 @@ export function getTodayISODate(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export const getOverdueText = (dueDate: string | null): string => {
+export const getOverdueText = (dueDate: Date | null): string => {
   if (!dueDate) {
     return "" // or some default text like "No due date"
   }
 
-  const due = new Date(dueDate)
   const now = new Date()
-  const diffInDays = differenceInDays(now, due)
+  const diffInDays = differenceInDays(now, dueDate)
 
   return `since ${diffInDays} ${diffInDays === 1 ? "day" : "days"}`
 }
@@ -104,4 +103,26 @@ export const getWeekDates = (date: Date) => {
     startDate: format(start, "yyyy-MM-dd"),
     endDate: format(end, "yyyy-MM-dd"),
   }
+}
+
+export const toUtcDate = (date: Date): Date => {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+}
+
+export const formatMeetDate = (date: Date) => {
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
+  const day = date.getDate()
+  return `${weekday}, ${day.toString().padStart(2, "0")}`
+}
+
+export const formatMeetTime = (date: Date): string => {
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+}
+
+export const formatDateHeader = (date: string) => {
+  return format(date, "dd, MMMM yy").toLowerCase()
 }

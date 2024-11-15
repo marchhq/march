@@ -1,14 +1,14 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 
-import { Icon } from "@iconify-icon/react"
+import Image from "next/image"
 
 import TextEditor from "../atoms/Editor"
+import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import classNames from "@/src/utils/classNames"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface EditedItem {
@@ -25,12 +25,11 @@ const SAVE_DELAY = {
   CONTENT: 500,
 } as const
 
-export const ThisWeekExpandedItem: React.FC = () => {
+export const TodayExpandedItem: React.FC = () => {
   const { session } = useAuth()
-  const { currentItem, setCurrentItem, updateItem, deleteItem } =
+  const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
     useCycleItemStore()
 
-  // Refs
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutRefs = useRef<TimeoutRefs>({
@@ -39,14 +38,14 @@ export const ThisWeekExpandedItem: React.FC = () => {
   })
   const lastSavedContent = useRef(currentItem?.description || "<p></p>")
 
-  // State
+  // state
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
   const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
-  // Memoized handlers
+  // memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
     const hasChanged = newContent !== lastSavedContent.current
@@ -78,7 +77,6 @@ export const ThisWeekExpandedItem: React.FC = () => {
         await updateItem(
           session,
           {
-            ...item,
             title: editedItem.title,
           },
           item._id
@@ -90,28 +88,24 @@ export const ThisWeekExpandedItem: React.FC = () => {
     [session, updateItem, editItemId, editedItem.title]
   )
 
-  // Editor setup
+  // editor setup
   const editor = useEditorHook({
     content,
     setContent: handleContentChange,
     setIsSaved,
   })
 
-  // Handle editor content updates with debounce
+  // handle editor content updates with debounce
   const saveContent = useCallback(() => {
     if (!currentItem?._id || content === lastSavedContent.current) return
 
-    updateItem(
-      session,
-      { ...currentItem, description: content },
-      currentItem._id
-    )
+    updateItem(session, { description: content }, currentItem._id)
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
   }, [content, currentItem, session, updateItem])
 
-  // Effect to handle content auto-save
+  // effect to handle content auto-save
   useEffect(() => {
     if (!hasUnsavedChanges) return
 
@@ -128,7 +122,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [hasUnsavedChanges, saveContent])
 
-  // Effect to initialize editor when currentItem changes
+  // effect to initialize editor when currentItem changes
   useEffect(() => {
     if (!currentItem) return
 
@@ -147,7 +141,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [currentItem, editItemId, editor])
 
-  // Effect to handle title auto-save
+  // effect to handle title auto-save
   useEffect(() => {
     if (!currentItem || editedItem.title === currentItem.title) return
 
@@ -166,7 +160,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.title, currentItem, handleSaveEditedItem])
 
-  // Effect to handle textarea auto-resize
+  // effect to handle textarea auto-resize
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
@@ -175,7 +169,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     }
   }, [editedItem.title])
 
-  // Effect to handle click outside
+  // effect to handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -198,7 +192,7 @@ export const ThisWeekExpandedItem: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [handleClose])
 
-  // Memoized handler for textarea keydown
+  // memoized handler for textarea keydown
   const handleTextareaKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key !== "Enter") return
@@ -236,56 +230,71 @@ export const ThisWeekExpandedItem: React.FC = () => {
     },
     []
   )
-  return (
-    <div
-      ref={divRef}
-      className={classNames(
-        `absolute inset-y-0 left-1/2 z-50 w-1/2 h-full border-l border-border bg-background text-foreground`
-      )}
-    >
-      <div className="flex w-full flex-col gap-4 p-4">
-        <div className="flex items-center justify-between text-xs text-secondary-foreground">
-          <div className="flex gap-4">
-            <button
-              className="hover-text flex items-center"
-              onClick={handleClose}
-            >
-              <Icon icon="ep:back" className="text-[18px]" />
-            </button>
-            <p className="flex items-center">
-              {formatDateYear(currentItem?.createdAt || "")}
-            </p>
-            <p>edited {fromNow(currentItem?.updatedAt || "")}</p>
-          </div>
-          <div className="flex gap-4">
-            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>reschedule</span>
-            </button>
-            <button className="hover-text hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground">
-              <span>del</span>
-            </button>
-          </div>
-        </div>
-        <div>
-          <textarea
-            ref={textareaRefTitle}
-            value={editedItem.title}
-            onChange={(e) =>
-              setEditedItem((prev) => ({
-                ...prev,
-                title: e.target.value,
-              }))
+
+  if (currentItem) {
+    return (
+      <div>
+        <div
+          className="fixed inset-0 z-50 cursor-default bg-black/80"
+          role="button"
+          onClick={handleClose}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" || e.key === "Esc") {
+              handleClose()
             }
-            onKeyDown={handleTextareaKeyDown}
-            placeholder="title"
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-            rows={1}
-          />
-          <div className="text-foreground">
-            <TextEditor editor={editor} />
+          }}
+          tabIndex={0}
+        ></div>
+        <div className="fixed left-1/2 top-1/2 z-50 h-4/5 w-3/5 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-lg bg-background p-10 shadow-lg">
+          <div>
+            <div
+              ref={divRef}
+              className="flex size-full flex-col gap-4 text-foreground"
+            >
+              <div className="flex items-center gap-4 text-xs text-secondary-foreground">
+                <button
+                  className="group/button flex items-center"
+                  onClick={handleClose}
+                >
+                  <Image
+                    src={ChevronLeftIcon}
+                    alt="chevron left icon"
+                    width={16}
+                    height={16}
+                    className="opacity-50 group-hover/button:opacity-100"
+                  />
+                </button>
+                <p className="flex items-center">
+                  {formatDateYear(currentItem.createdAt)}
+                </p>
+                <p>edited {fromNow(currentItem.updatedAt)}</p>
+                <button
+                  className="hover-text flex w-fit items-center"
+                  onClick={(e) => handleDelete(e, currentItem._id)}
+                >
+                  <span>del</span>
+                </button>
+              </div>
+              <div className="flex items-center">
+                <textarea
+                  ref={textareaRefTitle}
+                  value={editedItem.title}
+                  onChange={(e) => handleTitleChange(e)}
+                  onKeyDown={handleTextareaKeyDown}
+                  placeholder="title"
+                  className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+                  rows={1}
+                />
+              </div>
+              <div className="mt-1 text-foreground">
+                <TextEditor editor={editor} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return null
 }

@@ -13,7 +13,8 @@ import {
     getAllItemsByBloackController,
     updateItemController,
     getItemController,
-    getItemFilterByLabelController
+    getItemFilterByLabelController,
+    getSubItemsController
 } from "../../controllers/lib/item.controller.js";
 
 import {
@@ -24,12 +25,11 @@ import {
     updateBlockController
 } from "../../controllers/lib/block.controller.js";
 import {
+    createMeetingController,
     getMeetingsController,
-    getUpcomingMeetingsController,
     updateMeetingController,
     deleteMeetingController,
-    getMeetingByIdController,
-    recentUpcomingMeetingController
+    getMeetingByIdController
 } from "../../controllers/page/meeting.controller.js";
 import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
 
@@ -38,9 +38,9 @@ const router = Router();
 // space controllers
 router.route("/").post(createSpaceController);
 router.route("/").get(getSpacesController);
+router.route("/name/:space").get(getSpaceByNameController);
 router.route("/:space/").get(getSpaceController);
 router.route("/:space/").put(updateSpaceController);
-router.route("/name/:space").get(getSpaceByNameController);
 
 // items filter by label name
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
@@ -64,11 +64,11 @@ router.route("/:space/blocks/:block/items/").post(createItemController);
 router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
 router.route("/:space/blocks/:block/items/:item/").get(getItemController);
 router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
+router.route("/:space/blocks/:block/items/:item/sub-items/").get(getSubItemsController);
 
 // Meeting controllers
+router.route("/meetings/create/").post(createMeetingController);
 router.route("/meetings/overview/").get(getMeetingsController);
-router.route("/meetings/upcomings/").get(getUpcomingMeetingsController);
-router.route("/meetings/recent-upcoming-meeting/").get(recentUpcomingMeetingController);
 router.route("/meetings/:meeting/").get(getMeetingByIdController);
 router.route("/meetings/:meeting/").put(updateMeetingController);
 router.route("/meetings/:meeting/").delete(deleteMeetingController);
