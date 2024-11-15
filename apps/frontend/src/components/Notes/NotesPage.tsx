@@ -285,7 +285,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={handleTextareaKeyDown}
               placeholder="Untitled"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
               /* eslint-disable-next-line jsx-a11y/no-autofocus */
               autoFocus={!title || title.trim() === ""}
