@@ -122,3 +122,7 @@ export const formatMeetTime = (date: Date): string => {
     hour12: false,
   })
 }
+
+export const formatDateHeader = (date: string) => {
+  return format(date, "dd, MMMM yy").toLowerCase()
+}
