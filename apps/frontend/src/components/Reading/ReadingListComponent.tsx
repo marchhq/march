@@ -2,10 +2,13 @@
 
 import React, { useEffect, useCallback } from "react"
 
+import { ReadingExpandModal } from "./ReadingExpandModal"
+import { ItemExpandModal } from "../atoms/ItemExpandModal"
 import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSpace } from "@/src/hooks/useSpace"
+import { ReadingItem } from "@/src/lib/@types/Items/Reading"
 import useBlockStore from "@/src/lib/store/block.store"
 import useReadingStore from "@/src/lib/store/reading.store"
 
@@ -15,7 +18,8 @@ const ReadingListComponent: React.FC = () => {
 
   const { blocks, blockId, isLoading, error, fetchBlocks, createBlock } =
     useBlockStore()
-  const { fetchReadingList } = useReadingStore()
+  const { fetchReadingList, readingItems, currentItem, setCurrentItem } =
+    useReadingStore()
 
   // Load the reading list space and block
   const loadReadingList = useCallback(async () => {
@@ -58,6 +62,15 @@ const ReadingListComponent: React.FC = () => {
     }
   }, [spaces, blockId, loadReadingList, loadReadingListItems])
 
+  const handleExpand = useCallback(
+    (item: ReadingItem) => {
+      if (!currentItem || currentItem._id !== item._id) {
+        setCurrentItem(item)
+      }
+    },
+    [currentItem, setCurrentItem]
+  )
+
   if (isLoading) {
     return (
       <div className="p-16 text-secondary-foreground">
@@ -84,16 +97,17 @@ const ReadingListComponent: React.FC = () => {
               />
             </div>
             <div className="flex-1">
-              <ItemsList
-                blockId={blockId}
-                spaceId={
-                  blocks.find((block) => block._id === blockId)?.space || ""
-                }
-              />
+              <ItemsList items={readingItems} handleExpand={handleExpand} />
             </div>
           </div>
         )}
       </div>
+      {blockId && (
+        <ReadingExpandModal
+          blockId={blockId}
+          spaceId={blocks.find((block) => block._id === blockId)?.space || ""}
+        />
+      )}
     </section>
   )
 }
