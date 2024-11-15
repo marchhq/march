@@ -1,18 +1,13 @@
 "use client"
 
-import React, { useEffect, useCallback, useState } from "react"
+import React, { useEffect, useCallback } from "react"
 
-import { ReadingExpandModal } from "./ReadingExpandModal"
-import { ItemExpandModal } from "../atoms/ItemExpandModal"
-import { RescheduleCalendar } from "../Inbox/RescheduleCalendar/RescheduleCalendar"
 import AddItemForm from "@/src/components/Reading/AddItemForm"
 import ItemsList from "@/src/components/Reading/ItemsList"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSpace } from "@/src/hooks/useSpace"
-import { ReadingItem } from "@/src/lib/@types/Items/Reading"
 import useBlockStore from "@/src/lib/store/block.store"
 import useReadingStore from "@/src/lib/store/reading.store"
-import { getWeekDates } from "@/src/utils/datetime"
 
 const ReadingListComponent: React.FC = () => {
   const { session } = useAuth()
@@ -20,20 +15,7 @@ const ReadingListComponent: React.FC = () => {
 
   const { blocks, blockId, isLoading, error, fetchBlocks, createBlock } =
     useBlockStore()
-  const {
-    fetchReadingList,
-    readingItems,
-    currentItem,
-    setCurrentItem,
-    updateItem,
-  } = useReadingStore()
-
-  const [date, setDate] = useState<Date | null>(new Date())
-  const [dateChanged, setDateChanged] = useState(false)
-  const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
-    null
-  )
+  const { fetchReadingList } = useReadingStore()
 
   // Load the reading list space and block
   const loadReadingList = useCallback(async () => {
@@ -76,15 +58,6 @@ const ReadingListComponent: React.FC = () => {
     }
   }, [spaces, blockId, loadReadingList, loadReadingListItems])
 
-  const handleExpand = useCallback(
-    (item: ReadingItem) => {
-      if (!currentItem || currentItem._id !== item._id) {
-        setCurrentItem(item)
-      }
-    },
-    [currentItem, setCurrentItem]
-  )
-
   if (isLoading) {
     return (
       <div className="p-16 text-secondary-foreground">
@@ -116,19 +89,11 @@ const ReadingListComponent: React.FC = () => {
                 spaceId={
                   blocks.find((block) => block._id === blockId)?.space || ""
                 }
-                items={readingItems}
-                handleExpand={handleExpand}
               />
             </div>
           </div>
         )}
       </div>
-      {blockId && (
-        <ReadingExpandModal
-          blockId={blockId}
-          spaceId={blocks.find((block) => block._id === blockId)?.space || ""}
-        />
-      )}
     </section>
   )
 }
