@@ -33,32 +33,28 @@ export const InboxItems: React.FC = () => {
   const { items: fetchedItems, error: inboxError } = inbox
   const { messages } = useWebSocket()
 
-  const [mergedItems, setMergedItems] = useState(fetchedItems || [])
-
   useEffect(() => {
-    fetchInbox(session)
+    const timeoutId = setTimeout(() => {
+      if (session) fetchInbox(session)
+    }, 300)
+    return () => clearTimeout(timeoutId)
   }, [fetchInbox, session])
 
-  useEffect(() => {
-    setMergedItems(fetchedItems)
-  }, [fetchedItems])
-
-  // Handle new WebSocket messages
+  // Handle WebSocket messages
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
-      if (lastMessage.type === "issue") {
-        const newItem = {
-          ...lastMessage,
-          _id: lastMessage.id, // Map id to _id as per CycleItem interface
-        }
-        //update items state
-        updateStateWithNewItem(newItem)
-      } else {
-        console.error(
-          "Invalid message format or unsupported type:",
-          lastMessage
-        )
+      if (lastMessage?.type === "linear" && lastMessage?.item) {
+        const { item } = lastMessage
+        // Update the item through the store
+        updateStateWithNewItem({
+          ...item,
+          _id: item._id,
+          title: item.title,
+          description: item.description,
+          status: item.status,
+          cycle: item.cycle,
+        })
       }
     }
   }, [messages, updateStateWithNewItem])
@@ -155,7 +151,8 @@ export const InboxItems: React.FC = () => {
     [updateItem, session]
   )
 
-  const filteredItems = mergedItems.filter((item) => item?.status !== "done")
+  const filteredItems =
+    fetchedItems?.filter((item) => item?.status !== "done") || []
 
   const handleRescheduleCalendar = (
     e: React.MouseEvent,

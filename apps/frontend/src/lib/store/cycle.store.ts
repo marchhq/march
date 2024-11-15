@@ -604,21 +604,46 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
     }
   },
 
-  updateStateWithNewItem: (newItem: CycleItem) => {
-    set((state) => ({
+ updateStateWithNewItem: (newItem: CycleItem) => {
+  set((state) => {
+    // Helper function to update or add item
+    const updateOrAddItem = (items: CycleItem[]) => {
+      const existingIndex = items.findIndex(item => item._id === newItem._id);
+      
+      if (existingIndex !== -1) {
+        // Update existing item
+        const updatedItems = [...items];
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          ...newItem
+        };
+        return updatedItems;
+      }
+      
+      // Add new item only if it doesn't exist
+      return [newItem, ...items];
+    };
+
+    return {
       inbox: {
-        items: [newItem, ...state.inbox.items],
+        ...state.inbox,
+        items: updateOrAddItem(state.inbox.items),
         isLoading: false,
         error: null,
       },
       thisWeek: {
         ...state.thisWeek,
-        items: [...state.thisWeek.items, newItem],
+        items: updateOrAddItem(state.thisWeek.items),
         isLoading: false,
         error: null,
       },
-      items: [newItem, ...state.items],
+      items: updateOrAddItem(state.items),
+      // Update currentItem if it's the same item
+      currentItem: state.currentItem?._id === newItem._id 
+        ? { ...state.currentItem, ...newItem }
+        : state.currentItem,
       isLoading: false,
-    }))
-  },
+    };
+  });
+},
 }))
