@@ -8,6 +8,7 @@ import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import classNames from "@/src/utils/classNames"
+import Link from "next/link"
 
 interface ItemListProps {
   items: CycleItem[]
@@ -23,22 +24,25 @@ interface ItemListProps {
   doneLine?: boolean
 }
 
-const getSourceIcon = (source: string) => {
+const getSourceIcon = (source: string, sourceUrl: string) => {
   switch (source) {
     case "gmail":
-      return <MailsIcon size={14} />
+      return <Link href={sourceUrl}><MailsIcon size={14} /></Link>
     case "githubIssue":
     case "githubPullRequest":
-      return <GithubIcon size={14} />
+      return <Link href={sourceUrl}><GithubIcon size={14} /></Link>
     case "linear":
       return (
+        <Link href={sourceUrl}>
+
         <Image
           src={LinearIcon}
           alt="linear icon"
           width={14}
           height={14}
           className="opacity-50"
-        />
+          />
+          </Link>
       )
     case "march":
     case "marchClipper":
@@ -107,7 +111,7 @@ export const ItemList: React.FC<ItemListProps> = ({
             </span>
             {item.source !== "march" && (
               <div className="mt-[3px] flex items-center text-secondary-foreground">
-                {getSourceIcon(item.source)}
+                {getSourceIcon(item.source, item.metadata?.url || "")}
               </div>
             )}
           </div>
