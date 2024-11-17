@@ -27,13 +27,13 @@ interface ItemListProps {
 const getSourceIcon = (source: string, sourceUrl: string) => {
   switch (source) {
     case "gmail":
-      return <Link href={sourceUrl}><MailsIcon size={14} /></Link>
+      return <Link href={sourceUrl} target="_blank"><MailsIcon size={14} /></Link>
     case "githubIssue":
     case "githubPullRequest":
-      return <Link href={sourceUrl}><GithubIcon size={14} /></Link>
+      return <Link href={sourceUrl} target="_blank"><GithubIcon size={14} /></Link>
     case "linear":
       return (
-        <Link href={sourceUrl}>
+        <Link href={sourceUrl} target="_blank">
 
         <Image
           src={LinearIcon}
