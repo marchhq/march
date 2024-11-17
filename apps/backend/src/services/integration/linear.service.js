@@ -4,6 +4,14 @@ import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
+/**
+ * Retrieves an access token from Linear using the provided authorization code.
+ *
+ * @param {string} code - The authorization code received from Linear.
+ * @param {Object} user - The user object to update with the access token.
+ * @returns {Promise<string>} - The access token.
+ * @throws Will throw an error if the token retrieval fails.
+ */
 const getAccessToken = async (code, user) => {
     try {
         const requestBody = {
@@ -32,6 +40,14 @@ const getAccessToken = async (code, user) => {
     }
 };
 
+/**
+ * Fetches user information from Linear using the access token.
+ *
+ * @param {string} linearToken - The access token for Linear API.
+ * @param {Object} user - The user object to update with Linear user info.
+ * @returns {Promise<Object>} - The user information from Linear.
+ * @throws Will throw an error if fetching user info fails.
+ */
 const fetchUserInfo = async (linearToken, user) => {
     try {
         const response = await axios.post('https://api.linear.app/graphql', {

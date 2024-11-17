@@ -3,9 +3,21 @@ import { getAccessToken, getMyLinearIssues, fetchUserInfo, getTodayLinearIssues,
 import { linearQueue } from "../../loaders/bullmq.loader.js";
 import * as crypto from "crypto";
 
+/**
+ * Controller to handle the retrieval of an access token from Linear.
+ *
+ * @param {Object} req - The request object, containing query parameters and user info.
+ * @param {Object} res - The response object, used to send back the access token or error messages.
+ * @param {Function} next - The next middleware function in the Express.js stack, used for error handling.
+ * @returns {Promise<void>}
+ * @throws Will pass an error to the next middleware if any step fails.
+ */
 const getAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
     const user = req.user;
+    if (!code || !user) {
+        return res.status(400).json({ error: 'Authorization code or user information is missing.' });
+    }
     try {
         const accessToken = await getAccessToken(code, user);
         const userInfo = await fetchUserInfo(accessToken, user);
