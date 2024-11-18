@@ -246,8 +246,16 @@ const handleWebhookEvent = async (payload) => {
     }
 };
 
+/**
+ * Revokes a Linear access token.
+ *
+ * @param {string} accessToken - The access token to be revoked.
+ * @returns {Promise<void>}
+ * @throws Will throw an error if the revocation fails.
+ */
 const revokeLinearAccess = async (accessToken) => {
     try {
+        // Send a POST request to revoke the Linear access token
         await axios.post('https://api.linear.app/oauth/revoke', {
             token: accessToken
         }, {
@@ -258,6 +266,7 @@ const revokeLinearAccess = async (accessToken) => {
         });
         console.log('Linear access revoked successfully');
     } catch (error) {
+        // Log the error and rethrow it
         console.error('Error revoking Linear token:', error.response ? error.response.data : error.message);
         throw error;
     }

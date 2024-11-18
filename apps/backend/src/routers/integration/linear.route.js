@@ -4,6 +4,11 @@ import { getAccessTokenController, revokeLinearAccessController } from "../../co
 const router = Router();
 
 router.route("/getAccessToken/").get(getAccessTokenController)
+/**
+ * Route to handle revoking Linear access.
+ *
+ * POST /revoke-access/ - Revokes the user's Linear access token.
+ */
 router.route("/revoke-access/").post(revokeLinearAccessController)
 
 export default router;
