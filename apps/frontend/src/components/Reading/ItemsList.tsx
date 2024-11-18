@@ -83,10 +83,6 @@ const ItemsList: React.FC<ItemsListProps> = ({
     setDate(newDate) // Ensure this is a Date or null
   }
 
-  if (items.length === 0) {
-    return <p>Reading list is empty </p>
-  }
-
   return (
     <div className="flex w-3/4 flex-col gap-2">
       {[...items].reverse().map((item: ReadingItem) => {
