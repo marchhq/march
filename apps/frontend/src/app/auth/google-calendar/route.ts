@@ -32,8 +32,6 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const { accessToken, refreshToken } = response.data.tokenInfo
-
     let redirectUrl = "/profile"
     if (state) {
       try {
@@ -47,20 +45,17 @@ export async function GET(request: NextRequest) {
     }
 
     const res = NextResponse.redirect(new URL(redirectUrl, redirectDomain))
-    res.cookies.set(GOOGLECALENDAR_ACCESS_TOKEN, accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: "/",
-    })
-    res.cookies.set(GOOGLECALENDAR_REFRESH_TOKEN, refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: "/",
-    })
+    res.cookies.set(
+      "USER_TIMEZONE",
+      encodeURIComponent(response.data.userTimezone.trim()),
+      {
+        httpOnly: false, // allows JavaScript
+        secure: true,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: "/",
+      }
+    )
     return res
   } catch (error) {
     console.error("Error in Google Calendar callback:", error)

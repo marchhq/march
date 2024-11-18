@@ -5,13 +5,15 @@ import React, { useEffect, useCallback, useState } from "react"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import { getWeekDates } from "@/src/utils/datetime"
+import { getUserDate, getWeekDates } from "@/src/utils/datetime"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
 
+  const timezone = useTimezone()
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
@@ -49,6 +51,13 @@ export const InboxItems: React.FC = () => {
       window.removeEventListener("keyup", handleKeyUp)
     }
   }, [])
+
+  useEffect(() => {
+    if (timezone) {
+      setDate(getUserDate(timezone))
+      setCycleDate(getUserDate(timezone))
+    }
+  }, [timezone])
 
   useEffect(() => {
     if (dateChanged) {
@@ -101,7 +110,7 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date()
+        const today = getUserDate(timezone)
         const { startDate, endDate } = getWeekDates(today)
         updateItem(
           session,
@@ -117,7 +126,7 @@ export const InboxItems: React.FC = () => {
         )
       }
     },
-    [updateItem, session]
+    [updateItem, session, timezone]
   )
 
   const filteredItems = items.filter((item) => item.status !== "done")
@@ -125,18 +134,26 @@ export const InboxItems: React.FC = () => {
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | string | null
   ) => {
     e.stopPropagation()
 
-    const newDate = dueDate
-      ? typeof dueDate === "string"
-        ? new Date(dueDate)
-        : dueDate
-      : null
+    let newDate: Date | null = null
+
+    if (dueDate) {
+      if (typeof dueDate === "string") {
+        newDate = new Date(dueDate)
+      } else {
+        newDate = dueDate
+      }
+    }
+
+    if (newDate && timezone) {
+      newDate = getUserDate(timezone)
+    }
 
     setReschedulingItemId(id)
-    setDate(newDate) // Ensure this is a Date or null
+    setDate(newDate)
   }
 
   if (filteredItems.length > 0) {
