@@ -173,69 +173,6 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     return issues;
 };
 
-const getMyLinearIssues = async (user) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-        query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } } }) {
-                nodes {
-                    id
-                    title
-                    description
-                    state {
-                        id
-                        name
-                    }
-                    labels {
-                        nodes {
-                            id
-                            name
-                        }
-                    }
-                    dueDate
-                    createdAt
-                    updatedAt
-                    priority
-                    project {
-                        id
-                        name
-                    }
-                    assignee {
-                        id
-                        name
-                    }
-                    url
-                    cycle { 
-                    id
-                    name
-                    startsAt
-                    endsAt
-                    number
-                }
-                }
-            }
-        }
-    `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-
-    const issues = response.data.data.issues.nodes;
-
-    return issues;
-};
-
 const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -457,7 +394,6 @@ export {
     fetchUserInfo,
     fetchAssignedIssues,
     saveIssuesToDatabase,
-    getMyLinearIssues,
     getTodayLinearIssues,
     getOverdueLinearIssues,
     getLinearIssuesByDate,
