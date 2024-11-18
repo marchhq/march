@@ -91,13 +91,13 @@ const ItemsList: React.FC<ItemsListProps> = ({
         return (
           <button
             key={item?._id}
-            className="group flex flex-col justify-center rounded-lg"
+            className="group flex flex-col justify-center gap-2 rounded-lg"
             onClick={() => handleExpand(item)}
           >
             <div className="flex items-center gap-2">
               <div className="grow overflow-hidden">
                 <p className="flex flex-wrap items-center gap-2 text-foreground">
-                  <span className="break-all text-[16px]">
+                  <span className="break-all text-[16px] leading-[23px]">
                     {truncateString(item?.title, 50)}
                   </span>
                   <a
