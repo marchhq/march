@@ -1,5 +1,5 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { getAccessToken, fetchUserInfo, getLinearIssuesByDate, handleWebhookEvent, revokeLinearAccess } from "../../services/integration/linear.service.js";
+import { getAccessToken, fetchUserInfo, handleWebhookEvent, revokeLinearAccess } from "../../services/integration/linear.service.js";
 import { linearQueue } from "../../loaders/bullmq.loader.js";
 import * as crypto from "crypto";
 
@@ -34,21 +34,6 @@ const getAccessTokenController = async (req, res, next) => {
 
         res.status(200).json({
             accessToken
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-const getLinearIssuesByDateController = async (req, res, next) => {
-    const { date } = req.params;
-    const user = req.user;
-
-    try {
-        const issues = await getLinearIssuesByDate(user, date);
-
-        res.status(200).json({
-            issues
         });
     } catch (err) {
         next(err);
@@ -96,7 +81,6 @@ const revokeLinearAccessController = async (req, res, next) => {
 
 export {
     getAccessTokenController,
-    getLinearIssuesByDateController,
     handleWebhook,
     revokeLinearAccessController
 }
