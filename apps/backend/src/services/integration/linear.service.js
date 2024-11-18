@@ -126,10 +126,18 @@ const saveIssuesToDatabase = async (issues, userId) => {
     }
 };
 
+/**
+ * Fetches issues assigned to a specific user from Linear.
+ *
+ * @param {string} linearToken - The access token for Linear API.
+ * @param {string} linearUserId - The Linear user ID to filter issues by assignee.
+ * @returns {Promise<Array>} - A promise that resolves to an array of issues assigned to the user.
+ * @throws Will throw an error if the request to Linear fails.
+ */
 const fetchAssignedIssues = async (linearToken, linearUserId) => {
     const response = await axios.post('https://api.linear.app/graphql', {
         query: `
-    query {
+        query {
             issues(filter: { assignee: { id: { eq: "${linearUserId}" } } }) {
                 nodes {
                     id
