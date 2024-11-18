@@ -100,8 +100,8 @@ const ItemsList: React.FC<ItemsListProps> = ({
           >
             <div className="flex items-center gap-2">
               <div className="grow overflow-hidden">
-                <p className="flex flex-wrap items-center gap-2 text-xs font-medium text-foreground">
-                  <span className="break-all">
+                <p className="flex flex-wrap items-center gap-2 text-primary-foreground">
+                  <span className="break-all text-[16px] leading-[23px]">
                     {truncateString(item?.title, 50)}
                   </span>
                   <a
