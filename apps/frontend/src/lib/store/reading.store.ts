@@ -6,7 +6,10 @@ import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 
 export interface ReadingStoreType {
   readingItems: ReadingItem[]
+  currentItem: ReadingItem | null
+  setCurrentItem: (item: ReadingItem | null) => void
   isFetched: boolean
+
   setIsFetched: (isFetched: boolean) => void
   fetchReadingList: (
     session: string,
@@ -20,6 +23,13 @@ export interface ReadingStoreType {
     spaceId: string,
     itemData: ItemData
   ) => Promise<void>
+  updateItem: (
+    session: string,
+    blockId: string,
+    spaceId: string,
+    itemId: string,
+    itemData: ItemData
+  ) => Promise<void>
   deleteItem: (
     session: string,
     spaceId: string,
@@ -29,9 +39,15 @@ export interface ReadingStoreType {
 }
 
 interface ItemData {
-  title: string
-  type: string
+  title?: string
+  type?: string
   description?: string
+  status?: string
+  dueDate?: Date | null
+  cycle?: {
+    startsAt: string | null
+    endsAt: string | null
+  }
   metadata?: {
     url: string
   }
@@ -39,7 +55,12 @@ interface ItemData {
 
 const useReadingStore = create<ReadingStoreType>((set, get) => ({
   readingItems: [],
+  currentItem: null,
   isFetched: false,
+
+  setCurrentItem: (item: ReadingItem | null) => {
+    set({ currentItem: item })
+  },
 
   setIsFetched: (isFetched: boolean) => set({ isFetched }),
 
@@ -104,7 +125,32 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       console.error("Error adding item:", error)
     }
   },
-
+  updateItem: async (
+    session: string,
+    spaceId: string,
+    blockId: string,
+    itemId: string,
+    itemData: ItemData
+  ) => {
+    try {
+      console.log(`itemId: ${itemId}`)
+      const updateResponse = await axios.put(
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}`,
+        itemData,
+        { headers: { Authorization: `Bearer ${session}` } }
+      )
+      const updatedItem = updateResponse.data.item
+      if (updatedItem) {
+        set((state) => ({
+          readingItems: state.readingItems.map((item) =>
+            item._id === itemId ? updatedItem : item
+          ),
+        }))
+      }
+    } catch (error) {
+      console.error("Error updating item:", error)
+    }
+  },
   deleteItem: async (
     session: string,
     spaceId: string,
