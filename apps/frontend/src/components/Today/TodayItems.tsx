@@ -8,9 +8,10 @@ import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import { getWeekDates } from "@/src/utils/datetime"
+import { getUserDate, getWeekDates } from "@/src/utils/datetime"
 
 interface TodayEventsProps {
   selectedDate: Date
@@ -21,6 +22,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
 }): JSX.Element => {
   const { session } = useAuth()
 
+  const timezone = useTimezone()
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
@@ -79,6 +81,13 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }, [])
 
   useEffect(() => {
+    if (timezone) {
+      setDate(getUserDate(timezone))
+      setCycleDate(getUserDate(timezone))
+    }
+  }, [timezone])
+
+  useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
         if (cycleDate) {
@@ -128,7 +137,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date()
+        const today = getUserDate(timezone)
         const { startDate, endDate } = getWeekDates(today)
         updateItem(
           session,
@@ -144,21 +153,29 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
         )
       }
     },
-    [updateItem, session]
+    [updateItem, session, timezone]
   )
 
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | string | null
   ) => {
     e.stopPropagation()
 
-    const newDate = dueDate
-      ? typeof dueDate === "string"
-        ? new Date(dueDate)
-        : dueDate
-      : null
+    let newDate: Date | null = null
+
+    if (dueDate) {
+      if (typeof dueDate === "string") {
+        newDate = new Date(dueDate)
+      } else {
+        newDate = dueDate
+      }
+    }
+
+    if (newDate && timezone) {
+      newDate = getUserDate(timezone)
+    }
 
     setReschedulingItemId(id)
     setDate(newDate)
