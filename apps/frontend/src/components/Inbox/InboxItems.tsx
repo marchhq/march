@@ -53,14 +53,7 @@ export const InboxItems: React.FC = () => {
   useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
-        if (date) {
-          updateItem(
-            session,
-            { status: "todo", dueDate: date },
-            reschedulingItemId
-          )
-        }
-        if (cycleDate) {
+        if (cycleDate !== null) {
           const { startDate, endDate } = getWeekDates(cycleDate)
           updateItem(
             session,
@@ -74,13 +67,25 @@ export const InboxItems: React.FC = () => {
             },
             reschedulingItemId
           )
+        } else {
+          updateItem(
+            session,
+            {
+              status: date ? "todo" : "null",
+              dueDate: date,
+              cycle: {
+                startsAt: null,
+                endsAt: null,
+              }, // explicitly set cycle to null
+            },
+            reschedulingItemId
+          )
         }
       }
       setReschedulingItemId(null)
       setDateChanged(false)
     }
   }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
-
   const handleExpand = useCallback(
     (item: CycleItem) => {
       if (isControlHeld && item.type === "link") {
