@@ -173,53 +173,6 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     return issues;
 };
 
-const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
-
-const getOverdueLinearIssues = async (user) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId;
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-    const today = new Date();
-    const formattedToday = formatDate(today);
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-          query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } }, dueDate: { lt: "${formattedToday}" }, completedAt: { null: true } }) {
-              nodes {
-                id
-                title
-                description
-                state {
-                  name
-                }
-                labels {
-                  nodes {
-                    name
-                  }
-                }
-                dueDate
-              }
-            }
-          }
-        `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data.data.issues.nodes;
-};
-
 const getLinearIssuesByDate = async (user, date) => {
     const linearToken = user.integration.linear.accessToken;
     const userId = user.integration.linear.userId;
@@ -353,7 +306,6 @@ export {
     fetchUserInfo,
     fetchAssignedIssues,
     saveIssuesToDatabase,
-    getOverdueLinearIssues,
     getLinearIssuesByDate,
     handleWebhookEvent,
     revokeLinearAccess
