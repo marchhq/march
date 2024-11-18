@@ -78,6 +78,14 @@ const fetchUserInfo = async (linearToken, user) => {
     }
 };
 
+/**
+ * Saves issues to the database, updating existing ones or creating new entries.
+ *
+ * @param {Array} issues - An array of issue objects to be saved.
+ * @param {string} userId - The ID of the user associated with the issues.
+ * @returns {Promise<void>}
+ * @throws Will throw an error if saving issues to the database fails.
+ */
 const saveIssuesToDatabase = async (issues, userId) => {
     try {
         const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
@@ -181,7 +189,14 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     return issues;
 };
 
-// need to improve it base so webhook type
+/**
+ * Handles webhook events from Linear, updating or deleting issues in the database.
+ *
+ * @param {Object} payload - The webhook payload containing issue data and action type.
+ * @returns {Promise<void>}
+ * @throws Will log an error if the operation fails.
+ */
+// TODO: need to improve it base so webhook type
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
     if (payload.action === 'remove') {
@@ -206,7 +221,7 @@ const handleWebhookEvent = async (payload) => {
 
     const user = await User.findOne({
         'integration.linear.userId': issue.assignee.id
-    })
+    });
     if (!user) {
         console.log('No user found with the matching Linear userId.');
         return;
@@ -261,6 +276,7 @@ const handleWebhookEvent = async (payload) => {
  * @returns {Promise<void>}
  * @throws Will throw an error if the revocation fails.
  */
+
 const revokeLinearAccess = async (accessToken) => {
     try {
         // Send a POST request to revoke the Linear access token
