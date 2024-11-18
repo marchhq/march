@@ -25,7 +25,6 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   const [isSaved, setIsSaved] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [toggle, setToggle] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const formattedDate = formatDate(selectedDate)
   const { journal, fetchJournal } = useJournal(formattedDate)
@@ -99,41 +98,18 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
     }
   }, [content, hasUnsavedChanges, isLoading])
 
-  const handleToggle = () => {
-    setToggle(!toggle)
-  }
-
   return (
     <div className="flex flex-col gap-3 pl-5">
-      {toggle && (
-        <section className="no-scrollbar min-h-[10vh] max-w-[700px] overflow-y-scroll">
-          {error && (
-            <div className="mb-2.5 truncate text-xs text-danger-foreground">
-              <span>{error}</span>
-            </div>
-          )}
-          <div className="text-foreground">
-            <TextEditor editor={editor} minH="10vh" />
+      <section className="no-scrollbar min-h-[10vh] max-w-[700px] overflow-y-scroll">
+        {error && (
+          <div className="mb-2.5 truncate text-xs text-danger-foreground">
+            <span>{error}</span>
           </div>
-        </section>
-      )}
-      {toggle ? (
-        <div className="flex justify-end text-secondary-foreground">
-          <ArrowUpLeftIcon
-            size={14}
-            className="hover-text mr-1"
-            onClick={handleToggle}
-          />
+        )}
+        <div className="text-foreground">
+          <TextEditor editor={editor} minH="10vh" />
         </div>
-      ) : (
-        <div className="flex justify-start text-secondary-foreground">
-          <ArrowDownRightIcon
-            size={14}
-            className="hover-text"
-            onClick={handleToggle}
-          />
-        </div>
-      )}
+      </section>
     </div>
   )
 }
