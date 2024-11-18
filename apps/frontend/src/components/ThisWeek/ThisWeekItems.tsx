@@ -114,19 +114,12 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
   useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
-        if (date) {
-          updateItem(
-            session,
-            { status: reschedulingItemStatus || "null", dueDate: date },
-            reschedulingItemId
-          )
-        }
-        if (cycleDate) {
+        if (cycleDate !== null) {
           const { startDate, endDate } = getWeekDates(cycleDate)
           updateItem(
             session,
             {
-              status: reschedulingItemStatus || "null",
+              status: "todo",
               dueDate: date,
               cycle: {
                 startsAt: startDate,
@@ -135,20 +128,25 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
             },
             reschedulingItemId
           )
+        } else {
+          updateItem(
+            session,
+            {
+              status: date ? "todo" : "null",
+              dueDate: date,
+              cycle: {
+                startsAt: null,
+                endsAt: null,
+              }, // explicitly set cycle to null
+            },
+            reschedulingItemId
+          )
         }
       }
       setReschedulingItemId(null)
       setDateChanged(false)
     }
-  }, [
-    date,
-    cycleDate,
-    updateItem,
-    session,
-    reschedulingItemId,
-    reschedulingItemStatus,
-    dateChanged,
-  ])
+  }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
 
   return (
     <div>
