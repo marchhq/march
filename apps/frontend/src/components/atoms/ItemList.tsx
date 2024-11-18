@@ -2,6 +2,7 @@ import React from "react"
 
 import { CalendarIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 import BoxIcon from "@/public/icons/box.svg"
 import BoxFilledIcon from "@/public/icons/boxfilled.svg"
@@ -23,22 +24,32 @@ interface ItemListProps {
   doneLine?: boolean
 }
 
-const getSourceIcon = (source: string) => {
+const getSourceIcon = (source: string, sourceUrl: string) => {
   switch (source) {
     case "gmail":
-      return <MailsIcon size={14} />
+      return (
+        <Link href={sourceUrl} target="_blank">
+          <MailsIcon size={14} />
+        </Link>
+      )
     case "githubIssue":
     case "githubPullRequest":
-      return <GithubIcon size={14} />
+      return (
+        <Link href={sourceUrl} target="_blank">
+          <GithubIcon size={14} />
+        </Link>
+      )
     case "linear":
       return (
-        <Image
-          src={LinearIcon}
-          alt="linear icon"
-          width={14}
-          height={14}
-          className="opacity-50"
-        />
+        <Link href={sourceUrl} target="_blank">
+          <Image
+            src={LinearIcon}
+            alt="linear icon"
+            width={14}
+            height={14}
+            className="opacity-50"
+          />
+        </Link>
       )
     case "march":
     case "marchClipper":
@@ -107,7 +118,7 @@ export const ItemList: React.FC<ItemListProps> = ({
             </span>
             {item.source !== "march" && (
               <div className="mt-[3px] flex items-center text-secondary-foreground">
-                {getSourceIcon(item.source)}
+                {getSourceIcon(item.source, item.metadata?.url || "")}
               </div>
             )}
           </div>
