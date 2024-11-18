@@ -90,7 +90,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
-        if (cycleDate) {
+        if (cycleDate !== null) {
           const { startDate, endDate } = getWeekDates(cycleDate)
           updateItem(
             session,
@@ -107,7 +107,14 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
         } else {
           updateItem(
             session,
-            { status: date ? "todo" : "null", dueDate: date },
+            {
+              status: date ? "todo" : "null",
+              dueDate: date,
+              cycle: {
+                startsAt: null,
+                endsAt: null,
+              }, // explicitly set cycle to null
+            },
             reschedulingItemId
           )
         }
