@@ -111,7 +111,6 @@ export const InboxItems: React.FC = () => {
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
         const today = getUserDate(timezone)
-        console.log("today: ", today)
         const { startDate, endDate } = getWeekDates(today)
         updateItem(
           session,
@@ -127,7 +126,7 @@ export const InboxItems: React.FC = () => {
         )
       }
     },
-    [updateItem, session]
+    [updateItem, session, timezone]
   )
 
   const filteredItems = items.filter((item) => item.status !== "done")
@@ -135,18 +134,26 @@ export const InboxItems: React.FC = () => {
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | string | null
   ) => {
     e.stopPropagation()
 
-    const newDate = dueDate
-      ? typeof dueDate === "string"
-        ? new Date(dueDate)
-        : dueDate
-      : null
+    let newDate: Date | null = null
+
+    if (dueDate) {
+      if (typeof dueDate === "string") {
+        newDate = new Date(dueDate)
+      } else {
+        newDate = dueDate
+      }
+    }
+
+    if (newDate && timezone) {
+      newDate = getUserDate(timezone)
+    }
 
     setReschedulingItemId(id)
-    setDate(newDate) // Ensure this is a Date or null
+    setDate(newDate)
   }
 
   if (filteredItems.length > 0) {
