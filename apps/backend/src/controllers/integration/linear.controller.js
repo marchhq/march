@@ -57,12 +57,20 @@ const handleWebhook = async (req, res, next) => {
     }
 }
 
+/**
+ * Revokes a user's Linear access.
+ *
+ * @param {Object} req - Request with user info.
+ * @param {Object} res - Response with success message.
+ * @param {Function} next - Error handling middleware.
+ */
 const revokeLinearAccessController = async (req, res, next) => {
     const user = req.user;
 
     try {
         await revokeLinearAccess(user.integration.linear.accessToken);
 
+        // Clear Linear integration data
         user.integration.linear = {
             accessToken: null,
             userId: null,
@@ -70,9 +78,7 @@ const revokeLinearAccessController = async (req, res, next) => {
         };
         await user.save();
 
-        res.status(200).json({
-            message: 'Linear access revoked successfully'
-        });
+        res.status(200).json({ message: 'Linear access revoked successfully' });
     } catch (err) {
         console.error('Error revoking Linear access:', err);
         next(err);
