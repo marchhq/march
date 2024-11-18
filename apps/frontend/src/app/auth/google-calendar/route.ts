@@ -32,12 +32,6 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const userRes = await axios.get(`${BACKEND_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
     let redirectUrl = "/profile"
     if (state) {
       try {
@@ -53,7 +47,7 @@ export async function GET(request: NextRequest) {
     const res = NextResponse.redirect(new URL(redirectUrl, redirectDomain))
     res.cookies.set(
       "USER_TIMEZONE",
-      encodeURIComponent(userRes.data.timezone.trim()),
+      encodeURIComponent(response.data.userTimezone.trim()),
       {
         httpOnly: false, // allows JavaScript
         secure: true,
