@@ -173,44 +173,6 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     return issues;
 };
 
-const getLinearIssuesByDate = async (user, date) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId;
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-          query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } }, dueDate: { eq: "${date}" } }) {
-              nodes {
-                id
-                title
-                description
-                state {
-                  name
-                }
-                labels {
-                  nodes {
-                    name
-                  }
-                }
-                dueDate
-              }
-            }
-          }
-        `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data.data.issues.nodes;
-};
-
 // need to improve it base so webhook type
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
@@ -306,7 +268,6 @@ export {
     fetchUserInfo,
     fetchAssignedIssues,
     saveIssuesToDatabase,
-    getLinearIssuesByDate,
     handleWebhookEvent,
     revokeLinearAccess
 }
