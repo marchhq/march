@@ -291,7 +291,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
               onFocus={() => setIsEditingTitle(true)}
               onBlur={() => setIsEditingTitle(false)}
             />
-            <div className="text-foreground">
+            <div className="max-w-6xl text-foreground">
               <TextEditor editor={editor} />
             </div>
           </div>
