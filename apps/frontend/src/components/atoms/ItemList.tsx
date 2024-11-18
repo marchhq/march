@@ -2,13 +2,13 @@ import React from "react"
 
 import { CalendarIcon, GithubIcon, MailsIcon } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 import BoxIcon from "@/public/icons/box.svg"
 import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import classNames from "@/src/utils/classNames"
-import Link from "next/link"
 
 interface ItemListProps {
   items: CycleItem[]
@@ -27,22 +27,29 @@ interface ItemListProps {
 const getSourceIcon = (source: string, sourceUrl: string) => {
   switch (source) {
     case "gmail":
-      return <Link href={sourceUrl} target="_blank"><MailsIcon size={14} /></Link>
+      return (
+        <Link href={sourceUrl} target="_blank">
+          <MailsIcon size={14} />
+        </Link>
+      )
     case "githubIssue":
     case "githubPullRequest":
-      return <Link href={sourceUrl} target="_blank"><GithubIcon size={14} /></Link>
+      return (
+        <Link href={sourceUrl} target="_blank">
+          <GithubIcon size={14} />
+        </Link>
+      )
     case "linear":
       return (
         <Link href={sourceUrl} target="_blank">
-
-        <Image
-          src={LinearIcon}
-          alt="linear icon"
-          width={14}
-          height={14}
-          className="opacity-50"
+          <Image
+            src={LinearIcon}
+            alt="linear icon"
+            width={14}
+            height={14}
+            className="opacity-50"
           />
-          </Link>
+        </Link>
       )
     case "march":
     case "marchClipper":
