@@ -83,10 +83,6 @@ const ItemsList: React.FC<ItemsListProps> = ({
     setDate(newDate) // Ensure this is a Date or null
   }
 
-  if (items.length === 0) {
-    return <p>Reading list is empty </p>
-  }
-
   return (
     <div className="flex w-3/4 flex-col gap-2">
       {[...items].reverse().map((item: ReadingItem) => {
@@ -95,13 +91,13 @@ const ItemsList: React.FC<ItemsListProps> = ({
         return (
           <button
             key={item?._id}
-            className="group flex flex-col justify-center gap-2 rounded-lg py-1"
+            className="group flex flex-col justify-center rounded-lg"
             onClick={() => handleExpand(item)}
           >
             <div className="flex items-center gap-2">
               <div className="grow overflow-hidden">
-                <p className="flex flex-wrap items-center gap-2 text-xs font-medium text-foreground">
-                  <span className="break-all">
+                <p className="flex flex-wrap items-center gap-2 text-foreground">
+                  <span className="break-all text-[16px]">
                     {truncateString(item?.title, 50)}
                   </span>
                   <a
