@@ -20,6 +20,11 @@ export async function generateMetadata({
   const itemId = slug[0]
 
   switch (spaceName) {
+    case "notes":
+      return generateMetadataHelper({
+        path: `/spaces/notes/${itemId}`,
+        title: "Notes",
+      })
     case "meetings":
       return generateMetadataHelper({
         path: `/spaces/meetings/${itemId}`,
