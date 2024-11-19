@@ -7,6 +7,7 @@ import { PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+import NoteDetails from "../header/note-details"
 import TextEditor from "@/src/components/atoms/Editor"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
@@ -242,12 +243,12 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-4">
               {note !== null && (
-                <>
-                  <p className="flex items-center">
-                    {formatDateHeader(note.createdAt)}.
-                  </p>
-                  <p className="text-xs">edited {fromNow(note.updatedAt)}.</p>
-                </>
+                <NoteDetails
+                  createdAt={note.createdAt}
+                  updatedAt={note.updatedAt}
+                  formatDateHeader={formatDateHeader}
+                  fromNow={fromNow}
+                />
               )}
             </div>
             <div className="flex items-center gap-4">
