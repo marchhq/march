@@ -18,6 +18,7 @@
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
     "@hedgedoc/markdown-it-plugins": "^2.1.4",
+    "@logsnag/next": "^1.0.3",
     "@phosphor-icons/react": "^2.1.7",
     "@radix-ui/react-context-menu": "^2.2.2",
     "@radix-ui/react-dialog": "^1.1.1",
