@@ -3,12 +3,18 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 
 import TextEditor from "../atoms/Editor"
+import Details from "../header/details"
+import MeetDetails from "../header/meet-details"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
-import { formatMeetDate, formatMeetTime } from "@/src/utils/datetime"
+import {
+  formatDateHeader,
+  formatMeetDate,
+  formatMeetTime,
+} from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
@@ -199,33 +205,13 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
 
   return (
     <>
-      <div className="flex items-center gap-1 text-sm">
-        <div className="mr-4 size-4 rounded-sm bg-[#E34136]/80"></div>
-        <p>
-          {meetData?.metadata?.start?.dateTime
-            ? formatMeetDate(new Date(meetData.metadata.start.dateTime))
-            : "Date not available"}
-        </p>
-        <p>.</p>
-        <p>
-          {meetData?.metadata?.start?.dateTime &&
-          meetData?.metadata?.end?.dateTime
-            ? `${formatMeetTime(new Date(meetData.metadata.start.dateTime))} - ${formatMeetTime(new Date(meetData.metadata.end.dateTime))}`
-            : "Time not available"}
-        </p>
-        {meetData?.metadata?.hangoutLink && (
-          <a
-            href={meetData.metadata.hangoutLink}
-            target="_blank"
-            className="flex items-center gap-3 rounded-md px-4 text-secondary-foreground"
-          >
-            <span>
-              <LinkIcon />
-            </span>
-            {meetData.metadata.hangoutLink}
-          </a>
-        )}
-      </div>
+      <MeetDetails
+        startDateTime={meetData.metadata.start?.dateTime}
+        endDateTime={meetData.metadata.end?.dateTime}
+        hangoutLink={meetData.metadata.hangoutLink}
+        formatMeetDate={formatMeetDate}
+        formatMeetTime={formatMeetTime}
+      />
       <div>
         <textarea
           ref={textareaRefTitle}
@@ -236,7 +222,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
           className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
           rows={1}
         />
-        <div className="text-foreground">
+        <div className="max-w-6xl text-foreground">
           <TextEditor editor={editor} />
         </div>
       </div>
