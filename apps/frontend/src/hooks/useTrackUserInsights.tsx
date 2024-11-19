@@ -1,112 +1,118 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-
+import { useEffect, useRef, useCallback, useMemo } from "react"
 import { useLogSnag } from "@logsnag/next"
 import { usePathname } from "next/navigation"
-
+import debounce from "lodash/debounce"
 import { useUserInfo } from "./useUserInfo"
 
 export function useTrackUserInsights() {
-  const { track } = useLogSnag()
-  const pathname = usePathname()
-  const { user } = useUserInfo()
+    const { track } = useLogSnag()
+    const pathname = usePathname()
+    const { user } = useUserInfo()
+    const userId = user?.userName || ""
+    
+    const startTimeRef = useRef<number | null>(null)
+    const totalTimeRef = useRef<number>(0)
+    const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const isActiveRef = useRef(true)
 
-  const userId = user?.userName || ""
-  const startTimeRef = useRef<number | null>(null) // Start time of the visit
-  const totalTimeRef = useRef<number>(0) // Accumulated time on page
-  const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const logTimeSpent = useCallback(async () => {
+        if (!isActiveRef.current) return
 
-  const logTimeSpent = async () => {
-    const endTime = Date.now()
-    if (startTimeRef.current) {
-      totalTimeRef.current += endTime - startTimeRef.current
-      startTimeRef.current = null // Reset start time
+        const endTime = Date.now()
+        if (startTimeRef.current) {
+            try {
+                totalTimeRef.current += endTime - startTimeRef.current
+                startTimeRef.current = null
 
-      // Log time spent
-      await track({
-        channel: "user-activity",
-        event: "Time Spent",
-        description: `User spent ${Math.round(totalTimeRef.current / 1000)} seconds on ${pathname}`,
-        tags: {
-          user: userId || "",
-          page: pathname,
-          time_spent: `${Math.round(totalTimeRef.current / 1000)}s`,
-        },
-      })
-    }
-  }
+                await track({
+                    channel: "user-activity",
+                    event: "Time Spent",
+                    description: `User spent ${Math.round(totalTimeRef.current / 1000)} seconds on ${pathname}`,
+                    tags: {
+                        user: userId || "",
+                        page: pathname,
+                        time_spent: `${Math.round(totalTimeRef.current / 1000)}s`,
+                    },
+                })
+            } catch (error) {
+                console.error('Failed to log time spent:', error)
+            }
+        }
+    }, [track, pathname, userId])
 
-  const handleVisibilityChange = () => {
-    if (document.visibilityState === "hidden") {
-      logTimeSpent() // Log time spent when the user leaves the tab
-      track({
-        channel: "user-activity",
-        event: "Tab Left",
-        description: `User left ${pathname}`,
-        tags: { user: userId, page: pathname },
-      })
-    } else if (document.visibilityState === "visible") {
-      startTimeRef.current = Date.now() // Resume tracking time when they return
-      track({
-        channel: "user-activity",
-        event: "Tab Returned",
-        description: `User returned to ${pathname}`,
-        tags: { user: userId, page: pathname },
-      })
-    }
-  }
+    const handleInactivity = useCallback(() => {
+        if (!isActiveRef.current) return
 
-  const handleInactivity = () => {
-    track({
-      channel: "user-activity",
-      event: "Inactivity",
-      description: `User became inactive on ${pathname}`,
-      tags: { user: userId, page: pathname },
-    })
-  }
+        track({
+            channel: "user-activity",
+            event: "Inactivity",
+            description: `User became inactive on ${pathname}`,
+            tags: { user: userId, page: pathname },
+        })
+    }, [track, pathname, userId])
 
-  const handleActivity = () => {
-    if (inactivityTimeoutRef.current) {
-      clearTimeout(inactivityTimeoutRef.current)
-    }
+    const handleActivity = useMemo(
+        () =>
+            debounce(() => {
+                if (!isActiveRef.current) return
 
-    inactivityTimeoutRef.current = setTimeout(() => {
-      handleInactivity()
-    }, 300000) // 5 minutes of inactivity
-  }
+                if (inactivityTimeoutRef.current) {
+                    clearTimeout(inactivityTimeoutRef.current)
+                }
+                inactivityTimeoutRef.current = setTimeout(handleInactivity, 300000)
+            }, 150),
+        [handleInactivity]
+    )
 
-  useEffect(() => {
-    // Track time spent on page
-    startTimeRef.current = Date.now()
+    const handleVisibilityChange = useCallback(() => {
+        if (!isActiveRef.current) return
 
-    // visibility change listeners
-    document.addEventListener("visibilitychange", handleVisibilityChange)
+        if (document.visibilityState === "hidden") {
+            logTimeSpent()
+            track({
+                channel: "user-activity",
+                event: "Tab Left",
+                description: `User left ${pathname}`,
+                tags: { user: userId, page: pathname },
+            })
+        } else if (document.visibilityState === "visible") {
+            startTimeRef.current = Date.now()
+            track({
+                channel: "user-activity",
+                event: "Tab Returned",
+                description: `User returned to ${pathname}`,
+                tags: { user: userId, page: pathname },
+            })
+        }
+    }, [logTimeSpent, track, pathname, userId])
 
-    // inactivity listeners
-    window.addEventListener("mousemove", handleActivity)
-    window.addEventListener("keydown", handleActivity)
+    useEffect(() => {
+        startTimeRef.current = Date.now()
+        isActiveRef.current = true
 
-    // Handle page unload (e.g., refresh or close tab)
-    const handlePageUnload = () => logTimeSpent()
-    window.addEventListener("beforeunload", handlePageUnload)
+        document.addEventListener("visibilitychange", handleVisibilityChange)
+        window.addEventListener("mousemove", handleActivity)
+        window.addEventListener("keydown", handleActivity)
+        window.addEventListener("beforeunload", logTimeSpent)
 
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-      window.removeEventListener("mousemove", handleActivity)
-      window.removeEventListener("keydown", handleActivity)
-      window.removeEventListener("beforeunload", handlePageUnload)
+        return () => {
+            isActiveRef.current = false
+            document.removeEventListener("visibilitychange", handleVisibilityChange)
+            window.removeEventListener("mousemove", handleActivity)
+            window.removeEventListener("keydown", handleActivity)
+            window.removeEventListener("beforeunload", logTimeSpent)
 
-      // Clear inactivity timeout
-      if (inactivityTimeoutRef.current) {
-        clearTimeout(inactivityTimeoutRef.current)
-      }
-    }
-  }, [pathname, userId, track])
+            if (inactivityTimeoutRef.current) {
+                clearTimeout(inactivityTimeoutRef.current)
+            }
+            handleActivity.cancel()
+        }
+    }, [handleVisibilityChange, handleActivity, logTimeSpent])
 
-  useEffect(() => {
-    // Reset timers on route change
-    totalTimeRef.current = 0
-    startTimeRef.current = Date.now()
-  }, [pathname])
+    useEffect(() => {
+        totalTimeRef.current = 0
+        startTimeRef.current = Date.now()
+    }, [pathname])
 }
