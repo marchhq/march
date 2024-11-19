@@ -15,6 +15,8 @@ import {
   useSidebarCollapse,
 } from "@/src/contexts/SidebarCollapseContext"
 import classNames from "@/src/utils/classNames"
+import { useUserInfo } from "@/src/hooks/useUserInfo"
+import { useTrackPageView } from "@/src/hooks/useTrackPageView"
 
 export const Sidebar: React.FC = () => {
   return (
@@ -26,6 +28,8 @@ export const Sidebar: React.FC = () => {
 
 const SidebarNav: React.FC = () => {
   const { isCollapsed } = useSidebarCollapse()
+  const { user } = useUserInfo()
+  useTrackPageView(user?.userName || "");
   return (
     <nav
       className={classNames(
