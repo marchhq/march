@@ -1,13 +1,15 @@
 "use client"
+
 import { useEffect, useState, useCallback, useRef } from "react"
 
 import axios from "axios"
+import { ArrowUpLeftIcon, ArrowDownRightIcon } from "lucide-react"
 
-import TextEditor from "./atoms/Editor"
-import { useAuth } from "../contexts/AuthContext"
-import useEditorHook from "../hooks/useEditor.hook"
-import { useJournal } from "../hooks/useJournal"
-import { BACKEND_URL } from "../lib/constants/urls"
+import TextEditor from "@/src/components/atoms/Editor"
+import { useAuth } from "@/src/contexts/AuthContext"
+import useEditorHook from "@/src/hooks/useEditor.hook"
+import { useJournal } from "@/src/hooks/useJournal"
+import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 interface JournalProps {
   selectedDate: Date
@@ -82,7 +84,8 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
       setHasUnsavedChanges(false)
       lastSavedContent.current = content
     } catch (error) {
-      setError("Failed to save journal. Please try again.")
+      console.error("failed to save journal", error)
+      setError("failed to save journal")
     } finally {
       setIsLoading(false)
     }
@@ -96,8 +99,17 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   }, [content, hasUnsavedChanges, isLoading])
 
   return (
-    <div className="text-foreground">
-      <TextEditor editor={editor} minH="30vh" />
+    <div className="flex flex-col gap-3 pl-5">
+      <section className="no-scrollbar min-h-[10vh] max-w-[700px] overflow-y-scroll">
+        {error && (
+          <div className="mb-2.5 truncate text-xs text-danger-foreground">
+            <span>{error}</span>
+          </div>
+        )}
+        <div className="text-foreground">
+          <TextEditor editor={editor} minH="10vh" />
+        </div>
+      </section>
     </div>
   )
 }

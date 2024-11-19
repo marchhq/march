@@ -1,8 +1,11 @@
 import { useCallback } from "react"
 
+import axios from "axios"
 import { useRouter } from "next/navigation"
 
-const useGitHubLogin = (): (() => Promise<void>) => {
+import { BACKEND_URL } from "../lib/constants/urls"
+
+const useGitHubLogin = (session?: string) => {
   const router = useRouter()
 
   const handleLogin = useCallback(async () => {
@@ -23,7 +26,20 @@ const useGitHubLogin = (): (() => Promise<void>) => {
     }
   }, [router])
 
-  return handleLogin
+  const handleRevoke = useCallback(async () => {
+    try {
+      await axios.delete(`${BACKEND_URL}/github/revoke-access/`, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+        },
+      })
+    } catch (error) {
+      console.error("Failed to revoke Github Installation: ", error)
+      throw error
+    }
+  }, [session])
+
+  return { handleLogin, handleRevoke }
 }
 
 export default useGitHubLogin

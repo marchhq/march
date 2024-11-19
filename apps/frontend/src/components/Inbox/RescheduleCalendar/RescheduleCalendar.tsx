@@ -53,9 +53,9 @@ export function RescheduleCalendar({
     setDateChanged(true)
   }
   const setNoDate = () => {
-    setNoDateFlag(true)
     setDate(null)
-    setDateChanged(false)
+    setCycleDate(null)
+    setDateChanged(true)
   }
 
   const todayFormatted = format(new Date(), "dd [eee]").toLowerCase()

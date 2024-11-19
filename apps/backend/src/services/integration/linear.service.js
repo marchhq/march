@@ -4,6 +4,14 @@ import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 
+/**
+ * Retrieves an access token from Linear using the provided authorization code.
+ *
+ * @param {string} code - The authorization code received from Linear.
+ * @param {Object} user - The user object to update with the access token.
+ * @returns {Promise<string>} - The access token.
+ * @throws Will throw an error if the token retrieval fails.
+ */
 const getAccessToken = async (code, user) => {
     try {
         const requestBody = {
@@ -32,6 +40,14 @@ const getAccessToken = async (code, user) => {
     }
 };
 
+/**
+ * Fetches user information from Linear using the access token.
+ *
+ * @param {string} linearToken - The access token for Linear API.
+ * @param {Object} user - The user object to update with Linear user info.
+ * @returns {Promise<Object>} - The user information from Linear.
+ * @throws Will throw an error if fetching user info fails.
+ */
 const fetchUserInfo = async (linearToken, user) => {
     try {
         const response = await axios.post('https://api.linear.app/graphql', {
@@ -62,6 +78,14 @@ const fetchUserInfo = async (linearToken, user) => {
     }
 };
 
+/**
+ * Saves issues to the database, updating existing ones or creating new entries.
+ *
+ * @param {Array} issues - An array of issue objects to be saved.
+ * @param {string} userId - The ID of the user associated with the issues.
+ * @returns {Promise<void>}
+ * @throws Will throw an error if saving issues to the database fails.
+ */
 const saveIssuesToDatabase = async (issues, userId) => {
     try {
         const filteredIssues = issues.filter(issue => issue.state.name !== 'Done');
@@ -110,10 +134,18 @@ const saveIssuesToDatabase = async (issues, userId) => {
     }
 };
 
+/**
+ * Fetches issues assigned to a specific user from Linear.
+ *
+ * @param {string} linearToken - The access token for Linear API.
+ * @param {string} linearUserId - The Linear user ID to filter issues by assignee.
+ * @returns {Promise<Array>} - A promise that resolves to an array of issues assigned to the user.
+ * @throws Will throw an error if the request to Linear fails.
+ */
 const fetchAssignedIssues = async (linearToken, linearUserId) => {
     const response = await axios.post('https://api.linear.app/graphql', {
         query: `
-    query {
+        query {
             issues(filter: { assignee: { id: { eq: "${linearUserId}" } } }) {
                 nodes {
                     id
@@ -157,196 +189,14 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
     return issues;
 };
 
-const getMyLinearIssues = async (user) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-        query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } } }) {
-                nodes {
-                    id
-                    title
-                    description
-                    state {
-                        id
-                        name
-                    }
-                    labels {
-                        nodes {
-                            id
-                            name
-                        }
-                    }
-                    dueDate
-                    createdAt
-                    updatedAt
-                    priority
-                    project {
-                        id
-                        name
-                    }
-                    assignee {
-                        id
-                        name
-                    }
-                    url
-                    cycle { 
-                    id
-                    name
-                    startsAt
-                    endsAt
-                    number
-                }
-                }
-            }
-        }
-    `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-
-    const issues = response.data.data.issues.nodes;
-
-    return issues;
-};
-
-const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
-
-const getTodayLinearIssues = async (user) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId;
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-    const today = new Date();
-    const formattedToday = formatDate(today);
-
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-            query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } }, dueDate: { eq: "${formattedToday}" } }) {
-                nodes {
-                id
-                title
-                description
-                state {
-                    name
-                }
-                labels {
-                    nodes {
-                    name
-                    }
-                }
-                dueDate
-                }
-            }
-            }
-        `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data.data.issues.nodes;
-};
-
-const getOverdueLinearIssues = async (user) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId;
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-    const today = new Date();
-    const formattedToday = formatDate(today);
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-          query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } }, dueDate: { lt: "${formattedToday}" }, completedAt: { null: true } }) {
-              nodes {
-                id
-                title
-                description
-                state {
-                  name
-                }
-                labels {
-                  nodes {
-                    name
-                  }
-                }
-                dueDate
-              }
-            }
-          }
-        `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data.data.issues.nodes;
-};
-
-const getLinearIssuesByDate = async (user, date) => {
-    const linearToken = user.integration.linear.accessToken;
-    const userId = user.integration.linear.userId;
-    if (!linearToken || !userId) {
-        const error = new Error("linearToken or userId is missing")
-        error.statusCode = 500
-        throw error
-    }
-    const response = await axios.post('https://api.linear.app/graphql', {
-        query: `
-          query {
-            issues(filter: { assignee: { id: { eq: "${userId}" } }, dueDate: { eq: "${date}" } }) {
-              nodes {
-                id
-                title
-                description
-                state {
-                  name
-                }
-                labels {
-                  nodes {
-                    name
-                  }
-                }
-                dueDate
-              }
-            }
-          }
-        `
-    }, {
-        headers: {
-            Authorization: `Bearer ${linearToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data.data.issues.nodes;
-};
-
-// need to improve it base so webhook type
+/**
+ * Handles webhook events from Linear, updating or deleting issues in the database.
+ *
+ * @param {Object} payload - The webhook payload containing issue data and action type.
+ * @returns {Promise<void>}
+ * @throws Will log an error if the operation fails.
+ */
+// TODO: need to improve it base so webhook type
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
     if (payload.action === 'remove') {
@@ -371,7 +221,7 @@ const handleWebhookEvent = async (payload) => {
 
     const user = await User.findOne({
         'integration.linear.userId': issue.assignee.id
-    })
+    });
     if (!user) {
         console.log('No user found with the matching Linear userId.');
         return;
@@ -419,14 +269,38 @@ const handleWebhookEvent = async (payload) => {
     }
 };
 
+/**
+ * Revokes a Linear access token.
+ *
+ * @param {string} accessToken - The access token to be revoked.
+ * @returns {Promise<void>}
+ * @throws Will throw an error if the revocation fails.
+ */
+
+const revokeLinearAccess = async (accessToken) => {
+    try {
+        // Send a POST request to revoke the Linear access token
+        await axios.post('https://api.linear.app/oauth/revoke', {
+            token: accessToken
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+        console.log('Linear access revoked successfully');
+    } catch (error) {
+        // Log the error and rethrow it
+        console.error('Error revoking Linear token:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
     fetchAssignedIssues,
     saveIssuesToDatabase,
-    getMyLinearIssues,
-    getTodayLinearIssues,
-    getOverdueLinearIssues,
-    getLinearIssuesByDate,
-    handleWebhookEvent
+    handleWebhookEvent,
+    revokeLinearAccess
 }

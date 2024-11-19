@@ -13,7 +13,7 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Note } from "@/src/lib/@types/Items/Note"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
-import { formatDateYear, fromNow } from "@/src/utils/datetime"
+import { formatDateHeader, formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface Props {
   noteId: string
@@ -239,37 +239,38 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
     <div className="flex size-full gap-16 bg-background p-10">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
         <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
-          <div className="flex gap-8">
-            <div className="flex gap-4">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-4">
               {note !== null && (
-                <p className="flex items-center">
-                  {formatDateYear(note.createdAt)}
-                </p>
+                <>
+                  <p className="flex items-center">
+                    {formatDateHeader(note.createdAt)}.
+                  </p>
+                  <p className="text-xs">edited {fromNow(note.updatedAt)}.</p>
+                </>
               )}
+            </div>
+            <div className="flex items-center gap-4">
               {!loading ? (
                 <button
                   onClick={addNewNote}
                   className="hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground"
                 >
                   <PlusIcon />
-                  <span>Add A New Note</span>
                 </button>
               ) : (
                 <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground">
                   <span>loading...</span>
                 </div>
               )}
+              <button
+                className="hover-text flex items-center"
+                onClick={handleClose}
+              >
+                <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
+              </button>
             </div>
-            <button
-              className="hover-text flex items-center"
-              onClick={handleClose}
-            >
-              <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
-            </button>
           </div>
-          {note !== null && (
-            <p className="text-xs">edited {fromNow(note.updatedAt)}</p>
-          )}
         </div>
         {note !== null ? (
           <div
@@ -283,14 +284,14 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={handleTextareaKeyDown}
               placeholder="Untitled"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-2xl font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-2 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
               rows={1}
               /* eslint-disable-next-line jsx-a11y/no-autofocus */
               autoFocus={!title || title.trim() === ""}
               onFocus={() => setIsEditingTitle(true)}
               onBlur={() => setIsEditingTitle(false)}
             />
-            <div className="text-foreground">
+            <div className="max-w-6xl text-foreground">
               <TextEditor editor={editor} />
             </div>
           </div>
@@ -310,12 +311,11 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
           "flex max-h-screen w-full max-w-[200px] flex-col gap-8 overflow-y-auto text-sm text-secondary-foreground"
         )}
       >
-        <span className="text-foreground">notes</span>
-        <div className="flex flex-col gap-2 px-2">
+        <div className="flex flex-col gap-2 border-l border-border">
           {notes?.map((n) => (
             <div
               key={n._id}
-              className="hover-bg group flex items-center justify-between gap-1 truncate rounded-md"
+              className="group -mb-1 flex items-center justify-between gap-1"
               role="button"
               tabIndex={0}
               onClick={() => {
@@ -330,16 +330,13 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
                 }
               }}
             >
-              <Link
-                href={`/space/notes/${n._id}`}
-                className="flex-1 truncate px-2 py-1"
-              >
+              <Link href={`/space/notes/${n._id}`} className="flex-1 truncate">
                 {n._id === note?._id ? (
-                  <p className="truncate text-foreground">
+                  <p className="truncate border-l border-l-secondary-foreground py-0.5 pl-2 text-foreground">
                     {title || "Untitled"}
                   </p>
                 ) : (
-                  <p className="truncate text-secondary-foreground">
+                  <p className="hover-text truncate py-0.5 pl-2 text-secondary-foreground">
                     {n.title || "Untitled"}
                   </p>
                 )}

@@ -30,7 +30,7 @@
   }
 
   p {
-    @apply text-inherit;
+    @apply text-sm;
   }
 
   pre {
@@ -57,11 +57,11 @@
 
     li {
       display: flex;
-      align-items: center;
+      align-items: start;
       /* Add some padding for spacing between list items */
 
       >label {
-        @apply flex items-center mr-2 mt-2;
+        @apply flex items-center mr-2 mt-1.5;
       }
 
       >div {
@@ -80,7 +80,7 @@
   }
 
   ol {
-    @apply list-decimal ml-4;
+    @apply list-decimal ml-6 pl-4;
   }
 
   blockquote {
@@ -113,7 +113,7 @@
   }
 
   [data-type="taskList"] input[type="checkbox"]:checked::after {
-    content: '';
+    content: "";
     display: inline-block;
     width: 5px;
     /* increase height for the vertical part of the checkmark */

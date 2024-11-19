@@ -46,8 +46,8 @@ export default Logo
 export const LogoDark = ({ size = 64 }: Props): JSX.Element => {
   return (
     <svg
-      width="49"
-      height="51"
+      width={size}
+      height={size + 2}
       viewBox="0 0 49 51"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
