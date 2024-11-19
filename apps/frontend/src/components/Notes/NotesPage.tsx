@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import TextEditor from "@/src/components/atoms/Editor"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
+import usePersistedState from "@/src/hooks/usePersistedState"
 import { Note } from "@/src/lib/@types/Items/Note"
 import useNotesStore from "@/src/lib/store/notes.store"
 import classNames from "@/src/utils/classNames"
@@ -42,7 +43,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   const editor = useEditorHook({ content, setContent, setIsSaved })
   const [loading, setLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
-  const [closeToggle, setCloseToggle] = useState(false)
+  const [closeToggle, setCloseToggle] = usePersistedState("closeToggle", true)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
 
