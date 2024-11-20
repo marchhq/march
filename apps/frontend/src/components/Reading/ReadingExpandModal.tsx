@@ -2,17 +2,14 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 
-import Markdown from "markdown-it"
 import Image from "next/image"
 
 import TextEditor from "../atoms/Editor"
 import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
-import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import classNames from "@/src/utils/classNames"
+import useReadingStore from "@/src/lib/store/reading.store"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
-import { processMarkdown } from "@/src/utils/markdown"
 
 interface EditedItem {
   title: string
@@ -28,10 +25,18 @@ const SAVE_DELAY = {
   CONTENT: 500,
 } as const
 
-export const InboxExpandedItem: React.FC = () => {
+interface ModalProps {
+  blockId: string
+  spaceId: string
+}
+
+export const ReadingExpandModal: React.FC<ModalProps> = ({
+  blockId,
+  spaceId,
+}) => {
   const { session } = useAuth()
-  const { currentItem, setCurrentItem, updateItem, deleteItem, error } =
-    useCycleItemStore()
+  const { currentItem, setCurrentItem, deleteItem, updateItem } =
+    useReadingStore()
 
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
@@ -44,11 +49,10 @@ export const InboxExpandedItem: React.FC = () => {
   // state
   const [editItemId, setEditItemId] = useState<string | null>(null)
   const [editedItem, setEditedItem] = useState<EditedItem>({ title: "" })
+  const [content, setContent] = useState(currentItem?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [content, setContent] = useState(
-    processMarkdown(currentItem?.description || "<p></p>")
-  )
+
   // memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
@@ -67,10 +71,11 @@ export const InboxExpandedItem: React.FC = () => {
     (event: React.MouseEvent, id: string) => {
       event.stopPropagation()
       if (id) {
-        deleteItem(session, id)
+        deleteItem(session, spaceId, blockId, id)
+        handleClose()
       }
     },
-    [deleteItem, session]
+    [deleteItem, session, handleClose]
   )
 
   const handleSaveEditedItem = useCallback(
@@ -78,14 +83,9 @@ export const InboxExpandedItem: React.FC = () => {
       if (!item?._id || !editItemId) return
 
       try {
-        await updateItem(
-          session,
-          {
-            ...item,
-            title: editedItem.title,
-          },
-          item._id
-        )
+        await updateItem(session, spaceId, blockId, item._id, {
+          title: editedItem.title,
+        })
       } catch (error) {
         console.error("Error updating item:", error)
       }
@@ -104,11 +104,9 @@ export const InboxExpandedItem: React.FC = () => {
   const saveContent = useCallback(() => {
     if (!currentItem?._id || content === lastSavedContent.current) return
 
-    updateItem(
-      session,
-      { ...currentItem, description: content },
-      currentItem._id
-    )
+    updateItem(session, spaceId, blockId, currentItem._id, {
+      description: content,
+    })
     lastSavedContent.current = content
     setHasUnsavedChanges(false)
     setIsSaved(true)
@@ -135,25 +133,20 @@ export const InboxExpandedItem: React.FC = () => {
   useEffect(() => {
     if (!currentItem) return
 
-    const newContent = processMarkdown(currentItem.description || "<p></p>")
-    setContent(newContent)
-    lastSavedContent.current = newContent
+    const newContent = currentItem.description || "<p></p>"
 
-    if (editor?.commands) {
-      editor.commands.setContent(newContent)
-      editor.commands.focus()
-    }
+    if (currentItem._id !== editItemId) {
+      setEditItemId(currentItem._id)
+      setEditedItem({ title: currentItem.title || "" })
+      setContent(newContent)
+      lastSavedContent.current = newContent
 
-    setEditItemId(currentItem._id)
-    setEditedItem({ title: currentItem.title || "" })
-
-    return () => {
       if (editor?.commands) {
-        editor.commands.clearContent()
+        editor.commands.setContent(newContent)
+        editor.commands.focus()
       }
-      lastSavedContent.current = "<p></p>"
     }
-  }, [currentItem, editor])
+  }, [currentItem, editItemId, editor])
 
   // effect to handle title auto-save
   useEffect(() => {
@@ -245,53 +238,70 @@ export const InboxExpandedItem: React.FC = () => {
     []
   )
 
-  return (
-    <div className={classNames("", currentItem && "w-1/2")}>
-      {currentItem && (
+  if (currentItem) {
+    return (
+      <div>
         <div
-          ref={divRef}
-          className="flex size-full flex-col gap-4 border-l border-border px-4 text-foreground"
-        >
-          <div className="flex items-center gap-4 text-xs text-secondary-foreground">
-            <button
-              className="group/button flex items-center"
-              onClick={handleClose}
+          className="fixed inset-0 z-50 cursor-default bg-black/80"
+          role="button"
+          onClick={handleClose}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" || e.key === "Esc") {
+              handleClose()
+            }
+          }}
+          tabIndex={0}
+        ></div>
+        <div className="fixed left-1/2 top-1/2 z-50 h-4/5 w-3/5 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-lg bg-background p-10 shadow-lg">
+          <div>
+            <div
+              ref={divRef}
+              className="flex size-full flex-col gap-4 text-foreground"
             >
-              <Image
-                src={ChevronLeftIcon}
-                alt="chevron left icon"
-                width={16}
-                height={16}
-                className="opacity-50 group-hover/button:opacity-100"
-              />
-            </button>
-            <p className="flex items-center">
-              {formatDateYear(currentItem.createdAt)}
-            </p>
-            <p>edited {fromNow(currentItem.updatedAt)}</p>
-            <button
-              className="hover-text flex w-fit items-center"
-              onClick={(e) => handleDelete(e, currentItem._id)}
-            >
-              <span>del</span>
-            </button>
-          </div>
-          <div className="flex items-center">
-            <textarea
-              ref={textareaRefTitle}
-              value={editedItem.title}
-              onChange={(e) => handleTitleChange(e)}
-              onKeyDown={handleTextareaKeyDown}
-              placeholder="title"
-              className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-              rows={1}
-            />
-          </div>
-          <div className="mt-1 text-foreground">
-            <TextEditor editor={editor} />
+              <div className="flex items-center gap-4 text-xs text-secondary-foreground">
+                <button
+                  className="group/button flex items-center"
+                  onClick={handleClose}
+                >
+                  <Image
+                    src={ChevronLeftIcon}
+                    alt="chevron left icon"
+                    width={16}
+                    height={16}
+                    className="opacity-50 group-hover/button:opacity-100"
+                  />
+                </button>
+                {/* <p className="flex items-center">
+                  {formatDateYear(currentItem.createdAt)}
+                </p>
+                <p>edited {fromNow(currentItem.updatedAt)}</p> */}
+                <button
+                  className="hover-text flex w-fit items-center"
+                  onClick={(e) => handleDelete(e, currentItem._id)}
+                >
+                  <span>del</span>
+                </button>
+              </div>
+              <div className="flex items-center">
+                <textarea
+                  ref={textareaRefTitle}
+                  value={editedItem.title}
+                  onChange={(e) => handleTitleChange(e)}
+                  onKeyDown={handleTextareaKeyDown}
+                  placeholder="title"
+                  className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-base font-semibold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+                  rows={1}
+                />
+              </div>
+              <div className="mt-1 text-foreground">
+                <TextEditor editor={editor} />
+              </div>
+            </div>
           </div>
         </div>
-      )}
-    </div>
-  )
+      </div>
+    )
+  }
+
+  return null
 }

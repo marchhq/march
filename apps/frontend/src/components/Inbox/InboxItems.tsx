@@ -5,14 +5,16 @@ import React, { useEffect, useCallback, useState } from "react"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useTimezone } from "@/src/hooks/useTimezone"
 import { useWebSocket } from "@/src/hooks/useWebSocket"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import { getWeekDates } from "@/src/utils/datetime"
+import { getUserDate, getWeekDates } from "@/src/utils/datetime"
 
 export const InboxItems: React.FC = () => {
   const { session } = useAuth()
 
+  const timezone = useTimezone()
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
@@ -82,16 +84,16 @@ export const InboxItems: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    if (timezone) {
+      setDate(getUserDate(timezone))
+      setCycleDate(getUserDate(timezone))
+    }
+  }, [timezone])
+
+  useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
-        if (date) {
-          updateItem(
-            session,
-            { status: "todo", dueDate: date },
-            reschedulingItemId
-          )
-        }
-        if (cycleDate) {
+        if (cycleDate !== null) {
           const { startDate, endDate } = getWeekDates(cycleDate)
           updateItem(
             session,
@@ -105,13 +107,25 @@ export const InboxItems: React.FC = () => {
             },
             reschedulingItemId
           )
+        } else {
+          updateItem(
+            session,
+            {
+              status: date ? "todo" : "null",
+              dueDate: date,
+              cycle: {
+                startsAt: null,
+                endsAt: null,
+              }, // explicitly set cycle to null
+            },
+            reschedulingItemId
+          )
         }
       }
       setReschedulingItemId(null)
       setDateChanged(false)
     }
   }, [date, cycleDate, updateItem, session, reschedulingItemId, dateChanged])
-
   const handleExpand = useCallback(
     (item: CycleItem) => {
       if (isControlHeld && item.type === "link") {
@@ -132,7 +146,7 @@ export const InboxItems: React.FC = () => {
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date()
+        const today = getUserDate(timezone)
         const { startDate, endDate } = getWeekDates(today)
         updateItem(
           session,
@@ -148,7 +162,7 @@ export const InboxItems: React.FC = () => {
         )
       }
     },
-    [updateItem, session]
+    [updateItem, session, timezone]
   )
 
   const filteredItems =
@@ -157,18 +171,26 @@ export const InboxItems: React.FC = () => {
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | string | null
   ) => {
     e.stopPropagation()
 
-    const newDate = dueDate
-      ? typeof dueDate === "string"
-        ? new Date(dueDate)
-        : dueDate
-      : null
+    let newDate: Date | null = null
+
+    if (dueDate) {
+      if (typeof dueDate === "string") {
+        newDate = new Date(dueDate)
+      } else {
+        newDate = dueDate
+      }
+    }
+
+    if (newDate && timezone) {
+      newDate = getUserDate(timezone)
+    }
 
     setReschedulingItemId(id)
-    setDate(newDate) // Ensure this is a Date or null
+    setDate(newDate)
   }
 
   if (filteredItems.length > 0) {

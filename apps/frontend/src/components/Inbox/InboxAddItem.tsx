@@ -97,7 +97,7 @@ export const InboxAddItem: React.FC = () => {
 
   return (
     <div onBlur={handleOnBlur} className="pl-5">
-      <textarea
+      {/*<textarea
         ref={textareaRefTitle}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -112,7 +112,23 @@ export const InboxAddItem: React.FC = () => {
         <div className="truncate text-xs text-danger-foreground">
           <span>{error}</span>
         </div>
-      )}
+      )} */}
+
+      <div className="relative">
+        <textarea
+          ref={textareaRefTitle}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Insert a link or just plain text.."
+          className="w-full truncate rounded-lg border border-transparent bg-background p-4 pl-6 pr-32 font-semibold text-primary-foreground outline-none transition-colors placeholder:text-secondary-foreground focus:border-border focus:ring-0"
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+        />
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-secondary-foreground">
+          press ↵ to save
+        </span>
+      </div>
     </div>
   )
 }

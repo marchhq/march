@@ -6,7 +6,7 @@ import { Button } from "../button/Button"
 import useGitHubLogin from "@/src/hooks/useGithubLogin"
 
 export const GithubLogin = (): JSX.Element => {
-  const handleLogin = useGitHubLogin()
+  const { handleLogin } = useGitHubLogin()
 
   return (
     <Button onClick={handleLogin}>
