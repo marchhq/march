@@ -37,7 +37,7 @@
     @apply bg-zinc-900 rounded-lg py-3 px-5 text-sm;
   }
 
-  p > code {
+  p>code {
     @apply bg-zinc-900 text-sm px-1 py-0.5 rounded-md;
   }
 
@@ -57,14 +57,14 @@
 
     li {
       display: flex;
-      align-items: center;
+      align-items: start;
       /* Add some padding for spacing between list items */
 
-      > label {
-        @apply flex items-center mr-2 mt-2;
+      >label {
+        @apply flex items-center mr-2 mt-1.5;
       }
 
-      > div {
+      >div {
         @apply flex-grow;
         margin-top: 0.3em;
       }
@@ -80,7 +80,7 @@
   }
 
   ol {
-    @apply list-decimal ml-4;
+    @apply list-decimal ml-6 pl-4;
   }
 
   blockquote {

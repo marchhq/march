@@ -2,21 +2,19 @@
 import { useState, useRef, useEffect } from "react"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import classNames from "@/src/utils/classNames"
 import { calculateMeetDuration, formatMeetTime } from "@/src/utils/meet"
 
 interface StackProps {
-  currentWeekMeets: Meet[]
+  meetings: Meet[]
   currentMeetId: string
 }
 
-export const Stack: React.FC<StackProps> = ({
-  currentWeekMeets,
-  currentMeetId,
-}) => {
+export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
+  const router = useRouter()
   const [closeToggle, setCloseToggle] = useState(false)
   const [maxHeight, setMaxHeight] = useState("auto")
   const stackRef = useRef<HTMLDivElement>(null)
@@ -39,17 +37,22 @@ export const Stack: React.FC<StackProps> = ({
     return () => window.removeEventListener("resize", updateMaxHeight)
   }, [])
 
-  const stackItems = currentWeekMeets.map((meet) => {
-    const startTime = new Date(meet.metadata.start.dateTime)
-    const endTime = new Date(meet.metadata.end.dateTime)
+  const stackItems = meetings.map((meet) => {
+    const startTime = new Date(meet.metadata?.start?.dateTime)
+    const endTime = new Date(meet.metadata?.end?.dateTime)
     return {
-      id: meet._id,
+      id: meet.id,
       title: meet.title,
-      url: meet.metadata.hangoutLink,
+      url: meet.metadata?.hangoutLink,
       time: formatMeetTime(startTime, endTime),
       duration: calculateMeetDuration(startTime, endTime),
     }
   })
+
+  const handleMeetingClick = (e: React.MouseEvent, meetId: string) => {
+    e.preventDefault()
+    router.push(`/space/meetings/${meetId}`, { scroll: false })
+  }
 
   return (
     <div className="flex w-full flex-col">
@@ -68,33 +71,23 @@ export const Stack: React.FC<StackProps> = ({
         )}
         style={{ maxHeight }}
       >
-        <div className="w-full">
+        <div className="mt-2 flex flex-col gap-2 border-l border-border">
           {stackItems.map((meet) => (
-            <div
+            <Link
               key={meet.id}
-              className="-mx-4 mb-16 mt-8 space-y-3 rounded-md border border-transparent p-4 hover:border-border"
+              href={`/space/meetings/${meet.id}`}
+              onClick={(e) => handleMeetingClick(e, meet.id)}
             >
-              <Link
-                href={`/space/meetings/${meet.id}`}
-                className="block cursor-pointer break-words text-[16px] font-medium text-primary-foreground"
+              <button
+                className={`-ml-px truncate border-l border-border pl-2 text-start ${
+                  meet.id === currentMeetId
+                    ? "border-l-secondary-foreground text-primary-foreground"
+                    : "border-border hover:text-primary-foreground"
+                }`}
               >
                 {meet.title}
-              </Link>
-              <p className="text-[16px]">
-                {meet.time}, {meet.duration} min
-              </p>
-              <a
-                href={meet.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <span className="flex items-center justify-start gap-2 text-[16px] hover:text-primary-foreground">
-                  <LinkIcon />
-                  Google Meet
-                </span>
-              </a>
-            </div>
+              </button>
+            </Link>
           ))}
         </div>
       </div>
