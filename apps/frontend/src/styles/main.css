@@ -46,8 +46,8 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: 16, 16, 16;
-      /* 101010 */
+      --background: 23, 23, 23;
+      /* 171717 */
       --background-hover: 22, 22, 22;
       --background-active: 24, 24, 24;
 

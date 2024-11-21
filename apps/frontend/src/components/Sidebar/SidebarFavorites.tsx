@@ -15,7 +15,6 @@ import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 export const SidebarFavorites: React.FC = () => {
   const { session } = useAuth()
 
-  const { isCollapsed, toggleCollapse } = useSidebarCollapse()
   const { favorites, fetchFavorites } = useCycleItemStore()
   const [toggle, setToggle] = useState(false)
 
@@ -23,17 +22,8 @@ export const SidebarFavorites: React.FC = () => {
     fetchFavorites(session)
   }, [session, fetchFavorites])
 
-  useEffect(() => {
-    if (toggle) {
-      setToggle(!isCollapsed)
-    }
-  }, [toggle, isCollapsed])
-
   const handleToggle = () => {
     setToggle(!toggle)
-    if (isCollapsed) {
-      toggleCollapse()
-    }
   }
 
   if (favorites.items.length !== 0) {
@@ -44,7 +34,6 @@ export const SidebarFavorites: React.FC = () => {
           onClick={handleToggle}
         >
           <Sparkle size={16} />
-          {!isCollapsed && <span>favorites</span>}
           {toggle ? (
             <Image
               src={ChevronDownIcon}

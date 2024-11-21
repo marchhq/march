@@ -7,7 +7,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
 import classNames from "@/src/utils/classNames"
 
@@ -15,8 +14,6 @@ export const SidebarProfile: React.FC = () => {
   const pathname = usePathname()
 
   const { user, error } = useUserInfo()
-
-  const { isCollapsed } = useSidebarCollapse()
 
   const isActive = pathname.includes("/profile")
 
@@ -33,20 +30,15 @@ export const SidebarProfile: React.FC = () => {
           <Image
             src={user?.avatar}
             alt="user avatar"
-            width={16}
-            height={16}
+            width={18}
+            height={18}
             className={classNames(
               isActive && "border-foreground",
               "rounded border border-border group-hover:border-foreground"
             )}
           />
         ) : (
-          <UserIcon size={16} />
-        )}
-        {!isCollapsed && user && (
-          <span className="max-w-[calc(100%-24px)] truncate">
-            {user.userName}
-          </span>
+          <UserIcon size={18} />
         )}
       </Link>
       {error && (

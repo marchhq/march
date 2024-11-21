@@ -1,19 +1,19 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 
-import Image from "next/image"
-
-import ChevronDownIcon from "@/public/icons/chevrondown.svg"
-import ChevronRightIcon from "@/public/icons/chevronright.svg"
+import { SidebarCollapsibleSpaces } from "./SidebarCollapsibleSpaces"
+import { SidebarFeedback } from "./SidebarFeedback"
+import { Switch } from "../atoms/Switch"
 import { SidebarFavorites } from "@/src/components/Sidebar/SidebarFavorites"
 import { SidebarMain } from "@/src/components/Sidebar/SidebarMain"
 import { SidebarProfile } from "@/src/components/Sidebar/SidebarProfile"
-import { SidebarSpaces } from "@/src/components/Sidebar/SidebarSpaces"
+import { useAuth } from "@/src/contexts/AuthContext"
 import {
   SidebarCollapseProvider,
   useSidebarCollapse,
 } from "@/src/contexts/SidebarCollapseContext"
+import useSpaceStore from "@/src/lib/store/space.store"
 import classNames from "@/src/utils/classNames"
 
 export const Sidebar: React.FC = () => {
@@ -29,49 +29,61 @@ const SidebarNav: React.FC = () => {
   return (
     <nav
       className={classNames(
-        "flex w-full relative flex-col justify-between bg-background p-10 pr-0 text-sm text-secondary-foreground group",
+        "flex w-full relative flex-col justify-between bg-background p-10 pr-0 text-sm text-secondary-foreground group border-r border-border",
         isCollapsed
           ? "min-w-fit max-w-fit"
-          : "min-w-[calc(min(-20px+100vw,230px))] max-w-[calc(min(-20px+100vw,230px))]"
+          : "min-w-[calc(min(-20px+100vw,300px))] max-w-[calc(min(-20px+100vw,300px))]"
       )}
     >
-      <div className="flex flex-col gap-7">
-        <div className="flex gap-4">
-          <SidebarProfile />
-          <SidebarCollapseButton />
+      <div
+        className={classNames(
+          "flex h-5/6 justify-between",
+          isCollapsed ? "" : "mr-14"
+        )}
+      >
+        <div className="flex flex-col justify-between">
+          <div>
+            <SidebarCollapseButton />
+            <SidebarMain />
+            <SidebarFavorites />
+          </div>
+          <div className="flex flex-col gap-2">
+            <SidebarProfile />
+            <SidebarFeedback />
+          </div>
         </div>
-        <SidebarMain />
-        <SidebarFavorites />
-        <SidebarSpaces />
+        <div>
+          <SecondSidebar />
+        </div>
       </div>
     </nav>
   )
 }
 
+const SecondSidebar: React.FC = () => {
+  const { isCollapsed } = useSidebarCollapse()
+
+  const { session } = useAuth()
+  const { error, spaces, fetchSpaces } = useSpaceStore()
+
+  useEffect(() => {
+    if (!isCollapsed) {
+      fetchSpaces(session)
+    }
+  }, [isCollapsed, session, fetchSpaces])
+
+  return !isCollapsed
+    ? spaces.map((space) => (
+        <SidebarCollapsibleSpaces
+          spaces={space}
+          key={space._id}
+          error={error}
+        />
+      ))
+    : null
+}
+
 const SidebarCollapseButton: React.FC = () => {
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
-  return (
-    <button
-      onClick={toggleCollapse}
-      className="group/button invisible group-hover:visible"
-    >
-      {!isCollapsed ? (
-        <Image
-          src={ChevronDownIcon}
-          alt="chevron down icon"
-          width={16}
-          height={16}
-          className="opacity-50 group-hover/button:opacity-100"
-        />
-      ) : (
-        <Image
-          src={ChevronRightIcon}
-          alt="chevron right icon"
-          width={16}
-          height={16}
-          className="opacity-50 group-hover/button:opacity-100"
-        />
-      )}
-    </button>
-  )
+  return <Switch checked={isCollapsed} onCheckedChange={toggleCollapse} />
 }
