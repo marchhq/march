@@ -14,6 +14,7 @@ export function useTrackPageView(userId: string | null) {
       track({
         channel: "user-activity",
         event: `Page View ${pathname}`,
+        user_id: userId,
         description: `User visited ${pathname}`,
         tags: {
           page: pathname,
