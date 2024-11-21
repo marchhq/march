@@ -14,7 +14,7 @@ export function useTrackUserInsights() {
   const pathname = usePathname()
   const { user } = useUserInfo()
   const userId = user?.userName || ""
-  const {inbox} = useCycleItemStore()
+  const { inbox } = useCycleItemStore()
 
   const startTimeRef = useRef<number | null>(null)
   const totalTimeRef = useRef<number>(0)
