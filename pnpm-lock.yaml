@@ -259,6 +259,9 @@ importers:
       js-cookies:
         specifier: ^1.0.4
         version: 1.0.4
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       lucide-react:
         specifier: ^0.439.0
         version: 0.439.0(react@18.3.1)
