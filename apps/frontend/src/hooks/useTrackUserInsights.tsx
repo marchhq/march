@@ -31,6 +31,7 @@ export function useTrackUserInsights() {
         await track({
           channel: "user-activity",
           event: "Time Spent",
+          user_id: userId,
           description: `User spent ${Math.round(totalTimeRef.current / 1000)} seconds on ${pathname}`,
           tags: {
             user: userId || "",
@@ -50,6 +51,7 @@ export function useTrackUserInsights() {
     track({
       channel: "user-activity",
       event: "Inactivity",
+      user_id: userId,
       description: `User became inactive on ${pathname}`,
       tags: { user: userId, page: pathname },
     })
@@ -76,6 +78,7 @@ export function useTrackUserInsights() {
       track({
         channel: "user-activity",
         event: "Tab Left",
+        user_id: userId,
         description: `User left ${pathname}`,
         tags: { user: userId, page: pathname },
       })
@@ -84,6 +87,7 @@ export function useTrackUserInsights() {
       track({
         channel: "user-activity",
         event: "Tab Returned",
+        user_id: userId,
         description: `User returned to ${pathname}`,
         tags: { user: userId, page: pathname },
       })
