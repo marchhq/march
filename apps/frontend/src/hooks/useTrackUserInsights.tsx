@@ -7,17 +7,20 @@ import debounce from "lodash/debounce"
 import { usePathname } from "next/navigation"
 
 import { useUserInfo } from "./useUserInfo"
+import { useCycleItemStore } from "../lib/store/cycle.store"
 
 export function useTrackUserInsights() {
-  const { track } = useLogSnag()
+  const { track, identify } = useLogSnag()
   const pathname = usePathname()
   const { user } = useUserInfo()
   const userId = user?.userName || ""
+  const {inbox} = useCycleItemStore()
 
   const startTimeRef = useRef<number | null>(null)
   const totalTimeRef = useRef<number>(0)
   const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isActiveRef = useRef(true)
+  const prevInboxItemsCountRef = useRef(inbox.items.length)
 
   const logTimeSpent = useCallback(async () => {
     if (!isActiveRef.current) return
@@ -93,6 +96,19 @@ export function useTrackUserInsights() {
       })
     }
   }, [logTimeSpent, track, pathname, userId])
+
+  useEffect(() => {
+    const currentInboxItemsCount = inbox.items.length
+    if (currentInboxItemsCount !== prevInboxItemsCountRef.current) {
+      identify({
+        user_id: userId,
+        properties: {
+          inbox_item_count: currentInboxItemsCount,
+        },
+      })
+      prevInboxItemsCountRef.current = currentInboxItemsCount
+    }
+  }, [inbox.items, track, userId, pathname])
 
   useEffect(() => {
     startTimeRef.current = Date.now()
