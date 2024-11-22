@@ -13,6 +13,7 @@ import {
   SidebarCollapseProvider,
   useSidebarCollapse,
 } from "@/src/contexts/SidebarCollapseContext"
+import useBlockStore from "@/src/lib/store/block.store"
 import useSpaceStore from "@/src/lib/store/space.store"
 import classNames from "@/src/utils/classNames"
 
@@ -62,7 +63,6 @@ const SidebarNav: React.FC = () => {
 
 const SecondSidebar: React.FC = () => {
   const { isCollapsed } = useSidebarCollapse()
-
   const { session } = useAuth()
   const { error, spaces, fetchSpaces } = useSpaceStore()
 
@@ -72,15 +72,20 @@ const SecondSidebar: React.FC = () => {
     }
   }, [isCollapsed, session, fetchSpaces])
 
-  return !isCollapsed
-    ? spaces.map((space) => (
+  if (isCollapsed) return null
+
+  return (
+    <div>
+      {spaces.map((space) => (
         <SidebarCollapsibleSpaces
-          spaces={space}
           key={space._id}
+          title={space.name.toLowerCase()}
+          spaceId={space._id}
           error={error}
         />
-      ))
-    : null
+      ))}
+    </div>
+  )
 }
 
 const SidebarCollapseButton: React.FC = () => {

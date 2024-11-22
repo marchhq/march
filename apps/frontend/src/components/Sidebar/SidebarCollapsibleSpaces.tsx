@@ -1,26 +1,40 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 
 import { ChevronDown, ChevronRightIcon } from "lucide-react"
-import { usePathname } from "next/navigation"
 
+import { SidebarHeader } from "./SidebarHeader"
+import { SidebarSection } from "./SidebarSection"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
-import { useAuth } from "@/src/contexts/AuthContext"
 import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
+import { useSidebarData } from "@/src/hooks/useSidebarData"
 import { Space } from "@/src/lib/@types/Items/Space"
 
 const spaceLinkClassName = "border-l border-border pl-2 -ml-[1px]"
 
-export const SidebarCollapsibleSpaces: React.FC<{
-  spaces: Space
+interface SidebarCollapsibleProps {
+  title: string
+  spaceId: string
   error?: string | null
-}> = ({ spaces, error }) => {
-  const pathname = usePathname()
-  const { session } = useAuth()
+}
 
+export const SidebarCollapsibleSpaces: React.FC<SidebarCollapsibleProps> = ({
+  title,
+  spaceId,
+}) => {
   const [toggle, setToggle] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
+
+  const {
+    notes,
+    readingItems,
+    meets,
+    setIsMeetsOpen,
+    setIsReadingListOpen,
+    setIsNotesOpen,
+  } = useSidebarData(spaceId, isCollapsed)
 
   useEffect(() => {
     if (toggle) {
@@ -28,30 +42,32 @@ export const SidebarCollapsibleSpaces: React.FC<{
     }
   }, [toggle, isCollapsed])
 
+  useEffect(() => {
+    setIsNotesOpen(isOpen)
+    setIsMeetsOpen(isOpen)
+    setIsReadingListOpen(isOpen)
+  }, [isOpen, setIsNotesOpen, setIsMeetsOpen, setIsReadingListOpen])
+
   const handleToggle = () => {
-    setToggle(!toggle)
-    if (isCollapsed) {
-      toggleCollapse()
-    }
+    if (isCollapsed) toggleCollapse()
+    setIsOpen((prev) => !prev)
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <button
-        className="flex min-h-5 items-center gap-2 font-medium outline-none"
-        onClick={handleToggle}
-      >
-        {toggle ? <ChevronDown size={18} /> : <ChevronRightIcon size={18} />}
-        {!isCollapsed && <span>{spaces.name}</span>}
-      </button>
-      {toggle && spaces && (
-        <div>
-          {error && (
-            <div className="truncate text-xs text-danger-foreground">
-              <span>{error}</span>
-            </div>
+    <div className="relative">
+      <SidebarHeader name={title} isOpen={isOpen} onToggle={handleToggle} />
+
+      {isOpen && !isCollapsed && (
+        <div className="ml-2 mt-1 flex flex-col gap-2 border-l border-border">
+          {notes.length > 0 && (
+            <SidebarSection items={notes} basePath="notes" />
           )}
-          <div className="ml-2 mt-1 flex flex-col gap-2 border-l border-border"></div>
+          {/* {meets.length > 0 && (
+            <SidebarSection items={meets} basePath="meetings" />
+          )}
+          {readingItems.length > 0 && (
+            <SidebarSection items={readingItems} basePath="reading-list" />
+          )} */}
         </div>
       )}
     </div>
