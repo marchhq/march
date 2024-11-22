@@ -110,9 +110,7 @@ export const toUtcDate = (date: Date): Date => {
 }
 
 export const formatMeetDate = (date: Date) => {
-  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
-  const day = date.getDate()
-  return `${weekday}, ${day.toString().padStart(2, "0")}`
+  return format(date, "dd, MMMM yy").toLowerCase()
 }
 
 export const formatMeetTime = (date: Date): string => {
