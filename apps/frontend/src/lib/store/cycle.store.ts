@@ -412,6 +412,20 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           }
         }
 
+        if (
+          updates.status === "done" &&
+          state.overdue.items.some((item) => item._id === id)
+        ) {
+          const itemFromOverdue = state.overdue.items.find(
+            (item) => item._id === id
+          )
+          if (itemFromOverdue) {
+            if (!items.some((item) => item._id === id)) {
+              return [...items, { ...itemFromOverdue, ...updates }]
+            }
+          }
+        }
+
         // otherwise, just update the item in by date view
         return items.map((item) =>
           item._id === id ? { ...item, ...updates } : item
@@ -441,7 +455,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             }
           }
 
-          if (updates.status === "done") {
+          if (isOverdue && updates.status === "done") {
             return items.filter((item) => item._id !== id)
           }
         }
