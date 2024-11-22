@@ -25,6 +25,8 @@ interface ItemData {
   metadata?: {
     url: string
   }
+  spaces: string
+  blocks: string
 }
 
 const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
@@ -62,6 +64,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
           title: finalValue,
           type: linkDetected ? "link" : "text",
           description: "",
+          spaces: spaceId,
+          blocks: blockId,
         }
 
         // Add metadata only if linkDetected is true

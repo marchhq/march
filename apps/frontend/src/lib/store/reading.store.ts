@@ -51,6 +51,8 @@ interface ItemData {
   metadata?: {
     url: string
   }
+  spaces?: string
+  blocks?: string
 }
 
 const useReadingStore = create<ReadingStoreType>((set, get) => ({

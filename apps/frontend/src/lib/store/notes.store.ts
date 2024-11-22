@@ -87,6 +87,8 @@ const useNotesStore = create<NotesStoreType>((set) => ({
             title,
             description: content,
             type: "note",
+            spaces: spaceId,
+            blocks: blockId,
           },
           {
             headers: {
