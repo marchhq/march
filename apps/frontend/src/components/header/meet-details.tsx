@@ -55,5 +55,4 @@ const MeetDetails: React.FC<MeetDetailsProps> = ({
   )
 }
 
-
 export default MeetDetails
