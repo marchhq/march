@@ -206,12 +206,13 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   return (
     <>
       <MeetDetails
-        startDateTime={meetData.metadata?.start?.dateTime}
+        startDateTime={meetData.metadata?.start?.dateTime || meetData.createdAt}
         endDateTime={meetData.metadata?.end?.dateTime}
         hangoutLink={meetData.metadata?.hangoutLink}
         formatMeetDate={formatMeetDate}
         formatMeetTime={formatMeetTime}
       />
+
       <div>
         <textarea
           ref={textareaRefTitle}
