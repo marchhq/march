@@ -206,9 +206,9 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   return (
     <>
       <MeetDetails
-        startDateTime={meetData.metadata.start?.dateTime}
-        endDateTime={meetData.metadata.end?.dateTime}
-        hangoutLink={meetData.metadata.hangoutLink}
+        startDateTime={meetData.metadata?.start?.dateTime}
+        endDateTime={meetData.metadata?.end?.dateTime}
+        hangoutLink={meetData.metadata?.hangoutLink}
         formatMeetDate={formatMeetDate}
         formatMeetTime={formatMeetTime}
       />
