@@ -16,19 +16,28 @@ const MeetDetails: React.FC<MeetDetailsProps> = ({
   formatMeetDate,
   formatMeetTime,
 }) => {
+  const isOnlyDate = startDateTime && !endDateTime
+
   return (
     <Details>
+      {/* Display Date */}
       <p>
         {startDateTime
           ? formatMeetDate(new Date(startDateTime))
           : "Date not available"}
         .
       </p>
-      <p>
-        {startDateTime && endDateTime
-          ? `${formatMeetTime(new Date(startDateTime))} - ${formatMeetTime(new Date(endDateTime))}`
-          : "Time not available"}
-      </p>
+
+      {/* Display Time if Available */}
+      {!isOnlyDate ? (
+        <p>
+          {startDateTime && endDateTime
+            ? `${formatMeetTime(new Date(startDateTime))} - ${formatMeetTime(new Date(endDateTime))}`
+            : "Time not available"}
+        </p>
+      ) : null}
+
+      {/* Display Hangout Link */}
       {hangoutLink && (
         <a
           href={hangoutLink}
