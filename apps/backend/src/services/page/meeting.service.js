@@ -23,7 +23,7 @@ const getMeeting = async (user) => {
         type: "meeting",
         isDeleted: false
     })
-        .sort({ created_at: -1 });
+        .sort({ updatedAt: -1 });
     return meetings;
 };
 
