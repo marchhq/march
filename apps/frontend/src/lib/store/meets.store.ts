@@ -109,10 +109,15 @@ export const useMeetsStore = create<MeetsStoreType>((set) => ({
       console.error(e.response?.data)
     }
   },
-  createMeet: async (session: string, meet: any) => {
+  createMeet: async (
+    session: string,
+    spaceId: string,
+    blockId: string,
+    meet: any
+  ) => {
     try {
-      const { data } = await axios.post(
-        `${BACKEND_URL}/spaces/meetings/create/`,
+      const response = await axios.post(
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items`,
         meet.meetData,
         {
           headers: {
@@ -120,7 +125,7 @@ export const useMeetsStore = create<MeetsStoreType>((set) => ({
           },
         }
       )
-      meet = data.meetings
+      meet = response.data.item
       set((state: any) => ({
         ...state,
         currentMeeting: meet,
