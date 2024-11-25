@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface SidebarHeaderProps {
   name: string
@@ -19,7 +20,9 @@ export const SidebarHeader = ({
       <ChevronRight
         className={`size-4 transition-transform ${isOpen ? "rotate-90" : ""}`}
       />
-      <span className="text-sm">{name}</span>
+      <Link href={`/space/${name.toLowerCase().replace(/\s+/g, "-")}`}>
+        {name}
+      </Link>
     </button>
   )
 }

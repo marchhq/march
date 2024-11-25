@@ -54,20 +54,19 @@ export const SidebarCollapsibleSpaces: React.FC<SidebarCollapsibleProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="w-full">
       <SidebarHeader name={title} isOpen={isOpen} onToggle={handleToggle} />
-
-      {isOpen && !isCollapsed && (
-        <div className="ml-2 mt-1 flex flex-col gap-2 border-l border-border">
+      {isOpen && (
+        <div className="ml-2 mt-1 flex flex-col gap-2">
           {notes.length > 0 && (
             <SidebarSection items={notes} basePath="notes" />
           )}
-          {/* {meets.length > 0 && (
+          {meets.length > 0 && (
             <SidebarSection items={meets} basePath="meetings" />
           )}
           {readingItems.length > 0 && (
             <SidebarSection items={readingItems} basePath="reading-list" />
-          )} */}
+          )}
         </div>
       )}
     </div>

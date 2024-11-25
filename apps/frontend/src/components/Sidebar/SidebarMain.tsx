@@ -47,7 +47,7 @@ export const SidebarMain: React.FC = () => {
   const today = String(new Date().getDate()).padStart(2, "0")
 
   return (
-    <div className="flex flex-col gap-3.5">
+    <div className="flex flex-col gap-5">
       <SidebarMainLink
         href="/inbox"
         icon={<Inbox className="text-primary-foreground" size={18} />}

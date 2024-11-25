@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { useAuth } from "../contexts/AuthContext"
 import useBlockStore from "../lib/store/block.store"
@@ -12,6 +12,21 @@ export const useSidebarData = (spaceId: string, isCollapsed: boolean) => {
   const { readingItems, fetchReadingList } = useReadingStore()
   const { notes, fetchNotes, setIsFetched, isFetched } = useNotesStore()
   const { meets, fetchMeets } = useMeetsStore()
+
+  const filteredNotes = useMemo(
+    () => notes.filter((note) => note.spaces[0] === spaceId),
+    [notes, spaceId]
+  )
+
+  const filteredMeets = useMemo(
+    () => meets.filter((meet) => meet.spaces[0] === spaceId),
+    [meets, spaceId]
+  )
+
+  const filteredReadingList = useMemo(
+    () => readingItems.filter((reading) => reading.spaces[0] === spaceId),
+    [meets, spaceId]
+  )
 
   const loadBlocks = useCallback(async () => {
     try {
@@ -83,9 +98,9 @@ export const useSidebarData = (spaceId: string, isCollapsed: boolean) => {
   }, [blocks, isCollapsed, isReadingListOpen, loadReadingList])
 
   return {
-    notes,
-    meets,
-    readingItems,
+    notes: filteredNotes,
+    meets: filteredMeets,
+    readingItems: filteredReadingList,
     setIsNotesOpen,
     setIsMeetsOpen,
     setIsReadingListOpen,

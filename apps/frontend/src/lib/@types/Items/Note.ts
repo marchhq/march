@@ -27,6 +27,8 @@ export interface Note {
   updatedAt: string
   __v: number
   isDeleted: boolean
+  spaces: string
+  blocks: string
 }
 
 export interface NotesResponse {

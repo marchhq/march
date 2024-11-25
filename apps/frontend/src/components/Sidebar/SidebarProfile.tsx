@@ -18,7 +18,7 @@ export const SidebarProfile: React.FC = () => {
   const isActive = pathname.includes("/profile")
 
   return (
-    <div className="flex w-full max-w-[calc(100%-32px)] flex-col gap-2">
+    <div className="flex w-full flex-col gap-2">
       <Link
         className={classNames(
           isActive && "text-foreground",

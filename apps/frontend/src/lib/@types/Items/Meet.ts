@@ -50,7 +50,8 @@ export interface Meet {
   id: string
   createdAt: string
   updatedAt: string
-  pages: []
+  spaces: string
+  blocks: string
   user: string
   isArchived: boolean
   isDeleted: boolean

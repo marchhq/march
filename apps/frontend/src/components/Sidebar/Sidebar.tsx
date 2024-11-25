@@ -34,21 +34,12 @@ const SidebarNav: React.FC = () => {
   useTrackPageView(user?.userName || "")
   return (
     <nav
-      className={classNames(
-        "flex w-full relative flex-col justify-between bg-background p-10 pr-0 text-sm text-secondary-foreground group border-r border-border",
-        isCollapsed
-          ? "min-w-fit max-w-fit"
-          : "min-w-[calc(min(-20px+100vw,300px))] max-w-[calc(min(-20px+100vw,300px))]"
-      )}
+      className={`group relative flex w-full border-r border-border bg-background p-6 text-sm text-secondary-foreground
+        ${isCollapsed ? "min-w-fit max-w-fit" : "min-w-[calc(min(-20px+100vw,280px))] max-w-[calc(min(-20px+100vw,280px))]"}`}
     >
-      <div
-        className={classNames(
-          "flex h-5/6 justify-between",
-          isCollapsed ? "" : "mr-14"
-        )}
-      >
-        <div className="flex flex-col justify-between">
-          <div>
+      <div className="flex h-5/6 w-full">
+        <div className="flex flex-col items-center justify-between">
+          <div className="flex flex-col gap-4">
             <SidebarCollapseButton />
             <SidebarMain />
             <SidebarFavorites />
@@ -58,9 +49,12 @@ const SidebarNav: React.FC = () => {
             <SidebarFeedback />
           </div>
         </div>
-        <div>
-          <SecondSidebar />
-        </div>
+
+        {!isCollapsed && (
+          <div className="ml-8 mt-10 w-36">
+            <SecondSidebar />
+          </div>
+        )}
       </div>
     </nav>
   )
@@ -95,5 +89,9 @@ const SecondSidebar: React.FC = () => {
 
 const SidebarCollapseButton: React.FC = () => {
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
-  return <Switch checked={isCollapsed} onCheckedChange={toggleCollapse} />
+  return (
+    <div className="-ml-1.5">
+      <Switch checked={isCollapsed} onCheckedChange={toggleCollapse} />
+    </div>
+  )
 }

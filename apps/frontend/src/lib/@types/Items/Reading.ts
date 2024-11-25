@@ -13,4 +13,6 @@ export interface ReadingItem {
     url: string
     favicon: string
   }
+  spaces: string
+  blocks: string
 }

@@ -9,7 +9,7 @@ export const SidebarSection = ({ items, basePath }: SidebarSectionProps) => {
   if (items.length === 0) return null
 
   return (
-    <div className="flex flex-col pl-3">
+    <div className="flex flex-col border-l border-border pl-4">
       {items
         .sort((a, b) =>
           (a.name || a.title || "").localeCompare(b.name || b.title || "")
