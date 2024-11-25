@@ -2,6 +2,8 @@
 
 import React, { useEffect } from "react"
 
+import Image from "next/image"
+
 import { SidebarCollapsibleSpaces } from "./SidebarCollapsibleSpaces"
 import { SidebarFeedback } from "./SidebarFeedback"
 import { Switch } from "../atoms/Switch"
@@ -13,7 +15,8 @@ import {
   SidebarCollapseProvider,
   useSidebarCollapse,
 } from "@/src/contexts/SidebarCollapseContext"
-import useBlockStore from "@/src/lib/store/block.store"
+import { useTrackPageView } from "@/src/hooks/useTrackPageView"
+import { useUserInfo } from "@/src/hooks/useUserInfo"
 import useSpaceStore from "@/src/lib/store/space.store"
 import classNames from "@/src/utils/classNames"
 
@@ -27,6 +30,8 @@ export const Sidebar: React.FC = () => {
 
 const SidebarNav: React.FC = () => {
   const { isCollapsed } = useSidebarCollapse()
+  const { user } = useUserInfo()
+  useTrackPageView(user?.userName || "")
   return (
     <nav
       className={classNames(
