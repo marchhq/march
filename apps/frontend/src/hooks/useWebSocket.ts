@@ -2,7 +2,13 @@ import { useEffect, useState } from "react"
 
 import { useCycleItemStore } from "../lib/store/cycle.store"
 
-const WEBSOCKET_URL = "ws://localhost:8080"
+const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL
+
+if (!WEBSOCKET_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_WEBSOCKET_URL is not defined in the environment."
+  )
+}
 
 export const useWebSocket = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null)

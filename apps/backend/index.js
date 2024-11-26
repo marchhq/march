@@ -2,20 +2,13 @@ import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
 import { WebSocketServer, WebSocket } from "ws";
 import http from "http";
-import ngrok from "@ngrok/ngrok";
 
-let listener;
 let wss;
 
 (async function init () {
     const server = http.createServer(app);
     server.listen(environment.PORT, async () => {
         console.log(`Server listening on port ${environment.PORT}`);
-        listener = await ngrok.forward({
-            addr: `http://localhost:8080`,
-            authtoken: environment.NGROK_AUTH_TOKEN
-        });
-        console.log(`Ingress established at: ${listener.url()}`);
     });
 
     wss = new WebSocketServer({ server });
