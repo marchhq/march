@@ -12,31 +12,37 @@ export default async function SpacePage({ params }: SpacePageProps) {
   const session = await getSession()
 
   const { spaces, fetchSpaces } = useSpaceStore.getState()
+  const space = spaces.find((space) => space._id === params.spaceId)
 
-  if (spaces.length === 0) {
+  if (!space) {
     await fetchSpaces(session)
+    const { spaces: updatedSpaces } = useSpaceStore.getState()
+    const updatedSpace = updatedSpaces.find((s) => s._id === params.spaceId)
+    if (!updatedSpace) return notFound()
   }
 
-  const { spaces: updatedSpaces } = useSpaceStore.getState()
+  const { blocks, blockId } = useBlockStore.getState()
+  const existingBlock = blocks.find((block) => block.space === params.spaceId)
 
-  const space = updatedSpaces.find((space) => space._id === params.spaceId)
-  if (!space) return notFound()
+  if (blockId) {
+    return redirect(`/spaces/${params.spaceId}/blocks/${blockId}/items`)
+  }
+
+  if (existingBlock) {
+    return redirect(
+      `/spaces/${params.spaceId}/blocks/${existingBlock._id}/items`
+    )
+  }
 
   const { fetchBlocks, createBlock } = useBlockStore.getState()
-
   const result = await fetchBlocks(session, params.spaceId)
 
   if (result?.noBlocks) {
     await createBlock(session, params.spaceId)
   }
 
-  const { blockId: currentBlockId } = useBlockStore.getState()
+  const { blockId: newBlockId } = useBlockStore.getState()
+  if (!newBlockId) return notFound()
 
-  if (!currentBlockId) {
-    return notFound()
-  }
-
-  const redirectUrl = `/spaces/${params.spaceId}/blocks/${currentBlockId}/items`
-
-  return redirect(redirectUrl)
+  return redirect(`/spaces/${params.spaceId}/blocks/${newBlockId}/items`)
 }
