@@ -75,6 +75,8 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       return
     }
 
+    set({ isFetched: false })
+
     try {
       const response = await axios.get(
         `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/`,
@@ -85,7 +87,10 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
         }
       )
 
-      set({ readingItems: response.data.items, isFetched: true })
+      set({
+        readingItems: response.data.items,
+        isFetched: true,
+      })
     } catch (error) {
       console.error("Error fetching reading list:", error)
       set({ isFetched: true, readingItems: [] })
