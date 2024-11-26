@@ -10,7 +10,7 @@ type Props = {}
 
 const Waitlist = (props: Props) => {
   return (
-    <div className="flex flex-col justify-center items-center gap-4 h-screen bg-background text-primary-foreground">
+    <div className="flex h-screen flex-col items-center justify-center gap-4 bg-background text-primary-foreground">
       {/* <Image
     src={waitlist}
     width={70}

@@ -6,6 +6,7 @@ import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 
 import { useAuth } from "@/src/contexts/AuthContext"
+import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import { isIntegrationConnected } from "@/src/lib/@types/auth/user"
 import { Meet } from "@/src/lib/@types/Items/Meet"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
@@ -21,6 +22,7 @@ export default function InitialMeetings() {
 
   const isLoading = loading || userLoading
   const isCalendarConnected = isIntegrationConnected(user, "googleCalendar")
+  const { handleLogin } = useGoogleCalendarLogin("/space/meetings")
 
   useEffect(() => {
     if (!user && session && !userLoading) {
@@ -71,8 +73,17 @@ export default function InitialMeetings() {
   if (user && !isCalendarConnected) {
     return (
       <section className="size-full overflow-auto bg-background px-8 py-16">
-        <p className="text-secondary-foreground">
-          Please connect your calendar.
+        <p className="text-[16px] text-secondary-foreground">
+          Please connect your{" "}
+          <span>
+            <button
+              className="text-primary-foreground underline"
+              onClick={handleLogin}
+            >
+              calendar
+            </button>
+          </span>
+          .
         </p>
       </section>
     )
