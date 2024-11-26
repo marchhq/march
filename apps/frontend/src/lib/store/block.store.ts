@@ -21,10 +21,13 @@ interface BlockState {
   isLoading: boolean
   error: string | null
   fetchBlocks: (
-    session: string,
+    session: string | Promise<string>,
     spaceId: string
   ) => Promise<FetchBlocksResult | void>
-  createBlock: (session: string, spaceId: string) => Promise<void>
+  createBlock: (
+    session: string | Promise<string>,
+    spaceId: string
+  ) => Promise<void>
 }
 
 const useBlockStore = create<BlockState>((set, get) => ({
@@ -34,7 +37,7 @@ const useBlockStore = create<BlockState>((set, get) => ({
   error: null,
 
   // Fetch existing blocks for the given space
-  fetchBlocks: async (session: string, spaceId: string) => {
+  fetchBlocks: async (session: string | Promise<string>, spaceId: string) => {
     set({ isLoading: true, error: null })
     try {
       const response = await fetch(`${BACKEND_URL}/spaces/${spaceId}/blocks/`, {
@@ -67,7 +70,7 @@ const useBlockStore = create<BlockState>((set, get) => ({
   },
 
   // Create a new block if none exists
-  createBlock: async (session: string, spaceId: string) => {
+  createBlock: async (session: string | Promise<string>, spaceId: string) => {
     set({ isLoading: true, error: null })
     try {
       const response = await fetch(`${BACKEND_URL}/spaces/${spaceId}/blocks/`, {

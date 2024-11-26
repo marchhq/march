@@ -11,6 +11,7 @@ import SpacesIcon from "@/public/icons/spacesicon.svg"
 import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
+import useBlockStore from "@/src/lib/store/block.store"
 import useSpaceStore from "@/src/lib/store/space.store"
 
 const spaceLinkClassName = "border-l border-border pl-2 -ml-[1px]"
@@ -18,17 +19,48 @@ const spaceLinkClassName = "border-l border-border pl-2 -ml-[1px]"
 export const SidebarSpaces: React.FC = () => {
   const pathname = usePathname()
   const { session } = useAuth()
+  const [spaceBlocks, setSpaceBlocks] = useState<Record<string, string>>({})
 
   const [toggle, setToggle] = useState(true)
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
 
   const { error, spaces, fetchSpaces } = useSpaceStore()
+  const { fetchBlocks, createBlock } = useBlockStore()
 
   useEffect(() => {
     if (toggle) {
       fetchSpaces(session)
     }
   }, [toggle, session, fetchSpaces])
+
+  useEffect(() => {
+    const fetchBlocksForSpaces = async () => {
+      if (!spaces || !toggle) return
+
+      const blockMap: Record<string, string> = {}
+
+      for (const space of spaces) {
+        try {
+          const result = await fetchBlocks(session, space._id)
+
+          if (result?.noBlocks) {
+            await createBlock(session, space._id)
+            const { blockId } = useBlockStore.getState()
+            if (blockId) {
+              blockMap[space._id] = blockId
+            } else if (result?.blocks?.[0]?._id) {
+              blockMap[space._id] = result.blocks[0]._id
+            }
+          }
+        } catch (err) {
+          console.error(`error fetching blocks for space ${space._id}:`, err)
+        }
+      }
+      setSpaceBlocks(blockMap)
+    }
+
+    fetchBlocksForSpaces()
+  }, [session, toggle, fetchBlocks, createBlock, spaces])
 
   useEffect(() => {
     if (toggle) {
@@ -80,12 +112,14 @@ export const SidebarSpaces: React.FC = () => {
             {spaces.map((space) => (
               <SidebarSpaceLink
                 key={space._id}
-                href={`/space/${space.name.toLowerCase().replace(/\s+/g, "-")}`}
+                href={
+                  spaceBlocks[space._id]
+                    ? `/spaces/${space._id}/blocks/${spaceBlocks[space._id]}/items`
+                    : `/spaces/${space._id}`
+                }
                 label={space.name}
                 customClass={spaceLinkClassName}
-                isActive={pathname.includes(
-                  `/space/${space.name.toLowerCase().replace(/\s+/g, "-")}`
-                )}
+                isActive={pathname.includes(`/spaces/${space._id}`)}
                 isSpace={true}
               />
             ))}

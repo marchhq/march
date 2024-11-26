@@ -13,8 +13,8 @@ export interface ReadingStoreType {
   setIsFetched: (isFetched: boolean) => void
   fetchReadingList: (
     session: string,
-    blockId: string,
-    spaceId: string
+    spaceId: string,
+    blockId: string
   ) => Promise<void>
   setReadingItems: (items: ReadingItem[]) => void
   addItem: (
@@ -66,8 +66,8 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
 
   fetchReadingList: async (
     session: string,
-    blockId: string,
-    spaceId: string
+    spaceId: string,
+    blockId: string
   ) => {
     if (!blockId || !spaceId) {
       console.warn("fetchReadingList: No blockId or spaceId provided")
