@@ -32,7 +32,7 @@ const SidebarNav: React.FC = () => {
     <nav
       className={classNames(
         "group relative flex h-screen bg-background text-sm p-6 text-secondary-foreground border-r border-border",
-        isCollapsed ? "w-[230px]" : "w-[60px]"
+        isCollapsed ? "w-[250px]" : "w-[80px]"
       )}
     >
       <div className="flex h-5/6 flex-col justify-between pt-4">
