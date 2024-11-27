@@ -12,7 +12,15 @@ import { Meet } from "@/src/lib/@types/Items/Meet"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
 import useUserStore from "@/src/lib/store/user.store"
 
-export default function InitialMeetings() {
+interface InitialMeetingsProps {
+  spaceId: string
+  blockId: string
+}
+
+export default function InitialMeetings({
+  spaceId,
+  blockId,
+}: InitialMeetingsProps) {
   const { session } = useAuth()
   const [loading, setLoading] = useState(true)
   const [hasMeetings, setHasMeetings] = useState<boolean | null>(null)
@@ -22,7 +30,9 @@ export default function InitialMeetings() {
 
   const isLoading = loading || userLoading
   const isCalendarConnected = isIntegrationConnected(user, "googleCalendar")
-  const { handleLogin } = useGoogleCalendarLogin("/space/meetings")
+  const { handleLogin } = useGoogleCalendarLogin(
+    `/spaces/${spaceId}/blocks/${blockId}/items`
+  )
 
   useEffect(() => {
     if (!user && session && !userLoading) {
@@ -46,7 +56,7 @@ export default function InitialMeetings() {
         console.log("single meet: ", meet)
 
         if (meet && meet.id) {
-          router.push(`/space/meetings/${meet.id}`)
+          router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${meet.id}`)
         } else {
           setHasMeetings(false)
           setLoading(false)

@@ -19,9 +19,11 @@ import { formatDateHeader, formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface Props {
   noteId: string
+  spaceId: string
+  blockId: string
 }
 
-const NotesPage: React.FC<Props> = ({ noteId }) => {
+const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
   const { session } = useAuth()
   const router = useRouter()
   const {
@@ -47,21 +49,6 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
   const [closeToggle, setCloseToggle] = usePersistedState("closeToggle", true)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
-
-  const fetchTheNotes = useCallback(async (): Promise<void> => {
-    try {
-      await fetchNotes(session)
-      setIsFetched(true)
-    } catch (error) {
-      setIsFetched(false)
-    }
-  }, [session, fetchNotes, setIsFetched])
-
-  useEffect(() => {
-    if (!isFetched) {
-      fetchTheNotes()
-    }
-  }, [fetchTheNotes, isFetched])
 
   useEffect(() => {
     return () => {
@@ -100,9 +87,9 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
       // Note doesn't exist - redirect to first note
       // This handles the case when returning to a deleted note's URL
       const firstNote = notes[0]
-      router.push(`/space/notes/${firstNote._id}`)
+      router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${firstNote._id}`)
     }
-  }, [isFetched, editor, notes, noteId, router])
+  }, [isFetched, editor, notes, noteId, router, blockId, spaceId])
 
   useEffect(() => {
     if (note !== null && !loading && isInitialLoad) {
@@ -166,7 +153,7 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
       setLoading(true)
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
-        router.push(`/space/notes/${newNote._id}`)
+        router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${newNote._id}`)
         return newNote // Return the new note
       }
       return null
@@ -190,7 +177,9 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
           const newNote = await addNewNote()
           // No need to redirect here since addNewNote already does the routing
         } else {
-          router.push(`/space/notes/${remainingNotes[0]._id}`)
+          router.push(
+            `/spaces/${spaceId}/blocks/${blockId}/items/${remainingNotes[0]._id}`
+          )
         }
       }
     } catch (error) {
@@ -332,7 +321,10 @@ const NotesPage: React.FC<Props> = ({ noteId }) => {
                 }
               }}
             >
-              <Link href={`/space/notes/${n._id}`} className="flex-1 truncate">
+              <Link
+                href={`/spaces/${spaceId}/blocks/${blockId}/items/${n._id}`}
+                className="flex-1 truncate"
+              >
                 {n._id === note?._id ? (
                   <p className="truncate border-l border-l-secondary-foreground py-0.5 pl-2 text-foreground">
                     {title || "Untitled"}
