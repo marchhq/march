@@ -3,13 +3,14 @@
 import React from "react"
 
 import { Inbox, Calendar } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import SpacesIcon from "@/public/icons/spacesicon.svg"
 import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 import classNames from "@/src/utils/classNames"
 import { getCurrentWeek } from "@/src/utils/datetime"
-
 const SidebarMainLink = ({
   href,
   icon,
@@ -59,6 +60,21 @@ export const SidebarMain: React.FC = () => {
         href="/this-week"
         icon={<Calendar size={18} className="text-primary-foreground" />}
         isActive={pathname.includes("/this-week")}
+        isCollapsed={isCollapsed}
+      />
+
+      <SidebarMainLink
+        href="/spaces"
+        icon={
+          <Image
+            src={SpacesIcon}
+            alt="spaces icon"
+            width={18}
+            height={18}
+            className="text-primary-foreground"
+          />
+        }
+        isActive={pathname.includes("/spaces")}
         isCollapsed={isCollapsed}
       />
     </div>
