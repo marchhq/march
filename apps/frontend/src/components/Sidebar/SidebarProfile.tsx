@@ -39,7 +39,7 @@ export const SidebarProfile: React.FC = () => {
             )}
           />
         ) : (
-          <UserIcon size={16} />
+          <UserIcon size={16} className="text-primary-foreground" />
         )}
       </Link>
       {error && (
