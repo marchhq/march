@@ -2,7 +2,7 @@ import { create } from "zustand"
 
 import { BACKEND_URL } from "../constants/urls"
 
-interface Block {
+export interface Block {
   _id: string
   name: string
   data: any

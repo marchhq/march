@@ -2,20 +2,13 @@
 
 import React, { useState, useEffect } from "react"
 
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 
 import { SidebarCollapsibleSpace } from "./SidebarCollapsibleSpace"
-import ChevronDownIcon from "@/public/icons/chevrondown.svg"
-import ChevronRightIcon from "@/public/icons/chevronright.svg"
-import SpacesIcon from "@/public/icons/spacesicon.svg"
-import { SidebarSpaceLink } from "@/src/components/Sidebar/SidebarSpaceLink"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSidebarCollapse } from "@/src/contexts/SidebarCollapseContext"
 import useBlockStore from "@/src/lib/store/block.store"
 import useSpaceStore from "@/src/lib/store/space.store"
-
-const spaceLinkClassName = "border-l border-border pl-2 -ml-[1px]"
 
 export const SidebarSpaces: React.FC = () => {
   const pathname = usePathname()
