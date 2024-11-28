@@ -122,7 +122,7 @@ export const formatMeetTime = (date: Date): string => {
 }
 
 export const formatDateHeader = (date: string) => {
-  return format(date, "dd, MMMM yy").toLowerCase()
+  return format(date, "dd, MMMM")
 }
 
 export const getUserDate = (timezone: string | null): Date => {
