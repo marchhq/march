@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import { PlusIcon } from "@radix-ui/react-icons"
-import Link from "next/link"
+import { Layers } from "lucide-react"
 import { useRouter } from "next/navigation"
 
+import { NoteStackModal } from "./components/NoteModal/NotesModal"
 import NoteDetails from "../header/note-details"
 import TextEditor from "@/src/components/atoms/Editor"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -14,8 +14,7 @@ import useEditorHook from "@/src/hooks/useEditor.hook"
 import usePersistedState from "@/src/hooks/usePersistedState"
 import { Note } from "@/src/lib/@types/Items/Note"
 import useNotesStore from "@/src/lib/store/notes.store"
-import classNames from "@/src/utils/classNames"
-import { formatDateHeader, formatDateYear, fromNow } from "@/src/utils/datetime"
+import { formatDateHeader, fromNow } from "@/src/utils/datetime"
 
 interface Props {
   noteId: string
@@ -26,16 +25,8 @@ interface Props {
 const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
   const { session } = useAuth()
   const router = useRouter()
-  const {
-    isFetched,
-    setIsFetched,
-    fetchNotes,
-    notes,
-    updateNote,
-    addNote,
-    saveNote,
-    deleteNote,
-  } = useNotesStore()
+  const { isFetched, notes, updateNote, addNote, saveNote, deleteNote } =
+    useNotesStore()
 
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState(note?.title ?? "")
@@ -226,22 +217,24 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
     }
   }
 
+  const simplifiedNotes = useMemo(() => {
+    return notes
+      ? notes.map((n) => ({
+          id: n._id,
+          title: n.title || "Untitled",
+          href: `/spaces/${spaceId}/blocks/${blockId}/items/${n._id}`,
+          createdAt: n.createdAt,
+          isActive: n._id === note?._id,
+        }))
+      : []
+  }, [notes, spaceId, blockId, note])
+
   return (
-    <div className="flex size-full gap-16 bg-background p-10">
+    <div className="flex size-full gap-16 bg-background p-10 pl-60">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
         <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
           <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-4">
-              {note !== null && (
-                <NoteDetails
-                  createdAt={note.createdAt}
-                  updatedAt={note.updatedAt}
-                  formatDateHeader={formatDateHeader}
-                  fromNow={fromNow}
-                />
-              )}
-            </div>
-            <div className="flex items-center gap-4">
+            <div className="flex w-full items-center justify-end gap-4">
               {!loading ? (
                 <button
                   onClick={addNewNote}
@@ -255,10 +248,10 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
                 </div>
               )}
               <button
-                className="hover-text flex items-center"
+                className={`hover-text flex items-center ${!closeToggle ? "text-foreground" : ""}`}
                 onClick={handleClose}
               >
-                <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
+                <Layers size={16} />
               </button>
             </div>
           </div>
@@ -282,7 +275,15 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
               onFocus={() => setIsEditingTitle(true)}
               onBlur={() => setIsEditingTitle(false)}
             />
-            <div className="max-w-6xl text-foreground">
+            <div className="ml-2 flex items-center gap-4 text-secondary-foreground">
+              <NoteDetails
+                createdAt={note.createdAt}
+                updatedAt={note.updatedAt}
+                formatDateHeader={formatDateHeader}
+                fromNow={fromNow}
+              />
+            </div>
+            <div className="mt-4 max-w-6xl text-foreground">
               <TextEditor editor={editor} />
             </div>
           </div>
@@ -296,57 +297,10 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
           </div>
         )}
       </div>
-      <div
-        className={classNames(
-          closeToggle ? "hidden" : "visible",
-          "flex max-h-screen w-full max-w-[200px] flex-col gap-8 overflow-y-auto text-sm text-secondary-foreground"
+      <div>
+        {!closeToggle && (
+          <NoteStackModal notes={simplifiedNotes} handleClose={handleClose} />
         )}
-      >
-        <div className="flex flex-col gap-2 border-l border-border">
-          {notes?.map((n) => (
-            <div
-              key={n._id}
-              className="group -mb-1 flex items-center justify-between gap-1"
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                if (note)
-                  saveNoteToServer({ ...note, title, description: content })
-              }}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  if (note) {
-                    saveNoteToServer({ ...note, title, description: content })
-                  }
-                }
-              }}
-            >
-              <Link
-                href={`/spaces/${spaceId}/blocks/${blockId}/items/${n._id}`}
-                className="flex-1 truncate"
-              >
-                {n._id === note?._id ? (
-                  <p className="truncate border-l border-l-secondary-foreground py-0.5 pl-2 text-foreground">
-                    {title || "Untitled"}
-                  </p>
-                ) : (
-                  <p className="hover-text truncate py-0.5 pl-2 text-secondary-foreground">
-                    {n.title || "Untitled"}
-                  </p>
-                )}
-              </Link>
-              <button
-                className="hover-text px-2 opacity-0 group-hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleDeleteNote(n)
-                }}
-              >
-                del
-              </button>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   )
