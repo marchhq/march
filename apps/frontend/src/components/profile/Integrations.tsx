@@ -154,7 +154,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         icon: <NotionDark />,
         name: "Notion",
         description:
-          "Link your Notion account to sync your notion Notion pages and databases  in march.",
+          "Link your Notion account to sync your Notion pages and databases in march.",
         handleConnect: handleNotionLogin,
         handleRevoke: () => {},
       },
