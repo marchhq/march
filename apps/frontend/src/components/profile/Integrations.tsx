@@ -13,10 +13,12 @@ import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
 import useGitHubLogin from "@/src/hooks/useGithubLogin"
 import installGitHub from "@/src/hooks/useInstallGitHub"
 import useLinear from "@/src/hooks/useLinear"
+import useNotion from "@/src/hooks/useNotion"
 import { Integration, User } from "@/src/lib/@types/auth/user"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
+import { NotionDark } from "@/src/lib/icons/Notion"
 import useUserStore from "@/src/lib/store/user.store"
 
 interface IntegrationItemProps {
@@ -117,6 +119,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   const { handleLogin: handleLinearLogin, handleRevoke: handleLinearRevoke } =
     useLinear()
   const { handleRevoke: handleGithubRevoke } = useGitHubLogin(session)
+  const { handleLogin: handleNotionLogin } = useNotion("/profile")
 
   const integrations: Integration[] = useMemo(
     () => [
@@ -146,6 +149,15 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         handleConnect: handleLinearLogin,
         handleRevoke: handleLinearRevoke,
       },
+      {
+        key: "notion",
+        icon: <NotionDark />,
+        name: "Notion",
+        description:
+          "Link your Notion account to sync your notion Notion pages and databases  in march.",
+        handleConnect: handleNotionLogin,
+        handleRevoke: null,
+      },
     ],
     [
       handleCalLogin,
@@ -153,6 +165,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       handleLinearLogin,
       handleLinearRevoke,
       handleGithubRevoke,
+      handleNotionLogin,
     ]
   )
 
