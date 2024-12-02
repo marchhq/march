@@ -8,6 +8,7 @@ import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
 import "../styles/main.css"
 import "../styles/tiptap.css"
+import Provider from "./provider"
 import classNames from "@/src/utils/classNames"
 
 const sansFont = Inter({
@@ -54,11 +55,13 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           "bg-background"
         )}
       >
-        <GoogleOAuthProvider
-          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
-        >
-          {children}
-        </GoogleOAuthProvider>
+        <Provider>
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
+          >
+            {children}
+          </GoogleOAuthProvider>
+        </Provider>
       </body>
     </html>
   )

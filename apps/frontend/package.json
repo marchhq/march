@@ -71,6 +71,7 @@
   "devDependencies": {
     "@iconify-icon/react": "^2.1.0",
     "@tanstack/eslint-plugin-query": "^5.51.15",
+    "@tanstack/react-query-devtools": "^5.62.0",
     "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
