@@ -3,39 +3,70 @@ import { useCallback } from "react"
 import { useRouter } from "next/navigation"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import { Note } from "@/src/lib/@types/Items/Note"
-import useNotesStore from "@/src/lib/store/notes.store"
+import type { Note } from "@/src/lib/@types/Items/Note"
+import { useCreateNote, useUpdateNote } from "@/src/lib/queries/note.query"
+import { useNoteStore } from "@/src/lib/store/note.store"
 
-export const useNoteHandlers = (state, dispatch, spaceId, blockId) => {
+export const useNoteHandlers = (
+  state: {
+    note: Note | null
+    title: string
+    content: string
+    isSaved: boolean
+  },
+  dispatch: React.Dispatch<any>,
+  spaceId: string,
+  blockId: string
+) => {
   const { session } = useAuth()
   const router = useRouter()
-  const { addNote, saveNote, updateNote, deleteNote, notes } = useNotesStore()
-  const { note, title, content, isSaved } = state
+  const { notes, setSelectedNoteId } = useNoteStore()
+
+  // TanStack Query mutations
+  const createNote = useCreateNote(session, spaceId, blockId)
+  const updateNote = useUpdateNote(session, spaceId, blockId)
 
   const saveNoteToServer = useCallback(
-    async (note: Note): Promise<void> => {
-      await saveNote(session, note)
+    async (note: Note) => {
+      if (!state.isSaved) {
+        await updateNote.mutateAsync({
+          noteId: note._id,
+          title: note.title,
+          description: note.description,
+        })
+        dispatch({ type: "SET_SAVED", payload: true })
+      }
     },
-    [session, saveNote]
+    [updateNote, state.isSaved, dispatch]
   )
 
   const handleUpdateNote = useCallback(
     async (noteData: Note) => {
       dispatch({ type: "SET_SAVED", payload: false })
-      updateNote(noteData)
+      setSelectedNoteId(noteData._id)
     },
-    [updateNote, dispatch]
+    [dispatch, setSelectedNoteId]
   )
 
   const addNewNote = useCallback(async (): Promise<Note | null> => {
-    if (!isSaved && note) {
-      await saveNoteToServer({ ...note, title, description: content })
+    if (!state.isSaved && state.note) {
+      await saveNoteToServer({
+        ...state.note,
+        title: state.title,
+        description: state.content,
+      })
     }
+
     try {
       dispatch({ type: "SET_LOADING", payload: true })
-      const newNote = await addNote(session, "", "<p></p>")
-      if (newNote !== null) {
+      const newNote = await createNote.mutateAsync({
+        title: "",
+        content: "<p></p>",
+      })
+
+      if (newNote) {
         router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${newNote._id}`)
+        setSelectedNoteId(newNote._id)
         return newNote
       }
       return null
@@ -46,47 +77,24 @@ export const useNoteHandlers = (state, dispatch, spaceId, blockId) => {
       dispatch({ type: "SET_LOADING", payload: false })
     }
   }, [
-    isSaved,
-    note,
-    title,
-    content,
+    state.isSaved,
+    state.note,
+    state.title,
+    state.content,
     saveNoteToServer,
-    session,
-    addNote,
+    createNote,
     router,
     dispatch,
     spaceId,
     blockId,
+    setSelectedNoteId,
   ])
-
-  const handleDeleteNote = useCallback(
-    async (n: Note): Promise<void> => {
-      if (!session || !n) return
-
-      try {
-        await deleteNote(session, n)
-        const remainingNotes = notes.filter((n_) => n_._id !== n._id)
-
-        if (n._id === note?._id) {
-          if (remainingNotes.length <= 0) {
-            await addNewNote()
-          } else {
-            router.push(
-              `/spaces/${spaceId}/blocks/${blockId}/items/${remainingNotes[0]._id}`
-            )
-          }
-        }
-      } catch (error) {
-        console.error("Error deleting note:", error)
-      }
-    },
-    [session, deleteNote, notes, note, addNewNote, router, spaceId, blockId]
-  )
 
   return {
     saveNoteToServer,
     addNewNote,
-    handleDeleteNote,
     handleUpdateNote,
+    isCreating: createNote.isPending,
+    isUpdating: updateNote.isPending,
   }
 }

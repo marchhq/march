@@ -2,7 +2,6 @@
 
 import { useRef, useCallback, useMemo, useEffect } from "react"
 
-import { debounce } from "lodash"
 import { useRouter } from "next/navigation"
 
 import NoteEditor from "./components/NoteEditor/NoteEditor"
@@ -11,9 +10,11 @@ import { NoteStackModal } from "./components/NoteModal/NotesModal"
 import { useNoteEffects } from "./hooks/useNoteEffects"
 import { useNoteHandlers } from "./hooks/useNoteHandlers"
 import { useNoteState } from "./hooks/useNoteState"
+import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import usePersistedState from "@/src/hooks/usePersistedState"
-import useNotesStore from "@/src/lib/store/notes.store"
+import { useNotes } from "@/src/lib/queries/note.query"
+import { useNoteStore } from "@/src/lib/store/note.store"
 
 interface Props {
   noteId: string
@@ -23,8 +24,9 @@ interface Props {
 
 const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
   const router = useRouter()
-  const { isFetched, notes } = useNotesStore()
-
+  const { session } = useAuth()
+  const { notes } = useNoteStore()
+  const { isLoading } = useNotes(session, spaceId, blockId)
   const { state, dispatch, setTitle, setContent, setIsSaved } = useNoteState()
 
   const { note, title, content, loading, notFound } = state
@@ -45,8 +47,8 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
     dispatch,
     editor,
     saveNoteToServer,
-    notes,
-    isFetched,
+    notes || [],
+    !isLoading,
     noteId,
     router,
     spaceId,

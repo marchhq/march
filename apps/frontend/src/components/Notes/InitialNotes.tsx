@@ -5,7 +5,8 @@ import React, { useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 
 import { useAuth } from "@/src/contexts/AuthContext"
-import useNotesStore from "@/src/lib/store/notes.store"
+import { useCreateNote, useNotes } from "@/src/lib/queries/note.query"
+import { useNoteStore } from "@/src/lib/store/note.store"
 
 interface InitialNotesProps {
   spaceId: string
@@ -15,48 +16,45 @@ interface InitialNotesProps {
 const InitialNotes: React.FC<InitialNotesProps> = ({ spaceId, blockId }) => {
   const { session } = useAuth()
   const router = useRouter()
-  const { notes, addNote, latestNote, fetchNotes, setIsFetched, isFetched } =
-    useNotesStore()
+  const { notes, setSelectedNoteId, setCurrentNote } = useNoteStore()
 
-  const fetchTheNotes = useCallback(async (): Promise<void> => {
-    try {
-      await fetchNotes(session, spaceId, blockId)
-      setIsFetched(true)
-    } catch (error) {
-      setIsFetched(false)
-    }
-  }, [session, fetchNotes, setIsFetched, spaceId, blockId])
+  const { data, isLoading } = useNotes(session, spaceId, blockId)
 
+  const createNote = useCreateNote(session, spaceId, blockId)
+
+  // Separate useEffect for handling redirection
   useEffect(() => {
-    if (!isFetched) {
-      fetchTheNotes()
-    }
-  }, [fetchTheNotes, isFetched])
-
-  useEffect(() => {
-    if (latestNote) {
+    if (notes && notes.length > 0) {
+      const latestNote = notes[0] // Already sorted in useNotes
       router.push(
         `/spaces/${spaceId}/blocks/${blockId}/items/${latestNote._id}`
       )
+      setSelectedNoteId(latestNote._id)
+      setCurrentNote(latestNote)
     }
-  }, [latestNote, router, blockId, spaceId])
+  }, [notes, router, spaceId, blockId, setSelectedNoteId, setCurrentNote])
 
-  const addNewNote = useCallback(async (): Promise<void> => {
+  const addNewNote = useCallback(async () => {
     try {
-      const newNote = await addNote(session, "", "<p></p>")
-      if (newNote !== null) {
+      const newNote = await createNote.mutateAsync({
+        title: "",
+        content: "<p></p>",
+      })
+
+      if (newNote) {
         router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${newNote._id}`)
       }
     } catch (error) {
-      console.error(error)
+      console.error("Error creating new note:", error)
     }
-  }, [session, addNote, router, spaceId, blockId])
+  }, [createNote, router, spaceId, blockId])
 
   useEffect(() => {
-    if (notes.length === 0) {
+    if (!isLoading && notes && notes.length === 0) {
+      console.log("No notes found, creating new note") // Debug log
       addNewNote()
     }
-  }, [notes, addNewNote])
+  }, [isLoading, notes, addNewNote])
 
   return (
     <div className="size-full overflow-auto bg-background p-16">

@@ -40,3 +40,17 @@ export interface NotesResponse {
 export interface NoteCreateResponse {
   item: Note
 }
+
+export interface NoteState {
+  currentNote: Note | null
+  selectedNoteId: string | null
+  spaceId: string | null
+  blockId: string | null
+  notes: Note[]
+  setCurrentNote: (note: Note | null) => void
+  setSelectedNoteId: (id: string | null) => void
+  setContext: (spaceId: string, blockId: string) => void
+  updateNotes: (note: Note[]) => void
+  addNote: (note: Note) => void
+  updateNote: (updatedNote: Note) => void
+}
