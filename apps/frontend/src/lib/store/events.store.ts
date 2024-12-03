@@ -32,7 +32,7 @@ export const useEventsStore = create<EventsStoreType>((set) => ({
       }))
     } catch (error) {
       const e = error as AxiosError
-      console.error(e.response?.data)
+      console.error("error fetching events: ", e.response?.data)
     }
   },
   setCurrentEvent: (event: Event | null) => {

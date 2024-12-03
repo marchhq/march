@@ -7,8 +7,11 @@
   "author": "march-dev",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/backend",
+    "apps/frontend",
+    "apps/extension"
   ],
+
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -31,5 +34,10 @@
       "@typescript-eslint/eslint-plugin": "6.4.0",
       "@typescript-eslint/parser": "6.4.0"
     }
+  },
+  "dependencies": {
+    "next": "15.0.3",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106"
   }
 }
