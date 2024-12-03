@@ -8,7 +8,7 @@
   }
 
   html, body {
-    @apply h-full select-none bg-black
+    @apply h-full select-none bg-[#171717]
   }
 
   h1 {
