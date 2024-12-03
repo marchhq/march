@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 export const MeetMuted = (): JSX.Element => {
   return (
     <svg

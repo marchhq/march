@@ -1,3 +1,4 @@
+import type { JSX } from "react"
 export const TextMessage = (): JSX.Element => {
   return (
     <svg

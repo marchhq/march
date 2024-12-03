@@ -1,6 +1,8 @@
 import { ProgressBar } from "@/src/components/atoms/Progress"
 import { AuthProvider } from "@/src/contexts/AuthContext"
 
+import type { JSX } from "react"
+
 const OnboardingLayout = ({
   children,
 }: {
