@@ -7,14 +7,15 @@ import { getSession } from "@/src/lib/server/actions/sessions"
 import useReadingStore from "@/src/lib/store/reading.store"
 import useSpaceStore from "@/src/lib/store/space.store"
 
-interface ItemsListProps {
-  params: {
-    spaceId: string
-    blockId: string
-  }
-}
+type Params = Promise<{ spaceId: string; blockId: string }>
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
-export default async function ItemsListPage({ params }: ItemsListProps) {
+export default async function ItemsListPage(props: {
+  params: Params
+  searchParams: SearchParams
+}) {
+  const params = await props.params
+  const { spaceId, blockId } = params
   const session = await getSession()
   const { spaces, fetchSpaces } = useSpaceStore.getState()
   const { fetchReadingList } = useReadingStore.getState()
@@ -25,28 +26,21 @@ export default async function ItemsListPage({ params }: ItemsListProps) {
 
   const { spaces: updatedSpaces } = useSpaceStore.getState()
 
-  const space = updatedSpaces.find((space) => space._id === params.spaceId)
+  const space = updatedSpaces.find((space) => space._id === spaceId)
   if (!space) return notFound()
 
   //prefetch items
   if (space.name.toLowerCase() === "reading list") {
-    await fetchReadingList(session, params.spaceId, params.blockId)
+    await fetchReadingList(session, spaceId, blockId)
   }
 
   switch (space.name.toLowerCase()) {
     case "reading list":
-      return (
-        <ReadingListComponent
-          spaceId={params.spaceId}
-          blockId={params.blockId}
-        />
-      )
+      return <ReadingListComponent spaceId={spaceId} blockId={blockId} />
     case "meetings":
-      return (
-        <InitialMeetings spaceId={params.spaceId} blockId={params.blockId} />
-      )
+      return <InitialMeetings spaceId={spaceId} blockId={blockId} />
     case "notes":
-      return <InitialNotes spaceId={params.spaceId} blockId={params.blockId} />
+      return <InitialNotes spaceId={spaceId} blockId={blockId} />
     default:
       return notFound()
   }
