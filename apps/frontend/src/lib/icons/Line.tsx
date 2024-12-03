@@ -1,4 +1,4 @@
-import React from "react"
+import React, { type JSX } from "react"
 
 const Line = (): JSX.Element => {
   return (

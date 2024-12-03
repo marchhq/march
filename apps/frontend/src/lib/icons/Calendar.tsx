@@ -1,3 +1,4 @@
+import type { JSX } from "react"
 export const Calendar = (): JSX.Element => {
   return (
     <svg
