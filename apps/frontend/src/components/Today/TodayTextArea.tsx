@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback, useRef } from "react"
+import { useEffect, useState, useCallback, useRef, type JSX } from "react"
 
 import axios from "axios"
 import { ArrowUpLeftIcon, ArrowDownRightIcon } from "lucide-react"
