@@ -4,11 +4,14 @@ import { getSession } from "@/src/lib/server/actions/sessions"
 import useBlockStore from "@/src/lib/store/block.store"
 import useSpaceStore from "@/src/lib/store/space.store"
 
-interface SpacePageProps {
-  params: { spaceId: string }
-}
+type Params = Promise<{ spaceId: string }>
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
-export default async function SpacePage({ params }: SpacePageProps) {
+export default async function SpacePage(props: {
+  params: Params
+  searchParams: SearchParams
+}) {
+  const params = await props.params
   const session = await getSession()
 
   const { spaces, fetchSpaces } = useSpaceStore.getState()

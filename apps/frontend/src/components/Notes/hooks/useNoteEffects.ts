@@ -23,7 +23,7 @@ export const useNoteEffects = (
   router: AppRouterInstance,
   spaceId: string,
   blockId: string,
-  textareaRef: React.RefObject<HTMLTextAreaElement>,
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>,
   handleUpdateNote: (note: Note) => void
 ) => {
   const { note, title, content, loading, isInitialLoad, isSaved } = state
