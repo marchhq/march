@@ -1,3 +1,4 @@
+import type { JSX } from "react"
 export const Linear = (): JSX.Element => {
   return (
     <svg
