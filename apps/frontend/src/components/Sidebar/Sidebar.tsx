@@ -19,7 +19,12 @@ import classNames from "@/src/utils/classNames"
 export const Sidebar: React.FC = () => {
   return (
     <SidebarCollapseProvider>
-      <SidebarNav />
+      <div className="flex flex-col border-r border-border">
+        <div className="pl-6 pt-1">
+          <SidebarCollapseButton />
+        </div>
+        <SidebarNav />
+      </div>
     </SidebarCollapseProvider>
   )
 }
@@ -31,13 +36,12 @@ const SidebarNav: React.FC = () => {
   return (
     <nav
       className={classNames(
-        "group relative flex h-screen bg-background text-sm p-6 text-secondary-foreground border-r border-border",
+        "group relative flex h-screen bg-background text-sm p-6 text-secondary-foreground ",
         isCollapsed ? "w-[250px]" : "w-[80px]"
       )}
     >
-      <div className="flex h-5/6 flex-col justify-between pt-4">
+      <div className="flex h-5/6 flex-col justify-between">
         <div className="flex flex-col gap-4">
-          <SidebarCollapseButton />
           <SidebarMain />
           <SidebarFavorites />
         </div>
