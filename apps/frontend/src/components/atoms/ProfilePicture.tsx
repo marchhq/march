@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type JSX } from "react";
 
 import axios from "axios"
 import Image from "next/image"

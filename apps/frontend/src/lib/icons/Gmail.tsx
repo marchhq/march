@@ -1,3 +1,4 @@
+import type { JSX } from "react"
 export const Gmail = (): JSX.Element => {
   return (
     <svg

@@ -50,10 +50,35 @@ const createItemController = async (req, res, next) => {
     }
 };
 
+// const createInboxItemController = async (req, res, next) => {
+//     try {
+//         const user = req.user._id;
+
+//         const requestedData = req.body;
+//         const { type } = requestedData;
+
+//         let itemData = requestedData;
+
+//         if (type === 'link' || type === 'text') {
+//             const updatedData = await generateLinkPreview(requestedData);
+//             if (updatedData) {
+//                 itemData = updatedData;
+//             }
+//         }
+
+//         const items = await createInboxItem(user, itemData);
+
+//         res.status(200).json({
+//             response: items
+//         });
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
 const createInboxItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
-
         const requestedData = req.body;
         const { type } = requestedData;
 
@@ -66,10 +91,10 @@ const createInboxItemController = async (req, res, next) => {
             }
         }
 
-        const items = await createInboxItem(user, itemData);
+        const item = await createInboxItem(user, itemData);
 
         res.status(200).json({
-            response: items
+            response: item
         });
     } catch (err) {
         next(err);

@@ -4,7 +4,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select"
+} from "../ui/select"
+
+import type { JSX } from "react";
 
 interface Props {
   placeholder: string
