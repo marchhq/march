@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, type JSX } from "react";
 
 import TextEditor from "../atoms/Editor"
 import Details from "../header/details"

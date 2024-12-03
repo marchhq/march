@@ -36,6 +36,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
+  updateStateWithNewItem: (newItem: CycleItem) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
@@ -619,5 +620,51 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       }))
       throw error
     }
+  },
+
+  updateStateWithNewItem: (newItem: CycleItem) => {
+    set((state) => {
+      // Helper function to update or add item
+      const updateOrAddItem = (items: CycleItem[]) => {
+        const existingIndex = items.findIndex(
+          (item) => item._id === newItem._id
+        )
+
+        if (existingIndex !== -1) {
+          // Update existing item
+          const updatedItems = [...items]
+          updatedItems[existingIndex] = {
+            ...updatedItems[existingIndex],
+            ...newItem,
+          }
+          return updatedItems
+        }
+
+        // Add new item only if it doesn't exist
+        return [newItem, ...items]
+      }
+
+      return {
+        inbox: {
+          ...state.inbox,
+          items: updateOrAddItem(state.inbox.items),
+          isLoading: false,
+          error: null,
+        },
+        thisWeek: {
+          ...state.thisWeek,
+          items: updateOrAddItem(state.thisWeek.items),
+          isLoading: false,
+          error: null,
+        },
+        items: updateOrAddItem(state.items),
+        // Update currentItem if it's the same item
+        currentItem:
+          state.currentItem?._id === newItem._id
+            ? { ...state.currentItem, ...newItem }
+            : state.currentItem,
+        isLoading: false,
+      }
+    })
   },
 }))
