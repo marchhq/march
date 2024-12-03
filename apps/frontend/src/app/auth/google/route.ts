@@ -1,5 +1,4 @@
 import axios, { type AxiosError } from "axios"
-import { cookies } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { type GoogleAuthResponse } from "@/src/lib/@types/auth/response"
