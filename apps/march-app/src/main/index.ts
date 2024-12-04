@@ -29,9 +29,11 @@ function createWindow(): void {
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    // For local development
+    mainWindow.loadURL('http://localhost:3000') // Adjust port as needed
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    // For production
+    mainWindow.loadURL('https://app.march.cat/today/')
   }
 
   app.on('open-url', (event, url) => {
