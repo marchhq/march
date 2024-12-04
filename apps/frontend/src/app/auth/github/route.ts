@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
 
     const { accessToken, refreshToken, isNewUser } = response.data
 
+    console.log("response.data: ", response.data)
+
     const res = NextResponse.redirect(
       // redirecting to inbox for test
       isNewUser

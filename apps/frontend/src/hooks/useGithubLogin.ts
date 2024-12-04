@@ -10,18 +10,21 @@ const useGitHubLogin = (session?: string) => {
 
   const handleLogin = useCallback(async () => {
     try {
-      const response = await axios.get(`/api/auth/github/url`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
+      const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
+      const GITHUB_SCOPE = "user:email"
 
-      const { authUrl } = response.data
-      router.push(authUrl)
+      if (!GITHUB_CLIENT_ID) {
+        throw new Error("GitHub Client ID is not set")
+      }
+
+      // const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI)}&scope=${encodeURIComponent(GITHUB_SCOPE)}`
+      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=${GITHUB_SCOPE}`
+
+      router.push(githubAuthUrl)
     } catch (error) {
       console.error("Failed to initiate GitHub login:", error)
     }
-  }, [router, session])
+  }, [router])
 
   const handleRevoke = useCallback(async () => {
     try {
