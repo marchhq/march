@@ -33,6 +33,20 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+
+    mainWindow.webContents.send('oauth-callback', url)
+  })
+}
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('march-app', process.execPath, [process.argv[1]])
+  }
+} else {
+  app.setAsDefaultProtocolClient('march-app')
 }
 
 // This method will be called when Electron has finished
