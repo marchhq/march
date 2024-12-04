@@ -1,6 +1,6 @@
 "use client"
 
-import React, { type JSX } from "react"
+import React, { type JSX } from "react";
 
 import { Icon } from "@iconify-icon/react"
 import { useGoogleLogin } from "@react-oauth/google"
