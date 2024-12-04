@@ -1,10 +1,6 @@
-"use client"
-import type { JSX } from "react"
-
-import { Icon } from "@iconify-icon/react"
-
-import { Button } from "../button/Button"
-import useGitHubLogin from "@/src/hooks/useGithubLogin"
+import { Icon } from '@iconify/react'
+import { Button } from '../buttons/button'
+import { useGitHubLogin } from '@renderer/hooks/use-github-login'
 
 export const GithubLogin = (): JSX.Element => {
   const { handleLogin } = useGitHubLogin()
