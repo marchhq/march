@@ -5,8 +5,8 @@ import axios from "axios"
 import { useAuth } from "../contexts/AuthContext"
 import { BACKEND_URL } from "../lib/constants/urls"
 
-const LINEAR_CLIENT_ID = process.env.LINEAR_CLIENT_ID
-const LINEAR_REDIRECT_URL = process.env.LINEAR_REDIRECT_URL
+const LINEAR_CLIENT_ID = process.env.NEXT_PUBLIC_LINEAR_CLIENT_ID
+const LINEAR_REDIRECT_URL = process.env.NEXT_PUBLIC_LINEAR_REDIRECT_URL
 
 interface LinearIssue {
   id: string
@@ -58,23 +58,17 @@ const useLinear = () => {
     }
   }, [])
 
-  const handleLogin = useCallback(async () => {
+  const handleLogin = useCallback(() => {
     try {
-      const response = await axios.get(`/api/auth/linear/url`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
-
-      const { authUrl } = response.data
-
+      const scopes = "read write"
+      const authUrl = `https://linear.app/oauth/authorize?client_id=${LINEAR_CLIENT_ID}&redirect_uri=${LINEAR_REDIRECT_URL}&response_type=code&scope=${encodeURIComponent(scopes)}`
       console.log("Redirecting to Linear OAuth URL:")
       window.location.href = authUrl
     } catch (error) {
       console.error("Error in initiating Linear OAuth login:", error)
       setError("Failed to initiate Linear login")
     }
-  }, [session])
+  }, [])
 
   const handleRevoke = useCallback(async () => {
     try {

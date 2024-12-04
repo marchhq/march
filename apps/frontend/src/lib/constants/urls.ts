@@ -7,7 +7,7 @@ const ENV_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 const ENV_FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL
 
 export const GITHUB_APP_URL =
-  process.env.GITHUB_APP_URL ?? "https://github.com/apps/march-app"
+  process.env.NEXT_PUBLIC_GITHUB_APP_URL ?? "https://github.com/apps/march-app"
 
 export const BACKEND_URL = ENV_BACKEND_URL ?? LOCAL_BACKEND
 
