@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { JSX } from "react"
 export const MeetMuted = (): JSX.Element => {
   return (
     <svg
