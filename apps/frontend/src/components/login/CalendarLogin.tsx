@@ -1,10 +1,10 @@
-"use client";
+"use client"
+import type { JSX } from "react"
+
 import { Icon } from "@iconify-icon/react"
 
 import { Button } from "../button/Button"
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
-
-import type { JSX } from "react";
 
 const CalendarLogin = (): JSX.Element => {
   const { handleLogin } = useGoogleCalendarLogin("/stack")
