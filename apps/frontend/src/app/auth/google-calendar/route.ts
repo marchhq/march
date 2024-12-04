@@ -1,6 +1,10 @@
 import axios from "axios"
 import { NextRequest, NextResponse } from "next/server"
 
+import {
+  GOOGLECALENDAR_ACCESS_TOKEN,
+  GOOGLECALENDAR_REFRESH_TOKEN,
+} from "@/src/lib/constants/cookie"
 import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest) {
