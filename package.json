@@ -9,7 +9,8 @@
   "workspaces": [
     "apps/backend",
     "apps/frontend",
-    "apps/extension"
+    "apps/extension",
+    "apps/march-app"
   ],
 
   "scripts": {
