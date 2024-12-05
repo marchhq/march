@@ -4,12 +4,12 @@
   "description": "Satellite Frontend",
   "author": "march-dev",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "type-check": "tsc --pretty --noEmit",
+    "dev": "bunx --bun next dev",
+    "build": "bunx --bun next build",
+    "start": "bunx --bun next start",
+    "lint": "bunx --bun next lint",
+    "format": "bunx prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "type-check": "bunx --bun tsc --pretty --noEmit",
     "prepare": "husky"
   },
   "dependencies": {
