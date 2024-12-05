@@ -3,18 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 
 import TextEditor from "../atoms/Editor"
-import Details from "../header/details"
-import MeetDetails from "../header/meet-details"
+import ActionHeader from "../header/action-header"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
+import usePersistedState from "@/src/hooks/usePersistedState"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
-import {
-  formatDateHeader,
-  formatMeetDate,
-  formatMeetTime,
-} from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
@@ -50,6 +44,7 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   const [content, setContent] = useState(meetData?.description || "<p></p>")
   const [isSaved, setIsSaved] = useState(true)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [closeToggle, setCloseToggle] = usePersistedState("closeToggle", true)
 
   // Memoized handlers
   const handleContentChange = useCallback((newContent: string) => {
@@ -58,6 +53,10 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
     setHasUnsavedChanges(hasChanged)
     setIsSaved(!hasChanged)
   }, [])
+
+  const handleClose = useCallback(() => {
+    setCloseToggle(!closeToggle)
+  }, [closeToggle, setCloseToggle])
 
   const handleSaveEditedItem = useCallback(
     async (item: Meet) => {
@@ -205,12 +204,18 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
 
   return (
     <>
-      <MeetDetails
+      {/* <MeetDetails
         startDateTime={meetData.metadata?.start?.dateTime || meetData.createdAt}
         endDateTime={meetData.metadata?.end?.dateTime}
         hangoutLink={meetData.metadata?.hangoutLink}
         formatMeetDate={formatMeetDate}
         formatMeetTime={formatMeetTime}
+      /> */}
+      <ActionHeader
+        closeToggle={closeToggle}
+        loading={loading}
+        onAdd={addNewMeet}
+        onClose={handleClose}
       />
 
       <div>
