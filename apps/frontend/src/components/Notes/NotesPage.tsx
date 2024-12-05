@@ -2,7 +2,6 @@
 
 import { useRef, useCallback, useMemo, useEffect } from "react"
 
-import { debounce } from "lodash"
 import { useRouter } from "next/navigation"
 
 import NoteEditor from "./components/NoteEditor/NoteEditor"
