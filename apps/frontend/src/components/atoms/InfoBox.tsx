@@ -1,8 +1,6 @@
-"use client";
+"use client"
 import { ProfileBtn } from "./ProfileBtn"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
-
-import type { JSX } from "react"
 
 export const InfoBox = (): JSX.Element => {
   const { user } = useUserInfo()

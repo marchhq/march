@@ -1,4 +1,3 @@
-import type { JSX } from "react"
 export const DynamicDate = ({
   selectedDate,
 }: {
