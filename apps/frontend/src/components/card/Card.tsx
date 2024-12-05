@@ -1,4 +1,3 @@
-import type { JSX } from "react";
 export const Card = ({ children, onClick }): JSX.Element => {
   return (
     <button

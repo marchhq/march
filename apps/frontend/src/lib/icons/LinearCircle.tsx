@@ -1,4 +1,3 @@
-import type { JSX } from "react";
 export const LinearCircle = (): JSX.Element => {
   return (
     <svg

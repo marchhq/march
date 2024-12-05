@@ -7,8 +7,12 @@
   "author": "march-dev",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/backend",
+    "apps/frontend",
+    "apps/extension",
+    "apps/march-app"
   ],
+
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -33,8 +37,8 @@
     }
   },
   "dependencies": {
-    "next": "15.0.3",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106"
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
