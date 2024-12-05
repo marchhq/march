@@ -4,9 +4,9 @@ import { PlusIcon } from "@radix-ui/react-icons"
 import { Layers } from "lucide-react"
 
 interface ActionHeaderProps {
-  loading: boolean
+  loading?: boolean
   closeToggle: boolean
-  onAdd: () => Promise<any>
+  onAdd?: () => Promise<any>
   onClose: () => void
 }
 
