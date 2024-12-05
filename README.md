@@ -1,65 +1,68 @@
-## Getting Started
+# Satellite Monorepo
 
-To get a local copy up and running, please follow these simple steps.
+Building a second brain for next generation makers.
 
 ## Prerequisites
 
-Here is what you need to run march.
+- Node.js >= 18
+- [Bun](https://bun.sh) (latest version)
 
-- Node.js (Version: >=18.x)
-- pnpm (recommended)
+## Getting Started
+
+1. Install dependencies:
+
+```bash
+bun install
+```
+
+2. Start development:
+
+```bash
+bun dev
+```
+
+3. Build all packages:
+
+```bash
+bun run build
+```
+
+## Workspace Structure
+
+- `apps/backend` - Backend API server
+- `apps/frontend` - Next.js frontend application
+- `apps/extension` - Browser extension
+- `apps/march-app` - Electron desktop application
 
 ## Development
 
-### Setup
+Each workspace can be developed independently:
 
-1. Clone the repo into a public GitHub repository
+```bash
+# Start frontend development
+cd apps/frontend
+bun dev
 
-```
-https://github.com/marchhq/march.git
+# Start backend development
+cd apps/backend
+bun dev
 
-```
-
-2. Switch to the project folder
-
-```
-cd march
-```
-
-3. Create your feature or fix branch you plan to work on using
-
-```
-git checkout -b <feature-branch-name>
+# Start electron app development
+cd apps/march-app
+bun dev
 ```
 
-4. Install packages with pnpm
+## Build
 
-```
-pnpm install
-```
+To build all packages:
 
-5. Set up your .env file
-
-Go to the `app/backend` and `app/frontend` directories and duplicate the `.env.example` to `.env`.
-
-6. Run (in development mode)
-
-```
-pnpm dev
+```bash
+bun run build
 ```
 
-### Linear integration
+To build a specific package:
 
-To set up the Linear integration:
-
-1. Sign up for a Linear account at https://linear.app if you haven't already.
-2. Create a new Linear OAuth application in your Linear settings.
-3. Fill in the following environment variables in your `.env` file:
-
+```bash
+cd apps/<package>
+bun run build
 ```
-LINEAR_REDIRECT_URL=http://localhost:3000/auth/linear
-LINEAR_CLIENT_ID=<your_linear_client_id>
-LINEAR_CLIENT_SECRET=<your_linear_client_secret>
-```
-
-Replace `<your_linear_client_id>` and `<your_linear_client_secret>` with the values provided by Linear for your OAuth application.
