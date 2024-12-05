@@ -6,8 +6,7 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "dist/**", "out/**"],
       "inputs": ["src/**", "public/**", "app/**", "lib/**", "config/**"],
-      "cache": true,
-      "filter": "!./apps/backend"
+      "cache": true
     },
     "develop": {
       "cache": false,
@@ -27,5 +26,7 @@
     "clean": {
       "cache": false
     }
-  }
+  },
+  "globalDependencies": ["tsconfig.json"],
+  "globalEnv": ["NODE_ENV"]
 }

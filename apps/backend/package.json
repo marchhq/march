@@ -11,8 +11,7 @@
   "scripts": {
     "dev": "bun --watch index.js",
     "test": "bun test",
-    "start": "bun index.js",
-    "build": "bun build index.js --target=node --outdir=dist"
+    "start": "bun index.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",
