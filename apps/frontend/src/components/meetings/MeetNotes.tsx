@@ -9,13 +9,8 @@ import MeetDetails from "../header/meet-details"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
-import {
-  formatDateHeader,
-  formatMeetDate,
-  formatMeetTime,
-} from "@/src/utils/datetime"
+import { formatMeetDate, formatMeetTime } from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
