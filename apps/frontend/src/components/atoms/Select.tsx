@@ -6,8 +6,6 @@ import {
   SelectValue,
 } from "../ui/select"
 
-import type { JSX } from "react";
-
 interface Props {
   placeholder: string
   item: string
