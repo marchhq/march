@@ -1,12 +1,11 @@
 "use client"
 
-import { useRef, useCallback, useMemo, useEffect } from "react"
+import { useRef, useCallback, useMemo } from "react"
 
-import { debounce } from "lodash"
 import { useRouter } from "next/navigation"
 
+import ActionHeader from "../ActionHeader"
 import NoteEditor from "./components/NoteEditor/NoteEditor"
-import NoteHeader from "./components/NoteHeader/NoteHeader"
 import { NoteStackModal } from "./components/NoteModal/NotesModal"
 import { useNoteEffects } from "./hooks/useNoteEffects"
 import { useNoteHandlers } from "./hooks/useNoteHandlers"
@@ -124,11 +123,11 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
         <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
           <div className="flex w-full items-center justify-between">
-            <NoteHeader
+            <ActionHeader
               closeToggle={closeToggle}
               loading={loading}
-              addNewNote={addNewNote}
-              handleClose={handleClose}
+              onAdd={addNewNote}
+              onClose={handleClose}
             />
           </div>
         </div>
