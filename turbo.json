@@ -1,10 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "tasks": {
+  "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**", "out/**"]
+      "outputs": [".next/**", "dist/**", "out/**"],
+      "inputs": ["src/**", "public/**", "app/**", "lib/**", "config/**"],
+      "cache": true,
+      "filter": "!./apps/backend"
     },
     "develop": {
       "cache": false,
