@@ -70,13 +70,14 @@
   "devDependencies": {
     "@iconify-icon/react": "^2.1.0",
     "@tanstack/eslint-plugin-query": "^5.51.15",
-    "@types/node": "^20.14.11",
-    "@types/react": "^18.3.3",
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.67",
+    "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.5",
+    "eslint-config-next": "^14.1.3",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.9.0",
@@ -89,10 +90,10 @@
     "husky": "^9.1.4",
     "lint-staged": "^15.2.7",
     "postcss": "^8.4.39",
-    "prettier": "^3.3.3",
+    "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "tailwindcss": "^3.4.6",
-    "typescript": "^5.5.3"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint"
@@ -115,10 +116,5 @@
   },
   "bugs": {
     "url": "https://github.com/nirnejak/satellite-frontend/issues"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1"
-    }
   }
 }

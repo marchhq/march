@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "bun --watch index.js",
     "test": "bun test",
-    "start": "bun index.js"
+    "start": "bun index.js",
+    "build": "bun build index.js --target=node --outdir=dist"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",
@@ -54,7 +55,6 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "nodemon": "^2.0.22"
+    "eslint-plugin-promise": "^6.1.1"
   }
 }

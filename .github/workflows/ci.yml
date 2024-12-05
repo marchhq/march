@@ -1,29 +1,104 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ preview, main ]
   pull_request:
-    branches: [ main ]
+    branches: [ preview, main ]
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: '1.0.30'
-        cache: true
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1.0.30'
+          cache: true
         
-    - name: Install dependencies
-      run: bun install
+      - name: Install dependencies
+        run: bun install
 
-    - name: Build
-      run: bun run build
+      - name: Type check
+        run: bun run type-check --filter=@satellite/frontend --filter=@satellite/backend --filter=@satellite/electron
+        
+      - name: Lint
+        run: bun run lint --filter=@satellite/frontend --filter=@satellite/backend --filter=@satellite/electron
 
-    - name: Lint
-      run: bun run lint
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1.0.30'
+          cache: true
+        
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build Backend
+        run: bun run build --filter=@satellite/backend
+        
+      - name: Build Frontend
+        run: bun run build --filter=@satellite/frontend
+        
+      - name: Build Electron
+        run: bun run build --filter=@satellite/electron
+        
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: apps/backend/dist/
+          
+      - name: Upload frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: apps/frontend/.next/
+          
+      - name: Upload electron artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build
+          path: apps/electron/out/
+
+  deploy-preview:
+    needs: build
+    if: github.ref == 'refs/heads/preview'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: builds/
+      
+      # Add your staging deployment steps here
+      # Example:
+      # - Deploy backend to staging server
+      # - Deploy frontend to Vercel Preview
+      # - Create electron preview build
+      
+  deploy-production:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: builds/
+      
+      # Add your production deployment steps here
+      # Example:
+      # - Deploy backend to production server
+      # - Deploy frontend to Vercel Production
+      # - Create electron production release

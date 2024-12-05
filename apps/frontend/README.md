@@ -6,52 +6,52 @@
 
 ## Available Scripts
 
-**Install Dependencies**
+### Install Dependencies
 
 ```bash
-npm install
+bun install
 ```
 
-**Install Git Hooks** (won't let you commit if there are any ESLint issues)
+### Prepare Husky (won't let you commit if there are any ESLint issues)
 
 ```bash
-npm run prepare
+bun run prepare
 ```
 
-**Start Development Server**
+### Start Development Server
 
 ```bash
-npm run dev
+bun run dev
 ```
 
-**Lint all the files**
+### Lint Code
 
 ```bash
-npm run lint
+bun run lint
 ```
 
-**Format all files with Prettier**
+### Format Code
 
 ```bash
-npm run format
+bun run format
 ```
 
-**Check TypeScript issues**
+### Type Check
 
 ```bash
-npm run type-check
+bun run type-check
 ```
 
-**Build for Production**
+### Build Application
 
 ```bash
-npm run build
+bun run build
 ```
 
-**Start Production Server**
+### Start Production Server
 
 ```bash
-npm start
+bun start
 ```
 
 ---
