@@ -13,12 +13,12 @@
   ],
 
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "start": "turbo run start",
-    "lint": "turbo run lint",
-    "clean": "turbo run clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "dev": "bunx --bun turbo run dev",
+    "build": "bunx --bun turbo run build",
+    "start": "bunx --bun turbo run start",
+    "lint": "bunx --bun turbo run lint",
+    "clean": "bunx --bun turbo run clean",
+    "format": "bunx prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "prettier": "^3.2.5",
