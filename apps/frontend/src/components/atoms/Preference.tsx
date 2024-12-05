@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, type JSX } from "react";
+import React, { useState, useEffect } from "react"
 
 import { SelectBox } from "./Select"
 import { Switch } from "./Switch"

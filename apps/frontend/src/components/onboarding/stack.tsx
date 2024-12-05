@@ -1,4 +1,4 @@
-import { useMemo, type JSX } from "react";
+import { useMemo } from "react"
 
 import { StackItems } from "./stack-items"
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"

@@ -1,4 +1,3 @@
-import type { JSX } from "react"
 /**
  * User type.
  */
