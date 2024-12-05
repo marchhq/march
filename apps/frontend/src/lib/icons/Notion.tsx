@@ -1,4 +1,3 @@
-import type { JSX } from "react"
 export const Notion = (): JSX.Element => {
   return (
     <svg
