@@ -9,7 +9,7 @@
   "workspaces": [
     "apps/backend",
     "apps/frontend",
-    "apps/march-app"
+    "apps/electron"
   ],
 
   "scripts": {
