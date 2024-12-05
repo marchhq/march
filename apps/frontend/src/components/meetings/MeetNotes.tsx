@@ -3,18 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 
 import TextEditor from "../atoms/Editor"
-import Details from "../header/details"
 import MeetDetails from "../header/meet-details"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { Meet } from "@/src/lib/@types/Items/Meet"
-import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
-import {
-  formatDateHeader,
-  formatMeetDate,
-  formatMeetTime,
-} from "@/src/utils/datetime"
+import { formatMeetDate, formatMeetTime } from "@/src/utils/datetime"
 
 interface EditedItem {
   title: string
@@ -204,29 +198,19 @@ export const MeetNotes = ({ meetData }): JSX.Element => {
   }
 
   return (
-    <>
-      <MeetDetails
-        startDateTime={meetData.metadata?.start?.dateTime || meetData.createdAt}
-        endDateTime={meetData.metadata?.end?.dateTime}
-        hangoutLink={meetData.metadata?.hangoutLink}
-        formatMeetDate={formatMeetDate}
-        formatMeetTime={formatMeetTime}
+    <div>
+      <textarea
+        ref={textareaRefTitle}
+        value={editedItem.title}
+        onChange={handleTitleChange}
+        onKeyDown={handleTextareaKeyDown}
+        placeholder="Untitled"
+        className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+        rows={1}
       />
-
-      <div>
-        <textarea
-          ref={textareaRefTitle}
-          value={editedItem.title}
-          onChange={handleTitleChange}
-          onKeyDown={handleTextareaKeyDown}
-          placeholder="Untitled"
-          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background py-6 text-[21px] font-bold text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-          rows={1}
-        />
-        <div className="max-w-6xl text-foreground">
-          <TextEditor editor={editor} />
-        </div>
+      <div className="max-w-6xl text-foreground">
+        <TextEditor editor={editor} />
       </div>
-    </>
+    </div>
   )
 }
