@@ -16,7 +16,7 @@ interface NoteEditorProps {
   handleTitleFocus: () => void
   handleTitleBlur: () => void
   handleSaveNote: () => void
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  textareaRef: React.RefObject<HTMLTextAreaElement>
 }
 
 const NoteEditor = ({
