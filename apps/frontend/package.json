@@ -117,7 +117,7 @@
   "bugs": {
     "url": "https://github.com/nirnejak/satellite-frontend/issues"
   },
-  "pnpm": {
+  "bun": {
     "overrides": {
       "@types/react": "npm:types-react@19.0.0-rc.1"
     }
