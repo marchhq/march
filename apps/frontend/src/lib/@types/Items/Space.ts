@@ -15,6 +15,7 @@ export interface Spaces {
 
 export interface SpaceStoreTypes {
   spaces: Space[]
+  spaceId: string | null
   space: Space | null
   loading: boolean
   error: string | null
