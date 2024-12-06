@@ -109,5 +109,9 @@ export default function InitialMeetings({
   }
 
   // Show loading while waiting for user data
-  return <p>loading...</p>
+  return (
+    <p className="size-full overflow-auto bg-background px-8 text-secondary-foreground">
+      loading...
+    </p>
+  )
 }
