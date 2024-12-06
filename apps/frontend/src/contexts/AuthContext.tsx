@@ -1,12 +1,6 @@
 "use client"
 
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  type JSX,
-} from "react"
+import React, { createContext, useState, useEffect, useContext } from "react"
 
 import axios, { type AxiosError } from "axios"
 

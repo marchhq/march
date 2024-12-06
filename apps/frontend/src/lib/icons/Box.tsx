@@ -1,4 +1,3 @@
-import type { JSX } from "react"
 export const Box = (): JSX.Element => {
   return (
     <svg

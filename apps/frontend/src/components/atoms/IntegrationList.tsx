@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { ChevronDown, ChevronRight } from "lucide-react"
 
 import useGoogleCalendarLogin from "@/src/hooks/useCalendar"
@@ -7,8 +7,6 @@ import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
 import { NotionDark } from "@/src/lib/icons/Notion"
-
-import type { JSX } from "react";
 
 const integrations = [
   {
