@@ -1,4 +1,6 @@
 "use client"
+import type { JSX } from "react"
+
 import { Icon } from "@iconify-icon/react"
 
 import { Button } from "../button/Button"
