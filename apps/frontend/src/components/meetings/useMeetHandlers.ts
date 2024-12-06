@@ -9,8 +9,6 @@ export const useMeetHandlers = (state, dispatch) => {
   const { updateMeet } = useMeetsStore()
   const { meet, title, content, isSaved } = state
 
-  console.log("Handler state:", { meet, meetId: meet?.id })
-
   const saveMeetToServer = useCallback(
     async (meet: Meet): Promise<void> => {
       try {
