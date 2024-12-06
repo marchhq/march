@@ -76,7 +76,6 @@ const MeetingPage: React.FC<MeetingPageProps> = ({
   }
 
   const displayMeeting = meets.find((m) => m.id === meetId)
-  console.log("display meeting: ", displayMeeting)
 
   return (
     <main className="flex size-full gap-16 bg-background p-10 pl-60">

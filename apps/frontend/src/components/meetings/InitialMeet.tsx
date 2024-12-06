@@ -53,7 +53,6 @@ export default function InitialMeetings({
         }
 
         const meet: Meet | null = await fetchLatestMeet(session)
-        console.log("single meet: ", meet)
 
         if (meet && meet.id) {
           router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${meet.id}`)

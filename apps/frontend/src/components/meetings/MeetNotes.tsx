@@ -18,7 +18,6 @@ export const MeetNotes = ({ meetData }: { meetData: Meet }): JSX.Element => {
     useMeetState()
 
   useEffect(() => {
-    console.log("Setting meet data:", meetData)
     if (meetData?.id) {
       setMeet(meetData)
       setTitle(meetData.title || "")
