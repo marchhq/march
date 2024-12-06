@@ -1,58 +1,100 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import { MeetNotes } from "./MeetNotes"
-import { Stack } from "./Stack"
+import { useMeetState } from "./useMeetState"
+import ActionHeader from "../header/action-header"
+import { StackModal } from "../modals/StackModal"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { Meet } from "@/src/lib/@types/Items/Meet"
+import usePersistedState from "@/src/hooks/usePersistedState"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
 
 interface MeetingPageProps {
   meetId: string
+  spaceId: string
+  blockId: string
 }
 
-const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
+const MeetingPage: React.FC<MeetingPageProps> = ({
+  meetId,
+  spaceId,
+  blockId,
+}) => {
   const { session } = useAuth()
-  const { fetchMeets, meets, fetchMeetByid, currentMeeting } = useMeetsStore()
-  const [initialLoading, setInitialLoading] = useState(true)
+  const { fetchMeets, meets, fetchMeetByid } = useMeetsStore()
+  const [closeToggle, setCloseToggle] = usePersistedState("closeToggle", true)
+  const { state, setLoading, setIsInitialLoad } = useMeetState()
+  const { isLoading } = state
+
+  const handleClose = useCallback(() => {
+    setCloseToggle(!closeToggle)
+  }, [closeToggle, setCloseToggle])
 
   useEffect(() => {
-    const initializeMeeting = async () => {
-      if (meets.length === 0) {
-        setInitialLoading(true)
-      }
+    let mounted = true
 
+    const initialize = async () => {
+      if (!session || !meetId) return
+
+      setLoading(true)
       try {
-        await Promise.all([
-          !currentMeeting || currentMeeting.id !== meetId
-            ? fetchMeetByid(session, meetId)
-            : Promise.resolve(),
-          meets.length === 0 ? fetchMeets(session) : Promise.resolve(),
-        ])
+        // Fetch meets list if needed
+        if (meets.length === 0) {
+          await fetchMeets(session)
+        }
+        // Fetch specific meet
+        await fetchMeetByid(session, meetId)
       } finally {
-        setInitialLoading(false)
+        if (mounted) {
+          setLoading(false)
+          setIsInitialLoad(false)
+        }
       }
     }
 
-    if (session && meetId) {
-      initializeMeeting()
+    initialize()
+    return () => {
+      mounted = false
     }
-  }, [fetchMeets, fetchMeetByid, session, meetId, currentMeeting, meets])
+  }, [session, meetId])
 
-  if (initialLoading && meets.length === 0) {
+  const simplifiedNotes = useMemo(() => {
+    return meets
+      ? meets.map((m) => ({
+          id: m.id,
+          title: m.title || "Untitled",
+          href: `/spaces/${spaceId}/blocks/${blockId}/items/${m.id}`,
+          createdAt: m.createdAt,
+          isActive: m.id === meetId,
+        }))
+      : []
+  }, [meets, spaceId, blockId, meetId])
+
+  if (isLoading && meets.length === 0) {
     return <div>loading...</div>
   }
 
-  const displayMeeting = currentMeeting || meets.find((m) => m.id === meetId)
+  const displayMeeting = meets.find((m) => m.id === meetId)
 
   return (
-    <main className="flex h-full justify-between p-10 text-gray-color">
-      <section>
-        {displayMeeting && <MeetNotes meetData={displayMeeting} />}
+    <main className="flex size-full gap-16 bg-background p-10 pl-60">
+      <section className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
+        <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
+          <div className="flex w-full items-center justify-between">
+            <ActionHeader closeToggle={closeToggle} onClose={handleClose} />
+          </div>
+        </div>
+
+        {displayMeeting && (
+          <MeetNotes key={displayMeeting.id} meetData={displayMeeting} />
+        )}
       </section>
-      <section className="w-full max-w-[300px] text-[16px] text-secondary-foreground">
-        <Stack meetings={meets} currentMeetId={meetId} />
+
+      <section>
+        {!closeToggle && (
+          <StackModal notes={simplifiedNotes} handleClose={handleClose} />
+        )}
       </section>
     </main>
   )

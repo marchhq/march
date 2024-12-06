@@ -53,7 +53,6 @@ export default function InitialMeetings({
         }
 
         const meet: Meet | null = await fetchLatestMeet(session)
-        console.log("single meet: ", meet)
 
         if (meet && meet.id) {
           router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${meet.id}`)
@@ -109,5 +108,9 @@ export default function InitialMeetings({
   }
 
   // Show loading while waiting for user data
-  return <p>loading...</p>
+  return (
+    <p className="size-full overflow-auto bg-background px-8 text-secondary-foreground">
+      loading...
+    </p>
+  )
 }

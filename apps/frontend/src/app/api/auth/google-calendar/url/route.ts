@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { FRONTEND_URL } from "@/src/lib/constants/urls"
 
 export async function GET(request: NextRequest) {
+  console.log("hi from api")
   const { searchParams } = new URL(request.url)
   const redirectAfterAuth = searchParams.get("redirectAfterAuth")
 
-  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+  const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   const GOOGLE_SCOPE = "https://www.googleapis.com/auth/calendar"
   const GOOGLE_REDIRECT_URI = `${FRONTEND_URL}/auth/google-calendar`
 
