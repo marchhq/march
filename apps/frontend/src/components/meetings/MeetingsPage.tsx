@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import { MeetNotes } from "./MeetNotes"
+import { useMeetState } from "./useMeetState"
 import ActionHeader from "../header/action-header"
 import { StackModal } from "../modals/StackModal"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -21,36 +22,42 @@ const MeetingPage: React.FC<MeetingPageProps> = ({
   blockId,
 }) => {
   const { session } = useAuth()
-  const { fetchMeets, meets, fetchMeetByid, currentMeeting } = useMeetsStore()
-  const [initialLoading, setInitialLoading] = useState(true)
+  const { fetchMeets, meets, fetchMeetByid } = useMeetsStore()
   const [closeToggle, setCloseToggle] = usePersistedState("closeToggle", true)
+  const { state, setLoading, setIsInitialLoad } = useMeetState()
+  const { isLoading } = state
 
   const handleClose = useCallback(() => {
     setCloseToggle(!closeToggle)
   }, [closeToggle, setCloseToggle])
 
   useEffect(() => {
-    const initializeMeeting = async () => {
-      if (meets.length === 0) {
-        setInitialLoading(true)
-      }
+    let mounted = true
 
+    const initialize = async () => {
+      if (!session || !meetId) return
+
+      setLoading(true)
       try {
-        await Promise.all([
-          !currentMeeting || currentMeeting.id !== meetId
-            ? fetchMeetByid(session, meetId)
-            : Promise.resolve(),
-          meets.length === 0 ? fetchMeets(session) : Promise.resolve(),
-        ])
+        // Fetch meets list if needed
+        if (meets.length === 0) {
+          await fetchMeets(session)
+        }
+        // Fetch specific meet
+        await fetchMeetByid(session, meetId)
       } finally {
-        setInitialLoading(false)
+        if (mounted) {
+          setLoading(false)
+          setIsInitialLoad(false)
+        }
       }
     }
 
-    if (session && meetId) {
-      initializeMeeting()
+    initialize()
+    return () => {
+      mounted = false
     }
-  }, [fetchMeets, fetchMeetByid, session, meetId, currentMeeting, meets])
+  }, [session, meetId])
 
   const simplifiedNotes = useMemo(() => {
     return meets
@@ -64,11 +71,12 @@ const MeetingPage: React.FC<MeetingPageProps> = ({
       : []
   }, [meets, spaceId, blockId, meetId])
 
-  if (initialLoading && meets.length === 0) {
+  if (isLoading && meets.length === 0) {
     return <div>loading...</div>
   }
 
-  const displayMeeting = currentMeeting || meets.find((m) => m.id === meetId)
+  const displayMeeting = meets.find((m) => m.id === meetId)
+  console.log("display meeting: ", displayMeeting)
 
   return (
     <main className="flex size-full gap-16 bg-background p-10 pl-60">
@@ -79,7 +87,9 @@ const MeetingPage: React.FC<MeetingPageProps> = ({
           </div>
         </div>
 
-        {displayMeeting && <MeetNotes meetData={displayMeeting} />}
+        {displayMeeting && (
+          <MeetNotes key={displayMeeting.id} meetData={displayMeeting} />
+        )}
       </section>
 
       <section>
