@@ -1,21 +1,33 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import { MeetNotes } from "./MeetNotes"
-import { Stack } from "./Stack"
+import ActionHeader from "../header/action-header"
+import { StackModal } from "../modals/StackModal"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { Meet } from "@/src/lib/@types/Items/Meet"
+import usePersistedState from "@/src/hooks/usePersistedState"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
 
 interface MeetingPageProps {
   meetId: string
+  spaceId: string
+  blockId: string
 }
 
-const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
+const MeetingPage: React.FC<MeetingPageProps> = ({
+  meetId,
+  spaceId,
+  blockId,
+}) => {
   const { session } = useAuth()
   const { fetchMeets, meets, fetchMeetByid, currentMeeting } = useMeetsStore()
   const [initialLoading, setInitialLoading] = useState(true)
+  const [closeToggle, setCloseToggle] = usePersistedState("closeToggle", true)
+
+  const handleClose = useCallback(() => {
+    setCloseToggle(!closeToggle)
+  }, [closeToggle, setCloseToggle])
 
   useEffect(() => {
     const initializeMeeting = async () => {
@@ -40,6 +52,18 @@ const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
     }
   }, [fetchMeets, fetchMeetByid, session, meetId, currentMeeting, meets])
 
+  const simplifiedNotes = useMemo(() => {
+    return meets
+      ? meets.map((m) => ({
+          id: m.id,
+          title: m.title || "Untitled",
+          href: `/spaces/${spaceId}/blocks/${blockId}/items/${m.id}`,
+          createdAt: m.createdAt,
+          isActive: m.id === meetId,
+        }))
+      : []
+  }, [meets, spaceId, blockId, meetId])
+
   if (initialLoading && meets.length === 0) {
     return <div>loading...</div>
   }
@@ -47,12 +71,21 @@ const MeetingPage: React.FC<MeetingPageProps> = ({ meetId }) => {
   const displayMeeting = currentMeeting || meets.find((m) => m.id === meetId)
 
   return (
-    <main className="flex h-full justify-between p-10 text-gray-color">
-      <section>
+    <main className="flex size-full gap-16 bg-background p-10 pl-60">
+      <section className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
+        <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
+          <div className="flex w-full items-center justify-between">
+            <ActionHeader closeToggle={closeToggle} onClose={handleClose} />
+          </div>
+        </div>
+
         {displayMeeting && <MeetNotes meetData={displayMeeting} />}
       </section>
-      <section className="w-full max-w-[300px] text-[16px] text-secondary-foreground">
-        <Stack meetings={meets} currentMeetId={meetId} />
+
+      <section>
+        {!closeToggle && (
+          <StackModal notes={simplifiedNotes} handleClose={handleClose} />
+        )}
       </section>
     </main>
   )

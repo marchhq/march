@@ -1,5 +1,5 @@
+import { NoteLink } from "../NoteLink"
 import NoteDetails from "@/src/components/header/note-details"
-import { NoteLink } from "@/src/components/NoteLink"
 import { formatDateHeader } from "@/src/utils/datetime"
 
 interface SimplifiedNote {
@@ -16,7 +16,7 @@ interface ModalProps {
   handleClose: () => void
 }
 
-export const NoteStackModal = ({ notes, handleClose }: ModalProps) => {
+export const StackModal = ({ notes, handleClose }: ModalProps) => {
   return (
     <div>
       <div

@@ -32,7 +32,7 @@ export default async function ItemPage(props: {
     case "notes":
       return <NotesPage noteId={itemId} spaceId={spaceId} blockId={blockId} />
     case "meetings":
-      return <MeetingPage meetId={itemId} />
+      return <MeetingPage meetId={itemId} spaceId={spaceId} blockId={blockId} />
     case "reading list":
       return redirect(`/spaces/${spaceId}/${blockId}/items`)
     default:

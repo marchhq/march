@@ -3,27 +3,31 @@ import { memo } from "react"
 import { PlusIcon } from "@radix-ui/react-icons"
 import { Layers } from "lucide-react"
 
-interface NoteActionsProps {
+interface ActionHeaderProps {
   loading: boolean
   closeToggle: boolean
-  addNewNote: () => Promise<any>
-  handleClose: () => void
+  onAdd: () => Promise<any>
+  onClose: () => void
+  addButtonLabel?: string
 }
 
-const NoteActions = ({
+const ActionHeader = ({
   loading,
   closeToggle,
-  addNewNote,
-  handleClose,
-}: NoteActionsProps) => {
+  onAdd,
+  onClose,
+  addButtonLabel,
+}: ActionHeaderProps) => {
   return (
     <div className="flex w-full items-center justify-end gap-4">
       {!loading ? (
         <button
-          onClick={addNewNote}
+          onClick={onAdd}
           className="hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground"
+          title={addButtonLabel || "add new note"}
         >
           <PlusIcon />
+          {addButtonLabel && <span>{addButtonLabel}</span>}
         </button>
       ) : (
         <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground">
@@ -34,7 +38,7 @@ const NoteActions = ({
         className={`hover-text flex items-center ${
           !closeToggle ? "text-foreground" : ""
         }`}
-        onClick={handleClose}
+        onClick={onClose}
       >
         <Layers size={16} />
       </button>
@@ -42,4 +46,4 @@ const NoteActions = ({
   )
 }
 
-export default memo(NoteActions)
+export default memo(ActionHeader)
