@@ -1,11 +1,30 @@
 {
-  "name": "electron",
+  "name": "march",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "March Desktop App",
   "main": "./out/main/index.js",
   "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "build": {
+    "appId": "com.march.app",
+    "productName": "march",
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": ["AppImage"]
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    },
+    "npmRebuild": false,
+    "asar": true
+  },
   "scripts": {
+<<<<<<< HEAD
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
@@ -19,30 +38,27 @@
     "build:win": "bun run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux"
+=======
+    "typecheck": "tsc --noEmit -p tsconfig.json --composite false",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux",
+    "dist": "npm run build && electron-builder"
+>>>>>>> f11828263d931102b8f5738d87fdb45afb70857a
   },
   "dependencies": {
-    "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0"
   },
   "devDependencies": {
-    "@electron-toolkit/eslint-config-prettier": "^2.0.0",
-    "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@types/node": "^20.14.8",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "autoprefixer": "^10.4.19",
     "electron": "^31.0.2",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.3",
-    "postcss": "^8.4.39",
-    "prettier": "^3.3.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "tailwindcss": "^3.4.6",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   }
