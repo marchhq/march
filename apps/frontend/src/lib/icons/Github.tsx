@@ -1,4 +1,3 @@
-import type { JSX } from "react"
 export const Github = (): JSX.Element => {
   return (
     <svg

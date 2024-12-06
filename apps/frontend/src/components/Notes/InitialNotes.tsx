@@ -7,7 +7,12 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useNotesStore from "@/src/lib/store/notes.store"
 
-const NotesPage: React.FC = () => {
+interface InitialNotesProps {
+  spaceId: string
+  blockId: string
+}
+
+const InitialNotes: React.FC<InitialNotesProps> = ({ spaceId, blockId }) => {
   const { session } = useAuth()
   const router = useRouter()
   const { notes, addNote, latestNote, fetchNotes, setIsFetched, isFetched } =
@@ -15,12 +20,12 @@ const NotesPage: React.FC = () => {
 
   const fetchTheNotes = useCallback(async (): Promise<void> => {
     try {
-      await fetchNotes(session)
+      await fetchNotes(session, spaceId, blockId)
       setIsFetched(true)
     } catch (error) {
       setIsFetched(false)
     }
-  }, [session, fetchNotes, setIsFetched])
+  }, [session, fetchNotes, setIsFetched, spaceId, blockId])
 
   useEffect(() => {
     if (!isFetched) {
@@ -30,20 +35,22 @@ const NotesPage: React.FC = () => {
 
   useEffect(() => {
     if (latestNote) {
-      router.push(`/space/notes/${latestNote._id}`)
+      router.push(
+        `/spaces/${spaceId}/blocks/${blockId}/items/${latestNote._id}`
+      )
     }
-  }, [latestNote, router])
+  }, [latestNote, router, blockId, spaceId])
 
   const addNewNote = useCallback(async (): Promise<void> => {
     try {
       const newNote = await addNote(session, "", "<p></p>")
       if (newNote !== null) {
-        router.push(`/space/notes/${newNote._id}`)
+        router.push(`/spaces/${spaceId}/blocks/${blockId}/items/${newNote._id}`)
       }
     } catch (error) {
       console.error(error)
     }
-  }, [session, addNote, router])
+  }, [session, addNote, router, spaceId, blockId])
 
   useEffect(() => {
     if (notes.length === 0) {
@@ -58,4 +65,4 @@ const NotesPage: React.FC = () => {
   )
 }
 
-export default NotesPage
+export default InitialNotes
