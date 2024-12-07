@@ -30,7 +30,6 @@
     "start": "bun electron-vite preview",
     "dev": "bun electron-vite dev",
     "build": "bun run typecheck && bun electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
     "build:unpack": "bun run build && electron-builder --dir",
     "build:win": "bun run build && electron-builder --win",
     "build:mac": "bun run build && electron-builder --mac",
