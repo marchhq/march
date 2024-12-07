@@ -5,9 +5,6 @@ import { BACKEND_URL, FRONTEND_URL } from "@/src/lib/constants/urls"
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
 
-  const fullUrl = request.nextUrl.toString()
-  console.log("Full redirect URL from GitHub:", fullUrl)
-
   const code = searchParams.get("code")
   if (!code) {
     return NextResponse.json(

@@ -94,22 +94,31 @@ export const ItemAdd: React.FC = () => {
 
   return (
     <div onBlur={handleOnBlur} className="pl-5">
-      <textarea
-        ref={textareaRefTitle}
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="add anything..."
-        className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus
-        rows={1}
-      />
-      {error && (
-        <div className="truncate text-xs text-danger-foreground">
-          <span>{error}</span>
-        </div>
-      )}
+      <div className="relative">
+        <textarea
+          ref={textareaRefTitle}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="add anything..."
+          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+          rows={1}
+        />
+
+        {addingItem && (
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-secondary-foreground">
+            press ↵ to save
+          </span>
+        )}
+
+        {error && (
+          <div className="truncate text-xs text-danger-foreground">
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import React from "react"
 
+import PageTracker from "@/src/components/PageTracker"
 import { Sidebar } from "@/src/components/Sidebar/Sidebar"
 import { Toaster } from "@/src/components/ui/toaster"
 import { AuthProvider } from "@/src/contexts/AuthContext"
@@ -15,6 +16,7 @@ const AppLayout: React.FC<Props> = ({ children }) => {
       <QueryProvider>
         <ModalProvider>
           <main className="flex h-screen bg-background">
+            <PageTracker />
             <Sidebar />
             <section className="flex-1">{children}</section>
             <Toaster />

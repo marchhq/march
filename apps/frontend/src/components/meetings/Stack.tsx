@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -55,23 +56,25 @@ export const Stack: React.FC<StackProps> = ({ meetings, currentMeetId }) => {
   }
 
   return (
-    <div className="flex w-full flex-col">
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <span
-        onClick={handleClose}
-        className="mb-4 cursor-pointer hover:text-foreground"
-      >
-        stack
-      </span>
+    <div className="flex items-start gap-16">
+      <div className="shrink-0">
+        <button
+          className="hover-text mt-1 flex items-center"
+          onClick={handleClose}
+        >
+          <Icon icon="basil:stack-solid" style={{ fontSize: "15px" }} />
+        </button>
+      </div>
+
       <div
         ref={stackRef}
         className={classNames(
           closeToggle ? "hidden" : "visible",
-          "overflow-y-auto overflow-x-hidden px-4"
+          "ml-2 flex max-h-screen w-full max-w-[200px] flex-col gap-8 overflow-y-auto text-sm text-secondary-foreground"
         )}
         style={{ maxHeight }}
       >
-        <div className="mt-2 flex flex-col gap-2 border-l border-border">
+        <div className="flex flex-col gap-2 border-l border-border">
           {stackItems.map((meet) => (
             <Link
               key={meet.id}

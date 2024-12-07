@@ -53,7 +53,6 @@ export function RescheduleCalendar({
     setDateChanged(true)
   }
   const setNoDate = () => {
-    setNoDateFlag(true)
     setDate(null)
     setCycleDate(null)
     setDateChanged(true)
