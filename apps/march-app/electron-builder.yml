@@ -7,12 +7,9 @@ files:
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
-  - '!{tsconfig.json,tsconfig.node.json}'
-  - 'dist/**/*'
-  - 'main/**/*'
-  - 'package.json'
+  - '!{.env,.env.*,.npmrc,bun.lockb}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc*}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
 win:
