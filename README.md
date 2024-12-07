@@ -7,7 +7,7 @@ To get a local copy up and running, please follow these simple steps.
 Here is what you need to run march.
 
 - Node.js (Version: >=18.x)
-- pnpm (recommended)
+- bun (recommended)
 
 ## Development
 
