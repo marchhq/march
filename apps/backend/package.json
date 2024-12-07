@@ -11,9 +11,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "test": "jest",
-    "start": "node index.js",
-    "postinstall": "electron-builder install-app-deps",
-    "build": "electron-builder"
+    "start": "node index.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",
