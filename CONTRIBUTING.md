@@ -44,7 +44,7 @@ git checkout -b <feature-branch-name>
 4. Install packages with pnpm
 
 ```
-pnpm install
+bun install
 ```
 
 5. Set up your .env file
@@ -54,7 +54,7 @@ Go to the `app/backend` and `app/frontend` directories and duplicate the `.env.e
 6. Run (in development mode)
 
 ```
-pnpm dev
+bun dev
 ```
 
 ## Making a Pull Request
