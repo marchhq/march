@@ -55,10 +55,10 @@ const StackConnect: React.FC = () => {
   return (
     <main className="flex h-full flex-col items-center">
       <div className="flex size-full flex-col items-center justify-center gap-12 pb-4">
-        <div className="mr-[120px] font-medium ">
-          <h1>Connect your stack</h1>
-          <h1 className="text-start">
-            to <span className="text-primary-foreground">stay in the flow</span>
+        <div className="font-medium ">
+          <h1>
+            Connect your stack to{" "}
+            <span className="text-primary-foreground">stay in the flow</span>
           </h1>
         </div>
         <div className="flex flex-col gap-2 text-base font-medium text-secondary-foreground">
