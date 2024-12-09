@@ -14,7 +14,7 @@ const getGoogleCalendarAccessToken = async (code, user) => {
     user.timezone = userTimezone
     await user.save();
 
-    return tokens;
+    return { tokens, userTimezone };
 };
 
 const refreshGoogleCalendarAccessToken = async (user) => {

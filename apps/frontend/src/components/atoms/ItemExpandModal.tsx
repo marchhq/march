@@ -128,18 +128,21 @@ export const ItemExpandModal: React.FC = () => {
 
     const newContent = currentItem.description || "<p></p>"
 
-    if (currentItem._id !== editItemId) {
-      setEditItemId(currentItem._id)
-      setEditedItem({ title: currentItem.title || "" })
-      setContent(newContent)
-      lastSavedContent.current = newContent
-
-      if (editor?.commands) {
-        editor.commands.setContent(newContent)
-        editor.commands.focus()
-      }
+    if (editor?.commands) {
+      editor.commands.setContent(newContent)
+      editor.commands.focus()
     }
-  }, [currentItem, editItemId, editor])
+
+    setEditItemId(currentItem._id)
+    setEditedItem({ title: currentItem.title || "" })
+
+    return () => {
+      if (editor?.commands) {
+        editor.commands.clearContent()
+      }
+      lastSavedContent.current = "<p></p>"
+    }
+  }, [currentItem, editor])
 
   // effect to handle title auto-save
   useEffect(() => {

@@ -4,6 +4,7 @@ import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
+import { broadcastUpdate } from "../../../index.js";
 
 const exchangeCodeForAccessToken = async (code) => {
     const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
@@ -83,8 +84,11 @@ const processWebhookEvent = async (event, payload) => {
         user: userId
     });
 
+    let message = '';
+    let broadcastItem = null;
+
     if (existingItem) {
-        await Item.findByIdAndUpdate(existingItem._id, {
+        const updatedItem = await Item.findByIdAndUpdate(existingItem._id, {
             title: issueOrPR.title,
             description: issueOrPR.body,
             labels: labelIds,
@@ -95,6 +99,10 @@ const processWebhookEvent = async (event, payload) => {
             'metadata.assignees': issueOrPR.assignees,
             updatedAt: issueOrPR.updated_at
         }, { new: true });
+
+        message = `Updated item with ID: ${issueOrPR.id}`;
+        console.log("message", message)
+        broadcastItem = updatedItem;
     } else {
         // Create new item
         const newItem = new Item({
@@ -117,8 +125,20 @@ const processWebhookEvent = async (event, payload) => {
             updatedAt: issueOrPR.updated_at
         });
 
-        await newItem.save();
+        const savedItem = await newItem.save();
+        message = `Created new item with ID: ${issueOrPR.id}`;
+        console.log("message", message)
+        broadcastItem = savedItem;
     }
+
+    // Broadcast the message and the item from the database
+    const broadcastData = {
+        type: 'github',
+        message,
+        item: broadcastItem
+    };
+
+    broadcastUpdate(broadcastData);
 };
 
 const uninstallGithubApp = async (user) => {

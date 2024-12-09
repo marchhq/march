@@ -36,6 +36,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
+  updateStateWithNewItem: (newItem: CycleItem) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
@@ -412,6 +413,20 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           }
         }
 
+        if (
+          updates.status === "done" &&
+          state.overdue.items.some((item) => item._id === id)
+        ) {
+          const itemFromOverdue = state.overdue.items.find(
+            (item) => item._id === id
+          )
+          if (itemFromOverdue) {
+            if (!items.some((item) => item._id === id)) {
+              return [...items, { ...itemFromOverdue, ...updates }]
+            }
+          }
+        }
+
         // otherwise, just update the item in by date view
         return items.map((item) =>
           item._id === id ? { ...item, ...updates } : item
@@ -441,7 +456,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             }
           }
 
-          if (updates.status === "done") {
+          if (isOverdue && updates.status === "done") {
             return items.filter((item) => item._id !== id)
           }
         }
@@ -605,5 +620,51 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       }))
       throw error
     }
+  },
+
+  updateStateWithNewItem: (newItem: CycleItem) => {
+    set((state) => {
+      // Helper function to update or add item
+      const updateOrAddItem = (items: CycleItem[]) => {
+        const existingIndex = items.findIndex(
+          (item) => item._id === newItem._id
+        )
+
+        if (existingIndex !== -1) {
+          // Update existing item
+          const updatedItems = [...items]
+          updatedItems[existingIndex] = {
+            ...updatedItems[existingIndex],
+            ...newItem,
+          }
+          return updatedItems
+        }
+
+        // Add new item only if it doesn't exist
+        return [newItem, ...items]
+      }
+
+      return {
+        inbox: {
+          ...state.inbox,
+          items: updateOrAddItem(state.inbox.items),
+          isLoading: false,
+          error: null,
+        },
+        thisWeek: {
+          ...state.thisWeek,
+          items: updateOrAddItem(state.thisWeek.items),
+          isLoading: false,
+          error: null,
+        },
+        items: updateOrAddItem(state.items),
+        // Update currentItem if it's the same item
+        currentItem:
+          state.currentItem?._id === newItem._id
+            ? { ...state.currentItem, ...newItem }
+            : state.currentItem,
+        isLoading: false,
+      }
+    })
   },
 }))

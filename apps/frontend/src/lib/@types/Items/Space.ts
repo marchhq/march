@@ -15,10 +15,11 @@ export interface Spaces {
 
 export interface SpaceStoreTypes {
   spaces: Space[]
+  spaceId: string | null
   space: Space | null
   loading: boolean
   error: string | null
-  fetchSpaces: (session: string) => Promise<void>
+  fetchSpaces: (session: string | Promise<string>) => Promise<void>
   fetchSpaceById: (id: string, session: string) => Promise<void>
   createSpace: (data: Space, session: string) => Promise<void>
   updateSpace: (_id: string, data: Space, session: string) => Promise<void>

@@ -6,18 +6,28 @@ import { type ReadingItem } from "@/src/lib/@types/Items/Reading"
 
 export interface ReadingStoreType {
   readingItems: ReadingItem[]
+  currentItem: ReadingItem | null
+  setCurrentItem: (item: ReadingItem | null) => void
   isFetched: boolean
+
   setIsFetched: (isFetched: boolean) => void
   fetchReadingList: (
     session: string,
-    blockId: string,
-    spaceId: string
+    spaceId: string,
+    blockId: string
   ) => Promise<void>
   setReadingItems: (items: ReadingItem[]) => void
   addItem: (
     session: string,
     blockId: string,
     spaceId: string,
+    itemData: ItemData
+  ) => Promise<void>
+  updateItem: (
+    session: string,
+    blockId: string,
+    spaceId: string,
+    itemId: string,
     itemData: ItemData
   ) => Promise<void>
   deleteItem: (
@@ -29,9 +39,15 @@ export interface ReadingStoreType {
 }
 
 interface ItemData {
-  title: string
-  type: string
+  title?: string
+  type?: string
   description?: string
+  status?: string
+  dueDate?: Date | null
+  cycle?: {
+    startsAt: string | null
+    endsAt: string | null
+  }
   metadata?: {
     url: string
   }
@@ -39,20 +55,27 @@ interface ItemData {
 
 const useReadingStore = create<ReadingStoreType>((set, get) => ({
   readingItems: [],
+  currentItem: null,
   isFetched: false,
+
+  setCurrentItem: (item: ReadingItem | null) => {
+    set({ currentItem: item })
+  },
 
   setIsFetched: (isFetched: boolean) => set({ isFetched }),
 
   fetchReadingList: async (
     session: string,
-    blockId: string,
-    spaceId: string
+    spaceId: string,
+    blockId: string
   ) => {
     if (!blockId || !spaceId) {
       console.warn("fetchReadingList: No blockId or spaceId provided")
       set({ isFetched: true, readingItems: [] })
       return
     }
+
+    set({ isFetched: false })
 
     try {
       const response = await axios.get(
@@ -64,7 +87,10 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
         }
       )
 
-      set({ readingItems: response.data.items, isFetched: true })
+      set({
+        readingItems: response.data.items,
+        isFetched: true,
+      })
     } catch (error) {
       console.error("Error fetching reading list:", error)
       set({ isFetched: true, readingItems: [] })
@@ -104,7 +130,32 @@ const useReadingStore = create<ReadingStoreType>((set, get) => ({
       console.error("Error adding item:", error)
     }
   },
-
+  updateItem: async (
+    session: string,
+    spaceId: string,
+    blockId: string,
+    itemId: string,
+    itemData: ItemData
+  ) => {
+    try {
+      console.log(`itemId: ${itemId}`)
+      const updateResponse = await axios.put(
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items/${itemId}`,
+        itemData,
+        { headers: { Authorization: `Bearer ${session}` } }
+      )
+      const updatedItem = updateResponse.data.item
+      if (updatedItem) {
+        set((state) => ({
+          readingItems: state.readingItems.map((item) =>
+            item._id === itemId ? updatedItem : item
+          ),
+        }))
+      }
+    } catch (error) {
+      console.error("Error updating item:", error)
+    }
+  },
   deleteItem: async (
     session: string,
     spaceId: string,

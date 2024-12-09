@@ -110,9 +110,7 @@ export const toUtcDate = (date: Date): Date => {
 }
 
 export const formatMeetDate = (date: Date) => {
-  const weekday = date.toLocaleDateString("en-US", { weekday: "short" })
-  const day = date.getDate()
-  return `${weekday}, ${day.toString().padStart(2, "0")}`
+  return format(date, "dd, MMMM yy").toLowerCase()
 }
 
 export const formatMeetTime = (date: Date): string => {
@@ -124,5 +122,38 @@ export const formatMeetTime = (date: Date): string => {
 }
 
 export const formatDateHeader = (date: string) => {
-  return format(date, "dd, MMMM yy").toLowerCase()
+  return format(date, "dd, MMMM")
+}
+
+export const getUserDate = (timezone: string | null): Date => {
+  if (!timezone) {
+    return new Date()
+  }
+
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }
+
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", options)
+    const parts = formatter.formatToParts(new Date())
+
+    const dateObj: { [key: string]: string } = {}
+    parts.forEach(({ type, value }) => {
+      dateObj[type] = value
+    })
+
+    const localDateString = `${dateObj.year}-${dateObj.month}-${dateObj.day}T${dateObj.hour}:${dateObj.minute}:${dateObj.second}`
+    return new Date(localDateString)
+  } catch (error) {
+    console.error("Error formatting date with timezone:", error)
+    return new Date()
+  }
 }

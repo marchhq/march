@@ -5,7 +5,11 @@ export interface NotesStoreType {
   latestNote: Note | null
   isFetched: boolean
   setIsFetched: (isFetched: boolean) => void
-  fetchNotes: (session: string) => Promise<Note[]>
+  fetchNotes: (
+    session: string,
+    spaceId: string,
+    blockId: string
+  ) => Promise<Note[]>
   setNotes: (notes: Note[]) => void
   addNote: (
     session: string,

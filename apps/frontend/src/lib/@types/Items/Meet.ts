@@ -89,7 +89,12 @@ export interface MeetsStoreType {
    * Fetch meeting by id
    * @param session and meet _id
    */
-  createMeet: (session: string, meet: any) => Promise<void>
+  createMeet: (
+    session: string,
+    spaceId: string,
+    blockId: string,
+    meet: any
+  ) => Promise<void>
   /**
    * Update a Meet in local
    * @param meet - The Meet to update

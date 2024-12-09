@@ -8,9 +8,9 @@ const CalendarConnect = () => {
       <div className="flex size-3/4 flex-col items-center justify-center gap-12">
         <div className="flex flex-col justify-center gap-4">
           <div className="flex flex-col gap-2">
-            <h1 className="font-medium">
-              Connect Your{" "}
-              <span className="text-primary-foreground">calendar</span>
+            <h1 className="whitespace-nowrap font-medium">
+              Connect Your
+              <span className="ml-1 text-primary-foreground">calendar</span>
             </h1>
             <p className="max-w-[320px] pl-1 text-start text-xs font-semibold text-secondary-foreground">
               sync your daily agenda with march and take notes
