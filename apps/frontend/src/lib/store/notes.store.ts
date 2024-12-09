@@ -20,36 +20,18 @@ const useNotesStore = create<NotesStoreType>((set) => ({
       isFetched,
     }))
   },
-  fetchNotes: async (session: string) => {
+  fetchNotes: async (session: string, spaceId: string, blockId: string) => {
     let notes_: Note[] = []
     try {
-      const spaces = await axios.get(`${BACKEND_URL}/spaces`, {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      })
-      const notesSpace = spaces.data.spaces.find(
-        (space) => space.name == "Notes"
-      )
-      set({ spaceId: notesSpace._id })
-      const blocks = await axios.get(
-        `${BACKEND_URL}/spaces/${notesSpace._id}/blocks`,
-        {
-          headers: {
-            Authorization: `Bearer ${session}`,
-          },
-        }
-      )
-      const notesBlock = blocks.data.blocks[0]
-      set({ blockId: notesBlock._id })
       const { data } = await axios.get(
-        `${BACKEND_URL}/spaces/${notesSpace._id}/blocks/${notesBlock._id}/items`,
+        `${BACKEND_URL}/spaces/${spaceId}/blocks/${blockId}/items`,
         {
           headers: {
             Authorization: `Bearer ${session}`,
           },
         }
       )
+
       const res = data as NotesResponse
       notes_ = res.items.sort(
         (a, b) => Number(new Date(a.createdAt)) - Number(new Date(b.createdAt))
@@ -63,7 +45,9 @@ const useNotesStore = create<NotesStoreType>((set) => ({
 
       set((state: NotesStoreType) => ({
         notes: notes_,
-        latestNote, // Update the state with the latest note
+        latestNote,
+        spaceId,
+        blockId,
       }))
     } catch (error) {
       const e = error as AxiosError

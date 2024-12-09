@@ -2,10 +2,8 @@
 
 import React from "react"
 
-import Image from "next/image"
-
-import ChevronDownIcon from "@/public/icons/chevrondown.svg"
-import ChevronRightIcon from "@/public/icons/chevronright.svg"
+import { SidebarFeedback } from "./SidebarFeedback"
+import { Switch } from "../atoms/Switch"
 import { SidebarFavorites } from "@/src/components/Sidebar/SidebarFavorites"
 import { SidebarMain } from "@/src/components/Sidebar/SidebarMain"
 import { SidebarProfile } from "@/src/components/Sidebar/SidebarProfile"
@@ -21,7 +19,12 @@ import classNames from "@/src/utils/classNames"
 export const Sidebar: React.FC = () => {
   return (
     <SidebarCollapseProvider>
-      <SidebarNav />
+      <div className="flex flex-col border-r border-border">
+        <div className="pl-6 pt-1">
+          <SidebarCollapseButton />
+        </div>
+        <SidebarNav />
+      </div>
     </SidebarCollapseProvider>
   )
 }
@@ -33,21 +36,27 @@ const SidebarNav: React.FC = () => {
   return (
     <nav
       className={classNames(
-        "flex w-full relative flex-col justify-between bg-background p-10 pr-0 text-sm text-secondary-foreground group",
-        isCollapsed
-          ? "min-w-fit max-w-fit"
-          : "min-w-[calc(min(-20px+100vw,230px))] max-w-[calc(min(-20px+100vw,230px))]"
+        "group relative flex h-screen bg-background text-sm p-6 text-secondary-foreground ",
+        isCollapsed ? "w-[250px]" : "w-[80px]"
       )}
     >
-      <div className="flex flex-col gap-7">
-        <div className="flex gap-4">
-          <SidebarProfile />
-          <SidebarCollapseButton />
+      <div className="flex h-5/6 flex-col justify-between">
+        <div className="flex flex-col gap-4">
+          <SidebarMain />
+          <SidebarFavorites />
         </div>
-        <SidebarMain />
-        <SidebarFavorites />
-        <SidebarSpaces />
+
+        <div className="flex flex-col gap-2">
+          <SidebarProfile />
+          <SidebarFeedback />
+        </div>
       </div>
+
+      {isCollapsed && (
+        <div className="mr-4 mt-8">
+          <SidebarSpaces />
+        </div>
+      )}
     </nav>
   )
 }
@@ -55,27 +64,8 @@ const SidebarNav: React.FC = () => {
 const SidebarCollapseButton: React.FC = () => {
   const { isCollapsed, toggleCollapse } = useSidebarCollapse()
   return (
-    <button
-      onClick={toggleCollapse}
-      className="group/button invisible group-hover:visible"
-    >
-      {!isCollapsed ? (
-        <Image
-          src={ChevronDownIcon}
-          alt="chevron down icon"
-          width={16}
-          height={16}
-          className="opacity-50 group-hover/button:opacity-100"
-        />
-      ) : (
-        <Image
-          src={ChevronRightIcon}
-          alt="chevron right icon"
-          width={16}
-          height={16}
-          className="opacity-50 group-hover/button:opacity-100"
-        />
-      )}
-    </button>
+    <div className="-ml-2.5">
+      <Switch checked={isCollapsed} onCheckedChange={toggleCollapse} />
+    </div>
   )
 }

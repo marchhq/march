@@ -1,4 +1,3 @@
-import type { JSX } from "react";
 interface ProfileBtnProps {
   username?: string
   fullname?: string

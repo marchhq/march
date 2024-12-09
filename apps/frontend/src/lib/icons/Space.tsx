@@ -1,4 +1,3 @@
-import type { JSX } from "react"
 export const Space = (): JSX.Element => {
   return (
     <svg
