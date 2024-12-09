@@ -1,5 +1,5 @@
 "use client"
-import React, { type JSX } from "react";
+import React from "react"
 
 import Image from "next/image"
 

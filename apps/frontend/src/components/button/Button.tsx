@@ -1,4 +1,3 @@
-import type { JSX } from "react";
 export const Button = ({ children, onClick }): JSX.Element => {
   return (
     <button
