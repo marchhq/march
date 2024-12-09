@@ -16,12 +16,10 @@ export const SidebarProfile: React.FC = () => {
 
   const { user, error } = useUserInfo()
 
-  const { isCollapsed } = useSidebarCollapse()
-
   const isActive = pathname.includes("/profile")
 
   return (
-    <div className="flex w-full max-w-[calc(100%-32px)] flex-col gap-2">
+    <div className="flex w-full flex-col gap-2">
       <Link
         className={classNames(
           isActive && "text-foreground",
@@ -33,20 +31,15 @@ export const SidebarProfile: React.FC = () => {
           <Image
             src={user?.avatar}
             alt="user avatar"
-            width={16}
-            height={16}
+            width={18}
+            height={18}
             className={classNames(
               isActive && "border-foreground",
               "rounded border border-border group-hover:border-foreground"
             )}
           />
         ) : (
-          <UserIcon size={16} />
-        )}
-        {!isCollapsed && user && (
-          <span className="max-w-[calc(100%-24px)] truncate">
-            {user.userName}
-          </span>
+          <UserIcon size={16} className="text-primary-foreground" />
         )}
       </Link>
       {error && (
