@@ -1,12 +1,12 @@
 {
-  "name": "@satellite/backend",
+  "name": "@march/backend",
   "version": "0.0.1",
-  "description": "satellite Backend",
+  "description": "march Backend",
   "author": "march-dev",
   "private": true,
   "main": "index.js",
   "type": "module",
-  "repository": "git@github.com:marchhq/satellite-backend.git",
+  "repository": "git@github.com:marchhq/march.git",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon index.js",
