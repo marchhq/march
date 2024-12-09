@@ -3,7 +3,7 @@ import { environment } from '../../loaders/environment.loader.js';
 import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
-import { broadcastUpdate } from "../../../index.js"
+import { broadcastUpdate } from "../../loaders/websocket.loader.js";
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.

@@ -4,7 +4,7 @@ import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
-import { broadcastUpdate } from "../../../index.js";
+import { broadcastUpdate } from "../../loaders/websocket.loader.js";
 
 const exchangeCodeForAccessToken = async (code) => {
     const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
