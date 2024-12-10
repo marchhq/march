@@ -1,3 +1,4 @@
+import { Item } from "../../models/lib/item.model.js";
 import { Meeting } from "../../models/page/meetings.model.js";
 
 const createMeeting = async (user, meetingData) => {
@@ -17,16 +18,17 @@ const createMeeting = async (user, meetingData) => {
 };
 
 const getMeeting = async (user) => {
-    const meetings = await Meeting.find({
+    const meetings = await Item.find({
         user,
+        type: "meeting",
         isDeleted: false
     })
-        .sort({ created_at: -1 });
+        .sort({ updatedAt: -1 });
     return meetings;
 };
 
 const getMeetingById = async (user, id) => {
-    const meeting = await Meeting.find({
+    const meeting = await Item.find({
         user,
         id
     })
@@ -36,7 +38,7 @@ const getMeetingById = async (user, id) => {
 };
 
 const updateMeeting = async (id, updateData, user) => {
-    const updatedBlock = await Meeting.findOneAndUpdate({
+    const updatedBlock = await Item.findOneAndUpdate({
         id,
         user
     },

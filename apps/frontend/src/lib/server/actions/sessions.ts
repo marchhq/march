@@ -10,7 +10,7 @@ import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
  * @returns A Promise that resolves to a string representing the session token.
  */
 const getSession = async (): Promise<string> => {
-  const token = cookies().get(ACCESS_TOKEN)
+  const token = (await cookies()).get(ACCESS_TOKEN)
   const session = token?.value
   return session ?? ""
 }
@@ -21,7 +21,7 @@ const getSession = async (): Promise<string> => {
  * @returns A Promise that resolves to void.
  */
 const setSession = async (session: string): Promise<void> => {
-  cookies().set(ACCESS_TOKEN, session, {
+  ;(await cookies()).set(ACCESS_TOKEN, session, {
     maxAge: 60 * 60 * 24 * 30, // 30 days
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -36,7 +36,7 @@ const setSession = async (session: string): Promise<void> => {
  * @returns A Promise that resolves to void.
  */
 const clearSession = async (): Promise<void> => {
-  cookies().delete(ACCESS_TOKEN)
+  ;(await cookies()).delete(ACCESS_TOKEN)
   return redirect("/")
 }
 

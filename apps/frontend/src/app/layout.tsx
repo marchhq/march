@@ -2,6 +2,7 @@ import * as React from "react"
 
 import type { Viewport } from "next"
 
+import { LogSnagProvider } from "@logsnag/next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
@@ -38,6 +39,12 @@ interface Props {
 const RootLayout: React.FC<Props> = ({ children }) => {
   return (
     <html lang="en">
+      <head>
+        <LogSnagProvider
+          token={process.env.NEXT_PUBLIC_LOGSNAG_TOKEN ?? ""}
+          project={process.env.NEXT_PUBLIC_LOGSNAG_PROJECT_NAME ?? ""}
+        />
+      </head>
       <body
         className={classNames(
           sansFont.variable,

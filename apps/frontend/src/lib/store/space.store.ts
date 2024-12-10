@@ -13,6 +13,7 @@ const getConfig = (session: string) => ({
 
 const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   spaces: [],
+  spaceId: null,
   space: null,
   loading: false,
   error: null,

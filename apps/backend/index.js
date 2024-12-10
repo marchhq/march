@@ -1,32 +1,46 @@
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
+import { WebSocketServer, WebSocket } from "ws";
+import http from "http";
+
+let wss;
 
 (async function init () {
-    app.listen(environment.PORT, () => {
-        console.log(`Server listening on port ${environment.PORT}`)
-    })
-})()
+    const server = http.createServer(app);
+    server.listen(environment.PORT, async () => {
+        console.log(`Server listening on port ${environment.PORT}`);
+    });
 
-// for webhook testing in local
-// import { app } from "./src/index.js";
-// import { environment } from "./src/loaders/environment.loader.js";
-// import ngrok from '@ngrok/ngrok'
+    wss = new WebSocketServer({ server });
 
-// const PORT = 8080;
-// let listener;
-// (async function init () {
-//     app.listen(PORT, async () => {
-//         console.log(`Server is running on http://localhost:${PORT}`);
+    wss.on("connection", function connection (ws) {
+        ws.on("error", console.error);
 
-//         try {
-//             listener = await ngrok.forward({ addr: `http://localhost:${PORT}`, authtoken: environment.NGROK_AUTH_TOKEN });
-//             console.log(`Ingress established at: ${listener.url()}`);
-//         } catch (error) {
-//             console.error('Error starting ngrok:', error);
-//         }
-//     });
-// })()
+        ws.on("message", function message (data, isBinary) {
+            wss.clients.forEach(function each (client) {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(data, { binary: isBinary });
+                }
+            });
+        });
 
-// export {
-//     listener
-// }
+        ws.send("Hello! Message From Server!!");
+    });
+})();
+
+// Define the broadcastUpdate function inside index.js
+export const broadcastUpdate = (data, isBinary = false) => {
+    if (!wss) {
+        console.log("WebSocket server is not initialized");
+        return;
+    }
+
+    console.log("Broadcasting update: ", data);
+
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            // Send the data to all connected clients
+            client.send(JSON.stringify(data), { binary: isBinary });
+        }
+    });
+};
