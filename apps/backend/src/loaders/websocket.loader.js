@@ -20,17 +20,45 @@ const initializeWebSocket = (server) => {
     });
 };
 
+// const broadcastUpdate = (data, isBinary = false) => {
+//     if (!wss) {
+//         console.log("WebSocket server is not initialized");
+//         return;
+//     }
+
+//     console.log("Broadcasting update: ", data);
+
+//     wss.clients.forEach((client) => {
+//         if (client.readyState === WebSocket.OPEN) {
+//             client.send(JSON.stringify(data), { binary: isBinary });
+//         }
+//     });
+// };
+
 const broadcastUpdate = (data, isBinary = false) => {
     if (!wss) {
         console.log("WebSocket server is not initialized");
         return;
     }
 
-    console.log("Broadcasting update: ", data);
+    let message;
+    if (isBinary) {
+        if (typeof data === "object") {
+            message = Buffer.from(JSON.stringify(data), "utf-8");
+        } else if (Buffer.isBuffer(data) || data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
+            message = data;
+        } else {
+            throw new TypeError("Invalid data type for binary broadcast. Must be object or binary.");
+        }
+    } else {
+        message = typeof data === "object" ? JSON.stringify(data) : data;
+    }
+
+    // console.log("Broadcasting update: ", isBinary ? "[Binary Data]" : message);
 
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(data), { binary: isBinary });
+            client.send(message, { binary: isBinary });
         }
     });
 };

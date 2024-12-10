@@ -138,7 +138,7 @@ const processWebhookEvent = async (event, payload) => {
         item: broadcastItem
     };
 
-    broadcastUpdate(broadcastData);
+    broadcastUpdate(broadcastData, true);
 };
 
 const uninstallGithubApp = async (user) => {

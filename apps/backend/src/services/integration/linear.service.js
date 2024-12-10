@@ -285,7 +285,7 @@ const handleWebhookEvent = async (payload) => {
         item: broadcastItem
     };
 
-    broadcastUpdate(broadcastData);
+    broadcastUpdate(broadcastData, true);
 };
 
 /**
