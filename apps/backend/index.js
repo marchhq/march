@@ -1,7 +1,7 @@
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
 import { createServer } from "http";
-import { initializeWebSocket } from "./src/loaders/WebSocket.loader.js";
+import { initializeWebSocket } from "./src/loaders/websocket.loader.js";
 
 (async function init () {
     const server = createServer(app);
