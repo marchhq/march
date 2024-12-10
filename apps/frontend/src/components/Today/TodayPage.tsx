@@ -18,7 +18,7 @@ export const TodayPage: React.FC = () => {
   }
 
   return (
-    <main className="h-full bg-background p-10 pl-5">
+    <main className="h-full bg-background">
       <section className="flex h-full items-start gap-10">
         <div className="no-scrollbar flex h-full flex-1 flex-col gap-5 overflow-y-scroll text-sm">
           <header>

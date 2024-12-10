@@ -59,7 +59,7 @@ export const DateCycle: React.FC<DateCycleProps> = ({
         : formatedDateTitle
 
   return (
-    <div className="flex flex-1 flex-col gap-4 pl-5 text-sm">
+    <div className="flex flex-1 flex-col gap-4 text-sm">
       <div className="flex w-full items-center justify-between gap-5">
         <div className="flex items-center gap-2 text-secondary-foreground">
           <span className="text-sm">{formatedDateHeader}</span>
