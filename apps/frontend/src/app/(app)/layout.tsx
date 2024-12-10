@@ -7,23 +7,12 @@ import { Topbar } from "@/src/components/topbar/topbar"
 import { Toaster } from "@/src/components/ui/toaster"
 import { AuthProvider } from "@/src/contexts/AuthContext"
 import ModalProvider from "@/src/contexts/ModalProvider"
-import { prefetchSpaces, QueryProvider } from "@/src/contexts/QueryProvider"
-import { getSession } from "@/src/lib/server/actions/sessions"
+import { QueryProvider } from "@/src/contexts/QueryProvider"
 interface Props {
   children: React.ReactNode
 }
 
 export default async function AppLayout({ children }) {
-  const session = await getSession()
-
-  if (session) {
-    try {
-      await prefetchSpaces(session)
-    } catch (error) {
-      console.error("Failed to prefetch spaces:", error)
-    }
-  }
-
   return (
     <AuthProvider>
       <QueryProvider>
