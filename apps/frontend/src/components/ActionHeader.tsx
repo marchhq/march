@@ -4,7 +4,6 @@ import { PlusIcon } from "@radix-ui/react-icons"
 import { Layers } from "lucide-react"
 
 interface ActionHeaderProps {
-  loading: boolean
   closeToggle: boolean
   onAdd: () => Promise<any>
   onClose: () => void
@@ -12,7 +11,6 @@ interface ActionHeaderProps {
 }
 
 const ActionHeader = ({
-  loading,
   closeToggle,
   onAdd,
   onClose,
@@ -20,27 +18,21 @@ const ActionHeader = ({
 }: ActionHeaderProps) => {
   return (
     <div className="flex w-full items-center justify-end gap-4">
-      {!loading ? (
-        <button
-          onClick={onAdd}
-          className="hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground"
-          title={addButtonLabel || "add new note"}
-        >
-          <PlusIcon />
-          {addButtonLabel && <span>{addButtonLabel}</span>}
-        </button>
-      ) : (
-        <div className="flex items-center gap-1 rounded-md px-1 text-secondary-foreground">
-          <span>loading...</span>
-        </div>
-      )}
+      <button
+        onClick={onAdd}
+        className="hover-bg flex items-center gap-1 truncate rounded-md px-1 text-secondary-foreground"
+        title={addButtonLabel || "add new note"}
+      >
+        <PlusIcon />
+        {addButtonLabel && <span>{addButtonLabel}</span>}
+      </button>
       <button
         className={`hover-text flex items-center ${
           !closeToggle ? "text-foreground" : ""
         }`}
         onClick={onClose}
       >
-        <Layers size={16} />
+        <Layers size={16} className="hover-text text-secondary-foreground" />
       </button>
     </div>
   )
