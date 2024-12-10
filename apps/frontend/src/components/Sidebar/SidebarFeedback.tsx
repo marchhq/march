@@ -7,7 +7,7 @@ export const SidebarFeedback = () => {
   return (
     <Dialog>
       <DialogTrigger>
-        <CircleHelp className="text-primary-foreground" size={18} />
+        <CircleHelp className="text-white" size={18} />
       </DialogTrigger>
       <DialogContent>
         <FeedbackModal />
