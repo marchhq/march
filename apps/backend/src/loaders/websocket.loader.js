@@ -133,7 +133,6 @@
 // export { initializeWebSocket, broadcastToUser };
 
 // here im usinf sec-websocket
-
 import { WebSocketServer, WebSocket } from "ws";
 import { verifyJWTToken } from "../utils/jwt.service.js";
 import { BlackList } from "../models/core/black-list.model.js";
@@ -144,18 +143,13 @@ const userConnections = new Map();
 
 const initializeWebSocket = (server) => {
     const wss = new WebSocketServer({
-        server,
-        handleProtocols: (protocols, request) => {
-        // Return the first protocol if it matches (this is optional)
-            return protocols[0];
-        }
+        server
     });
 
     wss.on("connection", async (ws, req) => {
         try {
-        // Get the token from the Sec-WebSocket-Protocol header
+            // Get the token from the Sec-WebSocket-Protocol header
             const token = req.headers["sec-websocket-protocol"];
-            console.log("token", token)
             if (!token) {
                 ws.close(4000, "Authorization token is required");
                 return;
@@ -171,7 +165,6 @@ const initializeWebSocket = (server) => {
             // Verify the token
             const payload = await verifyJWTToken(token);
             const user = await getUserById(payload.id);
-            // console.log("user", user)
             if (!user) {
                 ws.close(4002, "Invalid user");
                 return;
@@ -179,18 +172,30 @@ const initializeWebSocket = (server) => {
 
             console.log(`WebSocket connection established for user: ${user.id}`);
 
-            // Store the WebSocket connection for the user
+            // Close any existing WebSocket connection for this user
+            if (userConnections.has(user.id)) {
+                const existingWs = userConnections.get(user.id);
+                if (existingWs.readyState === WebSocket.OPEN) {
+                    console.log(`Closing existing WebSocket for user: ${user.id}`);
+                    existingWs.close();
+                }
+                userConnections.delete(user.id); // Clean up the old connection
+            }
+
+            // Store the new WebSocket connection for the user
             userConnections.set(user.id, ws);
 
-            ws.on("error", console.error);
+            ws.on("error", (error) => {
+                console.error(`WebSocket error for user ${user.id}:`, error.message);
+            });
 
             ws.on("message", (data, isBinary) => {
-                console.log(`Message received from user ${user.id}:`, data);
+                console.log(`Message received from user ${user.id}:`, data.toString());
             });
 
             ws.on("close", () => {
                 console.log(`WebSocket connection closed for user: ${user.id}`);
-                userConnections.delete(user.id);
+                userConnections.delete(user.id); // Remove the connection on close
             });
 
             ws.send("Welcome! WebSocket connection established.");
@@ -213,6 +218,7 @@ const broadcastToUser = (userId, data, isBinary = false) => {
         console.log(`Message sent to user ${userId}:`, data);
     } else {
         console.log(`WebSocket for user ${userId} is not open`);
+        userConnections.delete(userId); // Clean up stale connections
     }
 };
 
