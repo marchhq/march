@@ -88,6 +88,7 @@
 //     sendMessage,
 //   }
 // }
+
 import { useEffect, useState } from "react"
 
 import { useCycleItemStore } from "../lib/store/cycle.store"
@@ -101,24 +102,31 @@ if (!WEBSOCKET_URL) {
   )
 }
 
+let socketInstance: WebSocket | null = null
+
 export const useWebSocket = () => {
-  const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
   const { updateStateWithNewItem } = useCycleItemStore()
 
   useEffect(() => {
     const initializeWebSocket = async () => {
-      try {
-        const session = await getSession() // Await session here
-        const newSocket = new WebSocket(WEBSOCKET_URL, session) // Use session for WebSocket connection
+      if (socketInstance) {
+        console.log("WebSocket is already connected")
+        return
+      }
 
-        newSocket.onopen = () => {
+      try {
+        const session = await getSession()
+        console.log("session", session)
+        socketInstance = new WebSocket(WEBSOCKET_URL, session)
+
+        socketInstance.onopen = () => {
           setIsConnected(true)
           console.log("WebSocket connection established")
         }
 
-        newSocket.onmessage = async (event) => {
+        socketInstance.onmessage = async (event) => {
           try {
             let message
 
@@ -146,22 +154,14 @@ export const useWebSocket = () => {
           }
         }
 
-        newSocket.onclose = () => {
+        socketInstance.onclose = () => {
           setIsConnected(false)
           console.log("WebSocket connection closed")
+          socketInstance = null
         }
 
-        newSocket.onerror = (error) => {
+        socketInstance.onerror = (error) => {
           console.error("WebSocket error:", error)
-        }
-
-        setSocket(newSocket) // Set the WebSocket instance
-
-        // Cleanup function to close the WebSocket on unmount
-        return () => {
-          if (newSocket) {
-            newSocket.close()
-          }
         }
       } catch (error) {
         console.error("Error initializing WebSocket:", error)
@@ -169,15 +169,23 @@ export const useWebSocket = () => {
     }
 
     initializeWebSocket() // Call the async function inside useEffect
-  }, []) // Only run once on mount, no need for ACCESS_TOKEN in dependencies
+
+    // Cleanup function to close the WebSocket on unmount
+    return () => {
+      if (socketInstance) {
+        socketInstance.close()
+        socketInstance = null
+      }
+    }
+  }, []) // Only run once on mount
 
   const sendMessage = (message: any, isBinary: boolean = false) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    if (socketInstance && socketInstance.readyState === WebSocket.OPEN) {
       const msgToSend = isBinary
         ? new TextEncoder().encode(JSON.stringify(message)) // Convert message to binary
         : JSON.stringify(message)
 
-      socket.send(msgToSend)
+      socketInstance.send(msgToSend)
     } else {
       console.warn("Cannot send message, WebSocket is not open")
     }
