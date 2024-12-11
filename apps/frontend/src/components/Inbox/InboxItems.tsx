@@ -44,7 +44,7 @@ export const InboxItems: React.FC = () => {
 
   // Handle WebSocket messages
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages?.length > 0) {
       const lastMessage = messages[messages.length - 1]
       if (lastMessage?.type === "linear" && lastMessage?.item) {
         const { item } = lastMessage

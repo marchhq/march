@@ -4,7 +4,7 @@ import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
 import { Item } from "../../models/lib/item.model.js";
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
-import { broadcastUpdate } from "../../loaders/websocket.loader.js";
+// import { broadcastUpdate } from "../../loaders/websocket.loader.js";
 
 const exchangeCodeForAccessToken = async (code) => {
     const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
@@ -128,17 +128,17 @@ const processWebhookEvent = async (event, payload) => {
         const savedItem = await newItem.save();
         message = `Created new item with ID: ${issueOrPR.id}`;
         console.log("message", message)
-        broadcastItem = savedItem;
+        // broadcastItem = savedItem;
     }
 
     // Broadcast the message and the item from the database
-    const broadcastData = {
-        type: 'github',
-        message,
-        item: broadcastItem
-    };
+    // const broadcastData = {
+    //     type: 'github',
+    //     message,
+    //     item: broadcastItem
+    // };
 
-    broadcastUpdate(broadcastData, true);
+    // broadcastUpdate(broadcastData, true);
 };
 
 const uninstallGithubApp = async (user) => {
