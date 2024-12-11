@@ -1,8 +1,9 @@
 import React from "react"
 
 import { format } from "date-fns"
+import { ChevronLeft, ChevronRight, Undo2 } from "lucide-react"
 
-import { LeftChevron, RightChevron } from "@/src/lib/icons/Navigation"
+import { Button } from "../ui/button"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 
 interface DateCycleProps {
@@ -59,30 +60,48 @@ export const DateCycle: React.FC<DateCycleProps> = ({
         : formatedDateTitle
 
   return (
-    <div className="flex flex-1 flex-col gap-4 text-sm">
-      <div className="flex w-full items-center justify-between gap-5">
-        <div className="flex items-center gap-2 text-secondary-foreground">
-          <span className="text-sm">{formatedDateHeader}</span>
-        </div>
-        <div className="flex items-center gap-2 text-secondary-foreground">
-          <button onClick={goToPreviousDay} className="px-1">
-            <LeftChevron className="hover-text" />
-          </button>
-          <button onClick={goToToday}>
-            <span className="hover-text">today</span>
-          </button>
-          <button onClick={goToNextDay} className="px-1">
-            <RightChevron className="hover-text" />
-          </button>
-        </div>
+    <div className="flex flex-col gap-4 text-sm">
+      <div className="flex items-center justify-between text-secondary-foreground">
+        <span>{formatedDateHeader}</span>
       </div>
       <div className="flex items-center gap-2">
         <h1 className="font-semibold text-foreground">{displayDateTitle}</h1>
         <div className="flex gap-1 text-secondary-foreground">
-          <span title={`total items by ${selectedDate}`}>
+          <span title={`total items by ${selectedDate.toDateString()}`}>
             {totalByDateItems}
           </span>
           <span title="total items by date + overdue">[{totalItems}]</span>
+        </div>
+      </div>
+      <div className="group relative">
+        <div className="flex items-center gap-2 text-secondary-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+            onClick={goToPreviousDay}
+          >
+            <ChevronLeft className="size-4" />
+            <span className="sr-only">Previous day</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+            onClick={goToNextDay}
+          >
+            <ChevronRight className="size-4" />
+            <span className="sr-only">Next day</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+            onClick={goToToday}
+          >
+            <Undo2 className="size-4" />
+            <span className="sr-only">Go to today</span>
+          </Button>
         </div>
       </div>
     </div>

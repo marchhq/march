@@ -1,13 +1,9 @@
 "use client"
 
-import { useEffect } from "react"
-
 import { usePathname } from "next/navigation"
 
 import { NavLink } from "./nav-link"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { queryClient } from "@/src/contexts/QueryProvider"
-import { getSpaces } from "@/src/lib/server/actions/spaces"
 import { useSpaces } from "@/src/queries/useSpace"
 import { getCurrentWeek } from "@/src/utils/datetime"
 
@@ -16,15 +12,6 @@ export const Navbar = () => {
   const { data: spaces } = useSpaces(session)
   const pathname = usePathname()
   const weekNumber = getCurrentWeek(new Date())
-
-  useEffect(() => {
-    if (session) {
-      queryClient.prefetchQuery({
-        queryKey: ["spaces", session],
-        queryFn: () => getSpaces(session),
-      })
-    }
-  }, [session, queryClient])
 
   const validSpaces = Array.isArray(spaces) ? spaces : []
 
