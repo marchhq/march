@@ -9,12 +9,13 @@ import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { Event } from "@/src/lib/@types/Items/event"
+import { Calendar, GoogleCalendar } from "@/src/lib/icons/Calendar"
 import classNames from "@/src/utils/classNames"
 
 interface ItemListProps {
   items: (CycleItem | Event)[]
   handleExpand: (item: CycleItem) => void
-  handleMeetingExpand?: (item: Event) => void
+  handleMeetingExpand: (item: Event) => void
   handleDone?: (event: React.MouseEvent, id: string, status: string) => void
   handleRescheduleCalendar?: (
     event: React.MouseEvent,
@@ -29,22 +30,43 @@ interface ItemListProps {
 const getSourceIcon = (
   source: string,
   sourceUrl: string,
-  item?: Event | CycleItem
+  item: Event | CycleItem
 ) => {
-  if ("conferenceData" in item && item.conferenceData?.conferenceSolution) {
-    const { iconUri, name } = item.conferenceData.conferenceSolution
+  if ("kind" in item && item.kind === "calendar#event") {
+    // If it has conference data, handle it as before
+    if (item.conferenceData?.conferenceSolution) {
+      const { iconUri, name } = item.conferenceData.conferenceSolution
+      return (
+        <Link
+          href={item.conferenceData.entryPoints?.[0]?.uri || item.htmlLink}
+          target="_blank"
+        >
+          {iconUri ? (
+            <Image
+              src={iconUri}
+              alt={`${name} icon`}
+              width={14}
+              height={14}
+              className="opacity-50 hover:opacity-100"
+              onError={(e) => {
+                e.currentTarget.src = "/calendar-icon.png"
+              }}
+            />
+          ) : (
+            <span className="opacity-50 hover:opacity-100">
+              <GoogleCalendar />
+            </span>
+          )}
+        </Link>
+      )
+    }
     return (
       <Link
-        href={item.conferenceData.entryPoints?.[0]?.uri || "#"}
+        href={item.htmlLink}
         target="_blank"
+        className="opacity-50 hover:opacity-100"
       >
-        <Image
-          src={iconUri}
-          alt={`${name} icon`}
-          width={14}
-          height={14}
-          className="opacity-50 hover:opacity-100"
-        />
+        <GoogleCalendar />
       </Link>
     )
   }
@@ -53,14 +75,14 @@ const getSourceIcon = (
     case "gmail":
       return (
         <Link href={sourceUrl} target="_blank">
-          <MailsIcon size={14} />
+          <MailsIcon size={14} className="opacity-50 hover:opacity-100" />
         </Link>
       )
     case "githubIssue":
     case "githubPullRequest":
       return (
         <Link href={sourceUrl} target="_blank">
-          <GithubIcon size={14} />
+          <GithubIcon size={14} className="opacity-50 hover:opacity-100" />
         </Link>
       )
     case "linear":
@@ -71,7 +93,10 @@ const getSourceIcon = (
             alt="linear icon"
             width={14}
             height={14}
-            className="opacity-50"
+            className="opacity-50 hover:opacity-100"
+            onError={(e) => {
+              e.currentTarget.src = "/fallback-icon.png"
+            }}
           />
         </Link>
       )
@@ -107,8 +132,6 @@ export const ItemList: React.FC<ItemListProps> = ({
         const isEvent = "summary" in item
         const itemId = isEvent ? item.id : item._id
         const title = isEvent ? item.summary : item.title
-
-        console.log("inside item list: ", isEvent)
 
         return (
           <button
