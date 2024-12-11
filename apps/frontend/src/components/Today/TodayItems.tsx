@@ -224,6 +224,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             <ItemList
               items={byDateItems}
               handleExpand={handleExpand}
+              handleMeetingExpand={handleMeetingExpand}
               handleDone={handleDone}
               handleRescheduleCalendar={handleRescheduleCalendar}
               doneLine={true}
@@ -242,6 +243,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
                 <ItemList
                   items={overdueItems}
                   handleExpand={handleExpand}
+                  handleMeetingExpand={handleMeetingExpand}
                   handleDone={handleDone}
                   handleRescheduleCalendar={handleRescheduleCalendar}
                   isOverdue={true}

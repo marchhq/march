@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: Props) {
         <Topbar />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
-          <div className="flex flex-1 flex-col pl-52">
+          <div className="ml-52 flex flex-1 flex-col">
             <Navbar />
             <div className="flex flex-1 overflow-hidden">
               <PageTracker />

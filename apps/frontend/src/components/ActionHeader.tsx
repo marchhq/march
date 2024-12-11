@@ -5,7 +5,7 @@ import { Layers } from "lucide-react"
 
 interface ActionHeaderProps {
   closeToggle: boolean
-  onAdd: () => Promise<any>
+  onAdd?: () => Promise<any>
   onClose: () => void
   addButtonLabel?: string
 }

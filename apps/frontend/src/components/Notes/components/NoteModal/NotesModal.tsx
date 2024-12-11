@@ -30,7 +30,7 @@ export const NoteStackModal = ({ notes, handleClose }: ModalProps) => {
         }}
         tabIndex={0}
       />
-      <div className="fixed right-[150px] top-[38%] z-50 h-[535px] w-[371px] -translate-y-1/2 overflow-y-scroll rounded-lg border border-border bg-background p-6">
+      <div className="fixed right-[30px] top-[32%] z-50 h-[535px] w-[371px] -translate-y-1/2 overflow-y-scroll rounded-lg border border-border bg-background p-6">
         <div className="flex flex-col gap-2">
           {notes?.map((note) => (
             <div
