@@ -8,13 +8,15 @@ import BoxIcon from "@/public/icons/box.svg"
 import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { Event } from "@/src/lib/@types/Items/event"
 import classNames from "@/src/utils/classNames"
 
 interface ItemListProps {
-  items: CycleItem[]
+  items: (CycleItem | Event)[]
   handleExpand: (item: CycleItem) => void
-  handleDone: (event: React.MouseEvent, id: string, status: string) => void
-  handleRescheduleCalendar: (
+  handleMeetingExpand?: (item: Event) => void
+  handleDone?: (event: React.MouseEvent, id: string, status: string) => void
+  handleRescheduleCalendar?: (
     event: React.MouseEvent,
     id: string,
     dueDate: Date | null,
@@ -24,7 +26,29 @@ interface ItemListProps {
   doneLine?: boolean
 }
 
-const getSourceIcon = (source: string, sourceUrl: string) => {
+const getSourceIcon = (
+  source: string,
+  sourceUrl: string,
+  item?: Event | CycleItem
+) => {
+  if ("conferenceData" in item && item.conferenceData?.conferenceSolution) {
+    const { iconUri, name } = item.conferenceData.conferenceSolution
+    return (
+      <Link
+        href={item.conferenceData.entryPoints?.[0]?.uri || "#"}
+        target="_blank"
+      >
+        <Image
+          src={iconUri}
+          alt={`${name} icon`}
+          width={14}
+          height={14}
+          className="opacity-50 hover:opacity-100"
+        />
+      </Link>
+    )
+  }
+
   switch (source) {
     case "gmail":
       return (
@@ -62,77 +86,125 @@ const getSourceIcon = (source: string, sourceUrl: string) => {
 export const ItemList: React.FC<ItemListProps> = ({
   items,
   handleExpand,
+  handleMeetingExpand,
   handleDone,
   handleRescheduleCalendar,
   isOverdue = false,
   doneLine = false,
 }) => {
+  const handleClick = (item: CycleItem | Event) => {
+    if ("summary" in item) {
+      // Type guard for Event
+      handleMeetingExpand(item)
+    } else {
+      handleExpand(item as CycleItem)
+    }
+  }
+
   return (
     <>
-      {items.map((item) => (
-        <button
-          key={item._id}
-          className={classNames(
-            "group flex items-start gap-2 py-1 outline-none",
-            !doneLine &&
-              "hover-text text-primary-foreground hover:text-foreground focus:text-foreground",
-            item.status === "done"
-              ? "line-through text-secondary-foreground focus:text-secondary-foreground"
-              : "text-primary-foreground hover-text-foreground hover:text-foreground focus:text-foreground"
-          )}
-          onClick={() => handleExpand(item)}
-          data-item-id={item._id}
-        >
-          <div className="flex items-start gap-2 truncate">
-            {item.status === "done" ? (
-              <Image
-                src={BoxFilledIcon}
-                alt="checkbox filled icon"
-                width={12}
-                height={12}
-                onClick={(e) => handleDone(e, item._id, item.status)}
-                className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
-              />
-            ) : (
-              <Image
-                src={BoxIcon}
-                alt="checkbox icon"
-                width={12}
-                height={12}
-                onClick={(e) => handleDone(e, item._id, item.status)}
-                className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
-              />
+      {items.map((item) => {
+        const isEvent = "summary" in item
+        const itemId = isEvent ? item.id : item._id
+        const title = isEvent ? item.summary : item.title
+
+        console.log("inside item list: ", isEvent)
+
+        return (
+          <button
+            key={itemId}
+            className={classNames(
+              "group flex items-start gap-2 py-1 outline-none",
+              !doneLine &&
+                "hover-text text-primary-foreground hover:text-foreground focus:text-foreground",
+              !isEvent && item.status === "done"
+                ? "line-through text-secondary-foreground focus:text-secondary-foreground"
+                : "text-primary-foreground hover-text-foreground hover:text-foreground focus:text-foreground"
             )}
-            <span
-              className={classNames(
-                `truncate text-left ${
-                  item.type === "link" ? "group-hover:underline" : ""
-                }`,
-                isOverdue && "flex gap-1"
+            onClick={() => handleClick(item)}
+            data-item-id={itemId}
+          >
+            <div className="flex items-start gap-2 truncate">
+              {!isEvent && (
+                <div>
+                  {(item as CycleItem).status === "done" ? (
+                    <Image
+                      src={BoxFilledIcon}
+                      alt="checkbox filled icon"
+                      width={12}
+                      height={12}
+                      onClick={(e) =>
+                        handleDone?.(
+                          e,
+                          (item as CycleItem)._id,
+                          (item as CycleItem).status
+                        )
+                      }
+                      className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+                    />
+                  ) : (
+                    <Image
+                      src={BoxIcon}
+                      alt="checkbox icon"
+                      width={12}
+                      height={12}
+                      onClick={(e) =>
+                        handleDone?.(
+                          e,
+                          (item as CycleItem)._id,
+                          (item as CycleItem).status
+                        )
+                      }
+                      className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
+                    />
+                  )}
+                </div>
               )}
-            >
-              {item.title}
-              {isOverdue && (
-                <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
+              <span
+                className={classNames(
+                  `truncate text-left ${
+                    !isEvent && item.type === "link"
+                      ? "group-hover:underline"
+                      : ""
+                  }`,
+                  isOverdue && "flex gap-1"
+                )}
+              >
+                {title}
+                {isOverdue && !isEvent && (
+                  <span className="mt-1 inline-block size-1 shrink-0 rounded-full bg-[#E34136]/80" />
+                )}
+              </span>
+              {!isEvent && item.source !== "march" && (
+                <div className="mt-[4.5px] flex items-center text-secondary-foreground">
+                  {getSourceIcon(item.source, item.metadata?.url || "", item)}
+                </div>
               )}
-            </span>
-            {item.source !== "march" && (
-              <div className="mt-[3px] flex items-center text-secondary-foreground">
-                {getSourceIcon(item.source, item.metadata?.url || "")}
+              {isEvent && (
+                <div className="mt-[4.5px] flex items-center text-secondary-foreground">
+                  {getSourceIcon("", "", item)}
+                </div>
+              )}
+            </div>
+            {!isEvent && (
+              <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
+                <CalendarIcon
+                  size={14}
+                  className="hover-text"
+                  onClick={(e) =>
+                    handleRescheduleCalendar?.(
+                      e,
+                      item._id,
+                      item.dueDate,
+                      item.status
+                    )
+                  }
+                />
               </div>
             )}
-          </div>
-          <div className="invisible mt-[3px] flex items-center gap-2 text-secondary-foreground group-hover:visible">
-            <CalendarIcon
-              size={14}
-              className="hover-text"
-              onClick={(e) =>
-                handleRescheduleCalendar(e, item._id, item.dueDate, item.status)
-              }
-            />
-          </div>
-        </button>
-      ))}
+          </button>
+        )
+      })}
     </>
   )
 }
