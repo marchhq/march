@@ -93,15 +93,17 @@ export const DateCycle: React.FC<DateCycleProps> = ({
             <ChevronRight className="size-4" />
             <span className="sr-only">Next day</span>
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
-            onClick={goToToday}
-          >
-            <Undo2 className="size-4" />
-            <span className="sr-only">Go to today</span>
-          </Button>
+          {!isToday && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+              onClick={goToToday}
+            >
+              <Undo2 className="size-4" />
+              <span className="sr-only">Go to today</span>
+            </Button>
+          )}
         </div>
       </div>
     </div>
