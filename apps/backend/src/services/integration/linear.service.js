@@ -3,7 +3,7 @@ import { environment } from '../../loaders/environment.loader.js';
 import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
-import { broadcastUpdate } from "../../../index.js"
+import { broadcastToUser } from "../../loaders/websocket.loader.js";
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.
@@ -198,67 +198,156 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
  * @throws Will log an error if the operation fails.
  */
 // TODO: need to improve it base so webhook type
+// const handleWebhookEvent = async (payload) => {
+//     const issue = payload.data;
+//     let message = '';
+//     let broadcastItem = null;
+
+//     if (payload.action === 'remove') {
+//         const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
+//         if (deletedIssue) {
+//             console.log(`Deleted issue with ID: ${issue.id}`);
+//             message = `Deleted issue with ID: ${issue.id}`;
+//             broadcastItem = deletedIssue;
+//         } else {
+//             console.log(`Issue with ID: ${issue.id} not found in the database.`);
+//         }
+//     } else {
+//         if (!issue.assignee || !issue.assignee.id) {
+//             const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
+//             if (deletedIssue) {
+//                 console.log(`Unassigned issue with ID: ${issue.id} deleted from the database.`);
+//                 message = `Unassigned issue with ID: ${issue.id} deleted from the database.`;
+//                 broadcastItem = deletedIssue;
+//             } else {
+//                 console.log(`Unassigned issue with ID: ${issue.id} not found in the database.`);
+//             }
+//         } else {
+//             const user = await User.findOne({ 'integration.linear.userId': issue.assignee.id });
+//             if (!user) {
+//                 console.log('No user found with the matching Linear userId.');
+//                 return;
+//             }
+//             const userId = user._id;
+
+//             // Check if the issue already exists
+//             const existingIssue = await Item.findOne({ id: issue.id, source: 'linear', user: userId });
+//             if (existingIssue) {
+//                 const updatedIssue = await Item.findByIdAndUpdate(existingIssue._id, {
+//                     title: issue.title,
+//                     description: issue.description,
+//                     'metadata.labels': issue.labels,
+//                     'metadata.state': issue.state,
+//                     'metadata.priority': issue.priority,
+//                     'metadata.project': issue.project,
+//                     dueDate: issue.dueDate,
+//                     'cycle.startsAt': issue.cycle?.startsAt,
+//                     'cycle.endsAt': issue.cycle?.endsAt,
+//                     updatedAt: issue.updatedAt
+//                 }, { new: true });
+
+//                 message = `Updated issue with ID: ${issue.id}`;
+//                 broadcastItem = updatedIssue;
+//                 console.log("message: ", message);
+//             } else {
+//                 const newIssue = new Item({
+//                     title: issue.title,
+//                     source: 'linear',
+//                     id: issue.id,
+//                     user: userId,
+//                     description: issue.description,
+//                     dueDate: issue.dueDate,
+//                     'cycle.startsAt': issue.cycle?.startsAt,
+//                     'cycle.endsAt': issue.cycle?.endsAt,
+//                     metadata: {
+//                         labels: issue.labels,
+//                         state: issue.state,
+//                         priority: issue.priority,
+//                         project: issue.project,
+//                         url: issue.url
+//                     },
+//                     createdAt: issue.createdAt,
+//                     updatedAt: issue.updatedAt
+//                 });
+
+//                 const savedIssue = await newIssue.save();
+//                 message = `Created new issue with ID: ${issue.id}`;
+//                 broadcastItem = savedIssue;
+//                 console.log("message: ", message);
+//             }
+//         }
+//     }
+
+//     // Broadcast the message and the item from the database
+//     const broadcastData = {
+//         type: 'linear',
+//         message,
+//         item: broadcastItem
+//     };
+
+//     broadcastUpdate(broadcastData, true);
+// };
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
-    let message = '';
+    let message = "";
     let broadcastItem = null;
+    let targetUserId = null;
 
-    if (payload.action === 'remove') {
-        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
+    if (payload.action === "remove") {
+        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
         if (deletedIssue) {
-            console.log(`Deleted issue with ID: ${issue.id}`);
             message = `Deleted issue with ID: ${issue.id}`;
             broadcastItem = deletedIssue;
+            targetUserId = deletedIssue.user;
         } else {
             console.log(`Issue with ID: ${issue.id} not found in the database.`);
         }
     } else {
         if (!issue.assignee || !issue.assignee.id) {
-            const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: 'linear' });
+            const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
             if (deletedIssue) {
-                console.log(`Unassigned issue with ID: ${issue.id} deleted from the database.`);
                 message = `Unassigned issue with ID: ${issue.id} deleted from the database.`;
                 broadcastItem = deletedIssue;
+                targetUserId = deletedIssue.user;
             } else {
                 console.log(`Unassigned issue with ID: ${issue.id} not found in the database.`);
             }
         } else {
-            const user = await User.findOne({ 'integration.linear.userId': issue.assignee.id });
+            const user = await User.findOne({ "integration.linear.userId": issue.assignee.id });
             if (!user) {
-                console.log('No user found with the matching Linear userId.');
+                console.log("No user found with the matching Linear userId.");
                 return;
             }
             const userId = user._id;
+            targetUserId = userId;
 
-            // Check if the issue already exists
-            const existingIssue = await Item.findOne({ id: issue.id, source: 'linear', user: userId });
+            const existingIssue = await Item.findOne({ id: issue.id, source: "linear", user: userId });
             if (existingIssue) {
                 const updatedIssue = await Item.findByIdAndUpdate(existingIssue._id, {
                     title: issue.title,
                     description: issue.description,
-                    'metadata.labels': issue.labels,
-                    'metadata.state': issue.state,
-                    'metadata.priority': issue.priority,
-                    'metadata.project': issue.project,
+                    "metadata.labels": issue.labels,
+                    "metadata.state": issue.state,
+                    "metadata.priority": issue.priority,
+                    "metadata.project": issue.project,
                     dueDate: issue.dueDate,
-                    'cycle.startsAt': issue.cycle?.startsAt,
-                    'cycle.endsAt': issue.cycle?.endsAt,
+                    "cycle.startsAt": issue.cycle?.startsAt,
+                    "cycle.endsAt": issue.cycle?.endsAt,
                     updatedAt: issue.updatedAt
                 }, { new: true });
 
                 message = `Updated issue with ID: ${issue.id}`;
                 broadcastItem = updatedIssue;
-                console.log("message: ", message);
             } else {
                 const newIssue = new Item({
                     title: issue.title,
-                    source: 'linear',
+                    source: "linear",
                     id: issue.id,
                     user: userId,
                     description: issue.description,
                     dueDate: issue.dueDate,
-                    'cycle.startsAt': issue.cycle?.startsAt,
-                    'cycle.endsAt': issue.cycle?.endsAt,
+                    "cycle.startsAt": issue.cycle?.startsAt,
+                    "cycle.endsAt": issue.cycle?.endsAt,
                     metadata: {
                         labels: issue.labels,
                         state: issue.state,
@@ -273,19 +362,19 @@ const handleWebhookEvent = async (payload) => {
                 const savedIssue = await newIssue.save();
                 message = `Created new issue with ID: ${issue.id}`;
                 broadcastItem = savedIssue;
-                console.log("message: ", message);
             }
         }
     }
 
-    // Broadcast the message and the item from the database
-    const broadcastData = {
-        type: 'linear',
-        message,
-        item: broadcastItem
-    };
+    if (targetUserId) {
+        const broadcastData = {
+            type: "linear",
+            message,
+            item: broadcastItem
+        };
 
-    broadcastUpdate(broadcastData);
+        broadcastToUser(targetUserId.toString(), broadcastData, true);
+    }
 };
 
 /**
