@@ -296,7 +296,6 @@ const handleWebhookEvent = async (payload) => {
     if (payload.action === "remove") {
         const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
         if (deletedIssue) {
-            console.log(`Deleted issue with ID: ${issue.id}`);
             message = `Deleted issue with ID: ${issue.id}`;
             broadcastItem = deletedIssue;
             targetUserId = deletedIssue.user;
@@ -307,7 +306,6 @@ const handleWebhookEvent = async (payload) => {
         if (!issue.assignee || !issue.assignee.id) {
             const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
             if (deletedIssue) {
-                console.log(`Unassigned issue with ID: ${issue.id} deleted from the database.`);
                 message = `Unassigned issue with ID: ${issue.id} deleted from the database.`;
                 broadcastItem = deletedIssue;
                 targetUserId = deletedIssue.user;
@@ -375,7 +373,7 @@ const handleWebhookEvent = async (payload) => {
             item: broadcastItem
         };
 
-        broadcastToUser(targetUserId, broadcastData);
+        broadcastToUser(targetUserId.toString(), broadcastData, true);
     }
 };
 
