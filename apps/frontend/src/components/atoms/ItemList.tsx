@@ -9,13 +9,13 @@ import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { Event } from "@/src/lib/@types/Items/event"
-import { Calendar, GoogleCalendar } from "@/src/lib/icons/Calendar"
+import { GoogleCalendar } from "@/src/lib/icons/Calendar"
 import classNames from "@/src/utils/classNames"
 
 interface ItemListProps {
   items: (CycleItem | Event)[]
   handleExpand: (item: CycleItem) => void
-  handleMeetingExpand: (item: Event) => void
+  handleMeetingExpand?: (item: Event) => void
   handleDone?: (event: React.MouseEvent, id: string, status: string) => void
   handleRescheduleCalendar?: (
     event: React.MouseEvent,
@@ -120,9 +120,17 @@ export const ItemList: React.FC<ItemListProps> = ({
   const handleClick = (item: CycleItem | Event) => {
     if ("summary" in item) {
       // Type guard for Event
-      handleMeetingExpand(item)
+      if (handleMeetingExpand) {
+        handleMeetingExpand(item)
+      } else {
+        console.error("handleMeetingExpand is undefined.")
+      }
     } else {
-      handleExpand(item as CycleItem)
+      if (handleExpand) {
+        handleExpand(item as CycleItem)
+      } else {
+        console.error("handleExpand is undefined.")
+      }
     }
   }
 
