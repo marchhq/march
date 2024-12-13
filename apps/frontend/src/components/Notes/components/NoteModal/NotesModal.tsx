@@ -14,7 +14,7 @@ interface SimplifiedNote {
 interface ModalProps {
   notes: SimplifiedNote[]
   handleClose: () => void
-  buttonPosition: { top: number; right: number }
+  buttonPosition?: { top: number; right: number }
 }
 
 export const NoteStackModal = ({
@@ -22,6 +22,8 @@ export const NoteStackModal = ({
   handleClose,
   buttonPosition,
 }: ModalProps) => {
+  const position = buttonPosition || { top: 0, right: 0 }
+
   return (
     <div>
       <div
@@ -38,8 +40,8 @@ export const NoteStackModal = ({
       <div
         className="fixed z-50 h-[535px] w-[371px] overflow-y-auto rounded-lg border border-border bg-background p-6"
         style={{
-          top: `${buttonPosition.top + 10}px`,
-          right: `${buttonPosition.right}px`,
+          top: `${position.top + 10}px`,
+          right: `${position.right}px`,
         }}
       >
         <div className="flex flex-col gap-2">
