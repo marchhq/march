@@ -2,11 +2,13 @@
 
 import React, { useEffect } from "react"
 
-import { LogOutIcon } from "lucide-react"
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs"
+import { ChevronLeft, LogOutIcon } from "lucide-react"
+import Link from "next/link"
 
+import { Separator } from "../ui/separator"
 import Integrations from "@/src/components/profile/Integrations"
 import UserInfo from "@/src/components/profile/UserInfo"
-import Spinner from "@/src/components/ui/spinner"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useUserStore from "@/src/lib/store/user.store"
 
@@ -33,36 +35,49 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    // TODO:: Can have a better way to adjust the layout(left margin) using flex
-    <div className="flex min-h-screen w-full p-10">
+    <div className="flex w-full p-10">
       <div className="flex w-full max-w-lg flex-col justify-between p-6">
-        <div className="flex flex-col space-y-8">
-          <UserInfo user={user} />
+        <div className="flex grow flex-col">
+          <div className="mb-8 flex flex-col space-y-8">
+            <Link
+              href={"/today"}
+              className="flex items-center text-secondary-foreground"
+            >
+              <ChevronLeft size={16} />
+              <span className="text-[13px] font-semibold">back</span>
+            </Link>
+            <UserInfo user={user} />
+          </div>
           <Integrations user={user} />
         </div>
 
-        <footer className="flex flex-col space-y-4 py-6">
-          <div className="space-y-2">
-            <p className="font-semibold text-primary-foreground">march 0.1</p>
-            <p className="text-xs text-secondary-foreground">
-              — crafted for the makers to{" "}
-              <span className="text-primary-foreground">get things done</span>
-            </p>
-          </div>
+        <div className="mt-6">
+          <Separator />
+          <footer className="flex flex-col space-y-4 pt-8">
+            <div className="space-y-2">
+              <p className="font-semibold text-primary-foreground">march 0.1</p>
+              <p className="text-xs text-secondary-foreground">
+                — crafted for the makers to{" "}
+                <span className="text-primary-foreground">get things done</span>
+              </p>
+            </div>
 
-          <button
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="flex w-fit items-center gap-2 rounded-lg bg-[#382826E5] px-4 py-2 text-base font-semibold text-[#EF6258CC] transition-colors hover:bg-[#382826] disabled:opacity-50"
-          >
-            {isLoggingOut ? (
-              <div className="size-5 animate-spin rounded-full border-2 border-[#EF6258CC] border-t-transparent" />
-            ) : (
-              <LogOutIcon size={20} />
-            )}
-            Logout
-          </button>
-        </footer>
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="mt-2 flex items-center gap-1 text-secondary-foreground"
+            >
+              {isLoggingOut ? (
+                <div className="size-5 animate-spin rounded-full border-2 border-[#EF6258CC] border-t-transparent" />
+              ) : (
+                <Icon icon={"hugeicons:logout-01"} />
+              )}
+              <span className="hover-text text-[13px] font-semibold">
+                Logout
+              </span>
+            </button>
+          </footer>
+        </div>
       </div>
     </div>
   )
