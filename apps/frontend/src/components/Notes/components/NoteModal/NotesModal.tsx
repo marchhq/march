@@ -14,9 +14,14 @@ interface SimplifiedNote {
 interface ModalProps {
   notes: SimplifiedNote[]
   handleClose: () => void
+  buttonPosition: { top: number; right: number }
 }
 
-export const NoteStackModal = ({ notes, handleClose }: ModalProps) => {
+export const NoteStackModal = ({
+  notes,
+  handleClose,
+  buttonPosition,
+}: ModalProps) => {
   return (
     <div>
       <div
@@ -30,7 +35,13 @@ export const NoteStackModal = ({ notes, handleClose }: ModalProps) => {
         }}
         tabIndex={0}
       />
-      <div className="fixed right-[30px] top-[32%] z-50 h-[535px] w-[371px] -translate-y-1/2 overflow-y-scroll rounded-lg border border-border bg-background p-6">
+      <div
+        className="fixed z-50 h-[535px] w-[371px] overflow-y-auto rounded-lg border border-border bg-background p-6"
+        style={{
+          top: `${buttonPosition.top + 10}px`,
+          right: `${buttonPosition.right}px`,
+        }}
+      >
         <div className="flex flex-col gap-2">
           {notes?.map((note) => (
             <div
@@ -38,7 +49,7 @@ export const NoteStackModal = ({ notes, handleClose }: ModalProps) => {
               className="group flex flex-col items-start justify-between"
             >
               <NoteLink note={note} isActive={note.isActive} />
-              <div className="pl-5 text-secondary-foreground">
+              <div className="pl-7 text-secondary-foreground">
                 <NoteDetails
                   createdAt={note.createdAt}
                   formatDateHeader={formatDateHeader}

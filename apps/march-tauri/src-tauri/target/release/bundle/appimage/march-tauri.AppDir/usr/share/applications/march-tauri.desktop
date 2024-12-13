@@ -1,0 +1,8 @@
+[Desktop Entry]
+Categories=
+Comment=A Tauri App
+Exec=march
+Icon=march
+Name=march-tauri
+Terminal=false
+Type=Application

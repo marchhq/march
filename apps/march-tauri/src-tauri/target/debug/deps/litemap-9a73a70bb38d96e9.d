@@ -1,0 +1,11 @@
+/home/pewpew/work/march/apps/march-tauri/src-tauri/target/debug/deps/liblitemap-9a73a70bb38d96e9.rmeta: /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/lib.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/map.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/mod.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/slice_impl.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/vec_impl.rs
+
+/home/pewpew/work/march/apps/march-tauri/src-tauri/target/debug/deps/liblitemap-9a73a70bb38d96e9.rlib: /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/lib.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/map.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/mod.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/slice_impl.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/vec_impl.rs
+
+/home/pewpew/work/march/apps/march-tauri/src-tauri/target/debug/deps/litemap-9a73a70bb38d96e9.d: /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/lib.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/map.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/mod.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/slice_impl.rs /home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/vec_impl.rs
+
+/home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/lib.rs:
+/home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/map.rs:
+/home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/mod.rs:
+/home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/slice_impl.rs:
+/home/pewpew/.cargo/registry/src/index.crates.io-6f17d22bba15001f/litemap-0.7.4/src/store/vec_impl.rs:

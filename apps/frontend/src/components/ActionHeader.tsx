@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { memo, useEffect, useRef } from "react"
 
 import { PlusIcon } from "@radix-ui/react-icons"
 import { Layers } from "lucide-react"
@@ -8,14 +8,34 @@ interface ActionHeaderProps {
   onAdd?: () => Promise<any>
   onClose: () => void
   addButtonLabel?: string
+  onButtonPositionChange: (position: { top: number; right: number }) => void
 }
 
 const ActionHeader = ({
   closeToggle,
   onAdd,
   onClose,
+  onButtonPositionChange,
   addButtonLabel,
 }: ActionHeaderProps) => {
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const updatePosition = () => {
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect()
+        onButtonPositionChange({
+          top: rect.bottom,
+          right: window.innerWidth - rect.right,
+        })
+      }
+    }
+
+    updatePosition()
+    window.addEventListener("resize", updatePosition)
+    return () => window.removeEventListener("resize", updatePosition)
+  }, [onButtonPositionChange])
+
   return (
     <div className="flex w-full items-center justify-end gap-4">
       <button
@@ -27,9 +47,8 @@ const ActionHeader = ({
         {addButtonLabel && <span>{addButtonLabel}</span>}
       </button>
       <button
-        className={`hover-text flex items-center ${
-          !closeToggle ? "text-foreground" : ""
-        }`}
+        ref={buttonRef}
+        className={`hover-text flex items-center ${!closeToggle ? "text-foreground" : ""}`}
         onClick={onClose}
       >
         <Layers size={16} className="hover-text text-secondary-foreground" />
