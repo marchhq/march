@@ -15,7 +15,11 @@ export const NavLink = ({ href, label, isActive }: NavLinkProps) => {
       className={classNames("flex items-center justify-center", activeClass)}
       href={href}
     >
-      <p className={classNames(!isActive && "text-secondary-foreground")}>
+      <p
+        className={classNames(
+          !isActive && "text-secondary-foreground hover-text"
+        )}
+      >
         {label}
       </p>
     </Link>

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 
-import { BracketsIcon } from "lucide-react"
+import { Parentheses } from "lucide-react"
+import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
 
 import ActionHeader from "../ActionHeader"
@@ -29,6 +30,7 @@ export const Topbar = () => {
   const { note } = state
   const { addNewNote } = useNoteHandlers(state, dispatch, spaceId, blockId)
   const [isStackOpen, setIsStackOpen] = useState(false)
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, right: 0 })
 
   useEffect(() => {
     fetchUser(session)
@@ -73,23 +75,35 @@ export const Topbar = () => {
       <div className="flex-1"></div>
 
       <div className="flex items-center space-x-2">
-        <BracketsIcon size={18} className="text-secondary-foreground" />
+        <Link href={"https://github.com/emptyarrayai/march"} target="_blank">
+          <Parentheses
+            size={18}
+            className="hover-text text-secondary-foreground"
+          />
+        </Link>
         <span className="size-1 rounded-full bg-secondary-foreground"></span>
-        <p className="text-sm text-secondary-foreground">
-          {user?.userName || user?.fullName}
-        </p>
+        <Link href="/profile">
+          <p className="text-sm text-secondary-foreground hover:text-primary-foreground">
+            {user?.userName || user?.fullName}
+          </p>
+        </Link>
       </div>
 
-      <div className="flex flex-1 justify-end space-x-4">
+      <div className="flex flex-1 justify-end">
         {spaceId && blockId && (
           <>
             <ActionHeader
               closeToggle={isStackOpen}
               onAdd={isMeetingRoute ? undefined : addNewNote}
+              onButtonPositionChange={setButtonPosition}
               onClose={toggleStack}
             />
             {isStackOpen && (
-              <NoteStackModal notes={stackItems} handleClose={toggleStack} />
+              <NoteStackModal
+                notes={stackItems}
+                handleClose={toggleStack}
+                buttonPosition={buttonPosition}
+              />
             )}
           </>
         )}
