@@ -7,7 +7,6 @@
   "author": "march-dev",
   "private": true,
   "workspaces": ["apps/*"],
-
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
