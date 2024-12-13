@@ -6,13 +6,7 @@
   "repository": "https://github.com/marchhq/satellite.git",
   "author": "march-dev",
   "private": true,
-  "workspaces": [
-    "apps/backend",
-    "apps/frontend",
-    "apps/extension",
-    "apps/march-app"
-  ],
-
+  "workspaces": ["apps/*"],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -26,15 +20,9 @@
     "turbo": "^2.0.9",
     "typescript": "^5.4.5"
   },
-  "packageManager": "pnpm@8.15.6",
+  "packageManager": "bun@1.1.38",
   "engines": {
     "node": ">=18"
-  },
-  "pnpm": {
-    "overrides": {
-      "@typescript-eslint/eslint-plugin": "6.4.0",
-      "@typescript-eslint/parser": "6.4.0"
-    }
   },
   "dependencies": {
     "next": "^14.2.5",
