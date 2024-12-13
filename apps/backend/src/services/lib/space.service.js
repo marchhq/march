@@ -28,7 +28,7 @@ const getSpaces = async (user) => {
 }
 
 const getSpace = async (user, identifier) => {
-    const space = await Space.find({
+    const space = await Space.findOne({
         identifier: identifier,
         users: user,
         isArchived: false,

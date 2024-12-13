@@ -3,7 +3,7 @@ import { createBlock, getBlocks, deleteBlock, getBlock, updateBlock } from "../.
 const createBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space } = req.params;
+        const space = res.locals.space._id;
 
         const requestedData = req.body;
         const block = await createBlock(user, requestedData, space);
@@ -19,7 +19,7 @@ const createBlockController = async (req, res, next) => {
 const getBlocksController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space } = req.params;
+        const space = res.locals.space._id;
 
         const blocks = await getBlocks(user, space);
 
@@ -34,7 +34,8 @@ const getBlocksController = async (req, res, next) => {
 const deleteBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { block: id, space } = req.params;
+        const space = res.locals.space._id;
+        const { block: id } = req.params;
         await deleteBlock(id, space, user);
 
         res.status(200).json({
@@ -48,7 +49,8 @@ const deleteBlockController = async (req, res, next) => {
 const getBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { block: id, space } = req.params;
+        const space = res.locals.space._id;
+        const { block: id } = req.params;
 
         const block = await getBlock(user, id, space);
 
@@ -64,7 +66,8 @@ const updateBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const updateData = req.body;
-        const { block: id, space } = req.params;
+        const space = res.locals.space._id;
+        const { block: id } = req.params;
 
         const block = await updateBlock(id, updateData, space, user);
 
