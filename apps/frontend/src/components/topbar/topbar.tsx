@@ -20,6 +20,7 @@ export const Topbar = () => {
   const spaceId = params?.spaceId as string
   const blockId = params?.blockId as string
   const itemId = params?.itemId as string
+
   const { session } = useAuth()
   const { user, fetchUser } = useUserStore()
   const { notes, fetchNotes } = useNotesStore()
@@ -28,7 +29,6 @@ export const Topbar = () => {
   const { note } = state
   const { addNewNote } = useNoteHandlers(state, dispatch, spaceId, blockId)
   const [isStackOpen, setIsStackOpen] = useState(false)
-  const [isMeetStackOpen, setIsMeetStackOpen] = useState(false)
 
   useEffect(() => {
     fetchUser(session)
@@ -38,9 +38,6 @@ export const Topbar = () => {
 
   const toggleStack = () => {
     setIsStackOpen(!isStackOpen)
-  }
-  const toggleMeetStack = () => {
-    setIsMeetStackOpen(!isMeetStackOpen)
   }
 
   const isMeetingRoute = useMemo(() => {
