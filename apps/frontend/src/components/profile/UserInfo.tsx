@@ -65,6 +65,11 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
         <span className="mr-2 text-[13px]">Logged in with {authMethod}</span>
         {icon}
       </div>
+      <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-secondary-foreground">
+        <p className="text-[13px]">Interface</p>
+        <span className="size-[3px] rounded-full bg-secondary-foreground"></span>{" "}
+        <button className="text-[13px] hover:underline">Light</button>
+      </div>
     </div>
   )
 }
