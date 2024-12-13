@@ -41,6 +41,8 @@ const SpaceSchema = new Schema({
 SpaceSchema.pre("save", async function (next) {
     const space = this;
 
+    space.identifier = space.identifier.replace(/\s+/g, '_');
+
     const existingSpaceByIdentifier = await Space.findOne({
         identifier: space.identifier,
         users: { $in: space.users }

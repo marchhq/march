@@ -164,7 +164,7 @@ const getItemController = async (req, res, next) => {
 
 const getItemFilterByLabelController = async (req, res, next) => {
     const { name } = req.query;
-    const { space } = req.params;
+    const space = res.locals.space._id;
     const user = req.user._id;
 
     try {

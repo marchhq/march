@@ -2,6 +2,7 @@ import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
 import { createServer } from "http";
 import { initializeWebSocket } from "./src/loaders/websocket.loader.js";
+// import updateIdentifiers from "./src/migrations/updateIdentifiers.js";
 
 (async function init () {
     const server = createServer(app);
@@ -10,6 +11,7 @@ import { initializeWebSocket } from "./src/loaders/websocket.loader.js";
     });
 
     initializeWebSocket(server);
+    // updateIdentifiers();
 })();
 
 // for webhook testing

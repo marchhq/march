@@ -25,4 +25,6 @@ async function migrateSpaces () {
     }
 }
 
-export default migrateSpaces;
+export {
+    migrateSpaces
+}

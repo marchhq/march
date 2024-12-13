@@ -27,9 +27,9 @@ const getSpaces = async (user) => {
     return space;
 }
 
-const getSpace = async (user, id) => {
+const getSpace = async (user, identifier) => {
     const space = await Space.find({
-        _id: id,
+        identifier: identifier,
         users: user,
         isArchived: false,
         isDeleted: false
@@ -49,9 +49,9 @@ const getSpaceByName = async (user, name) => {
     return space;
 };
 
-const updateSpace = async (id, updateData) => {
+const updateSpace = async (identifier, updateData) => {
     const updatedSpace = await Space.findOneAndUpdate({
-        _id: id
+        identifier: identifier
     },
     { $set: updateData },
     { new: true }
