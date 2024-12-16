@@ -81,7 +81,7 @@ export default function InitialMeetings({
   // Only show calendar connection message when we have user data
   if (user && !isCalendarConnected) {
     return (
-      <section className="size-full overflow-auto bg-background px-8 py-16">
+      <section className="size-full overflow-auto bg-background">
         <p className="text-[16px] text-secondary-foreground">
           Please connect your{" "}
           <span>
@@ -101,7 +101,7 @@ export default function InitialMeetings({
   // Only show no meetings when we have user data and calendar is connected
   if (user && isCalendarConnected && hasMeetings === false) {
     return (
-      <section className="size-full overflow-auto bg-background px-8 py-16">
+      <section className="size-full overflow-auto bg-background">
         <p className="text-secondary-foreground">No meetings found.</p>
       </section>
     )
@@ -109,7 +109,7 @@ export default function InitialMeetings({
 
   // Show loading while waiting for user data
   return (
-    <p className="size-full overflow-auto bg-background px-8 text-secondary-foreground">
+    <p className="size-full overflow-auto bg-background text-secondary-foreground">
       loading...
     </p>
   )
