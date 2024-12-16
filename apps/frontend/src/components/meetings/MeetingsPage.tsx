@@ -78,14 +78,8 @@ const MeetingPage: React.FC<MeetingPageProps> = ({
   const displayMeeting = meets.find((m) => m.id === meetId)
 
   return (
-    <main className="flex size-full gap-16 bg-background p-10 pl-60">
+    <main className="flex size-full gap-16 bg-background">
       <section className="flex flex-1 flex-col gap-2 overflow-y-auto pr-4">
-        <div className="flex w-full items-center justify-between gap-4 text-sm text-secondary-foreground">
-          <div className="flex w-full items-center justify-between">
-            <ActionHeader closeToggle={closeToggle} onClose={handleClose} />
-          </div>
-        </div>
-
         {displayMeeting && (
           <MeetNotes key={displayMeeting.id} meetData={displayMeeting} />
         )}
