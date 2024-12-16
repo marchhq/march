@@ -37,7 +37,7 @@ const SidebarNav: React.FC = () => {
                 <button className="block w-full">
                   <SearchIcon
                     size={18}
-                    className="cursor-pointer text-primary-foreground hover:text-white"
+                    className="hover-text cursor-pointer text-primary-foreground"
                   />
                 </button>
               </TooltipTrigger>
@@ -56,7 +56,7 @@ const SidebarNav: React.FC = () => {
                     alt="add item"
                     width={18}
                     height={18}
-                    className="cursor-pointer text-primary-foreground hover:text-white"
+                    className="hover-text cursor-pointer text-primary-foreground"
                   />
                 </button>
               </TooltipTrigger>
@@ -69,7 +69,7 @@ const SidebarNav: React.FC = () => {
           <div>
             <Link href={"https://march.userjot.com/"} target="_blank">
               <CircleHelp
-                className="text-primary-foreground hover:text-white"
+                className="hover-text text-primary-foreground"
                 size={18}
               />
             </Link>
