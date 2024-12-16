@@ -99,7 +99,7 @@ export const TodayTextArea = ({ selectedDate }: JournalProps): JSX.Element => {
   }, [content, hasUnsavedChanges, isLoading])
 
   return (
-    <div className="flex flex-col gap-3 pl-5">
+    <div className="flex flex-col gap-3">
       <section className="no-scrollbar min-h-[10vh] max-w-[700px] overflow-y-scroll">
         {error && (
           <div className="mb-2.5 truncate text-xs text-danger-foreground">
