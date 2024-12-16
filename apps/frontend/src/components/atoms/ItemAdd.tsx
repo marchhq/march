@@ -93,7 +93,7 @@ export const ItemAdd: React.FC = () => {
   }, [addingItem])
 
   return (
-    <div onBlur={handleOnBlur} className="pl-5">
+    <div onBlur={handleOnBlur}>
       <div className="relative">
         <textarea
           ref={textareaRefTitle}
