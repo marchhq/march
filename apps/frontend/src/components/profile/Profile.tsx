@@ -35,8 +35,8 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="flex w-full p-10">
-      <div className="flex w-full max-w-lg flex-col justify-between p-6">
+    <div className="flex w-full bg-background">
+      <div className="flex w-full max-w-lg flex-col justify-between pl-6">
         <div className="flex grow flex-col">
           <div className="mb-8 flex flex-col space-y-8">
             <Link
@@ -53,7 +53,7 @@ const ProfilePage: React.FC = () => {
 
         <div className="mt-6">
           <Separator />
-          <footer className="flex flex-col space-y-4 pt-8">
+          <footer className="flex flex-col space-y-8 pt-8">
             <div className="space-y-2">
               <p className="font-semibold text-primary-foreground">march 0.1</p>
               <p className="text-xs text-secondary-foreground">
