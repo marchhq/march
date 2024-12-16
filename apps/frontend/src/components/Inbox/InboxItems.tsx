@@ -6,6 +6,7 @@ import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useTimezone } from "@/src/hooks/useTimezone"
+import { useWebSocket } from "@/src/hooks/useWebSocket"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
 import { getUserDate, getWeekDates } from "@/src/utils/datetime"
@@ -21,14 +22,44 @@ export const InboxItems: React.FC = () => {
   )
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
-    useCycleItemStore()
+  const {
+    inbox,
+    currentItem,
+    setCurrentItem,
+    fetchInbox,
+    updateItem,
+    updateStateWithNewItem,
+    error,
+  } = useCycleItemStore()
 
-  const { items, error: inboxError } = inbox
+  const { items: fetchedItems, error: inboxError } = inbox
+  const { messages } = useWebSocket()
 
   useEffect(() => {
-    fetchInbox(session)
+    const timeoutId = setTimeout(() => {
+      if (session) fetchInbox(session)
+    }, 300)
+    return () => clearTimeout(timeoutId)
   }, [fetchInbox, session])
+
+  // Handle WebSocket messages
+  useEffect(() => {
+    if (messages?.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage?.type === "linear" && lastMessage?.item) {
+        const { item } = lastMessage
+        // Update the item through the store
+        updateStateWithNewItem({
+          ...item,
+          _id: item._id,
+          title: item.title,
+          description: item.description,
+          status: item.status,
+          cycle: item.cycle,
+        })
+      }
+    }
+  }, [messages, updateStateWithNewItem])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -134,7 +165,8 @@ export const InboxItems: React.FC = () => {
     [updateItem, session, timezone]
   )
 
-  const filteredItems = items.filter((item) => item.status !== "done")
+  const filteredItems =
+    fetchedItems?.filter((item) => item?.status !== "done") || []
 
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
