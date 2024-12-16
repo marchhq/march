@@ -198,6 +198,7 @@ export const ItemList: React.FC<ItemListProps> = ({
                       ? "group-hover:underline"
                       : ""
                   }`,
+                  isEvent && "pl-5",
                   isOverdue && "flex gap-1"
                 )}
               >
