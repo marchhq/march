@@ -59,7 +59,7 @@ const InitialNotes: React.FC<InitialNotesProps> = ({ spaceId, blockId }) => {
   }, [notes, addNewNote])
 
   return (
-    <div className="size-full overflow-auto bg-background p-16">
+    <div className="size-full overflow-auto bg-background">
       <p className="text-secondary-foreground">loading...</p>
     </div>
   )
