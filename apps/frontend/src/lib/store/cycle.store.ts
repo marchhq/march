@@ -37,6 +37,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
   updateStateWithNewItem: (newItem: CycleItem) => void
+  removeItemFromState: (itemToRemove: CycleItem) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
@@ -662,6 +663,36 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         currentItem:
           state.currentItem?._id === newItem._id
             ? { ...state.currentItem, ...newItem }
+            : state.currentItem,
+        isLoading: false,
+      }
+    })
+  },
+
+  removeItemFromState: (itemToRemove: CycleItem) => {
+    set((state) => {
+      // helper function to remove item from array
+      const removeItem = (items: CycleItem[]) =>
+        items.filter((item) => item._id !== itemToRemove._id)
+
+      return {
+        inbox: {
+          ...state.inbox,
+          items: removeItem(state.inbox.items),
+          isLoading: false,
+          error: null,
+        },
+        thisWeek: {
+          ...state.thisWeek,
+          items: removeItem(state.thisWeek.items),
+          isLoading: false,
+          error: null,
+        },
+        items: removeItem(state.items),
+        // clear currentItem if it's the deleted item
+        currentItem:
+          state.currentItem?._id === itemToRemove._id
+            ? null
             : state.currentItem,
         isLoading: false,
       }

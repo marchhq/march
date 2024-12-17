@@ -2,10 +2,10 @@
 
 import React, { useEffect, useCallback, useState } from "react"
 
-import { useWebSocket } from "../WebsocketProvider"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/contexts/WebsocketProvider"
 import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
