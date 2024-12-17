@@ -7,6 +7,7 @@ interface ThemeState {
   theme: Theme
   setTheme: (theme: Theme) => void
   detectSystemTheme: () => void
+  syncWithSystemTheme: () => void
 }
 
 export const useThemeStore = create<ThemeState>()(
@@ -22,6 +23,7 @@ export const useThemeStore = create<ThemeState>()(
         } else {
           root.classList.remove("dark")
         }
+        localStorage.setItem("theme-storage", JSON.stringify({ theme }))
       },
       detectSystemTheme: () => {
         const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -29,6 +31,42 @@ export const useThemeStore = create<ThemeState>()(
           ? "dark"
           : "light"
         set({ theme: systemTheme })
+        const root = window.document.documentElement
+        root.setAttribute("data-theme", systemTheme)
+        if (systemTheme === "dark") {
+          root.classList.add("dark")
+        } else {
+          root.classList.remove("dark")
+        }
+        localStorage.setItem(
+          "theme-storage",
+          JSON.stringify({ theme: systemTheme })
+        )
+      },
+      syncWithSystemTheme: () => {
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
+        const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+          const systemTheme = e.matches ? "dark" : "light"
+          set({ theme: systemTheme })
+
+          const root = window.document.documentElement
+          root.setAttribute("data-theme", systemTheme)
+          if (systemTheme === "dark") {
+            root.classList.add("dark")
+          } else {
+            root.classList.remove("dark")
+          }
+
+          localStorage.setItem(
+            "theme-storage",
+            JSON.stringify({ theme: systemTheme })
+          )
+        }
+
+        mediaQuery.addEventListener("change", handleChange)
+
+        return () => mediaQuery.removeEventListener("change", handleChange)
       },
     }),
     {
