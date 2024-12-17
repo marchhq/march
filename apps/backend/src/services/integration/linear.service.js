@@ -290,6 +290,7 @@ const fetchAssignedIssues = async (linearToken, linearUserId) => {
 const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
     let message = "";
+    let action = null;
     let broadcastItem = null;
     let targetUserId = null;
 
@@ -297,6 +298,7 @@ const handleWebhookEvent = async (payload) => {
         const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
         if (deletedIssue) {
             message = `Deleted issue with ID: ${issue.id}`;
+            action = "delete";
             broadcastItem = deletedIssue;
             targetUserId = deletedIssue.user;
         } else {
@@ -337,6 +339,7 @@ const handleWebhookEvent = async (payload) => {
                 }, { new: true });
 
                 message = `Updated issue with ID: ${issue.id}`;
+                action = "update"
                 broadcastItem = updatedIssue;
             } else {
                 const newIssue = new Item({
@@ -361,6 +364,7 @@ const handleWebhookEvent = async (payload) => {
 
                 const savedIssue = await newIssue.save();
                 message = `Created new issue with ID: ${issue.id}`;
+                action = "create"
                 broadcastItem = savedIssue;
             }
         }
@@ -370,13 +374,13 @@ const handleWebhookEvent = async (payload) => {
         const broadcastData = {
             type: "linear",
             message,
+            action,
             item: broadcastItem
         };
 
         broadcastToUser(targetUserId.toString(), broadcastData, true);
     }
 };
-
 /**
  * Revokes a Linear access token.
  *

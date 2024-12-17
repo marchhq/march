@@ -141,11 +141,13 @@ const exchangeCodeForAccessToken = async (code) => {
 //     // broadcastUpdate(broadcastData, true);
 // };
 
+
 const processWebhookEvent = async (payload) => {
     const issueOrPR = payload.issue || payload.pull_request;
     let message = "";
     let broadcastItem = null;
     let targetUserId = null;
+    let action = null;
 
     if (!issueOrPR) {
         console.log("No issue or pull request found in the payload.");
@@ -163,6 +165,7 @@ const processWebhookEvent = async (payload) => {
 
         if (deletedItem) {
             message = `Deleted item with ID: ${issueOrPR.id}`;
+            action = "delete";
             broadcastItem = deletedItem;
             targetUserId = deletedItem.user;
         } else {
@@ -202,6 +205,7 @@ const processWebhookEvent = async (payload) => {
             }, { new: true });
 
             message = `Updated item with ID: ${issueOrPR.id}`;
+            action = "update";
             broadcastItem = updatedItem;
         } else {
             const newItem = new Item({
@@ -226,6 +230,7 @@ const processWebhookEvent = async (payload) => {
 
             const savedItem = await newItem.save();
             message = `Created new item with ID: ${issueOrPR.id}`;
+            action = "create";
             broadcastItem = savedItem;
         }
     }
@@ -234,6 +239,7 @@ const processWebhookEvent = async (payload) => {
         const broadcastData = {
             type: "github",
             message,
+            action,
             item: broadcastItem
         };
 
