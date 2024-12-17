@@ -6,7 +6,7 @@
   "private": true,
   "main": "index.js",
   "type": "module",
-  "repository": "https://github.com/marchhq/march.git",
+  "repository": "https://github.com/marchhq/march",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon index.js",
