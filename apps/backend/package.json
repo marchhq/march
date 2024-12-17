@@ -1,12 +1,12 @@
 {
   "name": "@march/backend",
   "version": "0.0.1",
-  "description": "march Backend",
-  "author": "march-dev",
+  "description": "second brain for next generation makers",
+  "author": "emptyarray inc",
   "private": true,
   "main": "index.js",
   "type": "module",
-  "repository": "git@github.com:marchhq/march.git",
+  "repository": "https://github.com/marchhq/march.git",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon index.js",
