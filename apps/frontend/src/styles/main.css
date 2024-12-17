@@ -4,9 +4,13 @@
 
 @layer base {
 
-  html,
+  html {
+    color-scheme: light dark;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
   }
 
   h1 {
