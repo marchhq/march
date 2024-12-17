@@ -65,3 +65,60 @@ LINEAR_CLIENT_SECRET=<your_linear_client_secret>
 ```
 
 Replace `<your_linear_client_id>` and `<your_linear_client_secret>` with the values provided by Linear for your OAuth application.
+
+## Docker Development Setup
+
+For a quick development environment setup, you can use Docker:
+
+```bash
+# Build and start both frontend and backend services
+docker-compose up
+
+# The frontend will be available at http://localhost:3000
+# The backend will be available at http://localhost:8080
+```
+
+This will:
+- Start both frontend and backend development servers
+- Enable hot-reloading for both services
+- Set up all required environment variables
+- Configure communication between services
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Environment Variables
+The Docker setup automatically configures:
+- Frontend: `NEXT_PUBLIC_API_URL=http://localhost:8080`
+- Frontend: `NEXT_PUBLIC_APP_URL=http://localhost:3000`
+- Backend: `PORT=8080`
+
+### Development Commands
+
+Start all services:
+```bash
+docker-compose up
+```
+
+Rebuild and start after dependency changes:
+```bash
+docker-compose up --build
+```
+
+View logs:
+```bash
+# All logs
+docker-compose logs -f
+
+# Frontend only
+docker-compose logs -f frontend
+
+# Backend only
+docker-compose logs -f backend
+```
+
+Stop all services:
+```bash
+docker-compose down
+```
