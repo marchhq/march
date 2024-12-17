@@ -19,6 +19,7 @@ import {
 
 export const ThisWeekPage: React.FC = () => {
   const today = new Date()
+  const currentWeek = getCurrentWeek(new Date())
 
   const [currentDate, setCurrentDate] = useState(today)
 
@@ -31,14 +32,14 @@ export const ThisWeekPage: React.FC = () => {
 
   const doneItems = items.filter((item: CycleItem) => item.status === "done")
 
-  const [isCurrentWeek, setIsCurrentWeek] = useState(weekNumber === getCurrentWeek(new Date()))
+  const [isCurrentWeek, setIsCurrentWeek] = useState(weekNumber === currentWeek)
 
   const handleWeekChange = (direction: "left" | "right" | "this") => {
     setCurrentDate((prevDate) => {
       if (direction === "this") {
         const currentDate = new Date()
         const currentWeekNumber = getCurrentWeek(currentDate)
-        setIsCurrentWeek(currentWeekNumber === getCurrentWeek(new Date()))
+        setIsCurrentWeek(currentWeekNumber === currentWeek)
         return currentWeekNumber >= 1 && currentWeekNumber <= totalWeeks
           ? currentDate
           : prevDate
@@ -46,7 +47,7 @@ export const ThisWeekPage: React.FC = () => {
 
       const newDate = addWeeks(prevDate, direction === "left" ? -1 : 1)
       const newWeekNumber = getCurrentWeek(newDate)
-      setIsCurrentWeek(newWeekNumber === getCurrentWeek(new Date()))
+      setIsCurrentWeek(newWeekNumber === currentWeek)
       return newWeekNumber >= 1 && newWeekNumber <= totalWeeks
         ? newDate
         : prevDate
