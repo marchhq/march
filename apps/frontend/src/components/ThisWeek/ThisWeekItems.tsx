@@ -5,6 +5,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/contexts/WebsocketProvider"
 import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -19,6 +20,7 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
   startDate,
   endDate,
 }) => {
+  const { messages } = useWebSocket()
   const timezone = useTimezone()
   const [dateChanged, setDateChanged] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
@@ -31,8 +33,15 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
 
-  const { thisWeek, setCurrentItem, updateItem, setWeekDates, fetchThisWeek } =
-    useCycleItemStore()
+  const {
+    thisWeek,
+    setCurrentItem,
+    updateItem,
+    setWeekDates,
+    fetchThisWeek,
+    updateStateWithNewItem,
+    removeItemFromState,
+  } = useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
@@ -57,6 +66,28 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
       setCycleDate(getUserDate(timezone))
     }
   }, [timezone])
+
+  useEffect(() => {
+    if (messages?.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage?.type === "linear" && lastMessage?.item) {
+        const { item, action } = lastMessage
+
+        if (action === "delete") {
+          removeItemFromState(item)
+        } else {
+          updateStateWithNewItem({
+            ...item,
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            status: item.status,
+            cycle: item.cycle,
+          })
+        }
+      }
+    }
+  }, [messages, updateStateWithNewItem, removeItemFromState])
 
   const handleDone = useCallback(
     (
