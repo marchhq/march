@@ -61,8 +61,41 @@ export const DateCycle: React.FC<DateCycleProps> = ({
 
   return (
     <div className="flex flex-col gap-4 text-sm">
-      <div className="flex items-center justify-between text-secondary-foreground">
-        <span>{formatedDateHeader}</span>
+      <div className="group flex items-center justify-between text-secondary-foreground">
+        <div className="flex items-center gap-2">
+          <span>{formatedDateHeader}</span>
+          <div className="flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-5 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+              onClick={goToPreviousDay}
+            >
+              <ChevronLeft className="size-3" />
+              <span className="sr-only">Previous day</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-5 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+              onClick={goToNextDay}
+            >
+              <ChevronRight className="size-3" />
+              <span className="sr-only">Next day</span>
+            </Button>
+            {!isToday && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-5 border border-border hover:border-primary-foreground hover:text-primary-foreground"
+                onClick={goToToday}
+              >
+                <Undo2 className="size-3" />
+                <span className="sr-only">Go to today</span>
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <h1 className="font-semibold text-foreground">{displayDateTitle}</h1>
@@ -71,39 +104,6 @@ export const DateCycle: React.FC<DateCycleProps> = ({
             {totalByDateItems}
           </span>
           <span title="total items by date + overdue">[{totalItems}]</span>
-        </div>
-      </div>
-      <div className="group relative">
-        <div className="flex items-center gap-2 text-secondary-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
-            onClick={goToPreviousDay}
-          >
-            <ChevronLeft className="size-4" />
-            <span className="sr-only">Previous day</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
-            onClick={goToNextDay}
-          >
-            <ChevronRight className="size-4" />
-            <span className="sr-only">Next day</span>
-          </Button>
-          {!isToday && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 border border-border hover:border-primary-foreground hover:text-primary-foreground"
-              onClick={goToToday}
-            >
-              <Undo2 className="size-4" />
-              <span className="sr-only">Go to today</span>
-            </Button>
-          )}
         </div>
       </div>
     </div>

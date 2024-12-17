@@ -19,6 +19,7 @@ import {
 
 export const ThisWeekPage: React.FC = () => {
   const today = new Date()
+  const currentWeek = getCurrentWeek(new Date())
 
   const [currentDate, setCurrentDate] = useState(today)
 
@@ -31,11 +32,14 @@ export const ThisWeekPage: React.FC = () => {
 
   const doneItems = items.filter((item: CycleItem) => item.status === "done")
 
+  const [isCurrentWeek, setIsCurrentWeek] = useState(weekNumber === currentWeek)
+
   const handleWeekChange = (direction: "left" | "right" | "this") => {
     setCurrentDate((prevDate) => {
       if (direction === "this") {
         const currentDate = new Date()
         const currentWeekNumber = getCurrentWeek(currentDate)
+        setIsCurrentWeek(currentWeekNumber === currentWeek)
         return currentWeekNumber >= 1 && currentWeekNumber <= totalWeeks
           ? currentDate
           : prevDate
@@ -43,6 +47,7 @@ export const ThisWeekPage: React.FC = () => {
 
       const newDate = addWeeks(prevDate, direction === "left" ? -1 : 1)
       const newWeekNumber = getCurrentWeek(newDate)
+      setIsCurrentWeek(newWeekNumber === currentWeek)
       return newWeekNumber >= 1 && newWeekNumber <= totalWeeks
         ? newDate
         : prevDate
@@ -56,11 +61,16 @@ export const ThisWeekPage: React.FC = () => {
       <div className="relative flex flex-auto flex-col gap-5">
         <header>
           <div className="flex flex-1 flex-col gap-4  text-sm text-foreground">
-            <div className="flex w-full items-center justify-between gap-5">
-              <div className="flex items-center gap-2 text-secondary-foreground">
+            <div className="flex w-full items-center gap-5">
+              <div className="group flex items-center gap-2 text-secondary-foreground">
                 <span>{formattedDateRange}</span>
+                <div className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <ThisWeekArrows
+                    onChangeWeek={handleWeekChange}
+                    isCurrentWeek={isCurrentWeek}
+                  />
+                </div>
               </div>
-              <ThisWeekArrows onChangeWeek={handleWeekChange} />
             </div>
             <div className="flex items-center gap-2">
               <h1 className="font-semibold">week {weekNumber}</h1>
