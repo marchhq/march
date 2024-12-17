@@ -13,7 +13,7 @@ export const TodayPage: React.FC = () => {
     <main className="h-full bg-background">
       <section className="flex h-full items-start gap-10">
         <div className="no-scrollbar flex h-full flex-1 flex-col gap-5 overflow-y-scroll text-sm">
-          <header>
+          <header className="pl-5">
             <DateCycle
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}

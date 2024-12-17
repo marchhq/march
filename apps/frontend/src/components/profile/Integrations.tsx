@@ -157,7 +157,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   )
 
   return (
-    <div className="mb-8">
+    <div>
       <h3 className="mb-4 text-xl font-semibold text-foreground">
         Connect your stack
       </h3>
