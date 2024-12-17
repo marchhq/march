@@ -1,8 +1,8 @@
 {
-  "name": "@satellite/frontend",
+  "name": "@march/frontend",
   "version": "0.0.1",
-  "description": "Satellite Frontend",
-  "author": "march-dev",
+  "description": "march frontend",
+  "author": "emptyarray inc",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -115,10 +115,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirnejak/satellite-frontend"
+    "url": "https://github.com/marchhq/march"
   },
   "bugs": {
-    "url": "https://github.com/nirnejak/satellite-frontend/issues"
+    "url": "https://github.com/marchhq/march/issues"
   },
   "bun": {
     "overrides": {
