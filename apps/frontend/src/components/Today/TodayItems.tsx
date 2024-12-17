@@ -9,6 +9,7 @@ import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/contexts/WebsocketProvider"
 import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { Event } from "@/src/lib/@types/Items/event"
@@ -24,6 +25,8 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   selectedDate,
 }): JSX.Element => {
   const { session } = useAuth()
+
+  const { messages } = useWebSocket()
 
   const timezone = useTimezone()
   const [isControlHeld, setIsControlHeld] = useState(false)
@@ -42,6 +45,8 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     error,
     currentItem,
     setCurrentItem,
+    updateStateWithNewItem,
+    removeItemFromState,
   } = useCycleItemStore()
 
   const { events, fetchEventsByDate, currentEvent, setCurrentEvent } =
@@ -93,6 +98,28 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
       setCycleDate(getUserDate(timezone))
     }
   }, [timezone])
+
+  useEffect(() => {
+    if (messages?.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage?.type === "linear" && lastMessage?.item) {
+        const { item, action } = lastMessage
+
+        if (action === "delete") {
+          removeItemFromState(item)
+        } else {
+          updateStateWithNewItem({
+            ...item,
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            status: item.status,
+            cycle: item.cycle,
+          })
+        }
+      }
+    }
+  }, [messages, updateStateWithNewItem, removeItemFromState])
 
   useEffect(() => {
     if (dateChanged) {

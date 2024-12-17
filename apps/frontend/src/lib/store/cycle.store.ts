@@ -652,6 +652,18 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           isLoading: false,
           error: null,
         },
+        byDate: {
+          ...state.byDate,
+          items: updateOrAddItem(state.byDate.items),
+          isLoading: false,
+          error: null,
+        },
+        overdue: {
+          ...state.overdue,
+          items: updateOrAddItem(state.overdue.items),
+          isLoading: false,
+          error: null,
+        },
         thisWeek: {
           ...state.thisWeek,
           items: updateOrAddItem(state.thisWeek.items),
@@ -679,6 +691,18 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
         inbox: {
           ...state.inbox,
           items: removeItem(state.inbox.items),
+          isLoading: false,
+          error: null,
+        },
+        byDate: {
+          ...state.byDate,
+          items: removeItem(state.byDate.items),
+          isLoading: false,
+          error: null,
+        },
+        overdue: {
+          ...state.overdue,
+          items: removeItem(state.overdue.items),
           isLoading: false,
           error: null,
         },
