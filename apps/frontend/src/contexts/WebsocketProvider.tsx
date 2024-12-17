@@ -25,7 +25,7 @@ let socketInstance: WebSocket | null = null
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
-  const { updateStateWithNewItem } = useCycleItemStore()
+  const { updateStateWithNewItem, removeItemFromState } = useCycleItemStore()
 
   useEffect(() => {
     const initializeWebSocket = async () => {
@@ -63,8 +63,20 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
             console.log("message type: ", message)
             if (message?.type === "linear" && message?.item) {
-              setMessages((prevMessages) => [...prevMessages, message.item])
-              updateStateWithNewItem(message.item)
+              setMessages((prevMessages) => [...prevMessages, message])
+
+              switch (message.action) {
+                case "delete":
+                  removeItemFromState(message.item)
+                  break
+                case "create":
+                case "update":
+                  updateStateWithNewItem(message.item)
+                  break
+                default:
+                  console.warn("Unknown linear action type:", message.action)
+                  updateStateWithNewItem(message.item)
+              }
             }
             if (message?.type === "pong") {
               console.log("Received pong from server")

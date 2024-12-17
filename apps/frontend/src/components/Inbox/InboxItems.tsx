@@ -29,6 +29,7 @@ export const InboxItems: React.FC = () => {
     fetchInbox,
     updateItem,
     updateStateWithNewItem,
+    removeItemFromState,
     error,
   } = useCycleItemStore()
 
@@ -47,19 +48,23 @@ export const InboxItems: React.FC = () => {
     if (messages?.length > 0) {
       const lastMessage = messages[messages.length - 1]
       if (lastMessage?.type === "linear" && lastMessage?.item) {
-        const { item } = lastMessage
-        // Update the item through the store
-        updateStateWithNewItem({
-          ...item,
-          _id: item._id,
-          title: item.title,
-          description: item.description,
-          status: item.status,
-          cycle: item.cycle,
-        })
+        const { item, action } = lastMessage
+
+        if (action === "delete") {
+          removeItemFromState(item)
+        } else {
+          updateStateWithNewItem({
+            ...item,
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            status: item.status,
+            cycle: item.cycle,
+          })
+        }
       }
     }
-  }, [messages, updateStateWithNewItem])
+  }, [messages, updateStateWithNewItem, removeItemFromState])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
