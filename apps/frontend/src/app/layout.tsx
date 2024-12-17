@@ -51,7 +51,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           sansFont.variable,
           serifFont.variable,
           monoFont.variable,
-          "overflow-x-hidden font-sans theme-bg"
+          "overflow-x-hidden font-sans"
         )}
       >
         <ThemeProvider>
