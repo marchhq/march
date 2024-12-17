@@ -155,7 +155,7 @@ export const ItemList: React.FC<ItemListProps> = ({
             onClick={() => handleClick(item)}
             data-item-id={itemId}
           >
-            <div className="flex items-start gap-2 truncate">
+            <div className="flex items-start gap-2.5 truncate">
               {!isEvent && (
                 <div>
                   {(item as CycleItem).status === "done" ? (
