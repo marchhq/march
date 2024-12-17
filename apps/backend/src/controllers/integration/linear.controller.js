@@ -1,5 +1,10 @@
 import { environment } from "../../loaders/environment.loader.js";
-import { getAccessToken, fetchUserInfo, handleWebhookEvent, revokeLinearAccess } from "../../services/integration/linear.service.js";
+import {
+    getAccessToken,
+    fetchUserInfo,
+    handleWebhookEvent,
+    revokeLinearAccess
+} from "../../services/integration/linear.service.js";
 import { linearQueue } from "../../loaders/bullmq.loader.js";
 import * as crypto from "crypto";
 
@@ -16,21 +21,27 @@ const getAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
     const user = req.user;
     if (!code || !user) {
-        return res.status(400).json({ error: 'Authorization code or user information is missing.' });
+        return res
+            .status(400)
+            .json({ error: "Authorization code or user information is missing." });
     }
     try {
         const accessToken = await getAccessToken(code, user);
         const userInfo = await fetchUserInfo(accessToken, user);
 
-        await linearQueue.add('linearQueue', {
-            accessToken,
-            linearUserId: userInfo.id,
-            userId: user._id
-        }, {
-            attempts: 3,
-            backoff: 1000,
-            timeout: 30000
-        });
+        await linearQueue.add(
+            "linearQueue",
+            {
+                accessToken,
+                linearUserId: userInfo.id,
+                userId: user._id
+            },
+            {
+                attempts: 3,
+                backoff: 1000,
+                timeout: 30000
+            }
+        );
 
         res.status(200).json({
             accessToken
@@ -41,21 +52,25 @@ const getAccessTokenController = async (req, res, next) => {
 };
 
 const handleWebhook = async (req, res, next) => {
+    console.log("hi from handle webhook");
     const rawBody = req.body.toString();
     const payload = JSON.parse(rawBody);
-    const signature = crypto.createHmac("sha256", environment.LINER_WEBHOOK_SECRET).update(rawBody).digest("hex");
-    if (signature !== req.headers['linear-signature']) {
+    const signature = crypto
+        .createHmac("sha256", environment.LINER_WEBHOOK_SECRET)
+        .update(rawBody)
+        .digest("hex");
+    if (signature !== req.headers["linear-signature"]) {
         res.sendStatus(400);
         return;
     }
 
     try {
         await handleWebhookEvent(payload);
-        res.status(200).send('Webhook event processed');
+        res.status(200).send("Webhook event processed");
     } catch (err) {
         next(err);
     }
-}
+};
 
 /**
  * Revokes a user's Linear access.
@@ -78,9 +93,9 @@ const revokeLinearAccessController = async (req, res, next) => {
         };
         await user.save();
 
-        res.status(200).json({ message: 'Linear access revoked successfully' });
+        res.status(200).json({ message: "Linear access revoked successfully" });
     } catch (err) {
-        console.error('Error revoking Linear access:', err);
+        console.error("Error revoking Linear access:", err);
         next(err);
     }
 };
@@ -89,4 +104,4 @@ export {
     getAccessTokenController,
     handleWebhook,
     revokeLinearAccessController
-}
+};

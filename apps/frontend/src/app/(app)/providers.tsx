@@ -5,9 +5,9 @@ import { useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
-import { WebSocketProvider } from "@/src/components/WebsocketProvider"
 import { AuthProvider } from "@/src/contexts/AuthContext"
 import ModalProvider from "@/src/contexts/ModalProvider"
+import { WebSocketProvider } from "@/src/contexts/WebsocketProvider"
 
 interface ProvidersProps {
   children: React.ReactNode
