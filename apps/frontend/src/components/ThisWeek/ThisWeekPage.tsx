@@ -65,7 +65,10 @@ export const ThisWeekPage: React.FC = () => {
               <div className="group flex items-center gap-2 text-secondary-foreground">
                 <span>{formattedDateRange}</span>
                 <div className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <ThisWeekArrows onChangeWeek={handleWeekChange} isCurrentWeek={isCurrentWeek} />
+                  <ThisWeekArrows
+                    onChangeWeek={handleWeekChange}
+                    isCurrentWeek={isCurrentWeek}
+                  />
                 </div>
               </div>
             </div>
