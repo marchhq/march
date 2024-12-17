@@ -1,0 +1,10 @@
+/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/libtauri_runtime-52961bba846e0601.rmeta: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/monitor.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/webview.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/window.rs
+
+/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/libtauri_runtime-52961bba846e0601.rlib: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/monitor.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/webview.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/window.rs
+
+/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/tauri_runtime-52961bba846e0601.d: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/monitor.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/webview.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/window.rs
+
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/lib.rs:
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/monitor.rs:
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/webview.rs:
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tauri-runtime-2.2.0/src/window.rs:
