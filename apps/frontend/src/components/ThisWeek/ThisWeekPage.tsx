@@ -54,7 +54,7 @@ export const ThisWeekPage: React.FC = () => {
   return (
     <div className="flex h-full w-[calc(100%-160px)]">
       <div className="relative flex flex-auto flex-col gap-5">
-        <header>
+        <header className="pl-5">
           <div className="flex flex-1 flex-col gap-4  text-sm text-foreground">
             <div className="flex w-full items-center justify-between gap-5">
               <div className="flex items-center gap-2 text-secondary-foreground">
