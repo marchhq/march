@@ -2,70 +2,80 @@
 
 import React from "react"
 
-import { SidebarFeedback } from "./SidebarFeedback"
-import { Switch } from "../atoms/Switch"
-import { SidebarFavorites } from "@/src/components/Sidebar/SidebarFavorites"
-import { SidebarMain } from "@/src/components/Sidebar/SidebarMain"
-import { SidebarProfile } from "@/src/components/Sidebar/SidebarProfile"
-import { SidebarSpaces } from "@/src/components/Sidebar/SidebarSpaces"
+import { CircleHelp, SearchIcon } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+
 import {
-  SidebarCollapseProvider,
-  useSidebarCollapse,
-} from "@/src/contexts/SidebarCollapseContext"
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../atoms/Tooltip"
 import { useTrackPageView } from "@/src/hooks/useTrackPageView"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
-import classNames from "@/src/utils/classNames"
+import SpaceIcon from "public/icons/spacesicon.svg"
 
 export const Sidebar: React.FC = () => {
   return (
-    <SidebarCollapseProvider>
-      <div className="flex flex-col border-r border-border">
-        <div className="pl-6 pt-1">
-          <SidebarCollapseButton />
-        </div>
-        <SidebarNav />
-      </div>
-    </SidebarCollapseProvider>
+    <div className="flex flex-col">
+      <SidebarNav />
+    </div>
   )
 }
 
 const SidebarNav: React.FC = () => {
-  const { isCollapsed } = useSidebarCollapse()
   const { user } = useUserInfo()
   useTrackPageView(user?.userName || "")
   return (
-    <nav
-      className={classNames(
-        "group relative flex h-screen bg-background text-sm p-6 text-secondary-foreground ",
-        isCollapsed ? "w-[250px]" : "w-[80px]"
-      )}
-    >
-      <div className="flex h-5/6 flex-col justify-between">
-        <div className="flex flex-col gap-4">
-          <SidebarMain />
-          <SidebarFavorites />
-        </div>
+    <nav className="flex h-screen bg-background p-4 text-sm text-secondary-foreground">
+      <div className="flex h-5/6 flex-col justify-center gap-4">
+        <div className="space-y-6 rounded-full border border-border p-3">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="block w-full">
+                  <SearchIcon
+                    size={18}
+                    className="hover-text cursor-pointer text-primary-foreground"
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-        <div className="flex flex-col gap-2">
-          <SidebarProfile />
-          <SidebarFeedback />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="block w-full">
+                  <Image
+                    src={SpaceIcon}
+                    alt="add item"
+                    width={18}
+                    height={18}
+                    className="hover-text cursor-pointer text-primary-foreground"
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <div>
+            <Link href={"https://march.userjot.com/"} target="_blank">
+              <CircleHelp
+                className="hover-text text-primary-foreground"
+                size={18}
+              />
+            </Link>
+          </div>
         </div>
       </div>
-
-      {isCollapsed && (
-        <div className="mr-4 mt-8">
-          <SidebarSpaces />
-        </div>
-      )}
     </nav>
-  )
-}
-
-const SidebarCollapseButton: React.FC = () => {
-  const { isCollapsed, toggleCollapse } = useSidebarCollapse()
-  return (
-    <div className="-ml-2.5">
-      <Switch checked={isCollapsed} onCheckedChange={toggleCollapse} />
-    </div>
   )
 }

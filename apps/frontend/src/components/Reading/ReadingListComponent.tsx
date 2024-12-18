@@ -53,7 +53,7 @@ const ReadingListComponent: React.FC<ReadingListComponentProps> = ({
 
   return (
     <section className="size-full overflow-y-auto bg-background text-secondary-foreground">
-      <div className="p-16 px-8 pb-8 sm:px-8 lg:px-14">
+      <div>
         <div className="flex w-3/4 flex-col gap-3 text-base">
           <div className="sticky top-0 z-10 grid bg-background">
             <AddItemForm blockId={blockId} spaceId={spaceId} />
