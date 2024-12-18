@@ -326,6 +326,9 @@ const handleWebhookEvent = async (payload) => {
 
             const existingIssue = await Item.findOne({ id: issue.id, source: "linear", user: userId });
             if (existingIssue) {
+                const dueDate = issue.dueDate ? issue.dueDate : null;
+                const startsAt = issue.cycle?.startsAt ? issue.cycle?.startsAt : null;
+                const endsAt = issue.cycle?.endsAt ? issue.cycle?.endsAt : null;
                 const updatedIssue = await Item.findByIdAndUpdate(existingIssue._id, {
                     title: issue.title,
                     description: issue.description,
@@ -333,9 +336,9 @@ const handleWebhookEvent = async (payload) => {
                     "metadata.state": issue.state,
                     "metadata.priority": issue.priority,
                     "metadata.project": issue.project,
-                    dueDate: issue.dueDate,
-                    "cycle.startsAt": issue.cycle?.startsAt,
-                    "cycle.endsAt": issue.cycle?.endsAt,
+                    dueDate,
+                    "cycle.startsAt": startsAt,
+                    "cycle.endsAt": endsAt,
                     updatedAt: issue.updatedAt
                 }, { new: true });
 
