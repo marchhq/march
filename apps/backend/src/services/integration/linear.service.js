@@ -309,6 +309,7 @@ const handleWebhookEvent = async (payload) => {
             const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
             if (deletedIssue) {
                 message = `Unassigned issue with ID: ${issue.id} deleted from the database.`;
+                action = "unassigned";
                 broadcastItem = deletedIssue;
                 targetUserId = deletedIssue.user;
             } else {
