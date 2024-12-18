@@ -16,7 +16,7 @@ Here is what you need to run march.
 1. Clone the repo into a public GitHub repository
 
 ```
-https://github.com/marchhq/march.git
+git clone https://github.com/marchhq/march.git
 
 ```
 
