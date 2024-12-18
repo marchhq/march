@@ -30,7 +30,6 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeWebSocket = async () => {
       if (socketInstance) {
-        console.log("WebSocket is already connected")
         return
       }
 
@@ -40,7 +39,6 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
         socketInstance.onopen = () => {
           setIsConnected(true)
-          console.log("WebSocket connection established")
         }
 
         socketInstance.onmessage = async (event) => {
@@ -61,12 +59,8 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
               message = JSON.parse(event.data.toString())
             }
 
-            console.log("message type: ", message)
             if (message?.type === "linear" && message?.item) {
               handleWebSocketMessage(message)
-            }
-            if (message?.type === "pong") {
-              console.log("Received pong from server")
             }
           } catch (error) {
             console.error("Error processing WebSocket message:", error)
@@ -75,7 +69,6 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
         socketInstance.onclose = () => {
           setIsConnected(false)
-          console.log("WebSocket connection closed")
           socketInstance = null
         }
 
@@ -91,7 +84,6 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
     const pingInterval = setInterval(() => {
       if (socketInstance && socketInstance.readyState === WebSocket.OPEN) {
-        console.log("Sending ping to server")
         socketInstance.send(JSON.stringify({ type: "ping" }))
       }
     }, 30000)
