@@ -31,7 +31,7 @@ export interface CycleItems {
 
 export interface WebSocketMessage {
   type: "linear" | string
-  action: "create" | "update" | "delete"
+  action: "create" | "update" | "delete" | "unassigned"
   item: CycleItem
 }
 
