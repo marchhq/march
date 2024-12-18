@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 import { AuthProvider } from "@/src/contexts/AuthContext"
 import ModalProvider from "@/src/contexts/ModalProvider"
+import { WebSocketProvider } from "@/src/contexts/WebsocketProvider"
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -29,7 +30,9 @@ export function Providers({ children, initialData }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ModalProvider>{children}</ModalProvider>
+        <WebSocketProvider>
+          <ModalProvider>{children}</ModalProvider>
+        </WebSocketProvider>
       </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

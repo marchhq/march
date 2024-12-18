@@ -29,6 +29,12 @@ export interface CycleItems {
   response: CycleItem[]
 }
 
+export interface WebSocketMessage {
+  type: "linear" | string
+  action: "create" | "update" | "delete" | "unassigned"
+  item: CycleItem
+}
+
 export interface CycleItemStore {
   items: CycleItem[]
   currentItem: CycleItem | null
