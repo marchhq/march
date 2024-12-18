@@ -1,4 +1,5 @@
-import axios, { AxiosError } from "axios"
+import axios from "axios"
+import { endOfWeek, isBefore, isToday, isTomorrow, parseISO } from "date-fns"
 import { create } from "zustand"
 
 import { CycleItem, CycleItemStore } from "../@types/Items/Cycle"
@@ -8,6 +9,55 @@ import { toUtcDate } from "@/src/utils/datetime"
 const api = axios.create({
   baseURL: BACKEND_URL,
 })
+
+const classifyItem = (
+  item: CycleItem,
+  thisWeekStart?: string,
+  thisWeekEnd?: string
+) => {
+  const belongs = {
+    inbox: false,
+    today: false,
+    overdue: false,
+    thisWeek: false,
+  }
+
+  if (item.dueDate) {
+    const dueDate = item.dueDate
+    const now = new Date()
+
+    if (isToday(dueDate) || isTomorrow(dueDate) || endOfWeek(dueDate)) {
+      belongs.today = true
+    } else if (dueDate < now) {
+      belongs.overdue = true
+    }
+  }
+
+  if (
+    thisWeekStart &&
+    thisWeekEnd &&
+    item.cycle?.startsAt &&
+    item.cycle?.endsAt
+  ) {
+    const cycleStart = parseISO(item.cycle.startsAt)
+    const cycleEnd = parseISO(item.cycle.endsAt)
+    const weekStart = parseISO(thisWeekStart)
+    const weekEnd = parseISO(thisWeekEnd)
+
+    if (
+      (cycleStart >= weekStart && cycleStart <= weekEnd) ||
+      (cycleEnd >= weekStart && cycleEnd <= weekEnd)
+    ) {
+      belongs.thisWeek = true
+    }
+  }
+
+  if (!belongs.today && !belongs.thisWeek && !belongs.overdue) {
+    belongs.inbox = true
+  }
+
+  return belongs
+}
 
 interface ViewState {
   items: CycleItem[]
@@ -36,8 +86,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
-  updateStateWithNewItem: (newItem: CycleItem) => void
-  removeItemFromState: (itemToRemove: CycleItem) => void
+  handleWebSocketMessage: (message: any) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
@@ -622,103 +671,82 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       throw error
     }
   },
+  handleWebSocketMessage: (message: any) => {
+    if (message?.type !== "linear" || !message?.item) return
 
-  updateStateWithNewItem: (newItem: CycleItem) => {
     set((state) => {
-      // Helper function to update or add item
-      const updateOrAddItem = (items: CycleItem[]) => {
-        const existingIndex = items.findIndex(
-          (item) => item._id === newItem._id
-        )
+      try {
+        const { item, action } = message
 
-        if (existingIndex !== -1) {
-          // Update existing item
-          const updatedItems = [...items]
-          updatedItems[existingIndex] = {
-            ...updatedItems[existingIndex],
-            ...newItem,
+        if (action === "delete") {
+          return {
+            inbox: {
+              ...state.inbox,
+              items: state.inbox.items.filter((i) => i._id !== item._id),
+            },
+            byDate: {
+              ...state.byDate,
+              items: state.byDate.items.filter((i) => i._id !== item._id),
+            },
+            overdue: {
+              ...state.overdue,
+              items: state.overdue.items.filter((i) => i._id !== item._id),
+            },
+            thisWeek: {
+              ...state.thisWeek,
+              items: state.thisWeek.items.filter((i) => i._id !== item._id),
+            },
+            items: state.items.filter((i) => i._id !== item._id),
           }
-          return updatedItems
         }
 
-        // Add new item only if it doesn't exist
-        return [newItem, ...items]
-      }
+        const belongs = classifyItem(
+          item,
+          state.thisWeek.startDate,
+          state.thisWeek.endDate
+        )
 
-      return {
-        inbox: {
-          ...state.inbox,
-          items: updateOrAddItem(state.inbox.items),
-          isLoading: false,
-          error: null,
-        },
-        byDate: {
-          ...state.byDate,
-          items: updateOrAddItem(state.byDate.items),
-          isLoading: false,
-          error: null,
-        },
-        overdue: {
-          ...state.overdue,
-          items: updateOrAddItem(state.overdue.items),
-          isLoading: false,
-          error: null,
-        },
-        thisWeek: {
-          ...state.thisWeek,
-          items: updateOrAddItem(state.thisWeek.items),
-          isLoading: false,
-          error: null,
-        },
-        items: updateOrAddItem(state.items),
-        // Update currentItem if it's the same item
-        currentItem:
-          state.currentItem?._id === newItem._id
-            ? { ...state.currentItem, ...newItem }
-            : state.currentItem,
-        isLoading: false,
-      }
-    })
-  },
+        // helper to update or add item to a list
+        const updateItems = (items: CycleItem[]) => {
+          const existingIndex = items.findIndex((i) => i._id === item._id)
+          if (existingIndex !== -1) {
+            return items.map((i) =>
+              i._id === item._id ? { ...i, ...item } : i
+            )
+          }
+          return [item, ...items]
+        }
 
-  removeItemFromState: (itemToRemove: CycleItem) => {
-    set((state) => {
-      // helper function to remove item from array
-      const removeItem = (items: CycleItem[]) =>
-        items.filter((item) => item._id !== itemToRemove._id)
-
-      return {
-        inbox: {
-          ...state.inbox,
-          items: removeItem(state.inbox.items),
-          isLoading: false,
-          error: null,
-        },
-        byDate: {
-          ...state.byDate,
-          items: removeItem(state.byDate.items),
-          isLoading: false,
-          error: null,
-        },
-        overdue: {
-          ...state.overdue,
-          items: removeItem(state.overdue.items),
-          isLoading: false,
-          error: null,
-        },
-        thisWeek: {
-          ...state.thisWeek,
-          items: removeItem(state.thisWeek.items),
-          isLoading: false,
-          error: null,
-        },
-        items: removeItem(state.items),
-        // clear currentItem if it's the deleted item
-        currentItem:
-          state.currentItem?._id === itemToRemove._id
-            ? null
-            : state.currentItem,
-        isLoading: false,
+        return {
+          inbox: {
+            ...state.inbox,
+            items: belongs.inbox
+              ? updateItems(state.inbox.items)
+              : state.inbox.items,
+          },
+          byDate: {
+            ...state.byDate,
+            items: belongs.today
+              ? updateItems(state.byDate.items)
+              : state.byDate.items,
+          },
+          overdue: {
+            ...state.overdue,
+            items: belongs.overdue
+              ? updateItems(state.overdue.items)
+              : state.overdue.items,
+          },
+          thisWeek: {
+            ...state.thisWeek,
+            items: belongs.thisWeek
+              ? updateItems(state.thisWeek.items)
+              : state.thisWeek.items,
+          },
+          items: updateItems(state.items),
+        }
+      } catch (error) {
+        console.error("Failed to process websocket message", error)
+        return state
       }
     })
   },
