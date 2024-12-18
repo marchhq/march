@@ -75,7 +75,11 @@ export const Topbar = () => {
       <div className="flex-1"></div>
 
       <div className="flex items-center space-x-2">
-        <Link href={"https://github.com/emptyarrayai/march"} target="_blank">
+        <Link
+          href={"https://github.com/emptyarrayai/march"}
+          target="_blank"
+          className="pt-px"
+        >
           <Parentheses
             size={18}
             className="hover-text text-secondary-foreground"

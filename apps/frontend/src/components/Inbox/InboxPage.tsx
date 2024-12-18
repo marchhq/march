@@ -19,7 +19,7 @@ export const InboxPage: React.FC = () => {
           currentItem && "w-1/2"
         )}
       >
-        <header className="flex flex-col gap-4 text-foreground">
+        <header className="flex flex-col gap-4 pl-5 text-foreground">
           <div className="flex gap-4 text-sm text-secondary-foreground">
             <span className="flex items-center">all unorganised items</span>
           </div>
