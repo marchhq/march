@@ -1,8 +1,8 @@
 {
-  "name": "@satellite/frontend",
+  "name": "@march/frontend",
   "version": "0.0.1",
-  "description": "Satellite Frontend",
-  "author": "march-dev",
+  "description": "march frontend",
+  "author": "emptyarray inc",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -26,6 +26,7 @@
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-select": "^2.1.1",
+    "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
@@ -114,10 +115,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirnejak/satellite-frontend"
+    "url": "https://github.com/marchhq/march"
   },
   "bugs": {
-    "url": "https://github.com/nirnejak/satellite-frontend/issues"
+    "url": "https://github.com/marchhq/march/issues"
   },
   "bun": {
     "overrides": {

@@ -1,10 +1,10 @@
 {
-  "name": "satellite",
+  "name": "march",
   "version": "0.0.1",
-  "description": "building a second brain for next generation makers",
+  "description": "second brain for next generation makers",
   "main": "index.js",
-  "repository": "https://github.com/marchhq/satellite.git",
-  "author": "march-dev",
+  "repository": "https://github.com/marchhq/march.git",
+  "author": "emptyarray inc",
   "private": true,
   "workspaces": ["apps/*"],
   "scripts": {
