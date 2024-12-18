@@ -2,7 +2,11 @@ import axios from "axios"
 import { endOfWeek, isBefore, isToday, isTomorrow, parseISO } from "date-fns"
 import { create } from "zustand"
 
-import { CycleItem, CycleItemStore } from "../@types/Items/Cycle"
+import {
+  CycleItem,
+  CycleItemStore,
+  WebSocketMessage,
+} from "../@types/Items/Cycle"
 import { BACKEND_URL } from "../constants/urls"
 import { toUtcDate } from "@/src/utils/datetime"
 
@@ -671,7 +675,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       throw error
     }
   },
-  handleWebSocketMessage: (message: any) => {
+  handleWebSocketMessage: (message: WebSocketMessage) => {
     if (message?.type !== "linear" || !message?.item) return
 
     set((state) => {
@@ -706,43 +710,42 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           state.thisWeek.endDate
         )
 
-        // helper to update or add item to a list
-        const updateItems = (items: CycleItem[]) => {
-          const existingIndex = items.findIndex((i) => i._id === item._id)
-          if (existingIndex !== -1) {
-            return items.map((i) =>
-              i._id === item._id ? { ...i, ...item } : i
-            )
-          }
-          return [item, ...items]
-        }
+        const filteredInbox = state.inbox.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredByDate = state.byDate.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredOverdue = state.overdue.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredThisWeek = state.thisWeek.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredItems = state.items.filter((i) => i._id !== item._id)
 
         return {
           inbox: {
             ...state.inbox,
-            items: belongs.inbox
-              ? updateItems(state.inbox.items)
-              : state.inbox.items,
+            items: belongs.inbox ? [item, ...filteredInbox] : filteredInbox,
           },
           byDate: {
             ...state.byDate,
-            items: belongs.today
-              ? updateItems(state.byDate.items)
-              : state.byDate.items,
+            items: belongs.today ? [item, ...filteredByDate] : filteredByDate,
           },
           overdue: {
             ...state.overdue,
             items: belongs.overdue
-              ? updateItems(state.overdue.items)
-              : state.overdue.items,
+              ? [item, ...filteredOverdue]
+              : filteredOverdue,
           },
           thisWeek: {
             ...state.thisWeek,
             items: belongs.thisWeek
-              ? updateItems(state.thisWeek.items)
-              : state.thisWeek.items,
+              ? [item, ...filteredThisWeek]
+              : filteredThisWeek,
           },
-          items: updateItems(state.items),
+          items: [item, ...filteredItems],
         }
       } catch (error) {
         console.error("Failed to process websocket message", error)

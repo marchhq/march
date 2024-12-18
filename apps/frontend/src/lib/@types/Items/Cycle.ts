@@ -29,27 +29,10 @@ export interface CycleItems {
   response: CycleItem[]
 }
 
-export interface CycleState {
-  inbox: {
-    items: CycleItem[]
-    isLoading: boolean
-    error: string | null
-  }
-  today: {
-    items: CycleItem[]
-    isLoading: boolean
-    error: string | null
-  }
-  thisWeek: {
-    items: CycleItem[]
-    startDate: string | null
-    endDate: string | null
-    isLoading: boolean
-    error: string | null
-  }
-  items: CycleItem[]
-  isLoading: boolean
-  error: string | null
+export interface WebSocketMessage {
+  type: "linear" | string
+  action: "create" | "update" | "delete"
+  item: CycleItem
 }
 
 export interface CycleItemStore {
