@@ -20,7 +20,6 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
   startDate,
   endDate,
 }) => {
-  const { messages } = useWebSocket()
   const timezone = useTimezone()
   const [dateChanged, setDateChanged] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
@@ -33,15 +32,8 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
 
-  const {
-    thisWeek,
-    setCurrentItem,
-    updateItem,
-    setWeekDates,
-    fetchThisWeek,
-    updateStateWithNewItem,
-    removeItemFromState,
-  } = useCycleItemStore()
+  const { thisWeek, setCurrentItem, updateItem, setWeekDates, fetchThisWeek } =
+    useCycleItemStore()
   const { items } = thisWeek
 
   const { session } = useAuth()
@@ -66,28 +58,6 @@ export const ThisWeekItems: React.FC<ThisWeekItemsProps> = ({
       setCycleDate(getUserDate(timezone))
     }
   }, [timezone])
-
-  useEffect(() => {
-    if (messages?.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      if (lastMessage?.type === "linear" && lastMessage?.item) {
-        const { item, action } = lastMessage
-
-        if (action === "delete") {
-          removeItemFromState(item)
-        } else {
-          updateStateWithNewItem({
-            ...item,
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            status: item.status,
-            cycle: item.cycle,
-          })
-        }
-      }
-    }
-  }, [messages, updateStateWithNewItem, removeItemFromState])
 
   const handleDone = useCallback(
     (

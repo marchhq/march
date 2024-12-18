@@ -5,7 +5,6 @@ import React, { useEffect, useCallback, useState } from "react"
 import { RescheduleCalendar } from "./RescheduleCalendar/RescheduleCalendar"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useWebSocket } from "@/src/contexts/WebsocketProvider"
 import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -22,19 +21,10 @@ export const InboxItems: React.FC = () => {
   )
   const [date, setDate] = useState<Date | null>(new Date())
   const [cycleDate, setCycleDate] = useState<Date | null>(new Date())
-  const {
-    inbox,
-    currentItem,
-    setCurrentItem,
-    fetchInbox,
-    updateItem,
-    updateStateWithNewItem,
-    removeItemFromState,
-    error,
-  } = useCycleItemStore()
+  const { inbox, currentItem, setCurrentItem, fetchInbox, updateItem, error } =
+    useCycleItemStore()
 
   const { items: fetchedItems, error: inboxError } = inbox
-  const { messages } = useWebSocket()
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -42,29 +32,6 @@ export const InboxItems: React.FC = () => {
     }, 300)
     return () => clearTimeout(timeoutId)
   }, [fetchInbox, session])
-
-  // Handle WebSocket messages
-  useEffect(() => {
-    if (messages?.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      if (lastMessage?.type === "linear" && lastMessage?.item) {
-        const { item, action } = lastMessage
-
-        if (action === "delete") {
-          removeItemFromState(item)
-        } else {
-          updateStateWithNewItem({
-            ...item,
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            status: item.status,
-            cycle: item.cycle,
-          })
-        }
-      }
-    }
-  }, [messages, updateStateWithNewItem, removeItemFromState])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

@@ -26,8 +26,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
 }): JSX.Element => {
   const { session } = useAuth()
 
-  const { messages } = useWebSocket()
-
   const timezone = useTimezone()
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
@@ -45,8 +43,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     error,
     currentItem,
     setCurrentItem,
-    updateStateWithNewItem,
-    removeItemFromState,
   } = useCycleItemStore()
 
   const { events, fetchEventsByDate, currentEvent, setCurrentEvent } =
@@ -98,28 +94,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
       setCycleDate(getUserDate(timezone))
     }
   }, [timezone])
-
-  useEffect(() => {
-    if (messages?.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      if (lastMessage?.type === "linear" && lastMessage?.item) {
-        const { item, action } = lastMessage
-
-        if (action === "delete") {
-          removeItemFromState(item)
-        } else {
-          updateStateWithNewItem({
-            ...item,
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            status: item.status,
-            cycle: item.cycle,
-          })
-        }
-      }
-    }
-  }, [messages, updateStateWithNewItem, removeItemFromState])
 
   useEffect(() => {
     if (dateChanged) {

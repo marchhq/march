@@ -29,6 +29,29 @@ export interface CycleItems {
   response: CycleItem[]
 }
 
+export interface CycleState {
+  inbox: {
+    items: CycleItem[]
+    isLoading: boolean
+    error: string | null
+  }
+  today: {
+    items: CycleItem[]
+    isLoading: boolean
+    error: string | null
+  }
+  thisWeek: {
+    items: CycleItem[]
+    startDate: string | null
+    endDate: string | null
+    isLoading: boolean
+    error: string | null
+  }
+  items: CycleItem[]
+  isLoading: boolean
+  error: string | null
+}
+
 export interface CycleItemStore {
   items: CycleItem[]
   currentItem: CycleItem | null
