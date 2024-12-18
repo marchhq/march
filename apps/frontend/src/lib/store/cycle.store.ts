@@ -682,7 +682,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       try {
         const { item, action } = message
 
-        if (action === "delete") {
+        if (action === "delete" || action === "unassigned") {
           return {
             inbox: {
               ...state.inbox,
