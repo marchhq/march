@@ -22,6 +22,10 @@ export interface ItemResponse {
   items: Item[]
 }
 
+export interface SearchResponse {
+  response: Item[]
+}
+
 export interface ItemStoreType {
   items: Item[]
   selectedItem: Item | null

@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../atoms/Tooltip"
+import { SearchButton } from "../button/SearchButton"
 import { useTrackPageView } from "@/src/hooks/useTrackPageView"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
 import SpaceIcon from "public/icons/spacesicon.svg"
@@ -34,12 +35,7 @@ const SidebarNav: React.FC = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button className="block w-full">
-                  <SearchIcon
-                    size={18}
-                    className="hover-text cursor-pointer text-primary-foreground"
-                  />
-                </button>
+                <SearchButton />
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>coming soon</p>
