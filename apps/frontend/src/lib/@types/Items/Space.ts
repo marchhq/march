@@ -7,6 +7,7 @@ export interface Space {
   isArchived: boolean
   isDeleted: boolean
   uuid: string
+  identifier: string
 }
 
 export interface Spaces {

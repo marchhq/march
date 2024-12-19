@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 
+import { useQuery } from "@tanstack/react-query"
 import { Parentheses } from "lucide-react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
@@ -11,6 +12,7 @@ import { NoteStackModal } from "../Notes/components/NoteModal/NotesModal"
 import { useNoteHandlers } from "../Notes/hooks/useNoteHandlers"
 import { useNoteState } from "../Notes/hooks/useNoteState"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { Space } from "@/src/lib/@types/Items/Space"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
 import useNotesStore from "@/src/lib/store/notes.store"
 import useUserStore from "@/src/lib/store/user.store"
@@ -22,6 +24,9 @@ export const Topbar = () => {
   const blockId = params?.blockId as string
   const itemId = params?.itemId as string
 
+  const { data: spaces } = useQuery<Space[]>({
+    queryKey: ["spaces"],
+  })
   const { session } = useAuth()
   const { user, fetchUser } = useUserStore()
   const { notes, fetchNotes } = useNotesStore()
@@ -42,12 +47,16 @@ export const Topbar = () => {
     setIsStackOpen(!isStackOpen)
   }
 
-  const isMeetingRoute = useMemo(() => {
-    return itemId?.includes("_20")
-  }, [itemId])
+  const currentSpace = useMemo(() => {
+    return spaces?.find((space) => space._id === spaceId)
+  }, [spaces, spaceId])
+
+  const isMeetingSpace = useMemo(() => {
+    return currentSpace?.identifier === "MEETINGS"
+  }, [currentSpace])
 
   const stackItems = useMemo(() => {
-    if (isMeetingRoute) {
+    if (isMeetingSpace) {
       return (
         meets?.map((m) => ({
           id: m.id,
