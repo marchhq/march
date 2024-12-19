@@ -13,10 +13,10 @@
 		"windows": [
 			{
         "label": "main",
-				"url": "/dashboard",
+				"url": "/today",
 				"width": 1200,
 				"height": 800,
-				"title": "GitLight",
+				"title": "march",
 				"titleBarStyle": "Overlay",
 				"hiddenTitle": true
 			},
