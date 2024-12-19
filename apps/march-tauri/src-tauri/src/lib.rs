@@ -14,7 +14,7 @@ pub fn run() {
         "http://localhost:3000".to_string()
     } else {
         // Production mode
-        "https://app.march.cat".to_string()
+        "https://alpha.march.cat".to_string()
     };
 
     tauri::Builder::default()

@@ -10,13 +10,29 @@
   },
   "app": {
     "withGlobalTauri": true,
-    "windows": [
+		"windows": [
+			{
+        "label": "main",
+				"url": "/dashboard",
+				"width": 1200,
+				"height": 800,
+				"title": "GitLight",
+				"titleBarStyle": "Overlay",
+				"hiddenTitle": true
+			},
       {
-        "title": "march-tauri",
-        "width": 800,
-        "height": 600
-      }
-    ],
+        "label": "tray",
+				"url": "/tray",
+				"width": 400,
+				"height": 600,
+				"title": "march",
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "resizable": false,
+        "visible": false,
+        "focus": false
+			}
+		],
     "security": {
       "csp": null
     }
