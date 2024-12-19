@@ -10,3 +10,7 @@ declare namespace JSX {
     "amp-img": AmpImg
   }
 }
+
+interface Window {
+  __TAURI__: unknown
+}
