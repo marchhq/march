@@ -13,11 +13,10 @@ Here is what you need to run march.
 
 ### Setup
 
-1. Clone the repo into a public GitHub repository
+1. Clone the Repository with a Shallow Clone
 
 ```
-https://github.com/marchhq/march.git
-
+git clone --depth=1 https://github.com/marchhq/march.git
 ```
 
 2. Switch to the project folder
