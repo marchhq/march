@@ -3,7 +3,7 @@ const nextConfig = {
   swcMinify: true,
   trailingSlash: true,
   output: "standalone",
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       {

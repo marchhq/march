@@ -18,8 +18,8 @@ export const Calendar = (): JSX.Element => {
 export const GoogleCalendar = (): JSX.Element => {
   return (
     <svg
-      width="90"
-      height="83"
+      width="14"
+      height="14"
       viewBox="0 0 90 83"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -33,8 +33,26 @@ export const formatMeetTime = (startTime: Date, endTime: Date): string => {
   return `${start} - ${end}`
 }
 
-export const calculateMeetDuration = (start: Date, end: Date): number => {
-  return Math.round((end.getTime() - start.getTime()) / (1000 * 60))
+export const calculateMeetDuration = (start: string, end: string): string => {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+
+  const minutes = Math.round(
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60)
+  )
+
+  if (minutes < 60) {
+    return `${minutes}min`
+  }
+
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+
+  if (remainingMinutes === 0) {
+    return `${hours}h`
+  }
+
+  return `${hours}h ${remainingMinutes}min`
 }
 
 export const getMeetingLink = (event) => {

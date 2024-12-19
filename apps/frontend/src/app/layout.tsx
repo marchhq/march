@@ -2,11 +2,13 @@ import * as React from "react"
 
 import type { Viewport } from "next"
 
+import { LogSnagProvider } from "@logsnag/next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
 import "../styles/main.css"
 import "../styles/tiptap.css"
+import { ThemeProvider } from "../components/ThemeProvider"
 import classNames from "@/src/utils/classNames"
 
 const sansFont = Inter({
@@ -38,20 +40,27 @@ interface Props {
 const RootLayout: React.FC<Props> = ({ children }) => {
   return (
     <html lang="en">
+      <head>
+        <LogSnagProvider
+          token={process.env.NEXT_PUBLIC_LOGSNAG_TOKEN ?? ""}
+          project={process.env.NEXT_PUBLIC_LOGSNAG_PROJECT_NAME ?? ""}
+        />
+      </head>
       <body
         className={classNames(
           sansFont.variable,
           serifFont.variable,
           monoFont.variable,
-          "overflow-x-hidden font-sans dark",
-          "bg-background"
+          "overflow-x-hidden font-sans"
         )}
       >
-        <GoogleOAuthProvider
-          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
-        >
-          {children}
-        </GoogleOAuthProvider>
+        <ThemeProvider>
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
+          >
+            {children}
+          </GoogleOAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
