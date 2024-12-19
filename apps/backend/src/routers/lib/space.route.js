@@ -30,6 +30,7 @@ import {
     getMeetingByIdController
 } from "../../controllers/page/meeting.controller.js";
 import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
+import { SpaceMiddleware } from "../../middlewares/space.middleware.js";
 
 const router = Router();
 
@@ -39,6 +40,8 @@ router.route("/").get(getSpacesController);
 router.route("/name/:space").get(getSpaceByNameController);
 router.route("/:space/").get(getSpaceController);
 router.route("/:space/").put(updateSpaceController);
+
+router.use("/:space", SpaceMiddleware)
 
 // items filter by label name
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)

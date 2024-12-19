@@ -32,9 +32,9 @@ const getSpacesController = async (req, res, next) => {
 const getSpaceController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space: id } = req.params;
+        const { space: identifier } = req.params;
 
-        const space = await getSpace(user, id);
+        const space = await getSpace(user, identifier);
 
         res.status(200).json({
             space
@@ -61,9 +61,9 @@ const getSpaceByNameController = async (req, res, next) => {
 
 const updateSpaceController = async (req, res, next) => {
     try {
-        const { space: id } = req.params;
+        const { space: identifier } = req.params;
         const updateData = req.body;
-        const space = await updateSpace(id, updateData);
+        const space = await updateSpace(identifier, updateData);
 
         res.status(200).json({
             space

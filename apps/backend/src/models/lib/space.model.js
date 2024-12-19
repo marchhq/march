@@ -12,6 +12,11 @@ const SpaceSchema = new Schema({
         default: '',
         required: true
     },
+    identifier: {
+        type: String,
+        required: true,
+        uppercase: true
+    },
     icon: {
         type: String,
         default: 'home'
@@ -36,15 +41,21 @@ const SpaceSchema = new Schema({
 SpaceSchema.pre("save", async function (next) {
     const space = this;
 
-    const existingSpace = await Space.findOne({
-        name: space.name,
+    space.identifier = space.identifier.replace(/\s+/g, '_');
+
+    const existingSpaceByIdentifier = await Space.findOne({
+        identifier: space.identifier,
         users: { $in: space.users }
     });
 
-    if (existingSpace) {
-        const error = new Error("The Space name is already taken.");
-        error.statusCode = 400;
-        return next(error);
+    if (existingSpaceByIdentifier) {
+        let suffix = 1;
+        let newIdentifier;
+        do {
+            newIdentifier = `${space.identifier}${suffix}`;
+            suffix++;
+        } while (await Space.findOne({ identifier: newIdentifier, users: { $in: space.users } }));
+        space.identifier = newIdentifier;
     }
 
     next();

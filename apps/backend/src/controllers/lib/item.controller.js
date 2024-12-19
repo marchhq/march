@@ -29,7 +29,8 @@ const generateLinkPreview = async (requestedData) => {
 const createItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space, block } = req.params;
+        const space = res.locals.space._id;
+        const { block } = req.params;
         const requestedData = req.body;
         const { type } = requestedData;
 
@@ -103,7 +104,8 @@ const createInboxItemController = async (req, res, next) => {
 
 const updateItemController = async (req, res, next) => {
     try {
-        const { space, block, item: id } = req.params;
+        const space = res.locals.space._id;
+        const { block, item: id } = req.params;
         const updateData = req.body;
         const item = await updateItem(id, updateData, space, block);
 
@@ -136,7 +138,8 @@ const filterItemsController = async (req, res, next) => {
 const getAllItemsByBloackController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space, block } = req.params;
+        const space = res.locals.space._id;
+        const { block } = req.params;
         const items = await getAllItemsByBloack(user, space, block);
 
         res.status(200).json({
@@ -150,7 +153,8 @@ const getAllItemsByBloackController = async (req, res, next) => {
 const getItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space, block, item: id } = req.params;
+        const space = res.locals.space._id;
+        const { block, item: id } = req.params;
 
         const item = await getItem(user, id, space, block);
 
@@ -164,7 +168,7 @@ const getItemController = async (req, res, next) => {
 
 const getItemFilterByLabelController = async (req, res, next) => {
     const { name } = req.query;
-    const { space } = req.params;
+    const space = res.locals.space._id;
     const user = req.user._id;
 
     try {

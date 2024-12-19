@@ -4,6 +4,7 @@ config();
 
 export const environment = {
     MONGO_URL: process.env.MONGO_URL,
+    DB_NAME: process.env.DB_NAME,
     PORT: process.env.PORT || 8080,
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_SECRET: process.env.JWT_SECRET,
