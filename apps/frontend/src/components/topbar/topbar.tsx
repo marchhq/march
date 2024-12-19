@@ -24,9 +24,6 @@ export const Topbar = () => {
   const blockId = params?.blockId as string
   const itemId = params?.itemId as string
 
-  const { data: spaces } = useQuery<Space[]>({
-    queryKey: ["spaces"],
-  })
   const { session } = useAuth()
   const { user, fetchUser } = useUserStore()
   const { notes, fetchNotes } = useNotesStore()
@@ -36,6 +33,10 @@ export const Topbar = () => {
   const { addNewNote } = useNoteHandlers(state, dispatch, spaceId, blockId)
   const [isStackOpen, setIsStackOpen] = useState(false)
   const [buttonPosition, setButtonPosition] = useState({ top: 0, right: 0 })
+
+  const { data: spaces } = useQuery<Space[]>({
+    queryKey: ["spaces", session],
+  })
 
   useEffect(() => {
     fetchUser(session)
@@ -77,7 +78,7 @@ export const Topbar = () => {
         isActive: n._id === note?._id,
       })) || []
     )
-  }, [isMeetingRoute, notes, meets, spaceId, blockId, itemId, note])
+  }, [isMeetingSpace, notes, meets, spaceId, blockId, itemId, note])
 
   return (
     <div className="flex h-10 items-center justify-between px-8">
@@ -107,7 +108,7 @@ export const Topbar = () => {
           <>
             <ActionHeader
               closeToggle={isStackOpen}
-              onAdd={isMeetingRoute ? undefined : addNewNote}
+              onAdd={isMeetingSpace ? undefined : addNewNote}
               onButtonPositionChange={setButtonPosition}
               onClose={toggleStack}
             />
