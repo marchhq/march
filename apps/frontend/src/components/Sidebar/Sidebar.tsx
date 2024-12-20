@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../atoms/Tooltip"
+import { CreateButton } from "../button/CreateButton"
 import { SearchButton } from "../button/SearchButton"
 import { useTrackPageView } from "@/src/hooks/useTrackPageView"
 import { useUserInfo } from "@/src/hooks/useUserInfo"
@@ -32,36 +33,8 @@ const SidebarNav: React.FC = () => {
     <nav className="flex h-screen bg-background p-4 text-sm text-secondary-foreground">
       <div className="flex h-5/6 flex-col justify-center gap-4">
         <div className="space-y-6 rounded-full border border-border p-3">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SearchButton />
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button className="block w-full">
-                  <Image
-                    src={SpaceIcon}
-                    alt="add item"
-                    width={18}
-                    height={18}
-                    className="hover-text cursor-pointer text-primary-foreground"
-                  />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
+          <SearchButton />
+          <CreateButton />
           <div>
             <Link href={"https://march.userjot.com/"} target="_blank">
               <CircleHelp
