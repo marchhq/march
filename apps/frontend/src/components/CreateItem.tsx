@@ -5,13 +5,16 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import useEditorHook from "../hooks/useEditor.hook"
 import TextEditor from "./atoms/Editor"
+import { ItemType } from "./ItemType"
 import { useCreateStore } from "../lib/store/create.store"
 import { useCycleItemStore } from "../lib/store/cycle.store"
+import { useItemTypeStore } from "../lib/store/type.store"
 
 export const CreateItem = () => {
   const { session } = useAuth()
   const { isOpen, close } = useCreateStore()
   const { createItem } = useCycleItemStore()
+  const { selectedType } = useItemTypeStore()
 
   const [title, setTitle] = useState("")
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
@@ -61,6 +64,7 @@ export const CreateItem = () => {
         await createItem(session, {
           title: title.trim(),
           description: currentContent,
+          type: selectedType,
         })
       }
       resetEditor()
@@ -72,6 +76,7 @@ export const CreateItem = () => {
     createItem,
     title,
     content,
+    selectedType,
     editor,
     hasUnsavedChanges,
     resetEditor,
@@ -132,6 +137,7 @@ export const CreateItem = () => {
               rows={1}
             />
           </div>
+          <ItemType />
           <div className="mt-1 text-foreground">
             <TextEditor editor={editor} />
           </div>
