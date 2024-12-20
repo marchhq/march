@@ -34,21 +34,21 @@ const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const hideModal = () => setIsModalVisible(false)
 
   // Load specific modals on keypress
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if ((event.metaKey || event.ctrlKey) && event.key === "f") {
-      event.preventDefault()
-      showModal(<FeedbackModal />)
-    }
-  }
+  //  const handleKeyPress = (event: KeyboardEvent) => {
+  //    if ((event.metaKey || event.ctrlKey) && event.key === "f") {
+  //      event.preventDefault()
+  //      showModal(<FeedbackModal />)
+  //    }
+  //  }
 
-  useEffect(() => {
-    console.log("Keypress listener activated")
-    window.addEventListener("keydown", handleKeyPress)
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress)
-    }
-  }, [])
+  //  useEffect(() => {
+  //    console.log("Keypress listener activated")
+  //    window.addEventListener("keydown", handleKeyPress)
+  //
+  //    return () => {
+  //      window.removeEventListener("keydown", handleKeyPress)
+  //    }
+  //  }, [])
 
   return (
     <ModalContext.Provider value={{ showModal, hideModal }}>
