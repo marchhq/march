@@ -7,6 +7,7 @@ import { Icon } from "@/src/components/Icon"
 import { User } from "@/src/lib/@types/auth/user"
 import { GithubDark } from "@/src/lib/icons/Github"
 import Google from "@/src/lib/icons/Google"
+import { useThemeStore } from "@/src/lib/store/theme.store"
 
 export const getAuthInfo = (
   user: User
@@ -45,6 +46,11 @@ interface UserInfoProps {
 
 const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   const { authMethod, email, icon } = getAuthInfo(user)
+  const { theme, setTheme } = useThemeStore()
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light")
+  }
   return (
     <div className="mb-8 flex flex-col">
       {user.avatar && (
@@ -64,6 +70,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
       <div className="flex items-center text-base text-secondary-foreground">
         <span className="mr-2 text-[13px]">Logged in with {authMethod}</span>
         {icon}
+      </div>
+      <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-secondary-foreground">
+        <p className="text-[13px]">Interface</p>
+        <span className="size-[3px] rounded-full bg-secondary-foreground"></span>{" "}
+        <button onClick={toggleTheme} className="text-[13px] hover:underline">
+          {theme === "light" ? <p>Light</p> : <p>Dark</p>}
+        </button>
       </div>
     </div>
   )

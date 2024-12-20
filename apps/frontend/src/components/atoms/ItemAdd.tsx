@@ -93,7 +93,7 @@ export const ItemAdd: React.FC = () => {
   }, [addingItem])
 
   return (
-    <div onBlur={handleOnBlur} className="pl-5">
+    <div onBlur={handleOnBlur}>
       <div className="relative">
         <textarea
           ref={textareaRefTitle}
@@ -101,7 +101,7 @@ export const ItemAdd: React.FC = () => {
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="add anything..."
-          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
+          className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background pl-5 text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           rows={1}

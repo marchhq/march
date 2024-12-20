@@ -38,6 +38,8 @@ import { linkPreviewGeneratorController } from "../../controllers/lib/linkPrevie
 
 const router = Router();
 
+router.route("/all/").get(getAllitemsController);
+
 /* Inbox Management Routes
 -------------------------------------------------- */
 router.route("/inbox/")
