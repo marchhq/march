@@ -4,13 +4,18 @@ import React, { useState, useEffect, useCallback } from "react"
 
 import { format } from "date-fns"
 
+import { TodayExpandedAgenda } from "./TodayExpandedAgenda"
 import { ItemExpandModal } from "@/src/components/atoms/ItemExpandModal"
 import { ItemList } from "@/src/components/atoms/ItemList"
 import { RescheduleCalendar } from "@/src/components/Inbox/RescheduleCalendar/RescheduleCalendar"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useWebSocket } from "@/src/contexts/WebsocketProvider"
+import { useTimezone } from "@/src/hooks/useTimezone"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
+import { Event } from "@/src/lib/@types/Items/event"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
-import { getWeekDates } from "@/src/utils/datetime"
+import { useEventsStore } from "@/src/lib/store/events.store"
+import { getUserDate, getWeekDates } from "@/src/utils/datetime"
 
 interface TodayEventsProps {
   selectedDate: Date
@@ -21,6 +26,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
 }): JSX.Element => {
   const { session } = useAuth()
 
+  const timezone = useTimezone()
   const [isControlHeld, setIsControlHeld] = useState(false)
   const [dateChanged, setDateChanged] = useState(false)
   const [reschedulingItemId, setReschedulingItemId] = useState<string | null>(
@@ -39,6 +45,9 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     setCurrentItem,
   } = useCycleItemStore()
 
+  const { events, fetchEventsByDate, currentEvent, setCurrentEvent } =
+    useEventsStore()
+
   const {
     items: byDateItems,
     error: byDateError,
@@ -52,9 +61,10 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
 
   useEffect(() => {
     const date = format(selectedDate, "yyyy-MM-dd").toLowerCase()
+    fetchEventsByDate(session, date)
     fetchByDate(session, date)
     fetchOverdue(session, date)
-  }, [session, selectedDate, fetchOverdue, fetchByDate])
+  }, [session, selectedDate, fetchOverdue, fetchByDate, fetchEventsByDate])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -79,9 +89,16 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
   }, [])
 
   useEffect(() => {
+    if (timezone) {
+      setDate(getUserDate(timezone))
+      setCycleDate(getUserDate(timezone))
+    }
+  }, [timezone])
+
+  useEffect(() => {
     if (dateChanged) {
       if (reschedulingItemId) {
-        if (cycleDate) {
+        if (cycleDate !== null) {
           const { startDate, endDate } = getWeekDates(cycleDate)
           updateItem(
             session,
@@ -98,7 +115,14 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
         } else {
           updateItem(
             session,
-            { status: date ? "todo" : "null", dueDate: date },
+            {
+              status: date ? "todo" : "null",
+              dueDate: date,
+              cycle: {
+                startsAt: null,
+                endsAt: null,
+              }, // explicitly set cycle to null
+            },
             reschedulingItemId
           )
         }
@@ -119,6 +143,12 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     [currentItem, setCurrentItem, isControlHeld]
   )
 
+  const handleMeetingExpand = (item: Event) => {
+    if (!currentEvent || currentEvent.id !== item.id) {
+      setCurrentEvent(item)
+    }
+  }
+
   const handleDone = useCallback(
     (
       event: React.MouseEvent,
@@ -128,7 +158,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
       event.stopPropagation()
       if (id) {
         const newStatus = currentStatus === "done" ? "null" : "done"
-        const today = new Date()
+        const today = getUserDate(timezone)
         const { startDate, endDate } = getWeekDates(today)
         updateItem(
           session,
@@ -144,27 +174,35 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
         )
       }
     },
-    [updateItem, session]
+    [updateItem, session, timezone]
   )
 
   const handleRescheduleCalendar = (
     e: React.MouseEvent,
     id: string,
-    dueDate: Date | null
+    dueDate: Date | string | null
   ) => {
     e.stopPropagation()
 
-    const newDate = dueDate
-      ? typeof dueDate === "string"
-        ? new Date(dueDate)
-        : dueDate
-      : null
+    let newDate: Date | null = null
+
+    if (dueDate) {
+      if (typeof dueDate === "string") {
+        newDate = new Date(dueDate)
+      } else {
+        newDate = dueDate
+      }
+    }
+
+    if (newDate && timezone) {
+      newDate = getUserDate(timezone)
+    }
 
     setReschedulingItemId(id)
     setDate(newDate)
   }
 
-  if (byDateItems.length + overdueItems.length > 0) {
+  if (byDateItems.length + overdueItems.length + events.length > 0) {
     return (
       <div className="no-scrollbar flex h-full flex-col gap-4 pb-5">
         <div>
@@ -179,6 +217,11 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             </div>
           )}
           <div className="flex flex-col gap-2.5">
+            <ItemList
+              items={events}
+              handleExpand={handleExpand}
+              handleMeetingExpand={handleMeetingExpand}
+            />
             <ItemList
               items={byDateItems}
               handleExpand={handleExpand}
@@ -235,6 +278,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
           </div>
         )}
         <ItemExpandModal />
+        <TodayExpandedAgenda />
       </div>
     )
   }

@@ -28,10 +28,10 @@ const authenticateWithGoogleController = async (req, res, next) => {
 
             // Log user event to LogSnag
             await logsnag.track({
-                channel: "waitlist",
-                event: `${user.userName} is Waitlisted`,
+                channel: "new-users",
+                event: `${user.userName} is Added`,
                 user_id: user._id,
-                icon: "⏳",
+                icon: "✨",
                 notify: true,
                 tags: {
                     method: "Google",
@@ -83,10 +83,10 @@ const authenticateWithGithubController = async (req, res, next) => {
 
             // Log user event to LogSnag
             await logsnag.track({
-                channel: "waitlist",
-                event: `${user.userName} is Waitlisted`,
+                channel: "new-users",
+                event: `${user.userName} is Added`,
                 user_id: user._id,
-                icon: "⏳",
+                icon: "✨",
                 notify: true,
                 tags: {
                     method: "Github",

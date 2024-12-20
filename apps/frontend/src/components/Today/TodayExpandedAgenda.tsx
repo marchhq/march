@@ -8,6 +8,7 @@ import TextEditor from "../atoms/Editor"
 import ChevronLeftIcon from "@/public/icons/chevronleft.svg"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
+import { useId } from "@/src/hooks/useId"
 import { Link as LinkIcon } from "@/src/lib/icons/Link"
 import { useEventsStore } from "@/src/lib/store/events.store"
 import { useMeetsStore } from "@/src/lib/store/meets.store"
@@ -31,6 +32,7 @@ const SAVE_DELAY = {
 export const TodayExpandedAgenda: React.FC = () => {
   const { session } = useAuth()
 
+  const { blockId, spaceId } = useId(session)
   const { currentEvent, setCurrentEvent } = useEventsStore()
   const {
     currentMeeting,
@@ -144,6 +146,7 @@ export const TodayExpandedAgenda: React.FC = () => {
     if (isFetched && !currentMeeting && currentEvent) {
       const meetData = {
         title: currentEvent.summary,
+        type: "meeting",
         id: currentEvent.id,
         metadata: {
           status: currentEvent.status,
@@ -159,7 +162,11 @@ export const TodayExpandedAgenda: React.FC = () => {
         createdAt: currentEvent.created,
         updatedAt: currentEvent.updated,
       }
-      createMeet(session, { meetData })
+      if (blockId && spaceId) {
+        createMeet(session, spaceId, blockId, { meetData })
+      } else {
+        console.error(`blockId ${blockId} or spaceId ${spaceId} not found.`)
+      }
     }
 
     const newContent = currentMeeting?.description || "<p></p>"

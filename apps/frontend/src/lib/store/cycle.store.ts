@@ -1,13 +1,67 @@
-import axios, { AxiosError } from "axios"
+import axios from "axios"
+import { endOfWeek, isBefore, isToday, isTomorrow, parseISO } from "date-fns"
 import { create } from "zustand"
 
-import { CycleItem, CycleItemStore } from "../@types/Items/Cycle"
+import {
+  CycleItem,
+  CycleItemStore,
+  WebSocketMessage,
+} from "../@types/Items/Cycle"
 import { BACKEND_URL } from "../constants/urls"
 import { toUtcDate } from "@/src/utils/datetime"
 
 const api = axios.create({
   baseURL: BACKEND_URL,
 })
+
+const classifyItem = (
+  item: CycleItem,
+  thisWeekStart?: string,
+  thisWeekEnd?: string
+) => {
+  const belongs = {
+    inbox: false,
+    today: false,
+    overdue: false,
+    thisWeek: false,
+  }
+
+  if (item.dueDate) {
+    const dueDate = item.dueDate
+    const now = new Date()
+
+    if (isToday(dueDate) || isTomorrow(dueDate) || endOfWeek(dueDate)) {
+      belongs.today = true
+    } else if (dueDate < now) {
+      belongs.overdue = true
+    }
+  }
+
+  if (
+    thisWeekStart &&
+    thisWeekEnd &&
+    item.cycle?.startsAt &&
+    item.cycle?.endsAt
+  ) {
+    const cycleStart = parseISO(item.cycle.startsAt)
+    const cycleEnd = parseISO(item.cycle.endsAt)
+    const weekStart = parseISO(thisWeekStart)
+    const weekEnd = parseISO(thisWeekEnd)
+
+    if (
+      (cycleStart >= weekStart && cycleStart <= weekEnd) ||
+      (cycleEnd >= weekStart && cycleEnd <= weekEnd)
+    ) {
+      belongs.thisWeek = true
+    }
+  }
+
+  if (!belongs.today && !belongs.thisWeek && !belongs.overdue) {
+    belongs.inbox = true
+  }
+
+  return belongs
+}
 
 interface ViewState {
   items: CycleItem[]
@@ -36,6 +90,7 @@ interface ExtendedCycleItemStore extends CycleItemStore {
     items: CycleItem[]
   ) => void
   setWeekDates: (startDate: string, endDate: string) => void
+  handleWebSocketMessage: (message: any) => void
 }
 
 export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
@@ -412,6 +467,20 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
           }
         }
 
+        if (
+          updates.status === "done" &&
+          state.overdue.items.some((item) => item._id === id)
+        ) {
+          const itemFromOverdue = state.overdue.items.find(
+            (item) => item._id === id
+          )
+          if (itemFromOverdue) {
+            if (!items.some((item) => item._id === id)) {
+              return [...items, { ...itemFromOverdue, ...updates }]
+            }
+          }
+        }
+
         // otherwise, just update the item in by date view
         return items.map((item) =>
           item._id === id ? { ...item, ...updates } : item
@@ -441,7 +510,7 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
             }
           }
 
-          if (updates.status === "done") {
+          if (isOverdue && updates.status === "done") {
             return items.filter((item) => item._id !== id)
           }
         }
@@ -605,5 +674,83 @@ export const useCycleItemStore = create<ExtendedCycleItemStore>((set, get) => ({
       }))
       throw error
     }
+  },
+  handleWebSocketMessage: (message: WebSocketMessage) => {
+    if (message?.type !== "linear" || !message?.item) return
+
+    set((state) => {
+      try {
+        const { item, action } = message
+
+        if (action === "delete" || action === "unassigned") {
+          return {
+            inbox: {
+              ...state.inbox,
+              items: state.inbox.items.filter((i) => i._id !== item._id),
+            },
+            byDate: {
+              ...state.byDate,
+              items: state.byDate.items.filter((i) => i._id !== item._id),
+            },
+            overdue: {
+              ...state.overdue,
+              items: state.overdue.items.filter((i) => i._id !== item._id),
+            },
+            thisWeek: {
+              ...state.thisWeek,
+              items: state.thisWeek.items.filter((i) => i._id !== item._id),
+            },
+            items: state.items.filter((i) => i._id !== item._id),
+          }
+        }
+
+        const belongs = classifyItem(
+          item,
+          state.thisWeek.startDate,
+          state.thisWeek.endDate
+        )
+
+        const filteredInbox = state.inbox.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredByDate = state.byDate.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredOverdue = state.overdue.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredThisWeek = state.thisWeek.items.filter(
+          (i) => i._id !== item._id
+        )
+        const filteredItems = state.items.filter((i) => i._id !== item._id)
+
+        return {
+          inbox: {
+            ...state.inbox,
+            items: belongs.inbox ? [item, ...filteredInbox] : filteredInbox,
+          },
+          byDate: {
+            ...state.byDate,
+            items: belongs.today ? [item, ...filteredByDate] : filteredByDate,
+          },
+          overdue: {
+            ...state.overdue,
+            items: belongs.overdue
+              ? [item, ...filteredOverdue]
+              : filteredOverdue,
+          },
+          thisWeek: {
+            ...state.thisWeek,
+            items: belongs.thisWeek
+              ? [item, ...filteredThisWeek]
+              : filteredThisWeek,
+          },
+          items: [item, ...filteredItems],
+        }
+      } catch (error) {
+        console.error("Failed to process websocket message", error)
+        return state
+      }
+    })
   },
 }))

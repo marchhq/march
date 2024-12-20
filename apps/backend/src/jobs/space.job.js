@@ -9,9 +9,9 @@ const processSpaceJob = async (job) => {
     const { user } = job.data;
 
     const spaces = [
-        { name: "Notes", icon: "note" },
-        { name: "Meetings", icon: "meeting" },
-        { name: "Reading List", icon: "book" }
+        { name: "Notes", icon: "note", identifier: "notes" },
+        { name: "Meetings", icon: "meeting", identifier: "meetings" },
+        { name: "Reading List", icon: "book", identifier: "reading-list" }
     ];
 
     try {

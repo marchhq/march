@@ -16,6 +16,8 @@ export const InboxAddItem: React.FC = () => {
 
   const { createItem, error } = useCycleItemStore()
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   useEffect(() => {
     const textarea = textareaRefTitle.current
     if (textarea) {
@@ -30,36 +32,37 @@ export const InboxAddItem: React.FC = () => {
   }
 
   const handleAddItemToInbox = async () => {
+    if (isSubmitting) return
+
     const trimmedTitle = title.trim()
+    if (!trimmedTitle) return
 
-    if (!trimmedTitle) {
-      return
-    }
+    try {
+      setIsSubmitting(true)
 
-    const linkDetected = isLink(trimmedTitle)
+      const linkDetected = isLink(trimmedTitle)
+      const finalTitle =
+        linkDetected && !/^https:\/\//i.test(trimmedTitle)
+          ? `https://${trimmedTitle}`
+          : trimmedTitle
 
-    // prepare the final URL if its a link
-    const finalTitle =
-      linkDetected && !/^https:\/\//i.test(trimmedTitle)
-        ? `https://${trimmedTitle}`
-        : trimmedTitle
-
-    // prepare the item data
-    const data: Partial<CycleItem> = {
-      title: finalTitle,
-      type: linkDetected ? "link" : "issue",
-    }
-
-    if (linkDetected) {
-      data.metadata = {
-        url: finalTitle,
+      const data: Partial<CycleItem> = {
+        title: finalTitle,
+        type: linkDetected ? "link" : "issue",
       }
+
+      if (linkDetected) {
+        data.metadata = {
+          url: finalTitle,
+        }
+      }
+
+      await createItem(session, data)
+      setAddingItem(false)
+      setTitle("")
+    } finally {
+      setIsSubmitting(false)
     }
-
-    await createItem(session, data)
-
-    setAddingItem(false)
-    setTitle("")
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -94,7 +97,7 @@ export const InboxAddItem: React.FC = () => {
 
   return (
     <div onBlur={handleOnBlur} className="pl-5">
-      <textarea
+      {/*<textarea
         ref={textareaRefTitle}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -109,7 +112,23 @@ export const InboxAddItem: React.FC = () => {
         <div className="truncate text-xs text-danger-foreground">
           <span>{error}</span>
         </div>
-      )}
+      )} */}
+
+      <div className="relative">
+        <textarea
+          ref={textareaRefTitle}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Insert a link or just plain text.."
+          className="w-full truncate rounded-lg border border-transparent bg-background p-4 pl-6 pr-32 font-semibold text-primary-foreground outline-none transition-colors placeholder:text-secondary-foreground focus:border-border focus:ring-0"
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+        />
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-secondary-foreground">
+          press ↵ to save
+        </span>
+      </div>
     </div>
   )
 }

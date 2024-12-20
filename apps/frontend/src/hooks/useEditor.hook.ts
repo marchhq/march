@@ -13,7 +13,7 @@ import { SlashCommand } from "../extensions/SlashCommand"
 interface Props {
   content: string
   setContent: (content: string) => void
-  setIsSaved: (isSaved: boolean) => void
+  setIsSaved?: (isSaved: boolean) => void
   placeholder?: string
 }
 
@@ -49,6 +49,7 @@ const useEditorHook = ({
     content,
     autofocus: false,
     onUpdate: ({ editor }) => {
+      if (!setIsSaved) return
       setIsSaved(false)
       setContent(editor.getHTML())
 

@@ -16,9 +16,10 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
     const user = req.user;
     try {
-        const tokenInfo = await getGoogleCalendarAccessToken(code, user);
+        const { tokenInfo, userTimezone } = await getGoogleCalendarAccessToken(code, user);
         res.status(200).json({
-            tokenInfo
+            tokenInfo,
+            userTimezone
         });
     } catch (err) {
         next(err);
