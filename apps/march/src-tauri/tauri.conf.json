@@ -10,18 +10,19 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "security": {
+      "csp": null
+    },
     "windows": [
       {
         "title": "march",
         "width": 1200,
         "height": 800,
         "titleBarStyle": "Overlay",
-				"hiddenTitle": true
+        "hiddenTitle": true,
+        "visible": false
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
