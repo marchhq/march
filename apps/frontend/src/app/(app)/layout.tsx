@@ -1,6 +1,7 @@
 import React from "react"
 
 import { Providers } from "./providers"
+import { CreateItem } from "@/src/components/CreateItem"
 import { SearchDialog } from "@/src/components/modals/SearchDialog"
 import { Navbar } from "@/src/components/navbar/navbar"
 import PageTracker from "@/src/components/PageTracker"
@@ -35,6 +36,7 @@ export default async function AppLayout({ children }: Props) {
         </div>
         <Toaster />
         <SearchDialog />
+        <CreateItem />
       </main>
     </Providers>
   )
