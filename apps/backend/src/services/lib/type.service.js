@@ -13,4 +13,9 @@ const createType = async (user, requestedData) => {
     return newType;
 }
 
-export { createType };
+const getAllTypes = async (user) => {
+    const types = await Type.find({ user });
+    return types;
+}
+
+export { createType, getAllTypes };
