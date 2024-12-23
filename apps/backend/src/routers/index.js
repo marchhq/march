@@ -19,7 +19,7 @@ const initRoutes = (app) => {
     app.use("/users", JWTMiddleware, UserRouter);
     app.use("/spaces", JWTMiddleware, SpaceRouter);
     app.use("/api", JWTMiddleware, CommonRouter);
-    app.use('/type', JWTMiddleware, TypeRoute);
+    app.use('/types', JWTMiddleware, TypeRoute);
     app.use('/linear', JWTMiddleware, LinearRoute);
     app.use('/calendar', JWTMiddleware, CalenderRoute);
     app.use('/gmail', JWTMiddleware, EmailRoute);

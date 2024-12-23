@@ -11,7 +11,9 @@ const createTypeController = async (req, res) => {
     })
 }
 const getAllTypesController = async (req, res) => {
+    console.log("hi")
     const user = req.user._id;
+    console.log("hm", user);
     const types = await getAllTypes(user);
     res.json({
         types
