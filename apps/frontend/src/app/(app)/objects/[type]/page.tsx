@@ -14,7 +14,7 @@ export default async function ObjectPage({ params }: Props) {
   switch (type) {
     case "todo":
       return <TodoView />
-    case "bookmarks":
+    case "bookmark":
       return <BookmarkView />
     case "note":
     case "meetings":
