@@ -23,7 +23,8 @@ const ItemSchema = new Schema(
         },
         type: {
             type: String,
-            default: "todo"
+            default: "todo",
+            required: true
         },
         source: {
             type: String,
