@@ -13,7 +13,10 @@ export const NavLink = ({ href, label, isActive, className }: NavLinkProps) => {
   const activeClass = isActive && "text-foreground"
   return (
     <Link
-      className={classNames(`flex items-center justify-center`, activeClass)}
+      className={classNames(
+        `flex items-center justify-center ${className}`,
+        activeClass
+      )}
       href={href}
     >
       <p

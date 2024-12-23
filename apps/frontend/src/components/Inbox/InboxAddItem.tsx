@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react"
 
+import { AutoResizingTextarea } from "../textarea/resizing-textarea"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { useCycleItemStore } from "@/src/lib/store/cycle.store"
@@ -96,39 +97,18 @@ export const InboxAddItem: React.FC = () => {
   }, [addingItem])
 
   return (
-    <div onBlur={handleOnBlur} className="pl-5">
-      {/*<textarea
-        ref={textareaRefTitle}
+    <section>
+      <AutoResizingTextarea
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={setTitle}
         onKeyDown={handleKeyDown}
+        onBlur={handleOnBlur}
         placeholder="add anything..."
-        className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus
+        className="w-full"
         rows={1}
+        showAddingItemHint={addingItem}
+        error={error}
       />
-      {error && (
-        <div className="truncate text-xs text-danger-foreground">
-          <span>{error}</span>
-        </div>
-      )} */}
-
-      <div className="relative">
-        <textarea
-          ref={textareaRefTitle}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Insert a link or just plain text.."
-          className="w-full truncate rounded-lg border border-transparent bg-background p-4 pl-6 pr-32 font-semibold text-primary-foreground outline-none transition-colors placeholder:text-secondary-foreground focus:border-border focus:ring-0"
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-        />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-secondary-foreground">
-          press ↵ to save
-        </span>
-      </div>
-    </div>
+    </section>
   )
 }
