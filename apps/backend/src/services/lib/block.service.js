@@ -1,6 +1,5 @@
 import { Block } from "../../models/lib/block.model.js";
 import { createItem } from "./item.service.js";
-import { Item } from "../../models/lib/item.model.js";
 
 const createBlock = async (user, blockData, space) => {
     const type = blockData.data.type;

@@ -28,7 +28,8 @@ import {
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
     getSubItemsController,
-    getItemsByTypeController
+    getItemsByTypeController,
+    getItemsBySourceController
 } from "../../controllers/lib/item.controller.js";
 
 // Utility imports
@@ -75,6 +76,7 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 router.route("/items/").get(getAllitemsController);
 router.route("/items/search/").get(searchItemsByTitleController);
 router.route("/items/filter/").get(filterItemsController);
+router.route("/items/source/").get(getItemsBySourceController);
 
 /* Asset Management Routes
 -------------------------------------------------- */
