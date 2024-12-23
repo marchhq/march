@@ -1,3 +1,5 @@
+import { createType } from "../../services/lib/type.service.js";
+
 const createTypeController = async (req, res) => {
     const user = req.user._id;
     const requestedData = req.body;
