@@ -1,7 +1,6 @@
 import { validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser, validateGithubUser } from "../../services/core/user.service.js";
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { BlackList } from "../../models/core/black-list.model.js";
-import { spaceQueue } from "../../loaders/bullmq.loader.js";
 import { logsnag } from "../../loaders/logsnag.loader.js";
 
 const authenticateWithGoogleController = async (req, res, next) => {
