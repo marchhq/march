@@ -1,6 +1,6 @@
 import { Block } from "../../models/lib/block.model.js";
 import { createItem } from "./item.service.js";
-import { Space } from "../../models/lib/space.model.js";
+import { Item } from "../../models/lib/item.model.js";
 
 const createBlock = async (user, blockData, space) => {
     const type = blockData.data.type;
@@ -92,25 +92,15 @@ const updateBlock = async (id, updateData, space, user) => {
     return updatedBlock;
 };
 
-export const migratespace = async () => {
-    console.log("Migrating spaces");
-    const spaces = await Space.find();
-    for (const space of spaces) {
-        const spacedata = {
-            identifier: space.name.toLowerCase()
-        }
-        if (space.name === "Reading List") {
-            spacedata.identifier = "reading-list";
-        }
-        await Space.findOneAndUpdate({
-            _id: space._id
-        },
-        { $set: spacedata },
-        { new: true }
-        )
-    }
-    console.log("Migration complete");
-};
+ export async function migrateSourceField () {
+    console.log("hey")
+    const result = await Item.updateMany(
+        { source: { $in: ["githubIssue", "githubPullRequest"] } },
+        { $set: { source: "github" } }
+    );
+
+    console.log(`Updated ${result} items.`);
+}
 
 export {
     createBlock,
