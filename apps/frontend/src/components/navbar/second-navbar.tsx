@@ -39,7 +39,7 @@ export const SecondNavbar = () => {
         <NavLink
           key={object.id}
           label={object.name}
-          href="#"
+          href={`/objects/${object.name.toLowerCase()}`}
           isActive={pathname.includes(object.name)}
           className="text-sm"
         />
