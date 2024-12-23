@@ -7,10 +7,10 @@ const processTypeJob = async (job) => {
     const { user } = job.data;
 
     const types = [
-        "todo",
-        "note",
-        "bookmark",
-        "meeting"
+        { "slug": "todo" },
+        { "slug": "note" },
+        { "slug": "bookmark" },
+        { "slug": "meeting" }
     ];
 
     try {
