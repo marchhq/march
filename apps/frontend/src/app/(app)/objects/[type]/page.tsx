@@ -1,3 +1,4 @@
+import { BookmarkView } from "@/src/components/bookmarks/BookmarkView"
 import { TodoView } from "@/src/components/todo/TodoView"
 
 interface Props {
@@ -12,6 +13,8 @@ export default async function ObjectPage({ params }: Props) {
   switch (type) {
     case "todo":
       return <TodoView />
+    case "bookmarks":
+      return <BookmarkView />
     default:
       return <div>{type} view</div>
   }
