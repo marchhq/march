@@ -1,3 +1,5 @@
+import { TodoView } from "@/src/components/todo/TodoView"
+
 interface Props {
   params: {
     type: string
@@ -7,5 +9,10 @@ interface Props {
 export default async function ObjectPage({ params }: Props) {
   const { type } = params
 
-  return <div>{type} view</div>
+  switch (type) {
+    case "todo":
+      return <TodoView />
+    default:
+      return <div>{type} view</div>
+  }
 }
