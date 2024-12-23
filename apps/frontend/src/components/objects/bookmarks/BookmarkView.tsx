@@ -1,5 +1,5 @@
 import { AddBookmark } from "./AddBookMark"
-import { ViewWrapper } from "../wrappers/ViewWrapper"
+import { ViewWrapper } from "../../wrappers/ViewWrapper"
 
 export const BookmarkView = () => {
   return (

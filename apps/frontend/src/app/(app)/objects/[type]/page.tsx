@@ -1,5 +1,6 @@
-import { BookmarkView } from "@/src/components/bookmarks/BookmarkView"
-import { TodoView } from "@/src/components/todo/TodoView"
+import { BookmarkView } from "@/src/components/objects/bookmarks/BookmarkView"
+import { NoteView } from "@/src/components/objects/note/NoteView"
+import { TodoView } from "@/src/components/objects/todo/TodoView"
 
 interface Props {
   params: {
@@ -15,6 +16,9 @@ export default async function ObjectPage({ params }: Props) {
       return <TodoView />
     case "bookmarks":
       return <BookmarkView />
+    case "note":
+    case "meetings":
+      return <NoteView type={type} />
     default:
       return <div>{type} view</div>
   }

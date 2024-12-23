@@ -1,5 +1,5 @@
 import { AddTodo } from "./AddTodo"
-import { ViewWrapper } from "../wrappers/ViewWrapper"
+import { ViewWrapper } from "../../wrappers/ViewWrapper"
 
 export const TodoView = () => {
   return (

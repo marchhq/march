@@ -2,7 +2,7 @@
 
 import { KeyboardEvent, useEffect, useState } from "react"
 
-import { AutoResizingTextarea } from "../textarea/resizing-textarea"
+import { AutoResizingTextarea } from "../../textarea/resizing-textarea"
 
 export const AddBookmark = () => {
   const [addingItem, setAddingItem] = useState(false)

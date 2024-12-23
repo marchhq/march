@@ -21,12 +21,15 @@ const objects = [
     id: 4,
     name: "Bookmarks",
   },
+]
+
+const sources = [
   {
-    id: 5,
+    id: 1,
     name: "Linear",
   },
   {
-    id: 6,
+    id: 2,
     name: "Pulls",
   },
 ]
@@ -41,6 +44,15 @@ export const SecondNavbar = () => {
           label={object.name}
           href={`/objects/${object.name.toLowerCase()}`}
           isActive={pathname.includes(`${object.name.toLowerCase()}`)}
+          className="text-sm"
+        />
+      ))}
+      {sources.map((source) => (
+        <NavLink
+          key={source.id}
+          label={source.name}
+          href={`/objects/${source.name.toLowerCase()}`}
+          isActive={pathname.includes(`${source.name.toLowerCase()}`)}
           className="text-sm"
         />
       ))}
