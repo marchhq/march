@@ -17,11 +17,16 @@ const cycleQueue = new Queue('cycleQueue', {
     connection: redisConnection
 });
 
+const typeQueue = new Queue('typeQueue', {
+    connection: redisConnection
+});
+
 console.log('Queues setup completed.');
 
 export {
     linearQueue,
     notionQueue,
     spaceQueue,
-    cycleQueue
+    cycleQueue,
+    typeQueue
 };
