@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-type ItemType = "note" | "todo" | "link"
+type ItemType = "note" | "todo" | "meeting" | "bookmark"
 
 interface ItemTypeStore {
   selectedType: ItemType

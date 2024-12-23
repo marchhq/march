@@ -3,25 +3,8 @@
 import { usePathname } from "next/navigation"
 
 import { NavLink } from "./nav-link"
-
-const objects = [
-  {
-    id: 1,
-    name: "Todo",
-  },
-  {
-    id: 2,
-    name: "Note",
-  },
-  {
-    id: 3,
-    name: "Meetings",
-  },
-  {
-    id: 4,
-    name: "Bookmarks",
-  },
-]
+import { useAuth } from "@/src/contexts/AuthContext"
+import { useTypes } from "@/src/queries/useType"
 
 const sources = [
   {
@@ -36,14 +19,19 @@ const sources = [
 
 export const SecondNavbar = () => {
   const pathname = usePathname()
+  const { session } = useAuth()
+  const { data: objects } = useTypes(session)
+
+  if (!objects) return null
+
   return (
     <nav className="flex gap-6">
       {objects.map((object) => (
         <NavLink
-          key={object.id}
-          label={object.name}
-          href={`/objects/${object.name.toLowerCase()}`}
-          isActive={pathname.includes(`${object.name.toLowerCase()}`)}
+          key={object._id}
+          label={object.slug}
+          href={`/objects/${object.slug.toLowerCase()}`}
+          isActive={pathname.includes(`${object.slug.toLowerCase()}`)}
           className="text-sm"
         />
       ))}

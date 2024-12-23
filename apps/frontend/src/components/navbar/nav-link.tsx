@@ -14,7 +14,7 @@ export const NavLink = ({ href, label, isActive, className }: NavLinkProps) => {
   return (
     <Link
       className={classNames(
-        `flex items-center justify-center ${className}`,
+        `flex items-center justify-center capitalize ${className}`,
         activeClass
       )}
       href={href}
@@ -22,7 +22,7 @@ export const NavLink = ({ href, label, isActive, className }: NavLinkProps) => {
       <p
         className={classNames(
           !isActive &&
-            `text-secondary-foreground font-medium ${className} hover-text`
+            `text-secondary-foreground font-medium capitalize ${className} hover-text`
         )}
       >
         {label}
