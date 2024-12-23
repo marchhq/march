@@ -8,9 +8,7 @@ const extractUrl = (text) => {
 };
 
 const generateLinkPreview = async (requestedData) => {
-    const url = requestedData.metadata?.url || extractUrl(requestedData.title);
-
-    if (!url) return null;
+    const url = requestedData.metadata?.url;
 
     const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
 
@@ -58,7 +56,7 @@ const createInboxItemController = async (req, res, next) => {
 
         let itemData = requestedData;
 
-        if (type === 'link' || type === 'text') {
+        if (type === "bookmark" && extractUrl(requestedData.title)) {
             const updatedData = await generateLinkPreview(requestedData);
             if (updatedData) {
                 itemData = updatedData;
