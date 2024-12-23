@@ -19,13 +19,12 @@ const initRoutes = (app) => {
     app.use("/users", JWTMiddleware, UserRouter);
     app.use("/spaces", JWTMiddleware, SpaceRouter);
     app.use("/api", JWTMiddleware, CommonRouter);
-    app.use('/types', JWTMiddleware, TypeRoute);
     app.use('/linear', JWTMiddleware, LinearRoute);
     app.use('/calendar', JWTMiddleware, CalenderRoute);
     app.use('/gmail', JWTMiddleware, EmailRoute);
     app.use('/github', JWTMiddleware, GithubRoute);
     app.use('/notion', JWTMiddleware, NotionRoute);
-
+    app.use('/types', JWTMiddleware, TypeRoute);
     app.get("/", async (req, res) => {
         res.json({
             "message": "Welcome to March Developers Portal"
