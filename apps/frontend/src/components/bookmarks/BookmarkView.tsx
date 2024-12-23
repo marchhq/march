@@ -1,10 +1,10 @@
-import { AddTodo } from "./AddTodo"
+import { AddBookmark } from "./AddBookMark"
 import { ViewWrapper } from "../wrappers/ViewWrapper"
 
-export const TodoView = () => {
+export const BookmarkView = () => {
   return (
     <ViewWrapper>
-      <AddTodo />
+      <AddBookmark />
     </ViewWrapper>
   )
 }
