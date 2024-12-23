@@ -2,7 +2,7 @@ import { Type } from "../../models/lib/type.model.js";
 
 const createType = async (user, requestedData) => {
     const { slug } = requestedData;
-    const typeExists = await Type.findOne({ slug });
+    const typeExists = await Type.findOne({ slug, user });
     if (typeExists) {
         throw new Error("Type already exists");
     }
