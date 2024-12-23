@@ -40,14 +40,14 @@ const authenticateWithGoogleController = async (req, res, next) => {
                 }
             });
 
-            // Add job to spaceQueue
-            await spaceQueue.add('spaceQueue', { user: user._id }, {
-                attempts: 3,
-                backoff: 1000, // 1 second delay between retries
-                timeout: 30000 // Job timeout set to 30 seconds
-            });
+            // Add job to typeQueue
+            // await spaceQueue.add('spaceQueue', { user: user._id }, {
+            //     attempts: 3,
+            //     backoff: 1000, // 1 second delay between retries
+            //     timeout: 30000 // Job timeout set to 30 seconds
+            // });
 
-            console.log("Job added to spaceQueue");
+            // console.log("Job added to spaceQueue");
         }
 
         const tokenPair = await generateJWTTokenPair(user);
@@ -96,13 +96,13 @@ const authenticateWithGithubController = async (req, res, next) => {
             });
 
             // Add job to spaceQueue
-            await spaceQueue.add('spaceQueue', { user: user._id }, {
-                attempts: 3,
-                backoff: 1000, // 1 second delay between retries
-                timeout: 30000 // Job timeout set to 30 seconds
-            });
+            // await spaceQueue.add('spaceQueue', { user: user._id }, {
+            //     attempts: 3,
+            //     backoff: 1000, // 1 second delay between retries
+            //     timeout: 30000 // Job timeout set to 30 seconds
+            // });
 
-            console.log("Job added to spaceQueue");
+            // console.log("Job added to spaceQueue");
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
