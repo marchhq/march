@@ -92,16 +92,6 @@ const updateBlock = async (id, updateData, space, user) => {
     return updatedBlock;
 };
 
- export async function migrateSourceField () {
-    console.log("hey")
-    const result = await Item.updateMany(
-        { source: { $in: ["githubIssue", "githubPullRequest"] } },
-        { $set: { source: "github" } }
-    );
-
-    console.log(`Updated ${result} items.`);
-}
-
 export {
     createBlock,
     getBlocks,
