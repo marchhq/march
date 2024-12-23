@@ -9,6 +9,7 @@ interface AutoResizingTextareaProps {
   onChange: (value: string) => void
   onKeyDown?: (event: KeyboardEvent<HTMLTextAreaElement>) => void
   onBlur?: () => void
+  onPaste?: (event: React.ClipboardEvent<HTMLTextAreaElement>) => void
   placeholder?: string
   className?: string
   rows?: number
@@ -21,7 +22,8 @@ export function AutoResizingTextarea({
   onChange,
   onKeyDown,
   onBlur,
-  placeholder = "Add anything...",
+  onPaste,
+  placeholder = "add anything...",
   className,
   rows = 1,
   showAddingItemHint = false,
@@ -48,6 +50,7 @@ export function AutoResizingTextarea({
           value={value}
           onChange={handleChange}
           onKeyDown={onKeyDown}
+          onPaste={onPaste}
           placeholder={placeholder}
           className={cn(
             "w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background pl-5 text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none",

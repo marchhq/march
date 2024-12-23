@@ -11,21 +11,12 @@ import { isLink } from "@/src/utils/helpers"
 export const InboxAddItem: React.FC = () => {
   const { session } = useAuth()
 
-  const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const [addingItem, setAddingItem] = useState(false)
   const [title, setTitle] = useState("")
 
   const { createItem, error } = useCycleItemStore()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
-    const textarea = textareaRefTitle.current
-    if (textarea) {
-      textarea.style.height = "auto"
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-  }, [title])
 
   const handleCloseAddItemToInbox = async () => {
     setAddingItem(false)
