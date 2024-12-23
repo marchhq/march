@@ -1,6 +1,7 @@
 import { Worker } from "bullmq";
 import { typeQueue } from "../loaders/bullmq.loader.js";
 import { redisConnection } from "../loaders/redis.loader.js";
+import { createType } from "../services/lib/type.service.js";
 
 const processTypeJob = async (job) => {
     const { user } = job.data;

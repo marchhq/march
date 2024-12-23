@@ -9,6 +9,7 @@ import { handleGithubWebhook } from "./controllers/integration/github.controller
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
 import { linearWorker } from "./jobs/linear.job.js"
+import { typeWorker } from "./jobs/type.job.js";
 import { addCycleJob } from "./jobs/cycle.job.js";
 
 const { ValidationError } = Joi;
