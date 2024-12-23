@@ -15,7 +15,7 @@ const ItemSchema = new Schema(
         },
         icon: {
             type: String,
-            default: 'home'
+            default: ''
         },
         cover_image: {
             type: String,
