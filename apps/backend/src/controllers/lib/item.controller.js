@@ -1,4 +1,4 @@
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems, getItemsByType } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems, getItemsByType, getItemsBySource } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -248,6 +248,17 @@ const getItemsByTypeController = async (req, res, next) => {
     }
 }
 
+const getItemsBySourceController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { source } = req.query;
+        const items = await getItemsBySource(user, source);
+        res.json({ items });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export {
     createItemController,
     filterItemsController,
@@ -260,5 +271,6 @@ export {
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
     getSubItemsController,
-    getItemsByTypeController
+    getItemsByTypeController,
+    getItemsBySourceController
 }

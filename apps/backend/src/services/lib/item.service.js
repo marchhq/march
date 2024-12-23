@@ -385,6 +385,14 @@ const getItemsByType = async (user, slug) => {
     return items;
 }
 
+const getItemsBySource = async (user, source) => {
+    const items = await Item.find({
+        source,
+        user
+    })
+    return items;
+}
+
 export {
     getInboxItems,
     getInboxItem,
@@ -406,5 +414,6 @@ export {
     getThisWeekItemsByDateRange,
     getUserFavoriteItems,
     getSubItems,
-    getItemsByType
+    getItemsByType,
+    getItemsBySource
 }
