@@ -27,7 +27,8 @@ import {
     filterItemsController,
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
-    getSubItemsController
+    getSubItemsController,
+    getItemsByTypeController
 } from "../../controllers/lib/item.controller.js";
 
 // Utility imports
@@ -39,6 +40,7 @@ import { linkPreviewGeneratorController } from "../../controllers/lib/linkPrevie
 const router = Router();
 
 router.route("/all/").get(getAllitemsController);
+router.route("/:slug").get(getItemsByTypeController);
 
 /* Inbox Management Routes
 -------------------------------------------------- */
