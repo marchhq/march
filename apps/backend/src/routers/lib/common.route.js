@@ -27,7 +27,9 @@ import {
     filterItemsController,
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
-    getSubItemsController
+    getSubItemsController,
+    getItemsByTypeController,
+    getItemsBySourceController
 } from "../../controllers/lib/item.controller.js";
 
 // Utility imports
@@ -39,6 +41,7 @@ import { linkPreviewGeneratorController } from "../../controllers/lib/linkPrevie
 const router = Router();
 
 router.route("/all/").get(getAllitemsController);
+router.route("/:slug").get(getItemsByTypeController);
 
 /* Inbox Management Routes
 -------------------------------------------------- */
@@ -73,6 +76,7 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 router.route("/items/").get(getAllitemsController);
 router.route("/items/search/").get(searchItemsByTitleController);
 router.route("/items/filter/").get(filterItemsController);
+router.route("/items/source/").get(getItemsBySourceController);
 
 /* Asset Management Routes
 -------------------------------------------------- */

@@ -1,4 +1,4 @@
-import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems } from "../../services/lib/item.service.js";
+import { createItem, filterItems, updateItem, getItem, getItemFilterByLabel, searchItemsByTitle, getAllItemsByBloack, createInboxItem, getThisWeekItemsByDateRange, getUserFavoriteItems, getSubItems, getItemsByType, getItemsBySource } from "../../services/lib/item.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -8,9 +8,7 @@ const extractUrl = (text) => {
 };
 
 const generateLinkPreview = async (requestedData) => {
-    const url = requestedData.metadata?.url || extractUrl(requestedData.title);
-
-    if (!url) return null;
+    const url = requestedData.metadata?.url;
 
     const { title: previewTitle, favicon } = await linkPreviewGenerator(url);
 
@@ -50,32 +48,6 @@ const createItemController = async (req, res, next) => {
     }
 };
 
-// const createInboxItemController = async (req, res, next) => {
-//     try {
-//         const user = req.user._id;
-
-//         const requestedData = req.body;
-//         const { type } = requestedData;
-
-//         let itemData = requestedData;
-
-//         if (type === 'link' || type === 'text') {
-//             const updatedData = await generateLinkPreview(requestedData);
-//             if (updatedData) {
-//                 itemData = updatedData;
-//             }
-//         }
-
-//         const items = await createInboxItem(user, itemData);
-
-//         res.status(200).json({
-//             response: items
-//         });
-//     } catch (err) {
-//         next(err);
-//     }
-// };
-
 const createInboxItemController = async (req, res, next) => {
     try {
         const user = req.user._id;
@@ -84,7 +56,7 @@ const createInboxItemController = async (req, res, next) => {
 
         let itemData = requestedData;
 
-        if (type === 'link' || type === 'text') {
+        if (type === "bookmark" && extractUrl(requestedData.title)) {
             const updatedData = await generateLinkPreview(requestedData);
             if (updatedData) {
                 itemData = updatedData;
@@ -100,6 +72,31 @@ const createInboxItemController = async (req, res, next) => {
         next(err);
     }
 };
+
+// const createInboxItemController = async (req, res, next) => {
+//     try {
+//         const user = req.user._id;
+//         const requestedData = req.body;
+//         const { type } = requestedData;
+
+//         let itemData = requestedData;
+
+//         if (type === 'link' || type === 'text') {
+//             const updatedData = await generateLinkPreview(requestedData);
+//             if (updatedData) {
+//                 itemData = updatedData;
+//             }
+//         }
+
+//         const item = await createInboxItem(user, itemData);
+
+//         res.status(200).json({
+//             response: item
+//         });
+//     } catch (err) {
+//         next(err);
+//     }
+// };
 
 const updateItemController = async (req, res, next) => {
     try {
@@ -238,6 +235,30 @@ const getSubItemsController = async (req, res, next) => {
     }
 };
 
+const getItemsByTypeController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { slug } = req.params;
+        const items = await getItemsByType(user, slug);
+        res.json({
+            items
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getItemsBySourceController = async (req, res, next) => {
+    try {
+        const user = req.user._id;
+        const { source } = req.query;
+        const items = await getItemsBySource(user, source);
+        res.json({ items });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export {
     createItemController,
     filterItemsController,
@@ -249,5 +270,7 @@ export {
     createInboxItemController,
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
-    getSubItemsController
+    getSubItemsController,
+    getItemsByTypeController,
+    getItemsBySourceController
 }

@@ -15,7 +15,7 @@ const ItemSchema = new Schema(
         },
         icon: {
             type: String,
-            default: 'home'
+            default: ''
         },
         cover_image: {
             type: String,
@@ -23,7 +23,8 @@ const ItemSchema = new Schema(
         },
         type: {
             type: String,
-            default: "todo"
+            default: "todo",
+            required: true
         },
         source: {
             type: String,

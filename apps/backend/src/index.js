@@ -8,8 +8,8 @@ import { handleWebhook } from "./controllers/integration/linear.controller.js";
 import { handleGithubWebhook } from "./controllers/integration/github.controller.js";
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
-import { spaceWorker } from "./jobs/space.job.js";
 import { linearWorker } from "./jobs/linear.job.js"
+import { typeWorker } from "./jobs/type.job.js";
 import { addCycleJob } from "./jobs/cycle.job.js";
 
 const { ValidationError } = Joi;
