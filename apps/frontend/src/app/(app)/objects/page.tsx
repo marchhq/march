@@ -1,3 +1,3 @@
-export default function Page() {
-  return <div>objects</div>
+export default async function ObjectPage() {
+  return <div>Object view</div>
 }
