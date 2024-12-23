@@ -18,4 +18,12 @@ const getAllTypes = async (user) => {
     return types;
 }
 
-export { createType, getAllTypes };
+const getTypesBySlug = async (user, slug) => {
+    const type = await Type.findOne({ slug, user });
+    if (!type) {
+        throw new Error("Type not found");
+    }
+    return type;
+}
+
+export { createType, getAllTypes, getTypesBySlug };

@@ -1,4 +1,4 @@
-import { createType, getAllTypes } from "../../services/lib/type.service.js";
+import { createType, getAllTypes, getTypesBySlug } from "../../services/lib/type.service.js";
 
 const createTypeController = async (req, res, next) => {
     const user = req.user._id;
@@ -25,4 +25,17 @@ const getAllTypesController = async (req, res, next) => {
     }
 }
 
-export { createTypeController, getAllTypesController };
+const getTypesBySlugController = async (req, res, next) => {
+    try {
+        const slug = req.params.slug;
+        const user = req.user._id;
+        const type = await getTypesBySlug(user, slug);
+        res.json({
+            type
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { createTypeController, getAllTypesController, getTypesBySlugController };
