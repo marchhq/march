@@ -2,6 +2,7 @@ import { environment } from "../../loaders/environment.loader.js";
 import { processWebhookEvent, exchangeCodeForAccessToken, uninstallGithubApp } from "../../services/integration/github.service.js";
 import * as crypto from "crypto";
 import { Source } from "../../models/lib/source.model.js";
+
 const handleGithubCallbackController = async (req, res, next) => {
     try {
         const { installation_id: installationId, code } = req.query;
