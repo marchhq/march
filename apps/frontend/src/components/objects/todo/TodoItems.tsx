@@ -1,11 +1,12 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 import { usePathname } from "next/navigation"
 
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useItems } from "@/src/queries/useItem"
+import { useCtrlKey } from "@/src/utils/useKeyPress"
 
 export const TodoItems: React.FC = () => {
   const { session } = useAuth()
@@ -13,6 +14,7 @@ export const TodoItems: React.FC = () => {
   const slug = pathname?.split("/objects/")[1]?.replace("/", "")
 
   const { data: items } = useItems(session, slug)
+  const isCTRLPressed = useCtrlKey()
 
   return (
     <div>
