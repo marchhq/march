@@ -64,9 +64,8 @@ const updateUserController = async (req, res, next) => {
 
 const getInboxItemsController = async (req, res, next) => {
     try {
-        console.log("hey")
         const me = req.user._id;
-        console.log("sajda:", me)
+
         const items = await getInboxItems(me);
 
         res.status(200).json({
