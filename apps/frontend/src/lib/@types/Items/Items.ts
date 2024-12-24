@@ -68,3 +68,8 @@ export interface ItemStoreType {
   ) => Promise<void>
   updateItem: (session: string, editedItem: Item, id: string) => void
 }
+
+export interface MutateItem {
+  id: string
+  data: Partial<Item>
+}

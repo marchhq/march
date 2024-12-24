@@ -9,18 +9,19 @@ import BoxFilledIcon from "@/public/icons/boxfilled.svg"
 import LinearIcon from "@/public/icons/linear.svg"
 import { CycleItem } from "@/src/lib/@types/Items/Cycle"
 import { Event } from "@/src/lib/@types/Items/event"
+import { Item } from "@/src/lib/@types/Items/Items"
 import { GoogleCalendar } from "@/src/lib/icons/Calendar"
 import classNames from "@/src/utils/classNames"
 
 interface ItemListProps {
-  items: (CycleItem | Event)[]
-  handleExpand: (item: CycleItem) => void
+  items: (Item | CycleItem | Event)[]
+  handleExpand?: (item: CycleItem | Item | Event) => void
   handleMeetingExpand?: (item: Event) => void
   handleDone?: (event: React.MouseEvent, id: string, status: string) => void
   handleRescheduleCalendar?: (
     event: React.MouseEvent,
     id: string,
-    dueDate: Date | null,
+    dueDate: string | Date | null,
     currentStatus?: string
   ) => void
   isOverdue?: boolean
@@ -30,7 +31,7 @@ interface ItemListProps {
 const getSourceIcon = (
   source: string,
   sourceUrl: string,
-  item: Event | CycleItem
+  item: Item | Event | CycleItem
 ) => {
   if ("kind" in item && item.kind === "calendar#event") {
     // If it has conference data, handle it as before
@@ -117,7 +118,7 @@ export const ItemList: React.FC<ItemListProps> = ({
   isOverdue = false,
   doneLine = false,
 }) => {
-  const handleClick = (item: CycleItem | Event) => {
+  const handleClick = (item: CycleItem | Event | Item) => {
     if ("summary" in item) {
       // Type guard for Event
       if (handleMeetingExpand) {
@@ -127,7 +128,7 @@ export const ItemList: React.FC<ItemListProps> = ({
       }
     } else {
       if (handleExpand) {
-        handleExpand(item as CycleItem)
+        handleExpand(item)
       } else {
         console.error("handleExpand is undefined.")
       }
@@ -158,19 +159,13 @@ export const ItemList: React.FC<ItemListProps> = ({
             <div className="flex items-start gap-2.5 truncate">
               {!isEvent && (
                 <div>
-                  {(item as CycleItem).status === "done" ? (
+                  {item.status === "done" ? (
                     <Image
                       src={BoxFilledIcon}
                       alt="checkbox filled icon"
                       width={12}
                       height={12}
-                      onClick={(e) =>
-                        handleDone?.(
-                          e,
-                          (item as CycleItem)._id,
-                          (item as CycleItem).status
-                        )
-                      }
+                      onClick={(e) => handleDone?.(e, item._id, item.status)}
                       className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
                     />
                   ) : (
@@ -179,13 +174,7 @@ export const ItemList: React.FC<ItemListProps> = ({
                       alt="checkbox icon"
                       width={12}
                       height={12}
-                      onClick={(e) =>
-                        handleDone?.(
-                          e,
-                          (item as CycleItem)._id,
-                          (item as CycleItem).status
-                        )
-                      }
+                      onClick={(e) => handleDone?.(e, item._id, item.status)}
                       className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
                     />
                   )}
