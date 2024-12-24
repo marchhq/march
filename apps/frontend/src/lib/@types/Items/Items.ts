@@ -1,14 +1,26 @@
 export interface Item {
   _id: string
   title: string
+  icon: string
+  cover_image: string
+  type: string
   source: string
   description: string
+  cycle: {
+    startsAt: string | null
+    endsAt: string | null
+  }
   dueDate: string
   status: string
   spaces: string[]
   blocks: string[]
   user: string
   labels: string[]
+  metadata?: {
+    url?: string
+    favicon?: string
+  }
+  isFavorite: boolean
   isCompleted: boolean
   isArchived: boolean
   isDeleted: boolean
@@ -20,6 +32,10 @@ export interface Item {
 
 export interface ItemResponse {
   items: Item[]
+}
+
+export interface ItemCreateResponse {
+  response: Item
 }
 
 export interface SearchResponse {

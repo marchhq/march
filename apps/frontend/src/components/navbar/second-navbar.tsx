@@ -25,14 +25,13 @@ export const SecondNavbar = () => {
   if (!objects) return null
 
   return (
-    <nav className="flex gap-6">
+    <nav className="flex gap-6 text-sm">
       {objects.map((object) => (
         <NavLink
           key={object._id}
           label={object.slug}
           href={`/objects/${object.slug.toLowerCase()}`}
           isActive={pathname.includes(`${object.slug.toLowerCase()}`)}
-          className="text-sm"
         />
       ))}
       {sources.map((source) => (
@@ -41,7 +40,6 @@ export const SecondNavbar = () => {
           label={source.name}
           href={`/objects/${source.name.toLowerCase()}`}
           isActive={pathname.includes(`${source.name.toLowerCase()}`)}
-          className="text-sm"
         />
       ))}
     </nav>
