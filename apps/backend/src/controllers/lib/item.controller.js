@@ -15,7 +15,6 @@ const generateLinkPreview = async (requestedData) => {
     return {
         ...requestedData,
         title: previewTitle || requestedData.title,
-        type: 'link',
         metadata: {
             ...requestedData.metadata,
             url,

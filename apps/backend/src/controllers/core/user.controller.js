@@ -65,6 +65,7 @@ const updateUserController = async (req, res, next) => {
 const getInboxItemsController = async (req, res, next) => {
     try {
         const me = req.user._id;
+
         const items = await getInboxItems(me);
 
         res.status(200).json({
