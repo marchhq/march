@@ -1,4 +1,5 @@
 import { createType, getAllTypes, getTypesBySlug } from "../../services/lib/type.service.js";
+import { getAllSources } from "../../services/lib/source.service.js";
 
 const createTypeController = async (req, res, next) => {
     const user = req.user._id;
@@ -17,8 +18,10 @@ const getAllTypesController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const types = await getAllTypes(user);
+        const sources = await getAllSources(user);
         res.json({
-            types
+            types,
+            sources
         })
     } catch (error) {
         next(error);
