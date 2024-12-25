@@ -377,11 +377,18 @@ const getSubItems = async (user, parentId) => {
     return subItems;
 };
 
-const getItemsByType = async (user, slug) => {
-    const items = await Item.find({
-        type: slug,
-        user
-    })
+const getItemsByTypeAndSource = async (user, { type, source }) => {
+    const query = { user };
+
+    if (type) {
+        query.type = type;
+    }
+
+    if (source) {
+        query.source = source;
+    }
+
+    const items = await Item.find(query);
     return items;
 }
 
@@ -414,6 +421,6 @@ export {
     getThisWeekItemsByDateRange,
     getUserFavoriteItems,
     getSubItems,
-    getItemsByType,
+    getItemsByTypeAndSource,
     getItemsBySource
 }
