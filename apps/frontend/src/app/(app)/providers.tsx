@@ -10,22 +10,10 @@ import { WebSocketProvider } from "@/src/contexts/WebsocketProvider"
 
 interface ProvidersProps {
   children: React.ReactNode
-  initialData: {
-    spaces: any[] | null
-    session: string | null
-  } | null
 }
 
-export function Providers({ children, initialData }: ProvidersProps) {
+export function Providers({ children }: ProvidersProps) {
   const [queryClient] = useState(() => new QueryClient())
-
-  if (initialData?.spaces) {
-    queryClient.setQueryData(
-      ["spaces", initialData.session],
-      initialData.spaces
-    )
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

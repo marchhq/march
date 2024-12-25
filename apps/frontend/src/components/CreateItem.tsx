@@ -96,7 +96,7 @@ export const CreateItem = () => {
     }
     resetEditor()
     close()
-  }, [close, hasUnsavedChanges, handleSave])
+  }, [close, hasUnsavedChanges, handleSave, resetEditor])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

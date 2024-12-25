@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 }
 
 export default async function ObjectPage() {
-  const session = await getSession()
+  const session = getSession()
   const types = await getTypes(session)
 
   if (types.length > 0) {

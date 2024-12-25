@@ -65,6 +65,7 @@ export const TodoItems: React.FC = () => {
   if (!items) {
     return null
   }
+  console.log("item list titles: ", items)
   return (
     <section className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       <section className="flex flex-col gap-2.5">

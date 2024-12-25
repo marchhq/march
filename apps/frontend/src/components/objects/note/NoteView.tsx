@@ -1,12 +1,15 @@
 import { ViewWrapper } from "../../wrappers/ViewWrapper"
 
-export const NoteView = ({ type }: { type: "note" | "meetings" }) => {
-  const content =
-    type === "note" ? "this is a note view." : "this is a meeting view."
+interface Props {
+  type: string
+  id: string
+  data: any
+}
 
+export const NoteView = ({ type, id, data }: Props) => {
   return (
     <ViewWrapper>
-      <div>{content}</div>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </ViewWrapper>
   )
 }

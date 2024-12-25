@@ -10,7 +10,7 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import useEditorHook from "@/src/hooks/useEditor.hook"
 import { MutateItem } from "@/src/lib/@types/Items/Items"
 import { useItemStore } from "@/src/lib/store/item.store"
-import { useMutateItem } from "@/src/queries/useItem"
+import { useUpdateItem } from "@/src/queries/useItem"
 import { formatDateYear, fromNow } from "@/src/utils/datetime"
 
 interface EditedItem {
@@ -30,9 +30,8 @@ const SAVE_DELAY = {
 export const ItemExpandedView: React.FC = () => {
   const { session } = useAuth()
   const { currentItem, setCurrentItem } = useItemStore()
-  const itemId = currentItem?._id
 
-  const mutateItem = useMutateItem(session)
+  const mutateItem = useUpdateItem(session)
   const textareaRefTitle = useRef<HTMLTextAreaElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
   const timeoutRefs = useRef<TimeoutRefs>({

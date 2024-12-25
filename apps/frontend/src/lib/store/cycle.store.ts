@@ -1,5 +1,5 @@
 import axios from "axios"
-import { endOfWeek, isBefore, isToday, isTomorrow, parseISO } from "date-fns"
+import { endOfWeek, isToday, isTomorrow, parseISO } from "date-fns"
 import { create } from "zustand"
 
 import {

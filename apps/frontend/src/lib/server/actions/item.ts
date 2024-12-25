@@ -14,19 +14,17 @@ export async function createItem(session: string | null, data: Partial<Item>) {
     console.error("no session provided")
     throw new Error("session is required")
   }
-
   try {
-    await axios.post(
+    const response = await axios.post<ItemCreateResponse>(
       `${BACKEND_URL}/api/inbox/`,
-      {
-        data,
-      },
+      data,
       {
         headers: {
           Authorization: `Bearer ${session}`,
         },
       }
     )
+    return response.data
   } catch (error) {
     console.error(error)
     throw new Error("failed to create item")
@@ -56,7 +54,29 @@ export async function getItemsByType(session: string | null, type: string) {
   }
 }
 
-export async function mutateItem(
+export async function getItemById(session: string | null, id: string) {
+  if (!session) {
+    console.error("no session provided")
+    throw new Error("session is required")
+  }
+
+  try {
+    console.log("fetching id: ", id)
+    const res = await axios.get(`${BACKEND_URL}/api/inbox/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session}`,
+      },
+    })
+
+    console.log("item by id: ", res.data)
+    return res.data || []
+  } catch (error) {
+    console.error(error)
+    throw new Error("failed to fetch items")
+  }
+}
+
+export async function updateItem(
   session: string | null,
   data: Partial<Item>,
   id: string
@@ -67,17 +87,17 @@ export async function mutateItem(
   }
 
   try {
-    await axios.put<ItemCreateResponse>(
+    const res = await axios.put<ItemCreateResponse>(
       `${BACKEND_URL}/api/inbox/${id}`,
-      {
-        data,
-      },
+      data,
       {
         headers: {
           Authorization: `Bearer ${session}`,
         },
       }
     )
+
+    return res.data
   } catch (error) {
     console.error(error)
     throw new Error("failed to update items")
