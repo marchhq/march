@@ -76,7 +76,7 @@ export const Topbar = () => {
 
       <div className="flex items-center space-x-2">
         <Link
-          href={"https://github.com/emptyarrayai/march"}
+          href={"https://github.com/marchhq/march"}
           target="_blank"
           className="pt-px"
         >
