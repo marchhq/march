@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation"
 
 import { NavLink } from "./nav-link"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useSources } from "@/src/queries/useSource"
 import { useTypes } from "@/src/queries/useType"
 
 const sources = [
@@ -21,8 +22,9 @@ export const SecondNavbar = () => {
   const pathname = usePathname()
   const { session } = useAuth()
   const { data: objects } = useTypes(session)
+  const { data: sources } = useSources(session)
 
-  if (!objects) return null
+  if (!objects || !sources) return null
 
   return (
     <nav className="flex gap-6 text-sm">
@@ -36,10 +38,10 @@ export const SecondNavbar = () => {
       ))}
       {sources.map((source) => (
         <NavLink
-          key={source.id}
-          label={source.name}
-          href={`/objects/${source.name.toLowerCase()}`}
-          isActive={pathname.includes(`${source.name.toLowerCase()}`)}
+          key={source._id}
+          label={source.slug}
+          href={`/objects/${source.slug.toLowerCase()}`}
+          isActive={pathname.includes(`${source.slug.toLowerCase()}`)}
         />
       ))}
     </nav>
