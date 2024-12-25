@@ -1,13 +1,13 @@
 import { AddTodo } from "./AddTodo"
-import { TodoItems } from "./TodoItems"
 import { ItemExpandedView } from "../../modals/ItemExpand"
 import { ViewWrapper } from "../../wrappers/ViewWrapper"
+import { ListView } from "../ListView"
 
 export const TodoView = () => {
   return (
     <ViewWrapper>
       <AddTodo />
-      <TodoItems />
+      <ListView />
       <ItemExpandedView />
     </ViewWrapper>
   )

@@ -8,7 +8,7 @@ export async function generateStaticParams() {
   const types = await getTypes(session)
 
   return types.map((type) => ({
-    type: type.slug,
+    slug: type.slug,
   }))
 }
 

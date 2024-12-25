@@ -4,9 +4,9 @@ import React, { useCallback, useEffect, useState } from "react"
 
 import { usePathname } from "next/navigation"
 
-import { ItemList } from "../../atoms/ItemList"
-import { RescheduleCalendar } from "../../Inbox/RescheduleCalendar/RescheduleCalendar"
-import { Modal } from "../../modals/RescheduleModal"
+import { ItemList } from "../atoms/ItemList"
+import { RescheduleCalendar } from "../Inbox/RescheduleCalendar/RescheduleCalendar"
+import { Modal } from "../modals/RescheduleModal"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useTimezone } from "@/src/hooks/useTimezone"
 import { Item } from "@/src/lib/@types/Items/Items"
@@ -16,7 +16,7 @@ import { formatRescheduleDate } from "@/src/utils/dateHelpers"
 import { getUserDate } from "@/src/utils/datetime"
 import { useCtrlKey } from "@/src/utils/useKeyPress"
 
-export const TodoItems: React.FC = () => {
+export const ListView: React.FC = () => {
   const { session } = useAuth()
   const pathname = usePathname()
   const slug = pathname?.split("/objects/")[1]?.replace("/", "")
@@ -65,7 +65,6 @@ export const TodoItems: React.FC = () => {
   if (!items) {
     return null
   }
-  console.log("item list titles: ", items)
   return (
     <section className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       <section className="flex flex-col gap-2.5">
