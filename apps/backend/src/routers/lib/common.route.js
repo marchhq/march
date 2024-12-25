@@ -28,7 +28,7 @@ import {
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
     getSubItemsController,
-    getItemsByTypeController,
+    getItemsByTypeAndSourceController,
     getItemsBySourceController
 } from "../../controllers/lib/item.controller.js";
 
@@ -59,6 +59,7 @@ router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
 router.route("/favorite/").get(getUserFavoriteItemsController);
 router.route("/setDate/").post(moveItemtoDateController);
+router.route("/items/").get(getItemsByTypeAndSourceController);
 router.route("/:date/").get(getUserItemsByDateController);
 
 /* Journal Routes
@@ -75,7 +76,6 @@ router.route("/items/search/").get(searchItemsByTitleController);
 router.route("/items/filter/").get(filterItemsController);
 router.route("/items/source/").get(getItemsBySourceController);
 router.route("/items/all/").get(getAllitemsController);
-router.route("/items/:slug").get(getItemsByTypeController);
 
 /* Asset Management Routes
 -------------------------------------------------- */
