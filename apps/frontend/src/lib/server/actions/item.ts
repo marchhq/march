@@ -54,22 +54,15 @@ export async function getItemsByType(session: string, type: string) {
   }
 }
 
-export async function getItemById(session: string | null, id: string) {
-  if (!session) {
-    console.error("no session provided")
-    throw new Error("session is required")
-  }
-
+export async function getItemById(session: string, id: string) {
   try {
-    console.log("fetching id: ", id)
     const res = await axios.get(`${BACKEND_URL}/api/inbox/${id}`, {
       headers: {
         Authorization: `Bearer ${session}`,
       },
     })
 
-    console.log("item by id: ", res.data)
-    return res.data || []
+    return res.data.response || null
   } catch (error) {
     console.error(error)
     throw new Error("failed to fetch items")

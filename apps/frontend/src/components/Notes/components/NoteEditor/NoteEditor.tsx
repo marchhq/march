@@ -4,11 +4,11 @@ import { Editor } from "@tiptap/react"
 
 import TextEditor from "@/src/components/atoms/Editor"
 import NoteDetails from "@/src/components/header/note-details"
-import { Note } from "@/src/lib/@types/Items/Note"
+import { Item } from "@/src/lib/@types/Items/Items"
 import { formatDateHeader, fromNow } from "@/src/utils/datetime"
 
 interface NoteEditorProps {
-  note: Note
+  note: Item
   title: string
   editor: Editor | null
   handleTitleChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -30,6 +30,10 @@ const NoteEditor = ({
   handleSaveNote,
   textareaRef,
 }: NoteEditorProps) => {
+  console.log("note passed: ", note)
+
+  console.log("date passed: ", note.createdAt)
+
   return (
     <div onBlur={handleSaveNote}>
       <textarea

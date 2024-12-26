@@ -8,18 +8,13 @@ import PageTracker from "@/src/components/PageTracker"
 import { Sidebar } from "@/src/components/Sidebar/Sidebar"
 import { Topbar } from "@/src/components/topbar/topbar"
 import { Toaster } from "@/src/components/ui/toaster"
-import { getInitialData } from "@/src/lib/server/actions/initial-data"
-import { getSession } from "@/src/lib/server/actions/sessions"
 interface Props {
   children: React.ReactNode
 }
 
 export default async function AppLayout({ children }: Props) {
-  const session = await getSession()
-  const initialData = await getInitialData(session)
-
   return (
-    <Providers initialData={initialData}>
+    <Providers>
       <main className="flex h-screen flex-col">
         <Topbar />
         <div className="flex flex-1 overflow-hidden">

@@ -122,7 +122,11 @@ export const formatMeetTime = (date: Date): string => {
 }
 
 export const formatDateHeader = (date: string) => {
-  return format(date, "dd, MMMM")
+  const parsedDate = new Date(date)
+  if (isNaN(parsedDate.getTime())) {
+    throw new RangeError("Invalid time value")
+  }
+  return format(parsedDate, "dd, MMMM")
 }
 
 export const getUserDate = (timezone: string | null): Date => {

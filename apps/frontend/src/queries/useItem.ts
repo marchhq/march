@@ -8,7 +8,7 @@ import {
   updateItem,
 } from "../lib/server/actions/item"
 
-export const useItems = (session: string | null, type: string) => {
+export const useItems = (session: string, type: string) => {
   return useQuery({
     queryKey: ["items", type, session],
     queryFn: () => getItemsByType(session, type),
@@ -16,7 +16,7 @@ export const useItems = (session: string | null, type: string) => {
   })
 }
 
-export const useItem = (session: string | null, id: string) => {
+export const useItem = (session: string, id: string) => {
   return useQuery({
     queryKey: ["item", id, session],
     queryFn: () => getItemById(session, id),

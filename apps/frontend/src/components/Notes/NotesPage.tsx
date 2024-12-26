@@ -4,7 +4,6 @@ import { useRef, useCallback, useMemo } from "react"
 
 import { useRouter } from "next/navigation"
 
-import ActionHeader from "../ActionHeader"
 import NoteEditor from "./components/NoteEditor/NoteEditor"
 import { NoteStackModal } from "./components/NoteModal/NotesModal"
 import { useNoteEffects } from "./hooks/useNoteEffects"

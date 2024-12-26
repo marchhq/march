@@ -28,7 +28,7 @@ export default async function ItemPage({ params }: Props) {
   switch (slug) {
     case "note":
     case "meeting":
-      return <NoteView />
+      return <NoteView id={id} />
     default:
       return <div>unknown item type: {slug}</div>
   }
