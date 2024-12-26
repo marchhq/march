@@ -1,6 +1,10 @@
+import { redirect } from "next/navigation"
+
 import { BookmarkView } from "@/src/components/objects/bookmarks/BookmarkView"
 import { SourceView } from "@/src/components/objects/source/SourceView"
 import { TodoView } from "@/src/components/objects/todo/TodoView"
+import { getItemsByType } from "@/src/lib/server/actions/item"
+import { getSession } from "@/src/lib/server/actions/sessions"
 
 interface Props {
   params: {
@@ -10,6 +14,20 @@ interface Props {
 
 export default async function ObjectPage({ params }: Props) {
   const { slug } = params
+  const session = getSession()
+
+  if (["note", "meeting"].includes(slug)) {
+    if (!session) {
+      throw new Error("authentication required")
+    }
+
+    const items = await getItemsByType(session, slug)
+    if (items && items.length > 0) {
+      redirect(`/objects/${slug}/${items[0]._id}`)
+    }
+
+    return <div>no {slug} items found.</div>
+  }
 
   switch (slug) {
     case "todo":
