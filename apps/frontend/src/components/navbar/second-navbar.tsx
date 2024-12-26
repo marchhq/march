@@ -3,20 +3,10 @@
 import { usePathname } from "next/navigation"
 
 import { NavLink } from "./nav-link"
+import { Separator } from "../ui/separator"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useSources } from "@/src/queries/useSource"
 import { useTypes } from "@/src/queries/useType"
-
-const sources = [
-  {
-    id: 1,
-    name: "Linear",
-  },
-  {
-    id: 2,
-    name: "Pulls",
-  },
-]
 
 export const SecondNavbar = () => {
   const pathname = usePathname()
@@ -27,7 +17,7 @@ export const SecondNavbar = () => {
   if (!objects || !sources) return null
 
   return (
-    <nav className="flex gap-6 text-sm">
+    <nav className="flex h-4 gap-6 text-sm">
       {objects.map((object) => (
         <NavLink
           key={object._id}
@@ -36,6 +26,7 @@ export const SecondNavbar = () => {
           isActive={pathname.includes(`${object.slug.toLowerCase()}`)}
         />
       ))}
+      <Separator orientation="vertical" />
       {sources.map((source) => (
         <NavLink
           key={source._id}
