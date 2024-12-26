@@ -18,7 +18,7 @@ const getInboxItems = async (me) => {
 }
 
 const getInboxItem = async (me, id) => {
-    const items = await Item.find({
+    const items = await Item.findOne({
         user: me,
         _id: id,
         isArchived: false,
