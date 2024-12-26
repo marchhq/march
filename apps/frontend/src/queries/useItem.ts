@@ -42,9 +42,16 @@ export const useUpdateItem = (session: string | null) => {
 
   return useMutation({
     mutationFn: ({ data, id }: MutateItem) => updateItem(session, data, id),
-    onSuccess: () =>
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["item", id],
+      })
       queryClient.invalidateQueries({
         queryKey: ["items"],
-      }),
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["items", "type"],
+      })
+    },
   })
 }

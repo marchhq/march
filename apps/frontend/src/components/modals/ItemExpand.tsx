@@ -35,20 +35,38 @@ export const ItemExpandedView: React.FC = () => {
 
   const handleContentChange = useCallback(
     (newContent: string) => {
+      console.log("Content changed:", {
+        newContent,
+        lastSavedContent: lastSavedContent.current,
+        currentItemDesc: currentItem?.description,
+      })
+
       setContent(newContent)
-      const hasChanged = newContent !== "<p></p>" || title.trim() !== ""
-      setHasUnsavedChanges(hasChanged)
+      const contentChanged =
+        newContent !== lastSavedContent.current &&
+        newContent !== "<p></p>" &&
+        newContent !== ""
+
+      console.log("Content changed detection:", {
+        contentChanged,
+        hasUnsavedChanges,
+        newContent,
+      })
+
+      setHasUnsavedChanges(contentChanged)
     },
-    [title]
+    [currentItem?.description]
   )
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const newTitle = e.target.value
       setTitle(newTitle)
-      setHasUnsavedChanges(true)
+      const titleChanged = newTitle !== currentItem?.title
+      const contentChanged = content !== currentItem?.description
+      setHasUnsavedChanges(titleChanged || contentChanged)
     },
-    []
+    [content, currentItem?.description, currentItem?.title]
   )
 
   const editor = useEditorHook({
@@ -71,18 +89,17 @@ export const ItemExpandedView: React.FC = () => {
     const currentContent = editor?.getHTML() || content
 
     try {
-      if (title.trim() || currentContent !== "<p></p>") {
-        const updateData: MutateItem = {
-          id: currentItem._id,
-          data: {
-            title: title.trim(),
-            description: currentContent,
-            type: selectedType,
-          },
-        }
-        await mutateItem.mutateAsync(updateData)
+      const updateData: MutateItem = {
+        id: currentItem._id,
+        data: {
+          title: title.trim(),
+          description: currentContent,
+          type: selectedType || currentItem.type,
+        },
       }
-      resetEditor()
+      await mutateItem.mutateAsync(updateData)
+      lastSavedContent.current = currentContent
+      setHasUnsavedChanges(false)
     } catch (error) {
       console.error("Error saving item:", error)
     }
@@ -95,20 +112,54 @@ export const ItemExpandedView: React.FC = () => {
     selectedType,
     editor,
     hasUnsavedChanges,
-    resetEditor,
   ])
+
+  const handleDelete = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (!session || !currentItem?._id) return
+
+      try {
+        const updateData: MutateItem = {
+          id: currentItem._id,
+          data: {
+            isDeleted: true,
+          },
+        }
+        await mutateItem.mutateAsync(updateData)
+        setCurrentItem(null)
+      } catch (error) {
+        console.error("error deleting item: ", error)
+      }
+    },
+    [currentItem, mutateItem, session, setCurrentItem]
+  )
 
   const handleClose = useCallback(async () => {
     if (hasUnsavedChanges) {
       await handleSave()
     }
-    resetEditor()
     setCurrentItem(null)
-  }, [setCurrentItem, hasUnsavedChanges, handleSave, resetEditor])
+  }, [setCurrentItem, hasUnsavedChanges, handleSave])
 
   useEffect(() => {
     setSelectedType(slug)
   }, [setSelectedType, slug])
+
+  useEffect(() => {
+    const onChange = () => {
+      const newContent = editor?.getHTML() || "<p></p>"
+      if (newContent !== lastSavedContent.current && newContent !== "<p></p>") {
+        setHasUnsavedChanges(true)
+      }
+    }
+
+    editor?.on("update", onChange)
+
+    return () => {
+      editor?.off("update", onChange)
+    }
+  }, [editor])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -121,6 +172,19 @@ export const ItemExpandedView: React.FC = () => {
     window.addEventListener("keydown", handleEscape)
     return () => window.removeEventListener("keydown", handleEscape)
   }, [currentItem, handleClose])
+
+  useEffect(() => {
+    if (currentItem) {
+      const initialContent = currentItem.description || "<p></p>"
+      setTitle(currentItem.title || "")
+      setContent(initialContent)
+      lastSavedContent.current = initialContent
+      setHasUnsavedChanges(false)
+      if (editor?.commands) {
+        editor.commands.setContent(initialContent)
+      }
+    }
+  }, [currentItem, editor])
 
   useEffect(() => {
     if (currentItem) {
@@ -169,6 +233,12 @@ export const ItemExpandedView: React.FC = () => {
                   {formatDateYear(currentItem.createdAt)}
                 </p>
                 <p>edited {fromNow(currentItem.updatedAt)}</p>
+                <button
+                  className="hover-text flex w-fit items-center"
+                  onClick={handleDelete}
+                >
+                  <span>del</span>
+                </button>
               </div>
               <div className="flex items-center">
                 <textarea
