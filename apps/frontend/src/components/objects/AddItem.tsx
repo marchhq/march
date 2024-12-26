@@ -2,15 +2,17 @@
 
 import { KeyboardEvent, useEffect, useState } from "react"
 
-import { usePathname } from "next/navigation"
-
-import { AutoResizingTextarea } from "../../textarea/resizing-textarea"
+import { AutoResizingTextarea } from "../textarea/resizing-textarea"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { Item } from "@/src/lib/@types/Items/Items"
 import { useCreateItem } from "@/src/queries/useItem"
 import { isLink } from "@/src/utils/helpers"
 
-export const AddTodo = () => {
+interface Props {
+  placeholder?: string
+}
+
+export const AddItem = ({ placeholder }: Props) => {
   const { session } = useAuth()
 
   const [addingItem, setAddingItem] = useState(false)
@@ -95,6 +97,7 @@ export const AddTodo = () => {
         value={title}
         onChange={setTitle}
         onKeyDown={handleKeyDown}
+        placeholder={placeholder}
         rows={1}
         showAddingItemHint={addingItem}
       />
