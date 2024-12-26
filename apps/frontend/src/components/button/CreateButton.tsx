@@ -10,7 +10,7 @@ export const CreateButton = () => {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "c" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "o" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
         open()
       }
