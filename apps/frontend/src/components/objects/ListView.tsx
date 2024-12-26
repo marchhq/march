@@ -69,7 +69,7 @@ export const ListView: React.FC = () => {
     <section className="no-scrollbar flex h-full flex-col gap-2 overflow-y-auto">
       <section className="flex flex-col gap-2.5">
         <ItemList
-          items={items}
+          items={items.slice().reverse()}
           handleExpand={handleExpand}
           handleRescheduleCalendar={handleCalendarClick}
         />

@@ -31,21 +31,21 @@ export async function createItem(session: string | null, data: Partial<Item>) {
   }
 }
 
-export async function getItemsByType(session: string | null, type: string) {
-  if (!session) {
-    console.error("no session provided")
-    throw new Error("session is required")
+export async function getItemsByType(session: string, type: string) {
+  let url = `${BACKEND_URL}/api/items`
+
+  if (type === "linear" || type === "github") {
+    url += `?source=${type}`
+  } else {
+    url += `?type=${type}`
   }
 
   try {
-    const res = await axios.get<ItemResponse>(
-      `${BACKEND_URL}/api/items/${type}`,
-      {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      }
-    )
+    const res = await axios.get<ItemResponse>(url, {
+      headers: {
+        Authorization: `Bearer ${session}`,
+      },
+    })
 
     return res.data.items || []
   } catch (error) {
