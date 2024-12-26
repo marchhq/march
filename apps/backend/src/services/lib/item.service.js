@@ -18,7 +18,7 @@ const getInboxItems = async (me) => {
 }
 
 const getInboxItem = async (me, id) => {
-    const items = await Item.find({
+    const items = await Item.findOne({
         user: me,
         _id: id,
         isArchived: false,
@@ -378,7 +378,7 @@ const getSubItems = async (user, parentId) => {
 };
 
 const getItemsByTypeAndSource = async (user, { type, source }) => {
-    const query = { user };
+    const query = { user, isArchived: false, isDeleted: false };
 
     if (type) {
         query.type = type;
