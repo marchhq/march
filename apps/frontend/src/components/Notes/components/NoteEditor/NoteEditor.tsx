@@ -30,10 +30,6 @@ const NoteEditor = ({
   handleSaveNote,
   textareaRef,
 }: NoteEditorProps) => {
-  console.log("note passed: ", note)
-
-  console.log("date passed: ", note.createdAt)
-
   return (
     <div onBlur={handleSaveNote}>
       <textarea
