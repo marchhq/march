@@ -378,7 +378,7 @@ const getSubItems = async (user, parentId) => {
 };
 
 const getItemsByTypeAndSource = async (user, { type, source }) => {
-    const query = { user };
+    const query = { user, isArchived: false, isDeleted: false };
 
     if (type) {
         query.type = type;
