@@ -14,7 +14,6 @@ interface NoteEditorProps {
   handleTitleChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
   handleTextareaKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
   handleTitleFocus: () => void
-  handleTitleBlur: () => void
   handleSaveNote: () => void
   textareaRef: React.RefObject<HTMLTextAreaElement>
 }
@@ -26,7 +25,6 @@ const NoteEditor = ({
   handleTitleChange,
   handleTextareaKeyDown,
   handleTitleFocus,
-  handleTitleBlur,
   handleSaveNote,
   textareaRef,
 }: NoteEditorProps) => {
@@ -43,7 +41,6 @@ const NoteEditor = ({
         /* eslint-disable-next-line jsx-a11y/no-autofocus */
         autoFocus={!title || title.trim() === ""}
         onFocus={handleTitleFocus}
-        onBlur={handleTitleBlur}
       />
       <div className="ml-2 flex items-center gap-4 text-secondary-foreground">
         <NoteDetails

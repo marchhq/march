@@ -2,8 +2,6 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { debounce } from "lodash"
-
 import NoteEditor from "../../Notes/components/NoteEditor/NoteEditor"
 import { ViewWrapper } from "../../wrappers/ViewWrapper"
 import { useAuth } from "@/src/contexts/AuthContext"
@@ -34,42 +32,6 @@ export const NoteView = ({ id }: Props) => {
     }
   }, [item])
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newTitle = e.target.value
-    console.log("Title changed:", newTitle)
-    setTitle(newTitle)
-    const titleChanged = newTitle !== item?.title
-    const contentChanged = content !== item?.description
-    setHasUnsavedChanges(titleChanged || contentChanged)
-  }
-
-  const handleContentChange = useCallback(
-    (newContent: string) => {
-      console.log("Content changed:", {
-        newContent,
-        lastSavedContent: lastSavedContent.current,
-      })
-
-      setContent(newContent)
-      const contentChanged =
-        newContent !== lastSavedContent.current &&
-        newContent !== "<p></p>" &&
-        newContent !== ""
-
-      console.log("Content changed detection:", {
-        contentChanged,
-        hasUnsavedChanges,
-      })
-      setHasUnsavedChanges(contentChanged)
-    },
-    [hasUnsavedChanges]
-  )
-
-  const editor = useEditorHook({
-    content,
-    setContent: handleContentChange,
-  })
-
   const handleSave = useCallback(async () => {
     if (!session || !id || !hasUnsavedChanges) return
 
@@ -89,15 +51,35 @@ export const NoteView = ({ id }: Props) => {
     } catch (error) {
       console.error("Failed to save:", error)
     }
-  }, [
-    session,
-    id,
-    hasUnsavedChanges,
-    title,
+  }, [session, id, hasUnsavedChanges, title, content, updateItemMutation])
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newTitle = e.target.value
+    setTitle(newTitle)
+    setHasUnsavedChanges(true)
+  }
+
+  const handleContentChange = useCallback((newContent: string) => {
+    setContent(newContent)
+    const contentChanged =
+      newContent !== lastSavedContent.current &&
+      newContent !== "<p></p>" &&
+      newContent !== ""
+
+    setHasUnsavedChanges(contentChanged)
+  }, [])
+
+  const handleEditorBlur = useCallback(() => {
+    if (hasUnsavedChanges) {
+      handleSave()
+    }
+  }, [hasUnsavedChanges, handleSave])
+
+  const editor = useEditorHook({
     content,
-    editor,
-    updateItemMutation,
-  ])
+    setContent: handleContentChange,
+    onBlur: handleEditorBlur,
+  })
 
   const handleTextareaKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>
@@ -113,20 +95,6 @@ export const NoteView = ({ id }: Props) => {
       textareaRef.current.select()
     }
   }
-
-  const handleTitleBlur = () => {
-    console.log("Title blur - hasUnsavedChanges:", hasUnsavedChanges)
-    if (hasUnsavedChanges) {
-      handleSave()
-    }
-  }
-
-  const handleSaveNote = useCallback(() => {
-    console.log("Editor blur - hasUnsavedChanges:", hasUnsavedChanges)
-    if (hasUnsavedChanges) {
-      handleSave()
-    }
-  }, [hasUnsavedChanges, handleSave])
 
   if (isLoading) {
     return <div>loading...</div>
@@ -146,8 +114,7 @@ export const NoteView = ({ id }: Props) => {
           handleTitleChange={handleTitleChange}
           handleTextareaKeyDown={handleTextareaKeyDown}
           handleTitleFocus={handleTitleFocus}
-          handleTitleBlur={handleTitleBlur}
-          handleSaveNote={handleSaveNote}
+          handleSaveNote={handleEditorBlur}
           textareaRef={textareaRef}
         />
       </div>
