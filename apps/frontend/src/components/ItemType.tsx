@@ -23,13 +23,13 @@ export const ItemType = () => {
           <SelectValue placeholder="note" />
         </SelectTrigger>
         <SelectContent className="flex items-center border-border">
-          <SelectItem value="note" className="hover-text">
+          <SelectItem value="note" className="hover-text cursor-pointer">
             <div className="flex items-center space-x-2">
               <StickyNote size={18} />
               <span>note</span>
             </div>
           </SelectItem>
-          <SelectItem value="todo">
+          <SelectItem value="todo" className="hover-text cursor-pointer">
             <div className="flex items-center space-x-2">
               <span>
                 <SquareCheck size={18} />
@@ -37,7 +37,7 @@ export const ItemType = () => {
               <span>todo</span>
             </div>
           </SelectItem>
-          <SelectItem value="link">
+          <SelectItem value="bookmark" className="hover-text cursor-pointer">
             <div className="flex items-center space-x-2">
               <span>
                 <Bookmark size={18} />

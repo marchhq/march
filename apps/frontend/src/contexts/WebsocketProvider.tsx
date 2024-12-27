@@ -6,8 +6,10 @@ import React, {
   ReactNode,
 } from "react"
 
+import { useQueryClient } from "@tanstack/react-query"
+
+import { Item, WebSocketMessage } from "../lib/@types/Items/Items"
 import { getSession } from "../lib/server/actions/sessions"
-import { useCycleItemStore } from "../lib/store/cycle.store"
 
 const WEBSOCKET_URL =
   process.env.NEXT_PUBLIC_WEBSOCKET_URL || "localhost://8080"
@@ -25,7 +27,7 @@ let socketInstance: WebSocket | null = null
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
-  const { handleWebSocketMessage } = useCycleItemStore()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     const initializeWebSocket = async () => {
@@ -43,7 +45,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
         socketInstance.onmessage = async (event) => {
           try {
-            let message
+            let message: WebSocketMessage
             if (
               event.data instanceof Blob ||
               event.data instanceof ArrayBuffer
@@ -60,7 +62,31 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
             }
 
             if (message?.type === "linear" && message?.item) {
-              handleWebSocketMessage(message)
+              queryClient.setQueriesData<Item[]>(
+                { queryKey: ["items"] },
+                (oldData) => {
+                  if (!oldData) return oldData
+
+                  switch (message.action) {
+                    case "create":
+                      return [...oldData, message.item]
+                    case "update":
+                      return oldData.map((item) =>
+                        item._id === message.item._id ? message.item : item
+                      )
+                    case "delete":
+                      return oldData.filter(
+                        (item) => item._id !== message.item._id
+                      )
+                    case "unassigned":
+                      return oldData.filter(
+                        (item) => item._id !== message.item._id
+                      )
+                    default:
+                      return oldData
+                  }
+                }
+              )
             }
           } catch (error) {
             console.error("Error processing WebSocket message:", error)
@@ -95,7 +121,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       }
       clearInterval(pingInterval)
     }
-  }, [handleWebSocketMessage])
+  }, [queryClient])
 
   const sendMessage = (message: any, isBinary: boolean = false) => {
     if (socketInstance && socketInstance.readyState === WebSocket.OPEN) {

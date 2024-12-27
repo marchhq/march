@@ -117,3 +117,9 @@ export interface MutateItem {
   id: string
   data: Partial<Item>
 }
+
+export interface WebSocketMessage {
+  type: "linear" | string
+  action: "create" | "update" | "delete" | "unassigned"
+  item: Item
+}
