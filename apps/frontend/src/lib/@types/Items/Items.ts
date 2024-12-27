@@ -8,10 +8,10 @@ export interface Item {
   source: string
   description: string
   cycle: {
-    startsAt: string | null
-    endsAt: string | null
+    startsAt: Date | null
+    endsAt: Date | null
   }
-  dueDate: string
+  dueDate: Date | null
   status: string
   spaces: string[]
   blocks: string[]

@@ -158,14 +158,27 @@ export const ItemList: React.FC<ItemListProps> = ({
           >
             <div className="flex items-start gap-2.5 truncate">
               {!isEvent && (
-                <div>
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }
+                  }}
+                >
                   {item.status === "done" ? (
                     <Image
                       src={BoxFilledIcon}
                       alt="checkbox filled icon"
                       width={12}
                       height={12}
-                      onClick={(e) => handleDone?.(e, item._id, item.status)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDone?.(e, item._id, item.status)
+                      }}
                       className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
                     />
                   ) : (
@@ -174,7 +187,10 @@ export const ItemList: React.FC<ItemListProps> = ({
                       alt="checkbox icon"
                       width={12}
                       height={12}
-                      onClick={(e) => handleDone?.(e, item._id, item.status)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDone?.(e, item._id, item.status)
+                      }}
                       className="invisible mt-1 opacity-50 hover:opacity-100 group-hover:visible"
                     />
                   )}
