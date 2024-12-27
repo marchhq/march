@@ -36,7 +36,6 @@ export const NoteView = ({ id }: Props) => {
     if (!session || !id || !hasUnsavedChanges) return
 
     const currentContent = editor?.getHTML() || content
-    console.log("Saving changes:", { title, content: currentContent })
 
     try {
       await updateItemMutation.mutateAsync({

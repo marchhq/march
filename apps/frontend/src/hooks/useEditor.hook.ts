@@ -52,7 +52,6 @@ const useEditorHook = ({
     autofocus: false,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
-      console.log("Editor content updated:", html)
       setContent(html)
 
       if (setIsSaved) {
@@ -60,7 +59,6 @@ const useEditorHook = ({
       }
     },
     onBlur: ({ event }) => {
-      console.log("editor blur triggered")
       if (onBlur) {
         onBlur()
       }
