@@ -22,8 +22,14 @@ export default async function ObjectPage({ params }: Props) {
     }
 
     const items = await getItemsByType(session, slug)
+    let itemId = ``
     if (items && items.length > 0) {
-      redirect(`/objects/${slug}/${items[0]._id}`)
+      if (items[0].id) {
+        itemId += `${items[0].id}`
+      } else {
+        itemId += `${items[0]._id}`
+      }
+      redirect(`/objects/${slug}/${itemId}`)
     }
 
     return <div>no {slug} items found.</div>

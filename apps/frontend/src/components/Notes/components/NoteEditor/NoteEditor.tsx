@@ -3,11 +3,14 @@ import { memo } from "react"
 import { Editor } from "@tiptap/react"
 
 import TextEditor from "@/src/components/atoms/Editor"
+import MetaDetails from "@/src/components/header/meta-details"
 import NoteDetails from "@/src/components/header/note-details"
 import { Item } from "@/src/lib/@types/Items/Items"
 import { formatDateHeader, fromNow } from "@/src/utils/datetime"
+import { calculateMeetDuration } from "@/src/utils/meet"
 
 interface NoteEditorProps {
+  type: string
   note: Item
   title: string
   editor: Editor | null
@@ -19,6 +22,7 @@ interface NoteEditorProps {
 }
 
 const NoteEditor = ({
+  type,
   note,
   title,
   editor,
@@ -43,12 +47,22 @@ const NoteEditor = ({
         onFocus={handleTitleFocus}
       />
       <div className="ml-2 flex items-center gap-4 text-secondary-foreground">
-        <NoteDetails
-          createdAt={note.createdAt}
-          updatedAt={note.updatedAt}
-          formatDateHeader={formatDateHeader}
-          fromNow={fromNow}
-        />
+        {type === "note" ? (
+          <NoteDetails
+            createdAt={note.createdAt}
+            updatedAt={note.updatedAt}
+            formatDateHeader={formatDateHeader}
+            fromNow={fromNow}
+          />
+        ) : (
+          <MetaDetails
+            url={note.metadata?.hangoutLink}
+            duration={calculateMeetDuration(
+              note.metadata?.start.dateTime,
+              note.metadata?.end.dateTime
+            )}
+          />
+        )}
       </div>
       <div className="mt-4 max-w-6xl text-foreground">
         <TextEditor editor={editor} />

@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+
+import { usePathname } from "next/navigation"
 
 import NoteEditor from "../../Notes/components/NoteEditor/NoteEditor"
 import { ViewWrapper } from "../../wrappers/ViewWrapper"
@@ -14,6 +16,8 @@ interface Props {
 
 export const NoteView = ({ id }: Props) => {
   const { session } = useAuth()
+  const pathname = usePathname()
+  const slug = pathname.split("/")[2]
   const { data: item, isLoading } = useItem(session, id)
   const updateItemMutation = useUpdateItem(session)
 
@@ -107,6 +111,7 @@ export const NoteView = ({ id }: Props) => {
     <ViewWrapper>
       <div className="flex flex-col gap-4 p-4">
         <NoteEditor
+          type={slug}
           note={item}
           title={title}
           editor={editor}

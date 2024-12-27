@@ -1,5 +1,6 @@
 export interface Item {
   _id: string
+  id: string
   title: string
   icon: string
   cover_image: string
@@ -16,10 +17,7 @@ export interface Item {
   blocks: string[]
   user: string
   labels: string[]
-  metadata?: {
-    url?: string
-    favicon?: string
-  }
+  metadata: Metadata
   isFavorite: boolean
   isCompleted: boolean
   isArchived: boolean
@@ -28,6 +26,52 @@ export interface Item {
   createdAt: string
   updatedAt: string
   __v: number
+}
+
+export interface Attendee {
+  email: string
+  organizer?: boolean
+  self?: boolean
+  responseStatus: string
+}
+
+export interface EntryPoint {
+  entryPointType: string
+  uri: string
+  label?: string
+  pin?: string
+  regionCode?: string
+}
+
+export interface Metadata {
+  url?: string
+  favicon?: string
+  status: string
+  attendees: Attendee[]
+  hangoutLink: string
+  start: {
+    dateTime: string
+    timeZone: string
+  }
+  end: {
+    dateTime: string
+    timeZone: string
+  }
+  creator: {
+    email: string
+    self: boolean
+  }
+  conferenceData: {
+    entryPoints: EntryPoint[]
+    conferenceSolution: {
+      key: {
+        type: string
+      }
+      name: string
+      iconUri: string
+    }
+    conferenceId: string
+  }
 }
 
 export interface ItemResponse {
