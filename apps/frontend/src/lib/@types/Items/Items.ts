@@ -46,22 +46,22 @@ export interface EntryPoint {
 export interface Metadata {
   url?: string
   favicon?: string
-  status: string
-  attendees: Attendee[]
-  hangoutLink: string
-  start: {
+  status?: string
+  attendees?: Attendee[]
+  hangoutLink?: string
+  start?: {
     dateTime: string
     timeZone: string
   }
-  end: {
+  end?: {
     dateTime: string
     timeZone: string
   }
-  creator: {
+  creator?: {
     email: string
     self: boolean
   }
-  conferenceData: {
+  conferenceData?: {
     entryPoints: EntryPoint[]
     conferenceSolution: {
       key: {

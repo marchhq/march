@@ -1,4 +1,5 @@
-"use client"
+{
+  /*"use client"
 
 import { useRef, useCallback, useMemo } from "react"
 
@@ -152,4 +153,6 @@ const NotesPage: React.FC<Props> = ({ noteId, spaceId, blockId }) => {
   )
 }
 
-export default NotesPage
+export default NotesPage 
+} */
+}

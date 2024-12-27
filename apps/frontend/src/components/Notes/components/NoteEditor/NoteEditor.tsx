@@ -57,10 +57,14 @@ const NoteEditor = ({
         ) : (
           <MetaDetails
             url={note.metadata?.hangoutLink}
-            duration={calculateMeetDuration(
-              note.metadata?.start.dateTime,
-              note.metadata?.end.dateTime
-            )}
+            duration={
+              note.metadata?.start?.dateTime && note.metadata?.end?.dateTime
+                ? calculateMeetDuration(
+                    note.metadata.start.dateTime,
+                    note.metadata.end.dateTime
+                  )
+                : undefined
+            }
           />
         )}
       </div>

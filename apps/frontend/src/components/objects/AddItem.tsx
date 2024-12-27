@@ -47,7 +47,6 @@ export const AddItem = ({ placeholder }: Props) => {
         }
       }
 
-      console.log("add item: ", data)
       addItem.mutate(data)
       setAddingItem(false)
       setTitle("")
