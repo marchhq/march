@@ -63,7 +63,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
             if (message?.type === "linear" && message?.item) {
               queryClient.setQueriesData<Item[]>(
-                { queryKey: ["items"] },
+                { queryKey: ["items", message.type] },
                 (oldData) => {
                   if (!oldData) return oldData
 
