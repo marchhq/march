@@ -7,7 +7,6 @@ import { Icon } from "@/src/components/Icon"
 import { User } from "@/src/lib/@types/auth/user"
 import { GithubDark } from "@/src/lib/icons/Github"
 import Google from "@/src/lib/icons/Google"
-import { useThemeStore } from "@/src/lib/store/theme.store"
 
 export const getAuthInfo = (
   user: User
@@ -46,37 +45,38 @@ interface UserInfoProps {
 
 const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   const { authMethod, email, icon } = getAuthInfo(user)
-  const { theme, setTheme } = useThemeStore()
 
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light")
-  }
   return (
-    <div className="mb-8 flex flex-col">
-      {user.avatar && (
-        <Image
-          src={user.avatar}
-          alt={`${user.fullName}'s Avatar`}
-          width={32}
-          height={32}
-          priority
-          className="mb-4 size-8 rounded-full border-2 border-secondary-foreground"
-        />
-      )}
-      <h2 className="mb-1 text-[16px] font-semibold text-foreground">
-        {user.fullName || "Anonymous User"}
-      </h2>
-      <p className="mb-4 text-xs text-secondary-foreground">{email}</p>
-      <div className="flex items-center text-base text-secondary-foreground">
-        <span className="mr-2 text-[13px]">Logged in with {authMethod}</span>
-        {icon}
-      </div>
-      <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-secondary-foreground">
-        <p className="text-[13px]">Interface</p>
-        <span className="size-[3px] rounded-full bg-secondary-foreground"></span>{" "}
-        <button onClick={toggleTheme} className="text-[13px] hover:underline">
-          {theme === "light" ? <p>Light</p> : <p>Dark</p>}
-        </button>
+    <div>
+      <div className="flex items-center space-x-3">
+        {user.avatar ? (
+          <Image
+            src={user.avatar}
+            alt={`${user.fullName}'s Avatar`}
+            width={40}
+            height={40}
+            priority
+            className="rounded-full"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+            <Icon name="User" className="w-5 h-5 text-gray-500" />
+          </div>
+        )}
+        
+        <div>
+          <h3 className="text-sm font-medium text-gray-900">
+            {user.fullName || "Anonymous User"}
+          </h3>
+          <div className="mt-1 flex items-center text-sm text-gray-500">
+            <span className="mr-2">{email}</span>
+            <span className="text-gray-300">•</span>
+            <div className="ml-2 flex items-center">
+              {icon}
+              <span className="ml-1">{authMethod}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
