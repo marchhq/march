@@ -1,32 +1,20 @@
 import Link from "next/link"
 
-import classNames from "@/src/utils/classNames"
-
 interface NavLinkProps {
   href: string
   label: string
-  isActive: boolean
-  className?: string
+  isActive?: boolean
 }
 
-export const NavLink = ({ href, label, isActive, className }: NavLinkProps) => {
-  const activeClass = isActive && "text-foreground"
+export const NavLink = ({ href, label, isActive }: NavLinkProps) => {
   return (
     <Link
-      className={classNames(
-        `flex items-center justify-center ${className}`,
-        activeClass
-      )}
       href={href}
+      className={`text-sm ${
+        isActive ? "text-gray-900 font-medium" : "text-gray-600 hover:text-gray-900"
+      }`}
     >
-      <p
-        className={classNames(
-          !isActive &&
-            `text-secondary-foreground font-medium ${className} hover-text`
-        )}
-      >
-        {label}
-      </p>
+      {label}
     </Link>
   )
 }
