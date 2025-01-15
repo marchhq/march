@@ -14,9 +14,9 @@ export const NavDropdown = ({ currentPath }: NavDropdownProps) => {
   const pathname = usePathname()
 
   const routes = [
-    { path: "/today", label: "today", dotColor: "#EE8862" },
-    { path: "/inbox", label: "inbox", dotColor: "#4CB1A9" },
-    { path: "/objects", label: "all objects", dotColor: "#6B7280" },
+    { path: "/today", label: "today" },
+    { path: "/inbox", label: "inbox" },
+    { path: "/objects", label: "all objects" },
   ]
 
   const defaultRoute = routes[0] // Default to "today"
@@ -30,10 +30,6 @@ export const NavDropdown = ({ currentPath }: NavDropdownProps) => {
       >
         <span className="text-gray-400">/</span>
         <div className="flex items-center space-x-2">
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: currentRoute.dotColor }}
-          />
           <span>{currentRoute.label}</span>
         </div>
         <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -52,13 +48,7 @@ export const NavDropdown = ({ currentPath }: NavDropdownProps) => {
               }`}
               onClick={() => setIsOpen(false)}
             >
-              <div className="flex items-center space-x-2">
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: route.dotColor }}
-                />
-                <span>{route.label}</span>
-              </div>
+              {route.label}
             </Link>
           ))}
         </div>
