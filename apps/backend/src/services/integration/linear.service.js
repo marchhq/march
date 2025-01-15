@@ -4,6 +4,7 @@ import { Item } from '../../models/lib/item.model.js';
 import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
+import { Source } from '../../models/lib/source.model.js';
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.
@@ -71,6 +72,16 @@ const fetchUserInfo = async (linearToken, user) => {
         user.integration.linear.userId = userInfo.id;
         user.integration.linear.connected = true;
         await user.save();
+        if (user.integration.linear.connected) {
+            const existingSource = await Source.findOne({ slug: "linear", user: user._id });
+            if (!existingSource) {
+                const source = new Source({
+                    slug: "linear",
+                    user: user._id
+                });
+                await source.save();
+            }
+        }
 
         return userInfo;
     } catch (error) {

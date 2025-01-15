@@ -1,6 +1,7 @@
 import { environment } from "../../loaders/environment.loader.js";
 import { processWebhookEvent, exchangeCodeForAccessToken, uninstallGithubApp } from "../../services/integration/github.service.js";
 import * as crypto from "crypto";
+import { Source } from "../../models/lib/source.model.js";
 
 const handleGithubCallbackController = async (req, res, next) => {
     try {
@@ -12,6 +13,17 @@ const handleGithubCallbackController = async (req, res, next) => {
         user.integration.github.userName = profile.login;
         user.integration.github.connected = true
         user.save();
+
+        if (user.integration.github.connected) {
+            const existingSource = await Source.findOne({ slug: "github", user: user._id });
+            if (!existingSource) {
+                const source = new Source({
+                    slug: "github",
+                    user: user._id
+                });
+                await source.save();
+            }
+        }
 
         res.status(200).send({
             message: 'GitHub App installed and user authenticated successfully'
