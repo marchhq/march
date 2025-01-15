@@ -1,7 +1,9 @@
-export default async function Space() {
+const SpacesPage = () => {
   return (
-    <section className="h-full overflow-y-auto bg-background text-secondary-foreground">
-      Please Select Space from sidebar
-    </section>
+    <div className="flex items-center justify-center h-full text-sm text-gray-500">
+      Please select a space from the dropdown
+    </div>
   )
 }
+
+export default SpacesPage

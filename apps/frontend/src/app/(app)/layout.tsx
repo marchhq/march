@@ -4,8 +4,8 @@ import { Providers } from "./providers"
 import { CreateItem } from "@/src/components/CreateItem"
 import { SearchDialog } from "@/src/components/modals/SearchDialog"
 import PageTracker from "@/src/components/PageTracker"
-import { Sidebar } from "@/src/components/Sidebar/Sidebar"
 import { Toaster } from "@/src/components/ui/toaster"
+import { SecondNavbar } from "@/src/components/navbar/second-navbar"
 import { getInitialData } from "@/src/lib/server/actions/initial-data"
 import { getSession } from "@/src/lib/server/actions/sessions"
 
@@ -19,22 +19,18 @@ export default async function AppLayout({ children }: Props) {
 
   return (
     <Providers initialData={initialData}>
-      <main className="flex h-screen flex-col">
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
-          <div className="ml-52 flex flex-1 flex-col">
-            <div className="flex flex-1 overflow-hidden">
-              <PageTracker />
-              <section className="flex-1 overflow-auto pt-5">
-                {children}
-              </section>
-            </div>
+      <div className="flex h-screen flex-col">
+        <SecondNavbar />
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-5xl px-4 py-4">
+            <PageTracker />
+            {children}
           </div>
-        </div>
+        </main>
         <Toaster />
         <SearchDialog />
         <CreateItem />
-      </main>
+      </div>
     </Providers>
   )
 }
