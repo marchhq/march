@@ -27,7 +27,9 @@ import {
     filterItemsController,
     getThisWeekItemsByDateRangeController,
     getUserFavoriteItemsController,
-    getSubItemsController
+    getSubItemsController,
+    getItemsByTypeAndSourceController,
+    getItemsBySourceController
 } from "../../controllers/lib/item.controller.js";
 
 // Utility imports
@@ -37,8 +39,6 @@ import { feedbackController } from "../../controllers/lib/feedback.controller.js
 import { linkPreviewGeneratorController } from "../../controllers/lib/linkPreview.controller.js";
 
 const router = Router();
-
-router.route("/all/").get(getAllitemsController);
 
 /* Inbox Management Routes
 -------------------------------------------------- */
@@ -59,6 +59,7 @@ router.route("/today/").get(getUserTodayItemsController);
 router.route("/overdue/").get(getUserOverdueItemsController);
 router.route("/favorite/").get(getUserFavoriteItemsController);
 router.route("/setDate/").post(moveItemtoDateController);
+router.route("/items/").get(getItemsByTypeAndSourceController);
 router.route("/:date/").get(getUserItemsByDateController);
 
 /* Journal Routes
@@ -73,6 +74,8 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 router.route("/items/").get(getAllitemsController);
 router.route("/items/search/").get(searchItemsByTitleController);
 router.route("/items/filter/").get(filterItemsController);
+router.route("/items/source/").get(getItemsBySourceController);
+router.route("/items/all/").get(getAllitemsController);
 
 /* Asset Management Routes
 -------------------------------------------------- */

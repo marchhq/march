@@ -18,7 +18,7 @@ const getInboxItems = async (me) => {
 }
 
 const getInboxItem = async (me, id) => {
-    const items = await Item.find({
+    const items = await Item.findOne({
         user: me,
         _id: id,
         isArchived: false,
@@ -377,6 +377,29 @@ const getSubItems = async (user, parentId) => {
     return subItems;
 };
 
+const getItemsByTypeAndSource = async (user, { type, source }) => {
+    const query = { user, isArchived: false, isDeleted: false };
+
+    if (type) {
+        query.type = type;
+    }
+
+    if (source) {
+        query.source = source;
+    }
+
+    const items = await Item.find(query);
+    return items;
+}
+
+const getItemsBySource = async (user, source) => {
+    const items = await Item.find({
+        source,
+        user
+    })
+    return items;
+}
+
 export {
     getInboxItems,
     getInboxItem,
@@ -397,5 +420,7 @@ export {
     getThisWeekItems,
     getThisWeekItemsByDateRange,
     getUserFavoriteItems,
-    getSubItems
+    getSubItems,
+    getItemsByTypeAndSource,
+    getItemsBySource
 }
