@@ -9,6 +9,8 @@ import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 import "../styles/main.css"
 import "../styles/tiptap.css"
 import { ThemeProvider } from "../components/ThemeProvider"
+import { Navbar } from "../components/navbar/navbar"
+import { AuthProvider } from "../contexts/AuthContext"
 import classNames from "@/src/utils/classNames"
 
 const sansFont = Inter({
@@ -51,16 +53,17 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           sansFont.variable,
           serifFont.variable,
           monoFont.variable,
-          "overflow-x-hidden font-sans"
+          "min-h-screen font-sans antialiased"
         )}
       >
-        <ThemeProvider>
-          <GoogleOAuthProvider
-            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
-          >
-            {children}
-          </GoogleOAuthProvider>
-        </ThemeProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
+          <AuthProvider>
+            <ThemeProvider>
+              <Navbar />
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   )
