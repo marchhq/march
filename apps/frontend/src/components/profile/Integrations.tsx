@@ -35,22 +35,26 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
   return (
     <div className="flex items-center py-2.5">
       <div className="flex items-center min-w-0 flex-1">
-        <div className="w-6 h-6 flex items-center justify-center mr-3">
+        <div className="size-6 flex items-center justify-center mr-3">
           {integration.icon}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center">
-            <h3 className="text-sm font-medium text-gray-900 whitespace-nowrap">{integration.name}</h3>
-            <span className="text-xs text-gray-500 truncate ml-2 mr-4">{integration.description}</span>
+            <h3 className="text-sm font-medium text-gray-900 whitespace-nowrap">
+              {integration.name}
+            </h3>
+            <span className="text-xs text-gray-500 truncate ml-2 mr-4">
+              {integration.description}
+            </span>
           </div>
         </div>
       </div>
-      
+
       <div className="flex-shrink-0">
         {connected ? (
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center text-xs text-gray-500 hover:text-gray-700">
-              <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></div>
+              <div className="size-2 rounded-full bg-green-500 mr-1.5"></div>
               <span>Connected</span>
               <ChevronDown size={14} className="ml-0.5" />
             </DropdownMenuTrigger>
@@ -93,7 +97,8 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
     () => [
       {
         key: "googleCalendar",
-        icon: <Cal className="w-4 h-4" />,
+        // eslint-disable-next-line tailwindcss/enforces-shorthand
+        icon: <Cal />,
         name: "Google Calendar",
         description: "Sync agenda",
         handleConnect: handleCalLogin,
@@ -101,7 +106,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       },
       {
         key: "github",
-        icon: <GithubDark className="w-4 h-4" />,
+        icon: <GithubDark />,
         name: "Github",
         description: "Issues & PRs",
         handleConnect: installGitHub,
@@ -109,7 +114,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
       },
       {
         key: "linear",
-        icon: <LinearDark className="w-4 h-4" />,
+        icon: <LinearDark />,
         name: "Linear",
         description: "Tasks",
         handleConnect: handleLinearLogin,

@@ -38,7 +38,10 @@ const ProfilePage: React.FC = () => {
     <div className="space-y-10">
       {/* Header */}
       <div className="flex items-center space-x-4">
-        <Link href="/today" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link
+          href="/today"
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+        >
           <ChevronLeft size={20} />
         </Link>
         <h1 className="text-xl font-medium text-gray-900">Profile</h1>
@@ -50,10 +53,12 @@ const ProfilePage: React.FC = () => {
         <div className="pb-6 border-b border-gray-100">
           <UserInfo user={user} />
         </div>
-        
+
         {/* Integrations */}
         <div className="pb-6">
-          <h2 className="text-sm font-medium text-gray-900 mb-4">Integrations</h2>
+          <h2 className="text-sm font-medium text-gray-900 mb-4">
+            Integrations
+          </h2>
           <div className="bg-white">
             <Integrations user={user} />
           </div>

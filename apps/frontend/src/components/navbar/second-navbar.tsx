@@ -31,18 +31,18 @@ export const SecondNavbar = () => {
 
   return (
     <nav className="flex h-10 items-center border-b border-gray-100 bg-white px-8">
-      <ul className="flex gap-8">
+      {/* <ul className="flex gap-8">
         {objects.map((object) => (
-          <NavLink
-            key={object.id}
-            href={`/objects/${object.name.toLowerCase()}`}
-            className="text-sm font-medium text-gray-500 hover:text-gray-900"
-            activeClassName="text-gray-900"
-          >
-            {object.name}
-          </NavLink>
+          // <NavLink
+          //   key={object.id}
+          //   href={`/objects/${object.name.toLowerCase()}`}
+          //   className="text-sm font-medium text-gray-500 hover:text-gray-900"
+          //   activeClassName="text-gray-900"
+          // >
+          //   {object.name}
+          // </NavLink>
         ))}
-      </ul>
+      </ul> */}
     </nav>
   )
 }
