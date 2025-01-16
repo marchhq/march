@@ -1,17 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronDown } from "lucide-react"
 
-interface NavDropdownProps {
-  currentPath: string
-}
 
-export const NavDropdown = ({ currentPath }: NavDropdownProps) => {
+
+export const NavDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const routes = [
     { path: "/today", label: "today" },
@@ -22,8 +21,20 @@ export const NavDropdown = ({ currentPath }: NavDropdownProps) => {
   const defaultRoute = routes[0] // Default to "today"
   const currentRoute = routes.find(route => pathname.includes(route.path)) || defaultRoute
 
+  // Close the dropdown when clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-1 text-sm text-gray-700 hover:text-gray-900"
