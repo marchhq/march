@@ -1,21 +1,21 @@
 import * as React from "react"
 
-import type { Viewport } from "next"
+import { Metadata } from "next"
+import { ThemeProvider } from "next-themes"
 
 import { LogSnagProvider } from "@logsnag/next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
-import { Metadata } from "next"
 
-import { ThemeProvider } from "@/src/components/ThemeProvider"
-import { AuthProvider } from "@/src/contexts/AuthContext"
 import { Navbar } from "@/src/components/navbar/navbar"
 import { Toaster } from "@/src/components/ui/toaster"
+import { AuthProvider } from "@/src/contexts/AuthContext"
 import classNames from "@/src/utils/classNames"
 
 import "../styles/main.css"
 import "../styles/tiptap.css"
 
+// Fonts
 const sansFont = Inter({
   variable: "--sans-font",
   subsets: ["latin"],
@@ -34,29 +34,22 @@ const monoFont = JetBrains_Mono({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 })
 
+// Metadata
 export const metadata: Metadata = {
   title: "March",
   description: "engineered for makers",
 }
 
+// Props Interface
 interface Props {
   children: React.ReactNode
 }
 
 export default function RootLayout({ children }: Props) {
-
-  
-
-
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          rel="icon"
-          href="/favicon.ico"
-          sizes="any"
-        />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <LogSnagProvider
           token={process.env.NEXT_PUBLIC_LOGSNAG_TOKEN ?? ""}
           project={process.env.NEXT_PUBLIC_LOGSNAG_PROJECT_NAME ?? ""}
@@ -70,6 +63,7 @@ export default function RootLayout({ children }: Props) {
           "min-h-screen font-sans antialiased"
         )}
       >
+        {/* Wrapping children with ThemeProvider */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -77,7 +71,9 @@ export default function RootLayout({ children }: Props) {
           disableTransitionOnChange
         >
           <AuthProvider>
-            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
+            <GoogleOAuthProvider
+              clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
+            >
               <Navbar />
               {children}
             </GoogleOAuthProvider>

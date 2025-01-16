@@ -12,10 +12,7 @@ export const TodayPage: React.FC = () => {
   return (
     <div className="space-y-5">
       <header>
-        <DateCycle
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-        />
+        <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
       </header>
       <div className="space-y-5">
         <TodayTextArea selectedDate={selectedDate} />

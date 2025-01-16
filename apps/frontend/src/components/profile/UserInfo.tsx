@@ -63,7 +63,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
             <Icon name="User" className="w-5 h-5 text-gray-500" />
           </div>
         )}
-        
+
         <div>
           <h3 className="text-sm font-medium text-gray-900">
             {user.fullName || "Anonymous User"}
