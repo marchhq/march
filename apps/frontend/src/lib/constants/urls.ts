@@ -10,5 +10,6 @@ export const GITHUB_APP_URL =
   process.env.GITHUB_APP_URL ?? "https://github.com/apps/march-app"
 
 export const BACKEND_URL = ENV_BACKEND_URL ?? LOCAL_BACKEND
+export const USER_PROFILE = `${BACKEND_URL}/users/me`
 
 export const FRONTEND_URL = ENV_FRONTEND_URL ?? LOCAL_FRONTEND
