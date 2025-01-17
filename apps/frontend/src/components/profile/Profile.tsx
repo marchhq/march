@@ -35,48 +35,45 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="flex w-full bg-background">
-      <div className="flex w-full max-w-lg flex-col justify-between pl-6">
-        <div className="flex grow flex-col">
-          <div className="mb-8 flex flex-col space-y-8">
-            <Link
-              href={"/today"}
-              className="flex items-center text-secondary-foreground"
-            >
-              <ChevronLeft size={16} />
-              <span className="text-[13px] font-semibold">back</span>
-            </Link>
-            <UserInfo user={user} />
-          </div>
-          <Integrations user={user} />
+    <div className="space-y-10">
+      {/* Header */}
+      <div className="flex items-center space-x-4">
+        <Link
+          href="/today"
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <ChevronLeft size={20} />
+        </Link>
+        <h1 className="text-xl font-medium text-gray-900">Profile</h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="space-y-10">
+        {/* User Info */}
+        <div className="pb-6 border-b border-gray-100">
+          <UserInfo user={user} />
         </div>
 
-        <div className="mt-6">
-          <Separator />
-          <footer className="flex flex-col space-y-8 pt-8">
-            <div className="space-y-2">
-              <p className="font-semibold text-primary-foreground">march 0.1</p>
-              <p className="text-xs text-secondary-foreground">
-                — crafted for the makers to{" "}
-                <span className="text-primary-foreground">get things done</span>
-              </p>
-            </div>
+        {/* Integrations */}
+        <div className="pb-6">
+          <h2 className="text-sm font-medium text-gray-900 mb-4">
+            Integrations
+          </h2>
+          <div className="bg-white">
+            <Integrations user={user} />
+          </div>
+        </div>
 
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="mt-2 flex items-center gap-1 text-secondary-foreground"
-            >
-              {isLoggingOut ? (
-                <div className="size-5 animate-spin rounded-full border-2 border-[#EF6258CC] border-t-transparent" />
-              ) : (
-                <Icon icon={"hugeicons:logout-01"} />
-              )}
-              <span className="hover-text text-[13px] font-semibold">
-                Logout
-              </span>
-            </button>
-          </footer>
+        {/* Logout Section */}
+        <div className="pt-4">
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <LogOutIcon size={16} className="mr-2" />
+            <span>Log out</span>
+          </button>
         </div>
       </div>
     </div>

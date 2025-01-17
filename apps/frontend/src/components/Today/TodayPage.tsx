@@ -10,19 +10,14 @@ export const TodayPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
 
   return (
-    <main className="h-full bg-background">
-      <section className="flex h-full items-start gap-10">
-        <div className="no-scrollbar flex h-full flex-1 flex-col gap-5 overflow-y-scroll text-sm">
-          <header className="pl-5">
-            <DateCycle
-              selectedDate={selectedDate}
-              onDateChange={setSelectedDate}
-            />
-          </header>
-          <TodayTextArea selectedDate={selectedDate} />
-          <TodayItems selectedDate={selectedDate} />
-        </div>
-      </section>
-    </main>
+    <div className="space-y-5">
+      <header>
+        <DateCycle selectedDate={selectedDate} onDateChange={setSelectedDate} />
+      </header>
+      <div className="space-y-5">
+        <TodayTextArea selectedDate={selectedDate} />
+        <TodayItems selectedDate={selectedDate} />
+      </div>
+    </div>
   )
 }

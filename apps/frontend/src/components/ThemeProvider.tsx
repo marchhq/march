@@ -13,7 +13,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       const { theme: storedUserTheme } = JSON.parse(storedTheme)
       setTheme(storedUserTheme)
     } else {
-      detectSystemTheme()
+      setTheme("light")
     }
 
     const cleanupListener = syncWithSystemTheme()
