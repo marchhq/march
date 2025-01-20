@@ -1,12 +1,12 @@
 import { Router } from "express";
 
 import {
-    createSpaceController,
-    getSpacesController,
-    getSpaceController,
-    updateSpaceController,
-    getSpaceByNameController
-} from "../../controllers/lib/space.controller.js";
+    createArrayController,
+    getArraysController,
+    getArrayController,
+    updateArrayController,
+    getArrayByNameController
+} from "../../controllers/lib/array.controller.js";
 
 import {
     createItemController,
@@ -33,12 +33,12 @@ import { createLabelController, getLabelsController, getLabelController, updateL
 
 const router = Router();
 
-// space controllers
-router.route("/").post(createSpaceController);
-router.route("/").get(getSpacesController);
-router.route("/name/:space").get(getSpaceByNameController);
-router.route("/:space/").get(getSpaceController);
-router.route("/:space/").put(updateSpaceController);
+// arrays controllers
+router.route("/").post(createArrayController);
+router.route("/").get(getArraysController);
+router.route("/name/:space").get(getArrayByNameController);
+router.route("/:space/").get(getArrayController);
+router.route("/:space/").put(updateArrayController);
 
 // items filter by label name
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
