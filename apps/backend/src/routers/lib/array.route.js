@@ -36,9 +36,9 @@ const router = Router();
 // arrays controllers
 router.route("/").post(createArrayController);
 router.route("/").get(getArraysController);
-router.route("/name/:space").get(getArrayByNameController);
-router.route("/:space/").get(getArrayController);
-router.route("/:space/").put(updateArrayController);
+router.route("/:array/").get(getArrayController);
+router.route("/:array/").put(updateArrayController);
+router.route("/name/:array/").get(getArrayByNameController);
 
 // items filter by label name
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
