@@ -25,6 +25,10 @@ const SpaceSchema = new Schema({
         ref: 'User',
         required: true
     }],
+    blockes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Block'
+    }],
     isArchived: {
         type: Boolean,
         default: false
