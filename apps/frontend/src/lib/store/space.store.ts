@@ -17,12 +17,14 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   space: null,
   loading: false,
   error: null,
-  rightSideSpaceList:false,
-
+  rightSideSpaceList: false,
+  draggableSpace: null,
+  setDraggableSpace: (space) => {
+    set({ draggableSpace: space })
+  },
   toggleRightSidePopUp: () => {
-    
-    const { rightSideSpaceList } = get(); // Access current state
-    set({ rightSideSpaceList: !rightSideSpaceList }); // Toggle the state
+    const { rightSideSpaceList } = get() // Access current state
+    set({ rightSideSpaceList: !rightSideSpaceList })
   },
   // Fetch all pages
   fetchSpaces: async (session: string) => {

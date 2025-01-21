@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react"
 import useSpaceStore from "@/src/lib/store/space.store"
 
 const RightSidePopup = () => {
-  const { rightSideSpaceList, toggleRightSidePopUp } = useSpaceStore()
+  const { rightSideSpaceList, toggleRightSidePopUp, setDraggableSpace } =
+    useSpaceStore()
   const [popUp, setPopUp] = useState<boolean>(false)
 
   useEffect(() => {
@@ -23,7 +24,12 @@ const RightSidePopup = () => {
           <button className="w-full text-left">📓 Notes</button>
         </li>
         <li className="rounded-lg p-3 transition hover:bg-gray-700">
-          <button className="w-full text-left" value="Calendar" draggable>
+          <button
+            className="w-full text-left"
+            value="Calendar"
+            draggable
+            onDragStart={() => setDraggableSpace("calender")}
+          >
             📅 Calendar
           </button>
         </li>
