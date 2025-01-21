@@ -17,7 +17,13 @@ const useSpaceStore = create<SpaceStoreTypes>((set, get) => ({
   space: null,
   loading: false,
   error: null,
+  rightSideSpaceList:false,
 
+  toggleRightSidePopUp: () => {
+    
+    const { rightSideSpaceList } = get(); // Access current state
+    set({ rightSideSpaceList: !rightSideSpaceList }); // Toggle the state
+  },
   // Fetch all pages
   fetchSpaces: async (session: string) => {
     set({ loading: true, error: null })

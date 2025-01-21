@@ -1,11 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+
+import { ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown } from "lucide-react"
-
-
 
 export const NavDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -16,15 +15,20 @@ export const NavDropdown = () => {
     { path: "/today", label: "today" },
     { path: "/inbox", label: "inbox" },
     { path: "/objects", label: "all objects" },
+    { path: "/personal", label: "personal" },
   ]
 
   const defaultRoute = routes[0] // Default to "today"
-  const currentRoute = routes.find(route => pathname.includes(route.path)) || defaultRoute
+  const currentRoute =
+    routes.find((route) => pathname.includes(route.path)) || defaultRoute
 
   // Close the dropdown when clicking outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
@@ -43,11 +47,14 @@ export const NavDropdown = () => {
         <div className="flex items-center space-x-2">
           <span>{currentRoute.label}</span>
         </div>
-        <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown
+          size={16}
+          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md bg-white py-1 shadow-lg">
           {routes.map((route) => (
             <Link
               key={route.path}

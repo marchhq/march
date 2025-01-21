@@ -18,7 +18,9 @@ export interface SpaceStoreTypes {
   spaceId: string | null
   space: Space | null
   loading: boolean
+  rightSideSpaceList:boolean
   error: string | null
+  toggleRightSidePopUp: () => void
   fetchSpaces: (session: string | Promise<string>) => Promise<void>
   fetchSpaceById: (id: string, session: string) => Promise<void>
   createSpace: (data: Space, session: string) => Promise<void>

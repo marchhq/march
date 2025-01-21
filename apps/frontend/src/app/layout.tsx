@@ -15,6 +15,7 @@ import classNames from "@/src/utils/classNames"
 
 import "../styles/main.css"
 import "../styles/tiptap.css"
+import RightSidePopup from "../components/right-side-popup/RightSidePopup"
 
 const sansFont = Inter({
   variable: "--sans-font",
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: Props) {
             <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
               <Navbar />
               {children}
+              <RightSidePopup/>
             </GoogleOAuthProvider>
           </AuthProvider>
         </ThemeProvider>

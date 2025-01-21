@@ -3,9 +3,9 @@ import React from "react"
 import { Providers } from "./providers"
 import { CreateItem } from "@/src/components/CreateItem"
 import { SearchDialog } from "@/src/components/modals/SearchDialog"
+import { SecondNavbar } from "@/src/components/navbar/second-navbar"
 import PageTracker from "@/src/components/PageTracker"
 import { Toaster } from "@/src/components/ui/toaster"
-import { SecondNavbar } from "@/src/components/navbar/second-navbar"
 import { getInitialData } from "@/src/lib/server/actions/initial-data"
 import { getSession } from "@/src/lib/server/actions/sessions"
 
@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: Props) {
       <div className="flex h-screen flex-col">
         <SecondNavbar />
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-5xl px-4 py-4">
+          <div className="mx-auto max-w-5xl p-4">
             <PageTracker />
             {children}
           </div>
