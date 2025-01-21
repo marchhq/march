@@ -290,7 +290,7 @@ const getObject = async (user, id, array, block) => {
         isDeleted: false
     })
 
-    return item;
+    return object;
 };
 
 const getAllObjectsByBloack = async (user, array, block) => {
@@ -315,7 +315,7 @@ const updateObject = async (id, updateData, array, block) => {
     { new: true }
     )
 
-    return updateObject;
+    return updatedObject;
 };
 
 const moveObjecttoDate = async (date, id) => {
