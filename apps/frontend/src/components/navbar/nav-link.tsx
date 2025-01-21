@@ -11,7 +11,9 @@ export const NavLink = ({ href, label, isActive }: NavLinkProps) => {
     <Link
       href={href}
       className={`text-sm ${
-        isActive ? "text-gray-900 font-medium" : "text-gray-600 hover:text-gray-900"
+        isActive
+          ? "font-medium text-gray-900"
+          : "text-gray-600 hover:text-gray-900"
       }`}
     >
       {label}

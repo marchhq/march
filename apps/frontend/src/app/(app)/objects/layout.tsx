@@ -5,9 +5,5 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  return (
-    <section className="flex-1 overflow-auto pt-5">
-      {children}
-    </section>
-  )
+  return <section className="flex-1 overflow-auto pt-5">{children}</section>
 }
