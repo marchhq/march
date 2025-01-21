@@ -28,10 +28,8 @@ const JournalSchema = new Schema({
     timestamps: true
 });
 
-// JournalSchema.index({ date: 1, user: 1 }, { unique: true });
 JournalSchema.index({ date: 1, user: 1 }, { unique: true })
 const Journal = db.model('Journal', JournalSchema, 'journals')
-// const Journal = db.model('Journal', JournalSchema, 'journals');
 
 export {
     Journal

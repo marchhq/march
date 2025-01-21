@@ -1,12 +1,12 @@
 import { Router } from "express";
 
 import {
-    createSpaceController,
-    getSpacesController,
-    getSpaceController,
-    updateSpaceController,
-    getSpaceByNameController
-} from "../../controllers/lib/space.controller.js";
+    createArrayController,
+    getArraysController,
+    getArrayController,
+    updateArrayController,
+    getArrayByNameController
+} from "../../controllers/lib/array.controller.js";
 
 import {
     createItemController,
@@ -33,12 +33,12 @@ import { createLabelController, getLabelsController, getLabelController, updateL
 
 const router = Router();
 
-// space controllers
-router.route("/").post(createSpaceController);
-router.route("/").get(getSpacesController);
-router.route("/name/:space").get(getSpaceByNameController);
-router.route("/:space/").get(getSpaceController);
-router.route("/:space/").put(updateSpaceController);
+// arrays controllers
+router.route("/").post(createArrayController);
+router.route("/").get(getArraysController);
+router.route("/:array/").get(getArrayController);
+router.route("/:array/").put(updateArrayController);
+router.route("/name/:array/").get(getArrayByNameController);
 
 // items filter by label name
 router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
@@ -51,11 +51,11 @@ router.route("/:space/labels/:label/").put(updateLabelController)
 router.route("/:space/labels/:label/").delete(deleteLabelController)
 
 // Block controllers
-router.route("/:space/blocks/").post(createBlockController);
-router.route("/:space/blocks/").get(getBlocksController);
-router.route("/:space/blocks/:block/").get(getBlockController);
-router.route("/:space/blocks/:block/").put(updateBlockController);
-router.route("/:space/blocks/:block/").delete(deleteBlockController);
+router.route("/:array/blocks/").post(createBlockController);
+router.route("/:array/blocks/").get(getBlocksController);
+router.route("/:array/blocks/:block/").get(getBlockController);
+router.route("/:array/blocks/:block/").put(updateBlockController);
+router.route("/:array/blocks/:block/").delete(deleteBlockController);
 
 // item controllers
 router.route("/:space/blocks/:block/items/").post(createItemController);
