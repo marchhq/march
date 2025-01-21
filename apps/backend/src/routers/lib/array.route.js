@@ -51,11 +51,11 @@ router.route("/:space/labels/:label/").put(updateLabelController)
 router.route("/:space/labels/:label/").delete(deleteLabelController)
 
 // Block controllers
-router.route("/:space/blocks/").post(createBlockController);
-router.route("/:space/blocks/").get(getBlocksController);
-router.route("/:space/blocks/:block/").get(getBlockController);
-router.route("/:space/blocks/:block/").put(updateBlockController);
-router.route("/:space/blocks/:block/").delete(deleteBlockController);
+router.route("/:array/blocks/").post(createBlockController);
+router.route("/:array/blocks/").get(getBlocksController);
+router.route("/:array/blocks/:block/").get(getBlockController);
+router.route("/:array/blocks/:block/").put(updateBlockController);
+router.route("/:array/blocks/:block/").delete(deleteBlockController);
 
 // item controllers
 router.route("/:space/blocks/:block/items/").post(createItemController);
