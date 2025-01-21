@@ -5,7 +5,7 @@ import InitialNotes from "@/src/components/Notes/InitialNotes"
 import ReadingListComponent from "@/src/components/Reading/ReadingListComponent"
 import { getSession } from "@/src/lib/server/actions/sessions"
 import useReadingStore from "@/src/lib/store/reading.store"
-import useSpaceStore from "@/src/lib/store/space.store"
+import useSpaceStore from "@/src/lib/store/array.store"
 
 type Params = Promise<{ spaceId: string; blockId: string }>
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>

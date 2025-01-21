@@ -8,6 +8,7 @@ import { NavDropdown } from "./nav-dropdown"
 // import useUserStore from "@/src/lib/store/user.store"
 import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
 import { getUserProfile } from "@/src/lib/server/fetcher/getMyProfile"
+import { getAllArray } from "@/src/lib/server/fetcher/getAllArray"
 
 export const Navbar = async () => {
   // const { session } = useAuth()
@@ -16,9 +17,11 @@ export const Navbar = async () => {
   const accessToken = cookieStore.get(ACCESS_TOKEN)?.value as string
   const user = await getUserProfile(accessToken)
 
+  const allArrays = await getAllArray(accessToken)
+   
   return (
     <nav className={` ${user === null ? "hidden" : "flex"}  h-14 items-center`}>
-      <div className="flex items-center justify-between w-full px-8">
+      <div className="flex w-full items-center justify-between px-8">
         <div className="flex items-center">
           {/* Logo */}
           <div className="pl-4">
@@ -30,20 +33,20 @@ export const Navbar = async () => {
                 height={16}
                 className="text-primary"
               />
-              <span className="font-medium text-base">march</span>
+              <span className="text-base font-medium">march</span>
             </Link>
           </div>
 
           {/* Navigation Dropdown */}
           <div className="ml-2">
-            <NavDropdown />
+            <NavDropdown routes={allArrays} />
           </div>
         </div>
 
         {/* Profile */}
         <div className="flex items-center pr-4">
           <Link href="/profile" className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-700">
+            <div className="flex size-8 items-center justify-center rounded-full bg-gray-100 text-sm font-medium text-gray-700">
               {/* {user?.userName?.[0]?.toUpperCase() || 'U'} */}
               {user ? (
                 <Image

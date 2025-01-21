@@ -1,34 +1,8 @@
 import { create } from "zustand"
 
 import { BACKEND_URL } from "../constants/urls"
+import { BlockState } from "../@types/Items/Block"
 
-export interface Block {
-  _id: string
-  name: string
-  data: any
-  user: string
-  space: string
-}
-
-interface FetchBlocksResult {
-  blocks?: Block[]
-  noBlocks?: true
-}
-
-interface BlockState {
-  blocks: Block[]
-  blockId: string | null
-  isLoading: boolean
-  error: string | null
-  fetchBlocks: (
-    session: string | Promise<string>,
-    spaceId: string
-  ) => Promise<FetchBlocksResult | void>
-  createBlock: (
-    session: string | Promise<string>,
-    spaceId: string
-  ) => Promise<void>
-}
 
 const useBlockStore = create<BlockState>((set, get) => ({
   blocks: [],
@@ -37,10 +11,11 @@ const useBlockStore = create<BlockState>((set, get) => ({
   error: null,
 
   // Fetch existing blocks for the given space
-  fetchBlocks: async (session: string | Promise<string>, spaceId: string) => {
+  fetchBlocks: async (session: string | Promise<string>, array: string) => {
     set({ isLoading: true, error: null })
+    
     try {
-      const response = await fetch(`${BACKEND_URL}/spaces/${spaceId}/blocks/`, {
+      const response = await fetch(`${BACKEND_URL}/arrays/${array}/blocks/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${session}`,
@@ -49,8 +24,12 @@ const useBlockStore = create<BlockState>((set, get) => ({
 
       if (response.ok) {
         const data = await response.json()
+        
+        
         const blocks = data.blocks
-        set({ blocks })
+        
+          
+        set({ blocks:blocks })
 
         if (blocks.length > 0) {
           set({ blockId: blocks[0]._id }) // Set the first block ID if it exists

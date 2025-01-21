@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { Space } from "../lib/@types/Items/Space"
+import { Space } from "../lib/@types/Items/Array"
 import { getSpaces } from "../lib/server/actions/spaces"
 import { queryClient } from "@/src/contexts/QueryProvider"
 

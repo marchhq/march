@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react"
 
-import useSpaceStore from "@/src/lib/store/space.store"
+import useSpaceStore from "@/src/lib/store/array.store"
 
 const RightSidePopup = () => {
   const { rightSideSpaceList, toggleRightSidePopUp, setDraggableSpace } =
