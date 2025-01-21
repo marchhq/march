@@ -1,42 +1,28 @@
 import { Block } from "../../models/lib/block.model.js";
 import { createItem } from "./item.service.js";
 
-const createBlock = async (user, blockData, space) => {
+const createBlock = async (user, blockData, array) => {
     const type = blockData.data.type;
-    let block;
 
-    switch (type) {
-    case 'note': {
-        block = new Block({
-            name: "Note",
-            user,
-            space,
-            data: { ...blockData.data }
-        });
-        await block.save();
+    // Initialize block with common properties
+    const block = new Block({
+        name: blockData.name || type,
+        user,
+        array,
+        data: { ...blockData.data }
+    });
 
-        const item = await createItem(user, { type: 'note' }, space, block._id);
+    // Handle specific types
+    if (type === 'note') {
+        const [savedBlock, item] = await Promise.all([
+            block.save(),
+            createItem(user, { type: 'note' }, array, block._id) // Create the an note
+        ]);
 
-        block.data.viewingNoteId = item._id;
-        await block.save();
-        break;
-    }
-    case 'list': {
-        block = new Block({
-            name: "List",
-            user,
-            space,
-            data: { ...blockData.data }
-        });
-        break;
-    }
-    default:
-        block = new Block({
-            name: blockData.name ? blockData.name : type,
-            user,
-            space,
-            data: { ...blockData.data }
-        });
+        // Update the block with the viewingNoteId
+        savedBlock.data.viewingNoteId = item._id;
+        await savedBlock.save();
+        return savedBlock;
     }
 
     await block.save();
