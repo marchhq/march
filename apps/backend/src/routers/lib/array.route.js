@@ -9,13 +9,13 @@ import {
 } from "../../controllers/lib/array.controller.js";
 
 import {
-    createItemController,
-    getAllItemsByBloackController,
-    updateItemController,
-    getItemController,
+    createObjectController,
+    getAllObjectsByBloackController,
     getItemFilterByLabelController,
-    getSubItemsController
-} from "../../controllers/lib/item.controller.js";
+    getSubItemsController,
+    getObjectController,
+    updateObjectController
+} from "../../controllers/lib/object.controller.js";
 
 import {
     createBlockController,
@@ -57,12 +57,12 @@ router.route("/:array/blocks/:block/").get(getBlockController);
 router.route("/:array/blocks/:block/").put(updateBlockController);
 router.route("/:array/blocks/:block/").delete(deleteBlockController);
 
-// item controllers
-router.route("/:space/blocks/:block/items/").post(createItemController);
-router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
-router.route("/:space/blocks/:block/items/:item/").get(getItemController);
-router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
-router.route("/:space/blocks/:block/items/:item/sub-items/").get(getSubItemsController);
+// object controllers
+router.route("/:array/blocks/:block/objects/").post(createObjectController);
+router.route("/:array/blocks/:block/objects/").get(getAllObjectsByBloackController);
+router.route("/:array/blocks/:block/objects/:object/").get(getObjectController);
+router.route("/:array/blocks/:block/objects/:object/").put(updateObjectController);
+router.route("/:array/blocks/:block/objects/:object/sub-objects/").get(getSubItemsController);
 
 // Meeting controllers
 
