@@ -7,8 +7,8 @@ import { NavDropdown } from "./nav-dropdown"
 // import { useAuth } from "@/src/contexts/AuthContext"
 // import useUserStore from "@/src/lib/store/user.store"
 import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
-import { getUserProfile } from "@/src/lib/server/fetcher/getMyProfile"
 import { getAllArray } from "@/src/lib/server/fetcher/getAllArray"
+import { getUserProfile } from "@/src/lib/server/fetcher/getMyProfile"
 
 export const Navbar = async () => {
   // const { session } = useAuth()
@@ -18,7 +18,7 @@ export const Navbar = async () => {
   const user = await getUserProfile(accessToken)
 
   const allArrays = await getAllArray(accessToken)
-   
+
   return (
     <nav className={` ${user === null ? "hidden" : "flex"}  h-14 items-center`}>
       <div className="flex w-full items-center justify-between px-8">

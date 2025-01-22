@@ -5,26 +5,20 @@ import { useState, useEffect, useRef } from "react"
 import { ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+
 import { Array } from "@/src/lib/@types/Items/Array"
 
 interface ArrayProps {
-  routes:Array[]
-  
+  routes: Array[]
 }
 
-export const NavDropdown: React.FC<ArrayProps> = ({routes}) => {
+export const NavDropdown: React.FC<ArrayProps> = ({ routes }) => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
-
-  
-
   const defaultRoute = routes[0]._id // Default to "today"
   const currentRoute =
     routes.find((route) => pathname.includes(route._id)) || defaultRoute
-  console.log(currentRoute,"dddd");
-  
-  // Close the dropdown when clicking outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -71,6 +65,7 @@ export const NavDropdown: React.FC<ArrayProps> = ({routes}) => {
               {route.name}
             </Link>
           ))}
+          <button   > Create Array </button>
         </div>
       )}
     </div>

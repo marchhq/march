@@ -1,4 +1,4 @@
-import Block from "@/src/components/array/Block"
+import Block from "@/src/components/array/block/Block"
 import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
 import { cookies } from "next/headers"
 
