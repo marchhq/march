@@ -20,9 +20,9 @@ const JournalSchema = new Schema({
         ref: 'User',
         required: true
     },
-    space: {
+    array: {
         type: Schema.Types.ObjectId,
-        ref: 'Space'
+        ref: 'Array'
     }
 }, {
     timestamps: true

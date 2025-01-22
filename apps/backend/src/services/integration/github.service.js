@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createAppAuth } from "@octokit/auth-app";
 import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
-import { Item } from "../../models/lib/item.model.js";
+import { Object } from '../../models/lib/object.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
 
@@ -30,7 +30,7 @@ const exchangeCodeForAccessToken = async (code) => {
 const processWebhookEvent = async (payload) => {
     const issueOrPR = payload.issue || payload.pull_request;
     let message = "";
-    let broadcastItem = null;
+    let broadcastObject = null;
     let targetUserId = null;
     let action = null;
 
@@ -43,18 +43,18 @@ const processWebhookEvent = async (payload) => {
 
     // Handle deletion events
     if (payload.action === "deleted") {
-        const deletedItem = await Item.findOneAndDelete({
+        const deletedObject = await Object.findOneAndDelete({
             id: issueOrPR.id,
             source: "github"
         });
 
-        if (deletedItem) {
-            message = `Deleted item with ID: ${issueOrPR.id}`;
+        if (deletedObject) {
+            message = `Deleted object with ID: ${issueOrPR.id}`;
             action = "delete";
-            broadcastItem = deletedItem;
-            targetUserId = deletedItem.user;
+            broadcastObject = deletedObject;
+            targetUserId = deletedObject.user;
         } else {
-            console.log(`Item with ID: ${issueOrPR.id} not found in the database.`);
+            console.log(`Object with ID: ${issueOrPR.id} not found in the database.`);
         }
     } else {
         // Handle creation or update events
@@ -68,7 +68,7 @@ const processWebhookEvent = async (payload) => {
         const userId = user._id;
         targetUserId = userId;
 
-        const existingItem = await Item.findOne({
+        const existingObject = await Object.findOne({
             id: issueOrPR.id,
             source: "github",
             user: userId
@@ -76,8 +76,8 @@ const processWebhookEvent = async (payload) => {
 
         const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
 
-        if (existingItem) {
-            const updatedItem = await Item.findByIdAndUpdate(existingItem._id, {
+        if (existingObject) {
+            const updatedObject = await Object.findByIdAndUpdate(existingObject._id, {
                 title: issueOrPR.title,
                 description: issueOrPR.body,
                 labels: labelIds,
@@ -89,11 +89,11 @@ const processWebhookEvent = async (payload) => {
                 updatedAt: issueOrPR.updated_at
             }, { new: true });
 
-            message = `Updated item with ID: ${issueOrPR.id}`;
+            message = `Updated object with ID: ${issueOrPR.id}`;
             action = "update";
-            broadcastItem = updatedItem;
+            broadcastObject = updatedObject;
         } else {
-            const newItem = new Item({
+            const newObject = new Object({
                 title: issueOrPR.title,
                 source: "github",
                 id: issueOrPR.id,
@@ -113,10 +113,10 @@ const processWebhookEvent = async (payload) => {
                 updatedAt: issueOrPR.updated_at
             });
 
-            const savedItem = await newItem.save();
+            const savedObject = await newObject.save();
             message = `Created new item with ID: ${issueOrPR.id}`;
             action = "create";
-            broadcastItem = savedItem;
+            broadcastObject = savedObject;
         }
     }
 
@@ -125,7 +125,7 @@ const processWebhookEvent = async (payload) => {
             type: "github",
             message,
             action,
-            item: broadcastItem
+            item: broadcastObject
         };
 
         broadcastToUser(targetUserId.toString(), broadcastData, true);

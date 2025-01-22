@@ -9,13 +9,13 @@ import {
 } from "../../controllers/lib/array.controller.js";
 
 import {
-    createItemController,
-    getAllItemsByBloackController,
-    updateItemController,
-    getItemController,
-    getItemFilterByLabelController,
-    getSubItemsController
-} from "../../controllers/lib/item.controller.js";
+    createObjectController,
+    getAllObjectsByBloackController,
+    // getObjectFilterByLabelController,
+    getSubObjectsController,
+    getObjectController,
+    updateObjectController
+} from "../../controllers/lib/object.controller.js";
 
 import {
     createBlockController,
@@ -29,7 +29,7 @@ import {
     updateMeetingController,
     getMeetingByIdController
 } from "../../controllers/page/meeting.controller.js";
-import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
+// import { createLabelController, getLabelsController, getLabelController, updateLabelController, deleteLabelController } from "../../controllers/lib/label.controller.js";
 
 const router = Router();
 
@@ -40,15 +40,15 @@ router.route("/:array/").get(getArrayController);
 router.route("/:array/").put(updateArrayController);
 router.route("/name/:array/").get(getArrayByNameController);
 
-// items filter by label name
-router.route("/:space/items/filter-by-label/").get(getItemFilterByLabelController)
+// // items filter by label name
+// router.route("/:space/items/filter-by-label/").get(getObjectFilterByLabelController)
 
-// Labels controller left with this
-router.route("/:space/labels/").post(createLabelController)
-router.route("/:space/labels/").get(getLabelsController)
-router.route("/:space/labels/:label/").get(getLabelController)
-router.route("/:space/labels/:label/").put(updateLabelController)
-router.route("/:space/labels/:label/").delete(deleteLabelController)
+// // Labels controller left with this
+// router.route("/:space/labels/").post(createLabelController)
+// router.route("/:space/labels/").get(getLabelsController)
+// router.route("/:space/labels/:label/").get(getLabelController)
+// router.route("/:space/labels/:label/").put(updateLabelController)
+// router.route("/:space/labels/:label/").delete(deleteLabelController)
 
 // Block controllers
 router.route("/:array/blocks/").post(createBlockController);
@@ -57,12 +57,12 @@ router.route("/:array/blocks/:block/").get(getBlockController);
 router.route("/:array/blocks/:block/").put(updateBlockController);
 router.route("/:array/blocks/:block/").delete(deleteBlockController);
 
-// item controllers
-router.route("/:space/blocks/:block/items/").post(createItemController);
-router.route("/:space/blocks/:block/items/").get(getAllItemsByBloackController);
-router.route("/:space/blocks/:block/items/:item/").get(getItemController);
-router.route("/:space/blocks/:block/items/:item/").put(updateItemController);
-router.route("/:space/blocks/:block/items/:item/sub-items/").get(getSubItemsController);
+// object controllers
+router.route("/:array/blocks/:block/objects/").post(createObjectController);
+router.route("/:array/blocks/:block/objects/").get(getAllObjectsByBloackController);
+router.route("/:array/blocks/:block/objects/:object/").get(getObjectController);
+router.route("/:array/blocks/:block/objects/:object/").put(updateObjectController);
+router.route("/:array/blocks/:block/objects/:object/sub-objects/").get(getSubObjectsController);
 
 // Meeting controllers
 

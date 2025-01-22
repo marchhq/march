@@ -3,7 +3,7 @@ import { getGmailAccessToken, createLabel } from "../../services/integration/ema
 import { google } from "googleapis";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
-import { Item } from "../../models/lib/item.model.js";
+import { Object } from "../../models/lib/object.model.js";
 
 // async function processGmailNotification (req, res) {
 //     const data = req.body
@@ -213,7 +213,7 @@ const createIssueFromEmail = async (email, user) => {
 
     const emailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`;
 
-    const existingIssue = await Item.findOne({ id: email.id, source: 'gmail', user: user._id });
+    const existingIssue = await Object.findOne({ id: email.id, source: 'gmail', user: user._id });
 
     if (existingIssue) {
         existingIssue.title = subject;
@@ -222,7 +222,7 @@ const createIssueFromEmail = async (email, user) => {
         existingIssue.metadata.url = emailUrl;
         await existingIssue.save();
     } else {
-        const newIssue = new Item({
+        const newIssue = new Object({
             title: subject,
             source: 'gmail',
             id: email.id,
