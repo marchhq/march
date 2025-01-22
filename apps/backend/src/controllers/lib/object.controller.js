@@ -74,7 +74,7 @@ const createInboxObjectController = async (req, res, next) => {
 
 const updateObjectController = async (req, res, next) => {
     try {
-        const { array, block, item: id } = req.params;
+        const { array, block, object: id } = req.params;
         const updateData = req.body;
         const object = await updateObject(id, updateData, array, block);
 
@@ -121,7 +121,7 @@ const getAllObjectsByBloackController = async (req, res, next) => {
 const getObjectController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { array, block, item: id } = req.params;
+        const { array, block, object: id } = req.params;
 
         const object = await getObject(user, id, array, block);
 
