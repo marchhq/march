@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react"
 import useSpaceStore from "@/src/lib/store/array.store"
 
 const RightSidePopup = () => {
-  const { rightSideSpaceList, toggleRightSidePopUp, setDraggableSpace } =
+  const { rightSideArrayList, toggleRightSidePopUp, setDraggableSpace } =
     useSpaceStore()
   const [popUp, setPopUp] = useState<boolean>(false)
 
   useEffect(() => {
-    setPopUp(rightSideSpaceList)
-  }, [rightSideSpaceList])
+    setPopUp(rightSideArrayList)
+  }, [rightSideArrayList])
 
   return (
     <div

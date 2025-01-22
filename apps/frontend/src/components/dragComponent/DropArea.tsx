@@ -1,44 +1,61 @@
+// src/components/dragComponent/DropArea.tsx
 "use client"
 
 import React, { useState } from "react"
+import useArrayStore from "@/src/lib/store/array.store"
 
-const DropArea = () => {
+interface DropAreaProps {
+  onDrop: (content:string) => void
+  children?: React.ReactNode
+  className?: string
+  draggableValue:string |null
+}
+
+const DropArea: React.FC<DropAreaProps> = ({
+  onDrop,
+  children,
+  draggableValue,
+  className = "",
+}) => {
+  const { draggableArray, setDraggableArray } = useArrayStore()
+  
   const [showDrop, setShowDrop] = useState(false)
 
-  // Handle drag over to show drop area
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault() // Prevent default to allow drop
+    e.preventDefault()
     setShowDrop(true)
   }
 
-  // Handle drag leave to hide drop area
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setShowDrop(false)
   }
 
-  // Handle drop event
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    setShowDrop(false)
-  }
+  
 
   return (
     <div
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={(e) => {
-        e.preventDefault() // Prevent default to allow drop
+        e.preventDefault()
         setShowDrop(true)
       }}
-      onDrop={handleDrop}
-      className={`size-full transition-all duration-300 ${
-        showDrop
-          ? "border-2 border-dashed border-blue-500 bg-blue-100"
-          : "bg-gray-100"
-      } flex items-center justify-center`}
+      onDrop={(e)=>{
+        e.preventDefault();
+        setShowDrop(false);
+        onDrop('draggableArray')
+      }}
+      className={`
+        ${className} 
+        transition-all duration-300 
+        ${showDrop ? "border-2 border-dashed border-blue-500 bg-blue-100" : "bg-gray-100"}
+        flex items-center justify-center
+      `}
     >
-      {showDrop ? (
+      {children ? (
+        children
+      ) : showDrop ? (
         <div className="text-blue-500 text-xl font-semibold">Drop here</div>
       ) : (
         <div className="text-gray-500">Drag and drop content here</div>

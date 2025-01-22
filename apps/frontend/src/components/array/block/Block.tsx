@@ -1,116 +1,108 @@
-// "use client"
-// import React, { useEffect, useState } from "react"
-
-// import DayCalendar from "./Calender"
-// import DropArea from "@/src/components/dragComponent/DropArea"
-// import type { Block } from "@/src/lib/@types/Items/Block"
-// import useSpaceStore from "@/src/lib/store/array.store"
-// import useBlockStore from "@/src/lib/store/block.store"
-
-// interface PageProps {
-//   arrayId: string
-//   token: string
-// }
-// const INITIAL_EVENTS = [
-//   {
-//     id: "1",
-//     title: "All-day event",
-//     start: new Date(),
-//   },
-//   {
-//     id: "2",
-//     title: "Timed event",
-//     start: new Date(),
-//   },
-// ]
-// const Block: React.FC<PageProps> = ({ arrayId, token }) => {
-//   const [RightPopUp, setRightPopUp] = useState<boolean>(false)
-//   const [block, setBlock] = useState<Block[]>([])
-//   const { fetchBlocks, blocks } = useBlockStore()
-
-//   useEffect(() => {
-//     fetchBlocks(token, arrayId)
-//   }, [token])
-//   useEffect(() => {
-//     setBlock(blocks)
-//   }, [blocks])
-//   return (
-//     <div className="flex h-screen items-center justify-center ">
-//       <DayCalendar currentDate={new Date()} initialEvents={INITIAL_EVENTS} />
-//       {/* {!RightPopUp ? (
-//         <div className="h-auto w-36 bg-zinc-500">
-//           <h1 className="text-center">
-//             {" "}
-//             {arrays.find((a) => a._id === params.space)?.name}{" "}
-//           </h1>
-//           <p>You can add fully customize app by adding block</p>
-//           <button className="bg-blue-800 px-3 " onClick={toggleRightSidePopUp}>
-//             {" "}
-//             + Add block{" "}
-//           </button>
-//         </div>
-//       ) : (
-//         <div className="grid size-full  h-screen grid-cols-2 bg-red-300 ">
-//           <div className="">
-//             {" "}
-//             <DropArea />{" "}
-//           </div>
-//           <div className="">
-//             <DropArea />
-//           </div>
-//         </div>
-//       )} */}
-//     </div>
-//   )
-// }
-
-// export default Block
-
 "use client"
 import React, { useEffect, useState } from "react"
 
 import DayCalendar from "./Calender"
 import DropArea from "@/src/components/dragComponent/DropArea"
+import type { Block } from "@/src/lib/@types/Items/Block"
+import useSpaceStore from "@/src/lib/store/array.store"
 import useBlockStore from "@/src/lib/store/block.store"
+import useArrayStore from "@/src/lib/store/array.store"
 
 interface PageProps {
   arrayId: string
   token: string
 }
-
 const INITIAL_EVENTS = [
   {
     id: "1",
     title: "All-day event",
-    start: "2025-01-22T00:00:00", // ISO format
+    start: new Date(),
   },
   {
     id: "2",
     title: "Timed event",
-    start: "2025-01-22T10:00:00", // ISO format
+    start: new Date(),
   },
 ]
-
 const Block: React.FC<PageProps> = ({ arrayId, token }) => {
-  const [block, setBlock] = useState([])
+  const { toggleRightSidePopUp , rightSideArrayList ,draggableArray, setDraggableArray} = useArrayStore()
+  const [RightPopUp, setRightPopUp] = useState<boolean>(false)
+  const [block, setBlock] = useState<Block[]>([])
   const { fetchBlocks, blocks } = useBlockStore()
 
   useEffect(() => {
     fetchBlocks(token, arrayId)
-  }, [fetchBlocks, token, arrayId])
-
+  }, [token])
   useEffect(() => {
-    return setBlock(block)
-  }, [block])
+    setBlock(blocks)
+  }, [blocks])
+
+  const [droppedContent, setDroppedContent] = useState<React.ReactNode[]>([])
+
+  const handleDrop = (content: string) => {
+    
+    if (content!=='') {
+      
+      alert(`Dropped content: ${content}`)
+      
+      // Optionally, add the content to droppedContent state
+      
+    }
+  }
+
+  const handleMoveContent = (fromIndex: number, toIndex: number) => {
+    const newContent = [...droppedContent]
+    const [movedItem] = newContent.splice(fromIndex, 1)
+    newContent.splice(toIndex, 0, movedItem)
+    setDroppedContent(newContent)
+  }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center p-4">
-      <div className="w-full max-w-4xl">
-        <DayCalendar
-          currentDate={new Date("2025-01-22")}
-          initialEvents={INITIAL_EVENTS}
-        />
-      </div>
+    <div className="flex h-screen items-center justify-center">
+      {!rightSideArrayList && blocks.length === 0 ? (
+        <div className="h-auto w-36 bg-zinc-500">
+          <p>You can add fully customize app by adding block</p>
+          <button className="bg-blue-800 px-3" onClick={toggleRightSidePopUp}>
+            + Add block
+          </button>
+        </div>
+      ) : (
+        <div
+          className={`
+          ${droppedContent.length === 0 ? "w-full" : "grid grid-cols-2"} 
+          h-screen bg-gray-100
+        `}
+        >
+          {droppedContent.length === 0 ? (
+            <DropArea 
+              onDrop={handleDrop} 
+              className="w-full h-full" 
+              draggableValue={draggableArray}
+            />
+          ) : (
+            <>
+              {droppedContent.map((content, index) => (
+                <div key={index} className="relative">
+                  <DropArea 
+                    onDrop={handleDrop} 
+                    className="w-full h-full"
+                    draggableValue={draggableArray}
+                  >
+                    {content}
+                  </DropArea>
+                </div>
+              ))}
+              {droppedContent.length < 2 && (
+                <DropArea 
+                  onDrop={handleDrop} 
+                  className="w-full h-full"
+                  draggableValue={draggableArray}
+                />
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }
