@@ -10,28 +10,27 @@ import {
 
 // User and item management imports
 import {
-    getInboxItemsController,
-    getInboxItemController,
-    updateInboxItemController,
-    getUserTodayItemsController,
-    getUserOverdueItemsController,
-    getUserItemsByDateController,
-    moveItemtoDateController,
-    getAllitemsController
+    getInboxObjectsController,
+    getInboxObjectController,
+    updateInboxObjectController,
+    getUserTodayObjectsController,
+    getUserOverdueObjectsController,
+    moveObjecttoDateController,
+    getUserObjectsByDateController,
+    getAllObjectsController
 } from "../../controllers/core/user.controller.js";
 
 // Item functionality imports
 import {
-    searchItemsByTitleController,
-    createInboxItemController,
-    filterItemsController,
-    getThisWeekItemsByDateRangeController,
-    getUserFavoriteItemsController,
-    getSubItemsController,
-    getItemsByTypeAndSourceController,
-    getItemsBySourceController
-} from "../../controllers/lib/item.controller.js";
-
+    createInboxObjectController,
+    getSubObjectsController,
+    getThisWeekObjectsByDateRangeController,
+    getUserFavoriteObjectsController,
+    getObjectsByTypeAndSourceController,
+    searchObjectsByTitleController,
+    filterObjectsController,
+    getObjectsBySourceController
+} from "../../controllers/lib/object.controller.js";
 // Utility imports
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
@@ -43,24 +42,24 @@ const router = Router();
 /* Inbox Management Routes
 -------------------------------------------------- */
 router.route("/inbox/")
-    .get(getInboxItemsController)
-    .post(createInboxItemController);
+    .get(getInboxObjectsController)
+    .post(createInboxObjectController);
 
 router.route("/inbox/:item/")
-    .get(getInboxItemController)
-    .put(updateInboxItemController);
+    .get(getInboxObjectController)
+    .put(updateInboxObjectController);
 
-router.route("/inbox/:item/sub-items/").get(getSubItemsController);
+router.route("/inbox/:item/sub-items/").get(getSubObjectsController);
 
 /* Timeline Routes
 -------------------------------------------------- */
-router.route("/this-week/").get(getThisWeekItemsByDateRangeController);
-router.route("/today/").get(getUserTodayItemsController);
-router.route("/overdue/").get(getUserOverdueItemsController);
-router.route("/favorite/").get(getUserFavoriteItemsController);
-router.route("/setDate/").post(moveItemtoDateController);
-router.route("/items/").get(getItemsByTypeAndSourceController);
-router.route("/:date/").get(getUserItemsByDateController);
+router.route("/this-week/").get(getThisWeekObjectsByDateRangeController);
+router.route("/today/").get(getUserTodayObjectsController);
+router.route("/overdue/").get(getUserOverdueObjectsController);
+router.route("/favorite/").get(getUserFavoriteObjectsController);
+router.route("/setDate/").post(moveObjecttoDateController);
+router.route("/items/").get(getObjectsByTypeAndSourceController);
+router.route("/:date/").get(getUserObjectsByDateController);
 
 /* Journal Routes
 -------------------------------------------------- */
@@ -71,11 +70,11 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 
 /* Item Management Routes
 -------------------------------------------------- */
-router.route("/items/").get(getAllitemsController);
-router.route("/items/search/").get(searchItemsByTitleController);
-router.route("/items/filter/").get(filterItemsController);
-router.route("/items/source/").get(getItemsBySourceController);
-router.route("/items/all/").get(getAllitemsController);
+router.route("/items/").get(getAllObjectsController);
+router.route("/items/search/").get(searchObjectsByTitleController);
+router.route("/items/filter/").get(filterObjectsController);
+router.route("/items/source/").get(getObjectsBySourceController);
+router.route("/items/all/").get(getAllObjectsController);
 
 /* Asset Management Routes
 -------------------------------------------------- */
