@@ -1,5 +1,5 @@
 import { Block } from "../../models/lib/block.model.js";
-import { createItem } from "./object.service.js";
+import { createObject } from "./object.service.js";
 
 const createBlock = async (user, blockData, array) => {
     const type = blockData.data.type;
@@ -16,7 +16,7 @@ const createBlock = async (user, blockData, array) => {
     if (type === 'note') {
         const [savedBlock, item] = await Promise.all([
             block.save(),
-            createItem(user, { type: 'note' }, array, block._id) // Create the an note
+            createObject(user, { type: 'note' }, array, block._id) // Create the an note
         ]);
 
         // Update the block with the viewingNoteId

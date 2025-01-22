@@ -1,4 +1,4 @@
-import { createObject, createInboxObject, filterObjects, updateObject, getAllItemsByBloack, getObject, getObjectFilterByLabel, searchObjectsByTitle, getThisWeekObjectsByDateRange, getUserFavoriteObjects, getSubObjects, getObjectsBySource, getObjectsByTypeAndSource } from "../../services/lib/object.service.js";
+import { createObject, createInboxObject, filterObjects, updateObject, getAllObjectsByBloack, getObject, getObjectFilterByLabel, searchObjectsByTitle, getThisWeekObjectsByDateRange, getUserFavoriteObjects, getSubObjects, getObjectsBySource, getObjectsByTypeAndSource } from "../../services/lib/object.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 
 const extractUrl = (text) => {
@@ -108,7 +108,7 @@ const getAllObjectsByBloackController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const { array, block } = req.params;
-        const objects = await getAllItemsByBloack(user, array, block);
+        const objects = await getAllObjectsByBloack(user, array, block);
 
         res.status(200).json({
             objects
