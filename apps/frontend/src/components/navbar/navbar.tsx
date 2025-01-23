@@ -15,6 +15,7 @@ export const Navbar = async () => {
   // const { user } = useUserStore()
   const cookieStore = await cookies()
   const accessToken = cookieStore.get(ACCESS_TOKEN)?.value as string
+  if (!accessToken) return null
   const user = await getUserProfile(accessToken)
 
   const allArrays = await getAllArray(accessToken)
