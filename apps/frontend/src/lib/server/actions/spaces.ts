@@ -1,7 +1,7 @@
 "use server"
 import axios from "axios"
 
-import { Space } from "@/src/lib/@types/Items/Space"
+import { Space } from "@/src/lib/@types/Items/Array"
 import { BACKEND_URL } from "@/src/lib/constants/urls"
 
 export const getSpaces = async (session: string): Promise<Space[]> => {

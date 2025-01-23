@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: Props) {
       <div className="flex h-screen flex-col">
         <SecondNavbar />
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-5xl px-4 py-4">
+          <div className="mx-auto max-w-5xl p-4">
             <PageTracker />
             {children}
           </div>

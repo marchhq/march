@@ -6,7 +6,9 @@
   "repository": "https://github.com/emptyarrayhq/emptyarray",
   "author": "emptyarray inc",
   "private": true,
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -25,6 +27,9 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
     "next": "^14.2.5",
     "next-themes": "^0.4.4",
     "react": "^18.3.1",

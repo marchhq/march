@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation"
 
 import { getSession } from "@/src/lib/server/actions/sessions"
 import useBlockStore from "@/src/lib/store/block.store"
-import useSpaceStore from "@/src/lib/store/space.store"
+import useSpaceStore from "@/src/lib/store/array.store"
 
 type Params = Promise<{ spaceId: string }>
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>

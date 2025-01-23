@@ -7,9 +7,11 @@ import { LogSnagProvider } from "@logsnag/next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
+import RightSidePopup from "../components/right-side-popup/RightSidePopup"
 import { Navbar } from "@/src/components/navbar/navbar"
 import { Toaster } from "@/src/components/ui/toaster"
 import { AuthProvider } from "@/src/contexts/AuthContext"
+// eslint-disable-next-line import/order
 import classNames from "@/src/utils/classNames"
 
 import "../styles/main.css"
@@ -76,6 +78,7 @@ export default function RootLayout({ children }: Props) {
             >
               <Navbar />
               {children}
+              <RightSidePopup />
             </GoogleOAuthProvider>
           </AuthProvider>
         </ThemeProvider>

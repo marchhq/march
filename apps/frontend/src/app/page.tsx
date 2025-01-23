@@ -16,6 +16,8 @@ export const metadata: Metadata = generateMetadata({
 })
 
 const Home: React.FC = () => {
+
+
   return (
     <section className="h-screen">
       <div className="p-9">

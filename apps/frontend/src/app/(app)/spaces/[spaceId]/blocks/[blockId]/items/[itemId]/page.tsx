@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import MeetingPage from "@/src/components/meetings/MeetingsPage"
 import NotesPage from "@/src/components/Notes/NotesPage"
 import { getSession } from "@/src/lib/server/actions/sessions"
-import useSpaceStore from "@/src/lib/store/space.store"
+import useSpaceStore from "@/src/lib/store/array.store"
 
 type Params = Promise<{ spaceId: string; blockId: string; itemId: string }>
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>

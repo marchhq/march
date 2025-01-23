@@ -12,9 +12,9 @@ import {
 } from "./ui/dropdown"
 import { useAuth } from "../contexts/AuthContext"
 import { useSpace } from "../hooks/useSpace"
-import { Space } from "../lib/@types/Items/Space"
+import { Space } from "../lib/@types/Items/Array"
 import { BACKEND_URL } from "../lib/constants/urls"
-import useSpaceStore from "../lib/store/space.store"
+import useSpaceStore from "../lib/store/array.store"
 import { Space as SpaceIcon } from "@/src/lib/icons/Space"
 
 export function AddToSpace({ itemId }) {

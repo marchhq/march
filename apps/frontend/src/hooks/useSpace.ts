@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 import { useAuth } from "../contexts/AuthContext"
-import { Spaces } from "../lib/@types/Items/Space"
+import { Spaces } from "../lib/@types/Items/Array"
 import { BACKEND_URL } from "../lib/constants/urls"
 
 export const useSpace = () => {
