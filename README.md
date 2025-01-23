@@ -1,61 +1,61 @@
-## Getting Started
+## getting Started
 
-To get a local copy up and running, please follow these simple steps.
+to get a local copy up and running, please follow these simple steps.
 
-## Prerequisites
+## prerequisites
 
-Here is what you need to run march.
+here is what you need to run emptyarray.
 
-- Node.js (Version: >=18.x)
+- node.js (version: >=18.x)
 - bun (recommended)
 
-## Development
+## development
 
-### Setup
+### setup
 
-1. Clone the Repository with a Shallow Clone
-
-```
-git clone --depth=1 https://github.com/marchhq/march.git
-```
-
-2. Switch to the project folder
+1. clone the repository with or without a shallow clone
 
 ```
-cd march
+git clone --depth=1 https://github.com/emptyarrayhq/emptyarray.git
 ```
 
-3. Create your feature or fix branch you plan to work on using
+2. switch to the project folder
+
+```
+cd emptyarray
+```
+
+3. create your feature or fix branch you plan to work on using
 
 ```
 git checkout -b <feature-branch-name>
 ```
 
-4. Install packages with pnpm
+4. install packages with bun
 
 ```
 bun install
 
 ```
 
-5. Set up your .env file
+5. set up your .env file
 
 Go to the `app/backend` and `app/frontend` directories and duplicate the `.env.example` to `.env`.
 
-6. Run (in development mode)
+6. run (in development mode)
 
 ```
 bun dev
 
 ```
 
-### Linear integration
+### linear integration
 
-To set up the Linear integration:
+to set up the Linear integration:
 
-1. Sign up for a Linear account at https://linear.app if you haven't already.
-2. Create a new Linear OAuth application in your Linear settings.
-3. Fill in the following environment variables in your `.env` file:
+1. sign up for a Linear account at https://linear.app if you haven't already.
+2. create a new Linear OAuth application in your Linear settings.
+3. fill in the following environment variables in your `.env` file:
 
 ```
 LINEAR_REDIRECT_URL=http://localhost:3000/auth/linear
