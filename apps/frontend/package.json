@@ -1,7 +1,7 @@
 {
-  "name": "@march/frontend",
+  "name": "@emptyarray/frontend",
   "version": "0.0.1",
-  "description": "march frontend",
+  "description": "emptyarray frontend",
   "author": "emptyarray inc",
   "scripts": {
     "dev": "next dev",
@@ -117,10 +117,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/marchhq/march"
+    "url": "https://github.com/emptyarrayhq/emptyarray"
   },
   "bugs": {
-    "url": "https://github.com/marchhq/march/issues"
+    "url": "https://github.com/emptyarrayhq/emptyarray/issues"
   },
   "bun": {
     "overrides": {
