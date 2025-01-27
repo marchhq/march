@@ -52,5 +52,6 @@ export const environment = {
     FEEDBACK_RECEIVER_EMAIL: process.env.FEEDBACK_RECEIVER_EMAIL,
     LOGSNAG_TOKEN: process.env.LOGSNAG_TOKEN,
     LOGSNAG_PROJECT_NAME: process.env.LOGSNAG_PROJECT_NAME,
-    LOOPS_TOKEN: process.env.LOOPS_TOKEN
+    LOOPS_TOKEN: process.env.LOOPS_TOKEN,
+    GOOGLE_AI_API_KEY: process.env.GOOGLE_AI_API_KEY
 };
