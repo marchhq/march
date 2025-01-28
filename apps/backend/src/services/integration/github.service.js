@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createAppAuth } from "@octokit/auth-app";
 import { environment } from '../../loaders/environment.loader.js';
 import { User } from "../../models/core/user.model.js";
-import { Item } from "../../models/lib/item.model.js";
+import { Object } from '../../models/lib/object.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
 
@@ -27,125 +27,10 @@ const exchangeCodeForAccessToken = async (code) => {
     return profile;
 };
 
-// const processWebhookEvent = async (event, payload) => {
-//     const installationId = payload.installation.id;
-//     const repository = payload.repository;
-
-//     const user = await User.findOne({ 'integration.github.installationId': installationId });
-//     if (!user) {
-//         return;
-//     }
-//     if (event === 'installation' && payload.action === 'deleted') {
-//         user.integration.github.connected = false;
-//         user.integration.github.installationId = null;
-//         await user.save();
-
-//         console.log(`GitHub App uninstalled for user ${user._id}`);
-//         return;
-//     }
-
-//     const issueOrPR = payload.issue || payload.pull_request;
-//     if (!issueOrPR) {
-//         console.log('No issue or pull request found in the payload.');
-//         return;
-//     }
-//     const userId = user._id;
-
-//     const githubUsername = user.integration.github.userName;
-
-//     // Check if the issue/PR is assigned to the user
-//     const isAssignedToUser = issueOrPR.assignees.some(assignee => assignee.login === githubUsername);
-
-//     // Check if the user is a reviewer for the PR
-//     const isReviewer = issueOrPR.requested_reviewers && issueOrPR.requested_reviewers.some(reviewer => reviewer.login === githubUsername);
-
-//     // Determine if we should process the PR
-//     const shouldProcessPR = isAssignedToUser || isReviewer;
-
-//     if (!shouldProcessPR) {
-//         console.log(`PR not assigned to or created by user: ${githubUsername}. Skipping.`);
-//         return; // Return if the PR is not relevant to the user
-//     }
-//     const existingLinearItem = await Item.findOne({
-//         title: issueOrPR.title,
-//         source: 'linear',
-//         user: userId
-//     });
-
-//     if (existingLinearItem) {
-//         console.log('An item with the same title already exists. Skipping creation.');
-//         return;
-//     }
-
-//     const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
-//     const existingItem = await Item.findOne({
-//         id: issueOrPR.id,
-//         source: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
-//         user: userId
-//     });
-
-//     let message = '';
-//     let broadcastItem = null;
-
-//     if (existingItem) {
-//         const updatedItem = await Item.findByIdAndUpdate(existingItem._id, {
-//             title: issueOrPR.title,
-//             description: issueOrPR.body,
-//             labels: labelIds,
-//             'metadata.state': issueOrPR.state,
-//             'metadata.url': issueOrPR.html_url,
-//             'metadata.repo': repository.name,
-//             'metadata.owner': repository.owner.login,
-//             'metadata.assignees': issueOrPR.assignees,
-//             updatedAt: issueOrPR.updated_at
-//         }, { new: true });
-
-//         message = `Updated item with ID: ${issueOrPR.id}`;
-//         console.log("message", message)
-//         broadcastItem = updatedItem;
-//     } else {
-//         // Create new item
-//         const newItem = new Item({
-//             title: issueOrPR.title,
-//             source: event === 'issues' ? 'githubIssue' : 'githubPullRequest',
-//             id: issueOrPR.id,
-//             description: issueOrPR.body,
-//             user: userId,
-//             labels: labelIds,
-//             metadata: {
-//                 state: issueOrPR.state,
-//                 url: issueOrPR.html_url,
-//                 repo: repository.name,
-//                 owner: repository.owner.login,
-//                 assignees: issueOrPR.assignees,
-//                 repository_url: issueOrPR.repository_url,
-//                 number: issueOrPR.number
-//             },
-//             createdAt: issueOrPR.created_at,
-//             updatedAt: issueOrPR.updated_at
-//         });
-
-//         const savedItem = await newItem.save();
-//         message = `Created new item with ID: ${issueOrPR.id}`;
-//         console.log("message", message)
-//         // broadcastItem = savedItem;
-//     }
-
-//     // Broadcast the message and the item from the database
-//     // const broadcastData = {
-//     //     type: 'github',
-//     //     message,
-//     //     item: broadcastItem
-//     // };
-
-//     // broadcastUpdate(broadcastData, true);
-// };
-
-
 const processWebhookEvent = async (payload) => {
     const issueOrPR = payload.issue || payload.pull_request;
     let message = "";
-    let broadcastItem = null;
+    let broadcastObject = null;
     let targetUserId = null;
     let action = null;
 
@@ -158,18 +43,18 @@ const processWebhookEvent = async (payload) => {
 
     // Handle deletion events
     if (payload.action === "deleted") {
-        const deletedItem = await Item.findOneAndDelete({
+        const deletedObject = await Object.findOneAndDelete({
             id: issueOrPR.id,
-            source: payload.issue ? "githubIssue" : "githubPullRequest"
+            source: "github"
         });
 
-        if (deletedItem) {
-            message = `Deleted item with ID: ${issueOrPR.id}`;
+        if (deletedObject) {
+            message = `Deleted object with ID: ${issueOrPR.id}`;
             action = "delete";
-            broadcastItem = deletedItem;
-            targetUserId = deletedItem.user;
+            broadcastObject = deletedObject;
+            targetUserId = deletedObject.user;
         } else {
-            console.log(`Item with ID: ${issueOrPR.id} not found in the database.`);
+            console.log(`Object with ID: ${issueOrPR.id} not found in the database.`);
         }
     } else {
         // Handle creation or update events
@@ -183,16 +68,16 @@ const processWebhookEvent = async (payload) => {
         const userId = user._id;
         targetUserId = userId;
 
-        const existingItem = await Item.findOne({
+        const existingObject = await Object.findOne({
             id: issueOrPR.id,
-            source: payload.issue ? "githubIssue" : "githubPullRequest",
+            source: "github",
             user: userId
         });
 
         const labelIds = await getOrCreateLabels(issueOrPR.labels, userId);
 
-        if (existingItem) {
-            const updatedItem = await Item.findByIdAndUpdate(existingItem._id, {
+        if (existingObject) {
+            const updatedObject = await Object.findByIdAndUpdate(existingObject._id, {
                 title: issueOrPR.title,
                 description: issueOrPR.body,
                 labels: labelIds,
@@ -204,13 +89,13 @@ const processWebhookEvent = async (payload) => {
                 updatedAt: issueOrPR.updated_at
             }, { new: true });
 
-            message = `Updated item with ID: ${issueOrPR.id}`;
+            message = `Updated object with ID: ${issueOrPR.id}`;
             action = "update";
-            broadcastItem = updatedItem;
+            broadcastObject = updatedObject;
         } else {
-            const newItem = new Item({
+            const newObject = new Object({
                 title: issueOrPR.title,
-                source: payload.issue ? "githubIssue" : "githubPullRequest",
+                source: "github",
                 id: issueOrPR.id,
                 description: issueOrPR.body,
                 user: userId,
@@ -228,10 +113,10 @@ const processWebhookEvent = async (payload) => {
                 updatedAt: issueOrPR.updated_at
             });
 
-            const savedItem = await newItem.save();
+            const savedObject = await newObject.save();
             message = `Created new item with ID: ${issueOrPR.id}`;
             action = "create";
-            broadcastItem = savedItem;
+            broadcastObject = savedObject;
         }
     }
 
@@ -240,7 +125,7 @@ const processWebhookEvent = async (payload) => {
             type: "github",
             message,
             action,
-            item: broadcastItem
+            item: broadcastObject
         };
 
         broadcastToUser(targetUserId.toString(), broadcastData, true);

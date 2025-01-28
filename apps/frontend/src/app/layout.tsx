@@ -1,16 +1,21 @@
 import * as React from "react"
 
-import type { Viewport } from "next"
+import { Metadata } from "next"
+import { ThemeProvider } from "next-themes"
 
 import { LogSnagProvider } from "@logsnag/next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google"
 
-import "../styles/main.css"
-import "../styles/tiptap.css"
-import { ThemeProvider } from "../components/ThemeProvider"
+import { Navbar } from "@/src/components/navbar/navbar"
+import { Toaster } from "@/src/components/ui/toaster"
+import { AuthProvider } from "@/src/contexts/AuthContext"
 import classNames from "@/src/utils/classNames"
 
+import "../styles/main.css"
+import "../styles/tiptap.css"
+
+// Fonts
 const sansFont = Inter({
   variable: "--sans-font",
   subsets: ["latin"],
@@ -29,18 +34,22 @@ const monoFont = JetBrains_Mono({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 })
 
-export const viewport: Viewport = {
-  themeColor: "#000000",
+// Metadata
+export const metadata: Metadata = {
+  title: "March",
+  description: "engineered for makers",
 }
 
+// Props Interface
 interface Props {
   children: React.ReactNode
 }
 
-const RootLayout: React.FC<Props> = ({ children }) => {
+export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <LogSnagProvider
           token={process.env.NEXT_PUBLIC_LOGSNAG_TOKEN ?? ""}
           project={process.env.NEXT_PUBLIC_LOGSNAG_PROJECT_NAME ?? ""}
@@ -51,19 +60,27 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           sansFont.variable,
           serifFont.variable,
           monoFont.variable,
-          "overflow-x-hidden font-sans"
+          "min-h-screen font-sans antialiased"
         )}
       >
-        <ThemeProvider>
-          <GoogleOAuthProvider
-            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
-          >
-            {children}
-          </GoogleOAuthProvider>
+        {/* Wrapping children with ThemeProvider */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <GoogleOAuthProvider
+              clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}
+            >
+              <Navbar />
+              {children}
+            </GoogleOAuthProvider>
+          </AuthProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   )
 }
-
-export default RootLayout

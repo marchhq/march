@@ -1,53 +1,38 @@
 import { Block } from "../../models/lib/block.model.js";
-import { createItem } from "./item.service.js";
-import { Space } from "../../models/lib/space.model.js";
+import { createObject } from "./object.service.js";
 
-const createBlock = async (user, blockData, space) => {
+const createBlock = async (user, blockData, array) => {
     const type = blockData.data.type;
-    let block;
 
-    switch (type) {
-    case 'note': {
-        block = new Block({
-            name: "Note",
-            user,
-            space,
-            data: { ...blockData.data }
-        });
-        await block.save();
+    // Initialize block with common properties
+    const block = new Block({
+        name: blockData.name || type,
+        user,
+        array,
+        data: { ...blockData.data }
+    });
 
-        const item = await createItem(user, { type: 'note' }, space, block._id);
+    // Handle specific types
+    if (type === 'note') {
+        const [savedBlock, item] = await Promise.all([
+            block.save(),
+            createObject(user, { type: 'note' }, array, block._id) // Create the an note
+        ]);
 
-        block.data.viewingNoteId = item._id;
-        await block.save();
-        break;
-    }
-    case 'list': {
-        block = new Block({
-            name: "List",
-            user,
-            space,
-            data: { ...blockData.data }
-        });
-        break;
-    }
-    default:
-        block = new Block({
-            name: blockData.name ? blockData.name : type,
-            user,
-            space,
-            data: { ...blockData.data }
-        });
+        // Update the block with the viewingNoteId
+        savedBlock.data.viewingNoteId = item._id;
+        await savedBlock.save();
+        return savedBlock;
     }
 
     await block.save();
     return block;
 };
 
-const getBlocks = async (user, space) => {
+const getBlocks = async (user, array) => {
     const blocks = await Block.find({
         user,
-        space
+        array
     })
     if (!blocks) {
         throw new Error('Blocks not found');
@@ -55,8 +40,8 @@ const getBlocks = async (user, space) => {
     return blocks;
 };
 
-const deleteBlock = async (id, space, user) => {
-    const block = await Block.findOneAndDelete({ _id: id, user, space });
+const deleteBlock = async (id, array, user) => {
+    const block = await Block.findOneAndDelete({ _id: id, user, array });
 
     if (!block) {
         throw new Error('Block not found');
@@ -64,11 +49,11 @@ const deleteBlock = async (id, space, user) => {
     return block;
 };
 
-const getBlock = async (user, id, space) => {
+const getBlock = async (user, id, array) => {
     const block = await Block.findOne({
         _id: id,
         user,
-        space
+        array
     }).populate({
         path: 'data.item',
         model: 'Item'
@@ -79,37 +64,17 @@ const getBlock = async (user, id, space) => {
     return block;
 };
 
-const updateBlock = async (id, updateData, space, user) => {
+const updateBlock = async (id, updateData, array, user) => {
     const updatedBlock = await Block.findOneAndUpdate({
         _id: id,
         user,
-        space
+        array
     },
     { $set: updateData },
     { new: true }
     )
 
     return updatedBlock;
-};
-
-export const migratespace = async () => {
-    console.log("Migrating spaces");
-    const spaces = await Space.find();
-    for (const space of spaces) {
-        const spacedata = {
-            identifier: space.name.toLowerCase()
-        }
-        if (space.name === "Reading List") {
-            spacedata.identifier = "reading-list";
-        }
-        await Space.findOneAndUpdate({
-            _id: space._id
-        },
-        { $set: spacedata },
-        { new: true }
-        )
-    }
-    console.log("Migration complete");
 };
 
 export {

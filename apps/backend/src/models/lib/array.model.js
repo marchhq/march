@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 import { db } from "../../loaders/db.loader.js";
 
-const SpaceSchema = new Schema({
+const ArraySchema = new Schema({
     uuid: {
         type: String,
         default: () => uuid()
@@ -25,6 +25,10 @@ const SpaceSchema = new Schema({
         ref: 'User',
         required: true
     }],
+    blockes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Block'
+    }],
     isArchived: {
         type: Boolean,
         default: false
@@ -37,31 +41,31 @@ const SpaceSchema = new Schema({
     timestamps: true
 });
 
-SpaceSchema.pre("save", async function (next) {
-    const space = this;
+ArraySchema.pre("save", async function (next) {
+    const array = this;
 
-    space.identifier = space.identifier.replace(/\s+/g, '-');
+    array.identifier = array.identifier.replace(/\s+/g, '-');
 
-    const existingSpaceByIdentifier = await Space.findOne({
-        identifier: space.identifier,
-        users: { $in: space.users }
+    const existingArrayByIdentifier = await Array.findOne({
+        identifier: array.identifier,
+        users: { $in: array.users }
     });
 
-    if (existingSpaceByIdentifier) {
+    if (existingArrayByIdentifier) {
         let suffix = 1;
         let newIdentifier;
         do {
-            newIdentifier = `${space.identifier}${suffix}`;
+            newIdentifier = `${array.identifier}${suffix}`;
             suffix++;
-        } while (await Space.findOne({ identifier: newIdentifier, users: { $in: space.users } }));
-        space.identifier = newIdentifier;
+        } while (await Array.findOne({ identifier: newIdentifier, users: { $in: array.users } }));
+        array.identifier = newIdentifier;
     }
 
     next();
 });
 
-const Space = db.model('Space', SpaceSchema, 'spaces');
+const Array = db.model('Array', ArraySchema, 'arrays');
 
 export {
-    Space
+    Array
 }

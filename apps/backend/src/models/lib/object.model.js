@@ -4,7 +4,7 @@ import { db } from "../../loaders/db.loader.js";
 
 const statusChoices = ["null", "todo", "in progress", "done", "archive"];
 
-const ItemSchema = new Schema(
+const ObjectSchema = new Schema(
     {
         uuid: {
             type: String,
@@ -15,7 +15,7 @@ const ItemSchema = new Schema(
         },
         icon: {
             type: String,
-            default: 'home'
+            default: ''
         },
         cover_image: {
             type: String,
@@ -23,7 +23,8 @@ const ItemSchema = new Schema(
         },
         type: {
             type: String,
-            default: "issue"
+            default: "todo",
+            required: true
         },
         source: {
             type: String,
@@ -64,10 +65,10 @@ const ItemSchema = new Schema(
         updatedAt: {
             type: Date
         },
-        spaces: [
+        arrays: [
             {
                 type: Schema.Types.ObjectId,
-                ref: "Space"
+                ref: "Array"
             }
         ],
         blocks: [
@@ -90,11 +91,6 @@ const ItemSchema = new Schema(
                 ref: "Label"
             }
         ],
-        lastVisitedSpace: {
-            type: Schema.Types.ObjectId,
-            ref: "Space",
-            default: null
-        },
         isFavorite: {
             type: Boolean,
             default: false,
@@ -122,7 +118,7 @@ const ItemSchema = new Schema(
     }
 );
 
-ItemSchema.pre("save", function (next) {
+ObjectSchema.pre("save", function (next) {
     if (this.status === "done") {
         this.isCompleted = true;
     } else {
@@ -136,7 +132,7 @@ ItemSchema.pre("save", function (next) {
     next();
 });
 
-ItemSchema.pre("findOneAndUpdate", function (next) {
+ObjectSchema.pre("findOneAndUpdate", function (next) {
     const update = this.getUpdate();
     if (update.$set && update.$set.status === "done") {
         update.$set.isCompleted = true;
@@ -149,6 +145,6 @@ ItemSchema.pre("findOneAndUpdate", function (next) {
     next();
 });
 
-const Item = db.model("Item", ItemSchema, "items");
+const Object = db.model("Object", ObjectSchema, "objects");
 
-export { Item };
+export { Object };

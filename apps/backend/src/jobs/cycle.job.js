@@ -1,7 +1,7 @@
 import { cycleQueue } from '../loaders/bullmq.loader.js';
 import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
-import { Item } from '../models/lib/item.model.js';
+import { Object } from '../models/lib/object.model.js';
 
 const getPreviousWeekDateRange = () => {
     const now = new Date();
@@ -38,7 +38,7 @@ const cycleWorker = new Worker('cycleQueue', async job => {
         const { startOfPreviousWeek, endOfPreviousWeek } = getPreviousWeekDateRange();
         const { startOfWeek, endOfWeek } = getCurrentWeekDateRange();
 
-        const overdueItems = await Item.find({
+        const overdueItems = await Object.find({
             "cycle.startsAt": { $gte: startOfPreviousWeek, $lte: endOfPreviousWeek },
             isCompleted: false,
             isArchived: false,
@@ -50,7 +50,7 @@ const cycleWorker = new Worker('cycleQueue', async job => {
             return;
         }
 
-        await Item.updateMany(
+        await Object.updateMany(
             { _id: { $in: overdueItems.map(item => item._id) } },
             { $set: { "cycle.startsAt": startOfWeek, "cycle.endsAt": endOfWeek } }
         );

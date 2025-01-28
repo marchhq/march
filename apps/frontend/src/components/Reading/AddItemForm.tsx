@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react"
 
+import { AutoResizingTextarea } from "../textarea/resizing-textarea"
 import { useAuth } from "@/src/contexts/AuthContext"
 import useReadingStore from "@/src/lib/store/reading.store"
 import { isLink } from "@/src/utils/helpers"
@@ -96,7 +97,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   )
 
   const handlePaste = useCallback(
-    (event: React.ClipboardEvent<HTMLInputElement>) => {
+    (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
       const pastedText = event.clipboardData.getData("text")
       setInput(pastedText)
       setIsPasting(true)
@@ -109,7 +110,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   )
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault()
         handleSubmit(input)
@@ -141,25 +142,15 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ blockId, spaceId }) => {
   return (
     <div className="relative flex w-3/4 items-center gap-2">
       <div className="flex w-full flex-col gap-1">
-        <div className="relative">
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => handleInputChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            placeholder="paste link or just plain text.."
-            className="w-full resize-none overflow-hidden truncate whitespace-pre-wrap break-words bg-background text-sm text-foreground outline-none placeholder:text-secondary-foreground focus:outline-none"
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
-            disabled={isSaving}
-          />
-          {input && !isSaving && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-secondary-foreground">
-              press ↵ to save
-            </span>
-          )}
-        </div>
+        <AutoResizingTextarea
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
+          placeholder="paste link or just plain text.."
+          className="w-full"
+          rows={1}
+        />
         {showWarning && (
           <span className="animate-shake text-sm text-red-500">
             Warning: Using http is dangerous! Please use https.

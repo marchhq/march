@@ -20,7 +20,7 @@ export const SearchButton = () => {
   }, [open])
 
   return (
-    <button className="block w-full">
+    <button onClick={open} className="block w-full">
       <SearchIcon
         size={18}
         className="hover-text cursor-pointer text-primary-foreground"

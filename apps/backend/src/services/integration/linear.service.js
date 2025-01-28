@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { environment } from '../../loaders/environment.loader.js';
-import { Item } from '../../models/lib/item.model.js';
+import { Object } from '../../models/lib/object.model.js';
 import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
+import { Source } from '../../models/lib/source.model.js';
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.
@@ -71,6 +72,16 @@ const fetchUserInfo = async (linearToken, user) => {
         user.integration.linear.userId = userInfo.id;
         user.integration.linear.connected = true;
         await user.save();
+        if (user.integration.linear.connected) {
+            const existingSource = await Source.findOne({ slug: "linear", user: user._id });
+            if (!existingSource) {
+                const source = new Source({
+                    slug: "linear",
+                    user: user._id
+                });
+                await source.save();
+            }
+        }
 
         return userInfo;
     } catch (error) {
@@ -94,7 +105,7 @@ const saveIssuesToDatabase = async (issues, userId) => {
         for (const issue of filteredIssues) {
             const labelIds = await getOrCreateLabels(issue.labels.nodes, userId);
 
-            const existingIssue = await Item.findOne({ id: issue.id, source: 'linear', user: userId });
+            const existingIssue = await Object.findOne({ id: issue.id, source: 'linear', user: userId });
 
             if (existingIssue) {
                 existingIssue.title = issue.title;
@@ -108,7 +119,7 @@ const saveIssuesToDatabase = async (issues, userId) => {
 
                 await existingIssue.save();
             } else {
-                const newIssue = new Item({
+                const newIssue = new Object({
                     title: issue.title,
                     source: 'linear',
                     description: issue.description,
@@ -291,26 +302,26 @@ const handleWebhookEvent = async (payload) => {
     const issue = payload.data;
     let message = "";
     let action = null;
-    let broadcastItem = null;
+    let broadcastObject = null;
     let targetUserId = null;
 
     if (payload.action === "remove") {
-        const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
+        const deletedIssue = await Object.findOneAndDelete({ id: issue.id, source: "linear" });
         if (deletedIssue) {
             message = `Deleted issue with ID: ${issue.id}`;
             action = "delete";
-            broadcastItem = deletedIssue;
+            broadcastObject = deletedIssue;
             targetUserId = deletedIssue.user;
         } else {
             console.log(`Issue with ID: ${issue.id} not found in the database.`);
         }
     } else {
         if (!issue.assignee || !issue.assignee.id) {
-            const deletedIssue = await Item.findOneAndDelete({ id: issue.id, source: "linear" });
+            const deletedIssue = await Object.findOneAndDelete({ id: issue.id, source: "linear" });
             if (deletedIssue) {
                 message = `Unassigned issue with ID: ${issue.id} deleted from the database.`;
                 action = "unassigned";
-                broadcastItem = deletedIssue;
+                broadcastObject = deletedIssue;
                 targetUserId = deletedIssue.user;
             } else {
                 console.log(`Unassigned issue with ID: ${issue.id} not found in the database.`);
@@ -324,12 +335,12 @@ const handleWebhookEvent = async (payload) => {
             const userId = user._id;
             targetUserId = userId;
 
-            const existingIssue = await Item.findOne({ id: issue.id, source: "linear", user: userId });
+            const existingIssue = await Object.findOne({ id: issue.id, source: "linear", user: userId });
             if (existingIssue) {
                 const dueDate = issue.dueDate ? issue.dueDate : null;
                 const startsAt = issue.cycle?.startsAt ? issue.cycle?.startsAt : null;
                 const endsAt = issue.cycle?.endsAt ? issue.cycle?.endsAt : null;
-                const updatedIssue = await Item.findByIdAndUpdate(existingIssue._id, {
+                const updatedIssue = await Object.findByIdAndUpdate(existingIssue._id, {
                     title: issue.title,
                     description: issue.description,
                     "metadata.labels": issue.labels,
@@ -344,9 +355,9 @@ const handleWebhookEvent = async (payload) => {
 
                 message = `Updated issue with ID: ${issue.id}`;
                 action = "update"
-                broadcastItem = updatedIssue;
+                broadcastObject = updatedIssue;
             } else {
-                const newIssue = new Item({
+                const newIssue = new Object({
                     title: issue.title,
                     source: "linear",
                     id: issue.id,
@@ -369,7 +380,7 @@ const handleWebhookEvent = async (payload) => {
                 const savedIssue = await newIssue.save();
                 message = `Created new issue with ID: ${issue.id}`;
                 action = "create"
-                broadcastItem = savedIssue;
+                broadcastObject = savedIssue;
             }
         }
     }
@@ -379,7 +390,7 @@ const handleWebhookEvent = async (payload) => {
             type: "linear",
             message,
             action,
-            item: broadcastItem
+            item: broadcastObject
         };
 
         broadcastToUser(targetUserId.toString(), broadcastData, true);

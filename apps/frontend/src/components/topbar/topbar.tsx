@@ -71,45 +71,38 @@ export const Topbar = () => {
   }, [isMeetingRoute, notes, meets, spaceId, blockId, itemId, note])
 
   return (
-    <div className="flex h-10 items-center justify-between px-8">
-      <div className="flex-1"></div>
-
+    <div className="flex h-14 items-center justify-between px-8 border-b border-gray-200">
+      {/* Left section - Logo and brand */}
       <div className="flex items-center space-x-2">
-        <Link
-          href={"https://github.com/emptyarrayai/march"}
-          target="_blank"
-          className="pt-px"
-        >
-          <Parentheses
-            size={18}
-            className="hover-text text-secondary-foreground"
-          />
-        </Link>
-        <span className="size-1 rounded-full bg-secondary-foreground"></span>
-        <Link href="/profile">
-          <p className="text-sm text-secondary-foreground hover:text-primary-foreground">
-            {user?.userName || user?.fullName}
-          </p>
+        <Link href="/" className="flex items-center space-x-2">
+          <Parentheses size={24} className="text-primary" />
+          <span className="font-semibold text-lg">March</span>
         </Link>
       </div>
 
-      <div className="flex flex-1 justify-end">
+      {/* Right section - User profile and actions */}
+      <div className="flex items-center space-x-4">
+        {user?.userName && (
+          <Link href="/profile" className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-700">
+              {user.userName[0].toUpperCase()}
+            </div>
+          </Link>
+        )}
         {spaceId && blockId && (
-          <>
-            <ActionHeader
-              closeToggle={isStackOpen}
-              onAdd={isMeetingRoute ? undefined : addNewNote}
-              onButtonPositionChange={setButtonPosition}
-              onClose={toggleStack}
-            />
-            {isStackOpen && (
-              <NoteStackModal
-                notes={stackItems}
-                handleClose={toggleStack}
-                buttonPosition={buttonPosition}
-              />
-            )}
-          </>
+          <ActionHeader
+            closeToggle={isStackOpen}
+            onAdd={isMeetingRoute ? undefined : addNewNote}
+            onButtonPositionChange={setButtonPosition}
+            onClose={toggleStack}
+          />
+        )}
+        {isStackOpen && (
+          <NoteStackModal
+            notes={stackItems}
+            handleClose={toggleStack}
+            buttonPosition={buttonPosition}
+          />
         )}
       </div>
     </div>

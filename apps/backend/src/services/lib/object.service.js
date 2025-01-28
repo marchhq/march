@@ -1,34 +1,34 @@
-import { Item } from "../../models/lib/item.model.js";
+import { Object } from "../../models/lib/object.model.js";
 import { getLabelByName } from "./label.service.js";
 
-const getInboxItems = async (me) => {
-    const items = await Item.find({
+const getInboxObjects = async (me) => {
+    const objects = await Object.find({
         user: me,
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
-        spaces: { $exists: true, $eq: [] },
+        arrays: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
         "cycle.startsAt": null,
         "cycle.endsAt": null
     }).sort({ createdAt: -1 });
 
-    return items;
+    return objects;
 }
 
-const getInboxItem = async (me, id) => {
-    const items = await Item.find({
+const getInboxObject = async (me, id) => {
+    const objects = await Object.findOne({
         user: me,
         _id: id,
         isArchived: false,
         isDeleted: false
     })
 
-    return items;
+    return objects;
 }
 
-const getThisWeekItems = async (me) => {
+const getThisWeekObjects = async (me) => {
     const startOfWeek = new Date();
     startOfWeek.setHours(0, 0, 0, 0);
     const day = startOfWeek.getDay();
@@ -39,7 +39,7 @@ const getThisWeekItems = async (me) => {
     endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
 
-    const items = await Item.find({
+    const objects = await Object.find({
         user: me,
         isArchived: false,
         isDeleted: false,
@@ -54,10 +54,10 @@ const getThisWeekItems = async (me) => {
         cycleDate: { $ne: null }
     })
         .sort({ createdAt: -1 });
-    return items;
+    return objects;
 }
 
-const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
+const getThisWeekObjectsByDateRange = async (me, startDate, endDate) => {
     if (!me || !startDate || !endDate) {
         throw new Error('Missing required parameters: me, startDate, endDate');
     }
@@ -72,7 +72,7 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
     endDate = new Date(endDate);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    const items = await Item.find({
+    const objects = await Object.find({
         user: me,
         isArchived: false,
         isDeleted: false,
@@ -84,38 +84,38 @@ const getThisWeekItemsByDateRange = async (me, startDate, endDate) => {
         ]
     }).sort({ createdAt: 1 });
 
-    return items;
+    return objects;
 };
 
-const getAllitems = async (me) => {
-    const items = await Item.find({
+const getAllObjects = async (me) => {
+    const objects = await Object.find({
         user: me,
         isDeleted: false
     })
         .sort({ createdAt: -1 });
 
-    return items;
+    return objects;
 }
 
-const getUserTodayItems = async (me) => {
+const getUserTodayObjects = async (me) => {
     const today = new Date();
     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
     const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
-    const items = await Item.find({
+    const objects = await Object.find({
         user: me,
         $or: [
             { dueDate: { $gte: startOfDay, $lt: endOfDay } },
             { completedAt: { $gte: startOfDay, $lt: endOfDay } }
         ]
     });
-    return items;
+    return objects;
 }
 
-const getUserOverdueItems = async (me) => {
+const getUserOverdueObjects = async (me) => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const items = await Item.find({
+    const objects = await Object.find({
         user: me,
         dueDate: { $lt: startOfToday },
         isCompleted: false,
@@ -124,17 +124,17 @@ const getUserOverdueItems = async (me) => {
     })
         .sort({ createdAt: -1 });
 
-    return items;
+    return objects;
 }
 
-const getUserItemsByDate = async (me, date) => {
+const getUserObjectsByDate = async (me, date) => {
     const startOfDay = new Date(date);
     startOfDay.setUTCHours(0, 0, 0, 0);
 
     const endOfDay = new Date(date);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
-    const items = await Item.find({
+    const objects = await Object.find({
         user: me,
         isArchived: false,
         isDeleted: false,
@@ -144,65 +144,65 @@ const getUserItemsByDate = async (me, date) => {
         ]
     }).sort({ createdAt: -1 });
 
-    return items;
+    return objects;
 };
 
-const createItem = async (user, itemData, space, block) => {
-    if (!space || !block) {
-        const error = new Error("Space and block must be provided");
+const createObject = async (user, objectData, array, block) => {
+    if (!array || !block) {
+        const error = new Error("Array and block must be provided");
         error.statusCode = 400;
         throw error;
     }
-    const newItem = new Item({
-        ...itemData,
+    const newObject = new Object({
+        ...objectData,
         user,
-        spaces: [space],
+        arrays: [array],
         blocks: [block]
     });
-    if (!newItem) {
-        const error = new Error("Failed to create the item")
+    if (!newObject) {
+        const error = new Error("Failed to create the object")
         error.statusCode = 500
         throw error
     }
 
-    const item = await newItem.save()
+    const object = await newObject.save()
 
-    return item;
+    return object;
 };
 
-const createInboxItem = async (user, itemData) => {
-    const newItem = new Item({
-        ...itemData,
+const createInboxObject = async (user, objectData) => {
+    const newObject = new Object({
+        ...objectData,
         user
     });
-    if (!newItem) {
-        const error = new Error("Failed to create the item")
+    if (!newObject) {
+        const error = new Error("Failed to create the object")
         error.statusCode = 500
         throw error
     }
 
-    const item = await newItem.save()
+    const object = await newObject.save()
 
-    return item;
+    return object;
 };
 
-const updateInboxItem = async (item, user, itemData) => {
-    const updatedItem = await Item.findOneAndUpdate({
-        _id: item,
+const updateInboxObject = async (object, user, objectData) => {
+    const updatedObject = await Object.findOneAndUpdate({
+        _id: object,
         user
     },
-    { $set: itemData },
+    { $set: objectData },
     { new: true }
     )
-    if (!updatedItem) {
-        const error = new Error("Item not found or you do not have permission to update it");
+    if (!updatedObject) {
+        const error = new Error("Object not found or you do not have permission to update it");
         error.statusCode = 404;
         throw error;
     }
-    return updatedItem;
+    return updatedObject;
 };
 
-const filterItems = async (user, filters, sortOptions) => {
+const filterObjects = async (user, filters, sortOptions) => {
     const query = {
         user,
         isArchived: false,
@@ -277,125 +277,150 @@ const filterItems = async (user, filters, sortOptions) => {
         sort.createdAt = -1;
     }
 
-    return await Item.find(query).sort(sort);
+    return await Object.find(query).sort(sort);
 };
 
-const getItem = async (user, id, space, block) => {
-    const item = await Item.find({
+const getObject = async (user, id, array, block) => {
+    const object = await Object.find({
         _id: id,
         user,
-        spaces: { $elemMatch: { $eq: space } },
+        arrays: { $elemMatch: { $eq: array } },
         blocks: { $elemMatch: { $eq: block } },
         isArchived: false,
         isDeleted: false
     })
 
-    return item;
+    return object;
 };
 
-const getAllItemsByBloack = async (user, space, block) => {
-    const item = await Item.find({
+const getAllObjectsByBloack = async (user, array, block) => {
+    const object = await Object.find({
         user,
-        spaces: { $elemMatch: { $eq: space } },
+        arrays: { $elemMatch: { $eq: array } },
         blocks: { $elemMatch: { $eq: block } },
         isArchived: false,
         isDeleted: false
     })
 
-    return item;
+    return object;
 };
 
-const updateItem = async (id, updateData, space, block) => {
-    const updatedItem = await Item.findOneAndUpdate({
+const updateObject = async (id, updateData, array, block) => {
+    const updatedObject = await Object.findOneAndUpdate({
         _id: id,
-        spaces: { $elemMatch: { $eq: space } },
+        arrays: { $elemMatch: { $eq: array } },
         blocks: { $elemMatch: { $eq: block } }
     },
     { $set: updateData },
     { new: true }
     )
 
-    return updatedItem;
+    return updatedObject;
 };
 
-const moveItemtoDate = async (date, id) => {
+const moveObjecttoDate = async (date, id) => {
     const formattedDate = date ? new Date(date) : null;
 
-    const item = await Item.findByIdAndUpdate(
+    const object = await Object.findByIdAndUpdate(
         id,
         { $set: { dueDate: formattedDate } },
         { new: true }
     );
 
-    return item;
+    return object;
 };
 
-const getItemFilterByLabel = async (name, userId, space) => {
-    const label = await getLabelByName(name, userId, space);
-    const items = await Item.find({
+const getObjectFilterByLabel = async (name, userId, array) => {
+    const label = await getLabelByName(name, userId, array);
+    const objects = await Object.find({
         labels: { $in: [label._id] },
         user: userId
     })
 
-    return items;
+    return objects;
 };
 
-const searchItemsByTitle = async (title, user) => {
-    const items = await Item.find({
+const searchObjectsByTitle = async (title, user) => {
+    const objects = await Object.find({
         title: { $regex: title, $options: 'i' },
         isDeleted: false,
         user
     }).exec();
 
-    return items;
+    return objects;
 };
 
-const getUserFavoriteItems = async (user) => {
-    const items = await Item.find({
+const getUserFavoriteObjects = async (user) => {
+    const objects = await Object.find({
         isFavorite: true,
         isArchived: false,
         isDeleted: false,
         user
     })
 
-    return items;
+    return objects;
 };
 
-const getSubItems = async (user, parentId) => {
-    const subItems = await Item.find({
+const getSubObjects = async (user, parentId) => {
+    const subobjects = await Object.find({
         parent: parentId,
         user,
         isArchived: false,
         isDeleted: false,
         isCompleted: false
     });
-    if (!subItems.length) {
-        const error = new Error("No sub-items found for this parent item.");
+    if (!subobjects.length) {
+        const error = new Error("No sub-objects found for this parent object.");
         error.statusCode = 404;
         throw error;
     }
-    return subItems;
+    return subobjects;
 };
 
+const getObjectsByTypeAndSource = async (user, { type, source }) => {
+    const query = { user, isArchived: false, isDeleted: false };
+
+    if (type) {
+        query.type = type;
+    }
+
+    if (source) {
+        query.source = source;
+    }
+
+    const objects = await Object.find(query);
+    return objects;
+}
+
+const getObjectsBySource = async (user, source) => {
+    const objects = await Object.find({
+        source,
+        user
+    })
+    return objects;
+}
+
 export {
-    getInboxItems,
-    getInboxItem,
-    createItem,
-    filterItems,
-    updateItem,
-    getItem,
-    getUserOverdueItems,
-    getUserItemsByDate,
-    moveItemtoDate,
-    getUserTodayItems,
-    getAllitems,
-    getItemFilterByLabel,
-    getAllItemsByBloack,
-    updateInboxItem,
-    searchItemsByTitle,
-    createInboxItem,
-    getThisWeekItems,
-    getThisWeekItemsByDateRange,
-    getUserFavoriteItems,
-    getSubItems
+    getInboxObjects,
+    getInboxObject,
+    createObject,
+    filterObjects,
+    updateObject,
+    getObject,
+    getUserOverdueObjects,
+    getUserObjectsByDate,
+    moveObjecttoDate,
+    getThisWeekObjects,
+    getAllObjects,
+    getObjectFilterByLabel,
+    getAllObjectsByBloack,
+    updateInboxObject,
+    searchObjectsByTitle,
+    createInboxObject,
+    getUserTodayObjects,
+    getThisWeekObjectsByDateRange,
+    getUserFavoriteObjects,
+    getSubObjects,
+    getObjectsByTypeAndSource,
+    getObjectsBySource
 }

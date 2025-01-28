@@ -32,76 +32,51 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
   onConnect,
   onRevoke,
 }) => {
-  const updateIntegrationStatus = useUserStore(
-    (state) => state.updateIntegrationStatus
-  )
-
-  const handleConnect = async () => {
-    try {
-      onConnect()
-    } catch (error) {
-      console.error("Failed to connect:", error)
-    }
-  }
-
-  const handleRevoke = async () => {
-    try {
-      // Update the UI immediately
-      updateIntegrationStatus(integration.key, false)
-
-      // Perform the revoke operation
-      onRevoke()
-    } catch (error) {
-      // Revert on error
-      console.error("Failed to revoke:", error)
-      updateIntegrationStatus(integration.key, true)
-    }
-  }
-
   return (
-    <div className="flex items-center justify-between rounded-lg p-4 text-foreground">
-      <div className="flex items-center space-x-4">
-        <div className="flex size-5 items-center justify-center">
+    <div className="flex items-center py-2.5">
+      <div className="flex items-center min-w-0 flex-1">
+        <div className="size-6 flex items-center justify-center mr-3">
           {integration.icon}
         </div>
-        <div className="max-w-md text-left">
-          <h4 className="text-[13px] font-medium">{integration.name}</h4>
-          <p className="text-[13px] text-secondary-foreground">
-            {integration.description}
-          </p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center">
+            <h3 className="text-sm font-medium text-gray-900 whitespace-nowrap">
+              {integration.name}
+            </h3>
+            <span className="text-xs text-gray-500 truncate ml-2 mr-4">
+              {integration.description}
+            </span>
+          </div>
         </div>
       </div>
-      {connected ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none">
-            <button
-              onClick={handleRevoke}
-              className="flex items-center text-secondary-foreground"
-            >
-              <div className="mr-2 size-1.5 rounded-full bg-green-500"></div>
-              <span className="text-[13px]">Connected</span>
-              <ChevronDown size={13} />
-            </button>
-          </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="hover-bg border-border text-primary-foreground ">
-            <DropdownMenuItem
-              onClick={handleRevoke}
-              className="flex cursor-pointer items-center justify-center text-center text-[13px]"
-            >
-              Disconnect
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        <button
-          onClick={handleConnect}
-          className="flex items-center rounded-md bg-primary px-4 py-2 text-[13px] text-primary-foreground"
-        >
-          Connect
-          <ChevronRight size={13} className="ml-1" />
-        </button>
-      )}
+      <div className="flex-shrink-0">
+        {connected ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center text-xs text-gray-500 hover:text-gray-700">
+              <div className="size-2 rounded-full bg-green-500 mr-1.5"></div>
+              <span>Connected</span>
+              <ChevronDown size={14} className="ml-0.5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                onClick={onRevoke}
+                className="text-red-600 hover:text-red-700"
+              >
+                Disconnect
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <button
+            onClick={onConnect}
+            className="flex items-center text-xs font-medium text-blue-600 hover:text-blue-700"
+          >
+            Connect
+            <ChevronRight size={14} className="ml-0.5" />
+          </button>
+        )}
+      </div>
     </div>
   )
 }
@@ -122,10 +97,10 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
     () => [
       {
         key: "googleCalendar",
+        // eslint-disable-next-line tailwindcss/enforces-shorthand
         icon: <Cal />,
         name: "Google Calendar",
-        description:
-          "Sync with google calendar to bring daily agenda to march today.",
+        description: "Sync agenda",
         handleConnect: handleCalLogin,
         handleRevoke: handleCalRevoke,
       },
@@ -133,8 +108,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         key: "github",
         icon: <GithubDark />,
         name: "Github",
-        description:
-          "Link your github account to pull assigned issues, PR to your workflow.",
+        description: "Issues & PRs",
         handleConnect: installGitHub,
         handleRevoke: handleGithubRevoke,
       },
@@ -142,7 +116,7 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
         key: "linear",
         icon: <LinearDark />,
         name: "Linear",
-        description: "Bring all your assigned linear issues to march inbox.",
+        description: "Tasks",
         handleConnect: handleLinearLogin,
         handleRevoke: handleLinearRevoke,
       },
@@ -157,21 +131,16 @@ const Integrations: React.FC<IntegrationsProps> = ({ user }) => {
   )
 
   return (
-    <div>
-      <h3 className="mb-4 text-xl font-semibold text-foreground">
-        Connect your stack
-      </h3>
-      <div className="-ml-8 space-y-1">
-        {integrations.map((integration) => (
-          <IntegrationItem
-            key={integration.key}
-            integration={integration}
-            connected={user.integrations?.[integration.key]?.connected ?? false}
-            onConnect={integration.handleConnect}
-            onRevoke={integration.handleRevoke}
-          />
-        ))}
-      </div>
+    <div className="divide-y divide-gray-100">
+      {integrations.map((integration) => (
+        <IntegrationItem
+          key={integration.key}
+          integration={integration}
+          connected={user.integrations?.[integration.key]?.connected ?? false}
+          onConnect={integration.handleConnect}
+          onRevoke={integration.handleRevoke}
+        />
+      ))}
     </div>
   )
 }

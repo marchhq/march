@@ -3,10 +3,10 @@ import { createBlock, getBlocks, deleteBlock, getBlock, updateBlock } from "../.
 const createBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space } = req.params;
+        const { array } = req.params;
 
         const requestedData = req.body;
-        const block = await createBlock(user, requestedData, space);
+        const block = await createBlock(user, requestedData, array);
 
         res.status(200).json({
             block
@@ -19,9 +19,9 @@ const createBlockController = async (req, res, next) => {
 const getBlocksController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { space } = req.params;
+        const { array } = req.params;
 
-        const blocks = await getBlocks(user, space);
+        const blocks = await getBlocks(user, array);
 
         res.status(200).json({
             blocks
@@ -34,8 +34,8 @@ const getBlocksController = async (req, res, next) => {
 const deleteBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { block: id, space } = req.params;
-        await deleteBlock(id, space, user);
+        const { block: id, array } = req.params;
+        await deleteBlock(id, array, user);
 
         res.status(200).json({
             ok: 'ok'
@@ -48,9 +48,9 @@ const deleteBlockController = async (req, res, next) => {
 const getBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
-        const { block: id, space } = req.params;
+        const { block: id, array } = req.params;
 
-        const block = await getBlock(user, id, space);
+        const block = await getBlock(user, id, array);
 
         res.status(200).json({
             block
@@ -64,9 +64,9 @@ const updateBlockController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const updateData = req.body;
-        const { block: id, space } = req.params;
+        const { block: id, array } = req.params;
 
-        const block = await updateBlock(id, updateData, space, user);
+        const block = await updateBlock(id, updateData, array, user);
 
         res.status(200).json({
             block
