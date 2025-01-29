@@ -1,9 +1,0 @@
-/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/libcore_graphics_types-1b4436439487b2fc.rmeta: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/base.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/geometry.rs
-
-/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/libcore_graphics_types-1b4436439487b2fc.rlib: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/base.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/geometry.rs
-
-/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/core_graphics_types-1b4436439487b2fc.d: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/base.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/geometry.rs
-
-/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/lib.rs:
-/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/base.rs:
-/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/core-graphics-types-0.2.0/src/geometry.rs:
