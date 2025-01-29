@@ -11,6 +11,7 @@ import {
 // User and item management imports
 import {
     getInboxObjectsController,
+    getObjectsWithDateController,
     getInboxObjectController,
     updateInboxObjectController,
     getUserTodayObjectsController,
@@ -45,6 +46,10 @@ router.route("/inbox/")
     .get(getInboxObjectsController)
     .post(createInboxObjectController);
 
+router.route("/objects/without-date/").get(getInboxObjectsController);
+router.route("/objects/with-date/").get(getObjectsWithDateController);
+router.route("/objects/source/").get(getObjectsBySourceController);
+
 router.route("/inbox/:item/")
     .get(getInboxObjectController)
     .put(updateInboxObjectController);
@@ -73,7 +78,7 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 router.route("/items/").get(getAllObjectsController);
 router.route("/items/search/").get(searchObjectsByTitleController);
 router.route("/items/filter/").get(filterObjectsController);
-router.route("/items/source/").get(getObjectsBySourceController);
+// router.route("/items/source/").get(getObjectsBySourceController);
 router.route("/items/all/").get(getAllObjectsController);
 
 /* Asset Management Routes

@@ -9,6 +9,7 @@ import EmailRoute from "../routers/integration/email.route.js";
 import GithubRoute from "../routers/integration/github.route.js";
 import NotionRoute from "../routers/integration/notion.route.js";
 import TypeRoute from "../routers/lib/type.route.js";
+import AiRoute from "../routers/ai/ai.route.js";
 
 /**
  * @param {import('express').Application} app
@@ -24,6 +25,7 @@ const initRoutes = (app) => {
     app.use('/gmail', JWTMiddleware, EmailRoute);
     app.use('/github', JWTMiddleware, GithubRoute);
     app.use('/notion', JWTMiddleware, NotionRoute);
+    app.use('/ai', JWTMiddleware, AiRoute);
     app.use('/', JWTMiddleware, TypeRoute);
     app.get("/", async (req, res) => {
         res.json({
