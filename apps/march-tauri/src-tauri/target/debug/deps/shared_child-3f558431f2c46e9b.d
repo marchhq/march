@@ -1,0 +1,10 @@
+/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/libshared_child-3f558431f2c46e9b.rmeta: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/mod.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/unix.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/unix.rs
+
+/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/libshared_child-3f558431f2c46e9b.rlib: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/mod.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/unix.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/unix.rs
+
+/Users/sajdakabir/Downloads/Documents/nights and Weekends/saju/march/apps/march-tauri/src-tauri/target/debug/deps/shared_child-3f558431f2c46e9b.d: /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/lib.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/mod.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/unix.rs /Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/unix.rs
+
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/lib.rs:
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/mod.rs:
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/sys/unix.rs:
+/Users/sajdakabir/.cargo/registry/src/index.crates.io-6f17d22bba15001f/shared_child-1.0.1/src/unix.rs:
