@@ -48,6 +48,7 @@ router.route("/inbox/")
 
 router.route("/objects/without-date/").get(getInboxObjectsController);
 router.route("/objects/with-date/").get(getObjectsWithDateController);
+router.route("/objects/source/").get(getObjectsBySourceController);
 
 router.route("/inbox/:item/")
     .get(getInboxObjectController)
@@ -77,7 +78,7 @@ router.route("/journals/:date/").get(getUserJournalByDateController);
 router.route("/items/").get(getAllObjectsController);
 router.route("/items/search/").get(searchObjectsByTitleController);
 router.route("/items/filter/").get(filterObjectsController);
-router.route("/items/source/").get(getObjectsBySourceController);
+// router.route("/items/source/").get(getObjectsBySourceController);
 router.route("/items/all/").get(getAllObjectsController);
 
 /* Asset Management Routes

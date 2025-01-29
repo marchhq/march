@@ -408,7 +408,9 @@ const getObjectsByTypeAndSource = async (user, { type, source }) => {
 const getObjectsBySource = async (user, source) => {
     const objects = await Object.find({
         source,
-        user
+        user,
+        isArchived: false,
+        isDeleted: false
     })
     return objects;
 }
