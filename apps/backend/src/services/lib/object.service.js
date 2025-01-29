@@ -16,6 +16,19 @@ const getInboxObjects = async (me) => {
 
     return objects;
 }
+export const getObjectsWithDate = async (me) => {
+    const objects = await Object.find({
+        user: me,
+        isCompleted: false,
+        isArchived: false,
+        isDeleted: false,
+        arrays: { $exists: true, $eq: [] },
+        status: { $nin: ["archive", "done"] },
+        dueDate: { $exists: true, $ne: null }
+    }).sort({ dueDate: 1, createdAt: -1 });
+
+    return objects;
+}
 
 const getInboxObject = async (me, id) => {
     const objects = await Object.findOne({

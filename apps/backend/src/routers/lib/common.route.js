@@ -11,6 +11,7 @@ import {
 // User and item management imports
 import {
     getInboxObjectsController,
+    getObjectsWithDateController,
     getInboxObjectController,
     updateInboxObjectController,
     getUserTodayObjectsController,
@@ -44,6 +45,9 @@ const router = Router();
 router.route("/inbox/")
     .get(getInboxObjectsController)
     .post(createInboxObjectController);
+
+router.route("/objects/without-date/").get(getInboxObjectsController);
+router.route("/objects/with-date/").get(getObjectsWithDateController);
 
 router.route("/inbox/:item/")
     .get(getInboxObjectController)

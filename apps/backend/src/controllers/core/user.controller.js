@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getInboxObject, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
+import { getInboxObject, getObjectsWithDate, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
@@ -66,6 +66,19 @@ const getInboxObjectsController = async (req, res, next) => {
         const me = req.user._id;
 
         const objects = await getInboxObjects(me);
+
+        res.status(200).json({
+            response: objects
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+export const getObjectsWithDateController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+
+        const objects = await getObjectsWithDate(me);
 
         res.status(200).json({
             response: objects
