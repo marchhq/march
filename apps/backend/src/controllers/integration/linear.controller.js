@@ -17,6 +17,7 @@ import * as crypto from "crypto";
  * @returns {Promise<void>}
  * @throws Will pass an error to the next middleware if any step fails.
  */
+
 const getAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
     const user = req.user;
