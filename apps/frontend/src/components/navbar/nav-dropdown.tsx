@@ -12,6 +12,7 @@ export const NavDropdown = () => {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const routes = [
+    { path: "/chat", label: "chat" },
     { path: "/today", label: "today" },
     { path: "/inbox", label: "inbox" },
     { path: "/objects", label: "all objects" },
@@ -53,7 +54,7 @@ export const NavDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md bg-white py-1 shadow-lg">
           {routes.map((route) => (
             <Link
               key={route.path}
