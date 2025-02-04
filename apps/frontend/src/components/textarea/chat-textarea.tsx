@@ -10,35 +10,42 @@ interface ChatTextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string
   error?: string
-  onSubmit?: () => void
+  onSubmit: (e: React.FormEvent) => void
+  disabled?: boolean
 }
 
 export const ChatTextarea = React.forwardRef<
   HTMLTextAreaElement,
   ChatTextareaProps
->(({ label, error, className, onSubmit, ...props }, ref) => {
+>(({ label, error, className, onSubmit, disabled, ...props }, ref) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      onSubmit(e)
+    }
+  }
+
   return (
-    <div className="space-y-2">
+    <form onSubmit={onSubmit} className="space-y-2">
       <div className="relative">
         <Textarea
           ref={ref}
+          className={cn("pr-10 resize-none", className)}
           {...props}
-          className={cn(error && "border-red-500", className)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
         />
-        <div className="flex justify-end">
-          <Button
-            variant={"outline"}
-            type="submit"
-            size="icon"
-            className="absolute bottom-2 right-2 size-6"
-            onClick={onSubmit}
-          >
-            <ArrowUpIcon className="size-4" />
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          type="submit"
+          size="icon"
+          className="absolute bottom-2 right-2 size-6"
+          disabled={disabled}
+        >
+          <ArrowUpIcon className="size-4" />
+        </Button>
       </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
-    </div>
+    </form>
   )
 })
 
