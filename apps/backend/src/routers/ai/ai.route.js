@@ -267,315 +267,351 @@
 // export default router;
 
 // new one
-import { Router } from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Pinecone } from "@pinecone-database/pinecone";
-import { Object } from "../../models/lib/object.model.js";
-import NodeCache from "node-cache";
+// import { Router } from "express";
+// import { GoogleGenerativeAI } from "@google/generative-ai";
+// import { Pinecone } from "@pinecone-database/pinecone";
+// import { Object } from "../../models/lib/object.model.js";
+// import NodeCache from "node-cache";
 
-const router = Router();
+// const router = Router();
 
-// Configuration constants
-const TIMEOUT_MS = 5000;
-const CACHE_TTL = 3600; // 1 hour
-const MAX_RETRIES = 3;
+// // Configuration constants
+// const TIMEOUT_MS = 5000;
+// const CACHE_TTL = 3600; // 1 hour
+// const MAX_RETRIES = 3;
 
-// Initialize caching
-const cache = new NodeCache({
-    stdTTL: CACHE_TTL,
-    checkperiod: 120 // Check for expired entries every 2 minutes
-});
+// // Initialize caching
+// const cache = new NodeCache({
+//     stdTTL: CACHE_TTL,
+//     checkperiod: 120 // Check for expired entries every 2 minutes
+// });
 
-// Initialize Pinecone with correct configuration
-const pinecone = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY,
-    maxRetries: MAX_RETRIES,
-    additionalHeaders: {
-        'request-timeout': TIMEOUT_MS.toString()
-    }
-});
+// // Initialize Pinecone with correct configuration
+// const pinecone = new Pinecone({
+//     apiKey: process.env.PINECONE_API_KEY,
+//     maxRetries: MAX_RETRIES,
+//     additionalHeaders: {
+//         'request-timeout': TIMEOUT_MS.toString()
+//     }
+// });
 
-const pineconeIndex = pinecone.index("my-ai-index");
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+// const pineconeIndex = pinecone.index("my-ai-index");
+// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
-// System prompt for the AI
-const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant.
+// // System prompt for the AI
+// const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant.
 
-Your core capabilities include:
-1. Storing and retrieving user's notes, tasks, and other information
-2. Answering questions based on stored content
-3. Helping users organize and understand their information
-4. Maintaining context across conversations
+// Your core capabilities include:
+// 1. Storing and retrieving user's notes, tasks, and other information
+// 2. Answering questions based on stored content
+// 3. Helping users organize and understand their information
+// 4. Maintaining context across conversations
 
-When responding without stored context:
-- Introduce yourself as March Assistant
-- Explain that you can help manage and retrieve personal information
-- Offer to store new information or suggest ways to use the system
+// When responding without stored context:
+// - Introduce yourself as March Assistant
+// - Explain that you can help manage and retrieve personal information
+// - Offer to store new information or suggest ways to use the system
 
-When responding with context:
-- Directly answer questions using stored information
-- Synthesize multiple pieces of information when relevant
-- Maintain a helpful and professional tone
-- Format responses clearly using markdown when appropriate
+// When responding with context:
+// - Directly answer questions using stored information
+// - Synthesize multiple pieces of information when relevant
+// - Maintain a helpful and professional tone
+// - Format responses clearly using markdown when appropriate
 
-Always be:
-- Clear and direct in your responses
-- Helpful in suggesting next steps
-- Honest about what information is or isn't available`;
+// Always be:
+// - Clear and direct in your responses
+// - Helpful in suggesting next steps
+// - Honest about what information is or isn't available`;
 
-// Initialize AI models
-const embeddingModel = genAI.getGenerativeModel({
-    model: "embedding-001",
-    generationConfig: {
-        maxOutputTokens: 2048
-    }
-});
+// // Initialize AI models
+// const embeddingModel = genAI.getGenerativeModel({
+//     model: "embedding-001",
+//     generationConfig: {
+//         maxOutputTokens: 2048
+//     }
+// });
 
-const chatModel = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    generationConfig: {
-        temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-        maxOutputTokens: 2048
-    },
-    systemInstruction: SYSTEM_PROMPT
-});
+// const chatModel = genAI.getGenerativeModel({
+//     model: "gemini-1.5-flash",
+//     generationConfig: {
+//         temperature: 0.7,
+//         topP: 0.8,
+//         topK: 40,
+//         maxOutputTokens: 2048
+//     },
+//     systemInstruction: SYSTEM_PROMPT
+// });
 
-// Retry logic for AI operations
-async function withRetry (operation, maxRetries = MAX_RETRIES, delay = 1000) {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Operation timeout')), TIMEOUT_MS);
-            });
+// // Retry logic for AI operations
+// async function withRetry (operation, maxRetries = MAX_RETRIES, delay = 1000) {
+//     for (let attempt = 1; attempt <= maxRetries; attempt++) {
+//         try {
+//             const timeoutPromise = new Promise((_, reject) => {
+//                 setTimeout(() => reject(new Error('Operation timeout')), TIMEOUT_MS);
+//             });
 
-            return await Promise.race([operation(), timeoutPromise]);
-        } catch (error) {
-            if (attempt === maxRetries) throw error;
-            if (error.message.includes('503') || error.message.includes('overloaded')) {
-                await new Promise(resolve => setTimeout(resolve, delay * attempt));
-                continue;
-            }
-            throw error;
-        }
-    }
-}
+//             return await Promise.race([operation(), timeoutPromise]);
+//         } catch (error) {
+//             if (attempt === maxRetries) throw error;
+//             if (error.message.includes('503') || error.message.includes('overloaded')) {
+//                 await new Promise(resolve => setTimeout(resolve, delay * attempt));
+//                 continue;
+//             }
+//             throw error;
+//         }
+//     }
+// }
 
-// Generate embeddings with caching
-async function generateEmbedding (text) {
-    const cacheKey = `emb_${Buffer.from(text).toString('base64')}`;
-    const cachedEmbedding = cache.get(cacheKey);
+// // Generate embeddings with caching
+// async function generateEmbedding (text) {
+//     const cacheKey = `emb_${Buffer.from(text).toString('base64')}`;
+//     const cachedEmbedding = cache.get(cacheKey);
 
-    if (cachedEmbedding) {
-        return cachedEmbedding;
-    }
+//     if (cachedEmbedding) {
+//         return cachedEmbedding;
+//     }
 
-    try {
-        const result = await withRetry(async () => {
-            const embedResult = await embeddingModel.embedContent(text);
-            const embedding = embedResult.embedding.values;
+//     try {
+//         const result = await withRetry(async () => {
+//             const embedResult = await embeddingModel.embedContent(text);
+//             const embedding = embedResult.embedding.values;
 
-            if (!embedding || embedding.length === 0) {
-                throw new Error("Empty embedding generated");
-            }
+//             if (!embedding || embedding.length === 0) {
+//                 throw new Error("Empty embedding generated");
+//             }
 
-            return embedding;
-        });
+//             return embedding;
+//         });
 
-        cache.set(cacheKey, result);
-        return result;
-    } catch (error) {
-        console.error("Embedding generation failed:", error);
-        throw error;
-    }
-}
+//         cache.set(cacheKey, result);
+//         return result;
+//     } catch (error) {
+//         console.error("Embedding generation failed:", error);
+//         throw error;
+//     }
+// }
 
-// Save content with proper error handling
-async function saveContent (title, content, userId, type = 'note') {
-    try {
-        const [embedding, newObject] = await Promise.all([
-            generateEmbedding(`${title} ${content}`),
-            Object.create({
-                title,
-                content,
-                type,
-                user: userId,
-                createdAt: new Date()
-            })
-        ]);
+// // Save content with proper error handling
+// async function saveContent (title, content, userId, type = 'note') {
+//     try {
+//         const [embedding, newObject] = await Promise.all([
+//             generateEmbedding(`${title} ${content}`),
+//             Object.create({
+//                 title,
+//                 content,
+//                 type,
+//                 user: userId,
+//                 createdAt: new Date()
+//             })
+//         ]);
 
-        await withRetry(async () => {
-            await pineconeIndex.upsert([{
-                id: newObject._id.toString(),
-                values: embedding,
-                metadata: {
-                    title,
-                    content,
-                    type,
-                    userId: userId.toString(),
-                    createdAt: new Date().toISOString()
-                }
-            }]);
-        });
+//         await withRetry(async () => {
+//             await pineconeIndex.upsert([{
+//                 id: newObject._id.toString(),
+//                 values: embedding,
+//                 metadata: {
+//                     title,
+//                     content,
+//                     type,
+//                     userId: userId.toString(),
+//                     createdAt: new Date().toISOString()
+//                 }
+//             }]);
+//         });
 
-        return newObject;
-    } catch (error) {
-        console.error("Failed to save content:", error);
-        throw error;
-    }
-}
+//         return newObject;
+//     } catch (error) {
+//         console.error("Failed to save content:", error);
+//         throw error;
+//     }
+// }
 
-// Search content with optimizations
-async function searchContent (query, userId, options = { limit: 5 }) {
-    try {
-        const queryEmbedding = await generateEmbedding(query);
+// // Search content with optimizations
+// async function searchContent (query, userId, options = { limit: 5 }) {
+//     try {
+//         const queryEmbedding = await generateEmbedding(query);
 
-        const searchResults = await withRetry(async () => {
-            return await pineconeIndex.query({
-                vector: queryEmbedding,
-                topK: options.limit,
-                filter: {
-                    userId: userId.toString()
-                },
-                includeMetadata: true
-            });
-        });
+//         const searchResults = await withRetry(async () => {
+//             return await pineconeIndex.query({
+//                 vector: queryEmbedding,
+//                 topK: options.limit,
+//                 filter: {
+//                     userId: userId.toString()
+//                 },
+//                 includeMetadata: true
+//             });
+//         });
 
-        return searchResults.matches.map(match => ({
-            ...match.metadata,
-            score: match.score
-        }));
-    } catch (error) {
-        console.error("Search failed:", error);
-        throw error;
-    }
-}
+//         return searchResults.matches.map(match => ({
+//             ...match.metadata,
+//             score: match.score
+//         }));
+//     } catch (error) {
+//         console.error("Search failed:", error);
+//         throw error;
+//     }
+// }
 
-// Format content for AI
-function formatContextForAI (relevantContent) {
-    return relevantContent.map(item => {
-        return `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
-Title: ${item.title}
-Content: ${item.content}
----`;
-    }).join('\n');
-}
+// // Format content for AI
+// function formatContextForAI (relevantContent) {
+//     return relevantContent.map(item => {
+//         return `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
+// Title: ${item.title}
+// Content: ${item.content}
+// ---`;
+//     }).join('\n');
+// }
 
-// Stream AI response
-async function * streamAIResponse (prompt, hasContext = true) {
-    try {
-        if (!hasContext) {
-            const introPrompt = `The user has asked: "${prompt}"
-            Please respond according to your introduction protocol as March Assistant.`;
+// // Stream AI response
+// async function * streamAIResponse (prompt, hasContext = true) {
+//     try {
+//         if (!hasContext) {
+//             const introPrompt = `The user has asked: "${prompt}"
+//             Please respond according to your introduction protocol as March Assistant.`;
 
-            const result = await chatModel.generateContentStream(introPrompt);
-            for await (const chunk of result.stream) {
-                yield chunk.text();
-            }
-            return;
-        }
+//             const result = await chatModel.generateContentStream(introPrompt);
+//             for await (const chunk of result.stream) {
+//                 yield chunk.text();
+//             }
+//             return;
+//         }
 
-        const result = await chatModel.generateContentStream(prompt);
-        for await (const chunk of result.stream) {
-            yield chunk.text();
-        }
-    } catch (error) {
-        if (error.message.includes('503') || error.message.includes('overloaded')) {
-            yield "I apologize, but I'm experiencing high load right now. Please try again in a moment.";
-        }
-        throw error;
-    }
-}
+//         const result = await chatModel.generateContentStream(prompt);
+//         for await (const chunk of result.stream) {
+//             yield chunk.text();
+//         }
+//     } catch (error) {
+//         if (error.message.includes('503') || error.message.includes('overloaded')) {
+//             yield "I apologize, but I'm experiencing high load right now. Please try again in a moment.";
+//         }
+//         throw error;
+//     }
+// }
 
-// API Routes
-router.post("/content", async (req, res) => {
-    try {
-        const { title, content, type } = req.body;
-        const userId = req.user._id;
+// // API Routes
+// router.post("/content", async (req, res) => {
+//     try {
+//         const { title, content, type } = req.body;
+//         const userId = req.user._id;
 
-        if (!title?.trim() || !content?.trim()) {
-            return res.status(400).json({ error: "Title and content are required" });
-        }
+//         if (!title?.trim() || !content?.trim()) {
+//             return res.status(400).json({ error: "Title and content are required" });
+//         }
 
-        const savedContent = await saveContent(title, content, userId, type);
-        res.json(savedContent);
-    } catch (error) {
-        console.error("Error saving content:", error);
-        res.status(500).json({
-            error: "Failed to save content",
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-});
+//         const savedContent = await saveContent(title, content, userId, type);
+//         res.json(savedContent);
+//     } catch (error) {
+//         console.error("Error saving content:", error);
+//         res.status(500).json({
+//             error: "Failed to save content",
+//             details: process.env.NODE_ENV === 'development' ? error.message : undefined
+//         });
+//     }
+// });
 
-router.get("/ask", async (req, res) => {
-    try {
-        const { query } = req.query;
-        const userId = req.user._id;
+// /**
+//  * Splits text into chunks while preserving sentence boundaries and context
+//  * @param {string} text - Input text to chunk
+//  * @param {number} maxTokens - Maximum tokens per chunk
+//  * @param {number} overlapRatio - Overlap between chunks (0-1)
+//  * @returns {string[]} Array of text chunks
+//  */
+// export function chunkContent (text, maxTokens = 2048, overlapRatio = 0.2) {
+//     // Simple sentence splitting - can be enhanced with better regex
+//     const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+//     const chunks = [];
+//     let currentChunk = [];
+//     let currentLength = 0;
 
-        if (!query?.trim()) {
-            return res.status(400).json({ error: "Query is required" });
-        }
+//     // Rough token estimation (can be replaced with actual tokenizer)
+//     const estimateTokens = (text) => Math.ceil(text.split(/\s+/).length * 1.3);
 
-        // Set up streaming headers
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
+//     for (const sentence of sentences) {
+//         const sentenceTokens = estimateTokens(sentence);
 
-        // Search for relevant content
-        const relevantContent = await searchContent(query, userId, { limit: 5 });
+//         if (currentLength + sentenceTokens > maxTokens && currentChunk.length > 0) {
+//             chunks.push(currentChunk.join(' '));
 
-        if (relevantContent.length === 0) {
-            // Stream introduction response
-            const stream = streamAIResponse(query, false);
-            for await (const chunk of stream) {
-                res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-            }
-            res.write(`data: ${JSON.stringify({
-                done: true,
-                hasStoredContent: false,
-                suggestion: "Try saving some information first using the /content endpoint"
-            })}\n\n`);
-            res.end();
-            return;
-        }
+//             // Calculate overlap
+//             const overlapSize = Math.floor(currentChunk.length * overlapRatio);
+//             currentChunk = currentChunk.slice(-overlapSize);
+//             currentLength = currentChunk.reduce((sum, s) => sum + estimateTokens(s), 0);
+//         }
 
-        // Format context and stream response
-        const context = formatContextForAI(relevantContent);
-        const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
+//         currentChunk.push(sentence);
+//         currentLength += sentenceTokens;
+//     }
 
-        const stream = streamAIResponse(prompt, true);
-        for await (const chunk of stream) {
-            res.write(`data: ${JSON.stringify({
-                chunk
-                // relevantContent: relevantContent.map(({ title, type, score }) => ({
-                //     title,
-                //     type,
-                //     relevance: score
-                // }))
-            })}\n\n`);
-        }
+//     if (currentChunk.length > 0) {
+//         chunks.push(currentChunk.join(' '));
+//     }
 
-        res.write(`data: ${JSON.stringify({ done: true, hasStoredContent: true })}\n\n`);
-        res.end();
-    } catch (error) {
-        console.error("Error processing question:", error);
-        res.write(`data: ${JSON.stringify({
-            error: "An error occurred while processing your request",
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        })}\n\n`);
-        res.end();
-    }
-});
+//     return chunks;
+// }
 
-export default router;
+// router.get("/ask", async (req, res) => {
+//     try {
+//         const { query } = req.query;
+//         const userId = req.user._id;
 
+//         if (!query?.trim()) {
+//             return res.status(400).json({ error: "Query is required" });
+//         }
 
+//         // Set up streaming headers
+//         res.setHeader('Content-Type', 'text/event-stream');
+//         res.setHeader('Cache-Control', 'no-cache');
+//         res.setHeader('Connection', 'keep-alive');
 
+//         // Search for relevant content
+//         const relevantContent = await searchContent(query, userId, { limit: 5 });
 
+//         if (relevantContent.length === 0) {
+//             // Stream introduction response
+//             const stream = streamAIResponse(query, false);
+//             for await (const chunk of stream) {
+//                 res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+//             }
+//             res.write(`data: ${JSON.stringify({
+//                 done: true,
+//                 hasStoredContent: false,
+//                 suggestion: "Try saving some information first using the /content endpoint"
+//             })}\n\n`);
+//             res.end();
+//             return;
+//         }
 
-// testing
+//         // Format context and stream response
+//         const context = formatContextForAI(relevantContent);
+//         const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
+
+//         const stream = streamAIResponse(prompt, true);
+//         for await (const chunk of stream) {
+//             res.write(`data: ${JSON.stringify({
+//                 chunk
+//                 // relevantContent: relevantContent.map(({ title, type, score }) => ({
+//                 //     title,
+//                 //     type,
+//                 //     relevance: score
+//                 // }))
+//             })}\n\n`);
+//         }
+
+//         res.write(`data: ${JSON.stringify({ done: true, hasStoredContent: true })}\n\n`);
+//         res.end();
+//     } catch (error) {
+//         console.error("Error processing question:", error);
+//         res.write(`data: ${JSON.stringify({
+//             error: "An error occurred while processing your request",
+//             details: process.env.NODE_ENV === 'development' ? error.message : undefined
+//         })}\n\n`);
+//         res.end();
+//     }
+// });
+
+// export default router;
+
+// testing --> read this code for the promt and the furthdet code like how to improrve the code specially pine code one
 
 // import { Router } from "express";
 // import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -679,7 +715,7 @@ export default router;
 //         try {
 //             return await Promise.race([
 //                 operation(),
-//                 new Promise((_, reject) => 
+//                 new Promise((_, reject) =>
 //                     setTimeout(() => reject(new Error('Operation timeout')), TIMEOUT_MS)
 //                 )
 //             ]);
@@ -849,8 +885,8 @@ export default router;
 //         // Prepare the full prompt with system context
 //         const fullPrompt = `${systemPrompt}
 
-// ${relevantContent.length > 0 
-//     ? template({ contexts: relevantContent, question: query }) 
+// ${relevantContent.length > 0
+//     ? template({ contexts: relevantContent, question: query })
 //     : `User query: ${query}`
 // }`;
 
@@ -872,7 +908,7 @@ export default router;
 //             const chunk = response.text;
 //             if (chunk) {
 //                 fullResponse += chunk;
-//                 res.write(`data: ${JSON.stringify({ 
+//                 res.write(`data: ${JSON.stringify({
 //                     chunk,
 //                     contexts: relevantContent.map(({ title, type, normalizedScore }) => ({
 //                         title,
@@ -922,12 +958,12 @@ export default router;
 
 //         // Special handling for introduction queries
 //         const introQueries = ['who are you', 'introduce yourself', 'what can you do'];
-//         const isIntroQuery = introQueries.some(q => 
+//         const isIntroQuery = introQueries.some(q =>
 //             query.toLowerCase().includes(q)
 //         );
 
 //         if (isIntroQuery) {
-//             const introResponse = `Hi there! I'm March Assistant, your personal AI helper for managing todos and notes. 
+//             const introResponse = `Hi there! I'm March Assistant, your personal AI helper for managing todos and notes.
 
 // **Key Capabilities:**
 // - Retrieve and summarize your personal todos and notes
@@ -1001,9 +1037,9 @@ export default router;
 //     console.log("Syncing content...");
 //     try {
 //         const userId = req.user._id;
-//         const objects = await Object.find({ 
+//         const objects = await Object.find({
 //             user: userId,
-//             isDeleted: false 
+//             isDeleted: false
 //         });
 
 //         console.log("Objects to sync:", objects.length);
@@ -1013,7 +1049,7 @@ export default router;
 //         res.json({ message: "Sync completed", count: objects.length });
 //     } catch (error) {
 //         console.error("Sync error:", error);
-//         res.status(500).json({ 
+//         res.status(500).json({
 //             error: "Failed to sync content",
 //             details: process.env.NODE_ENV === 'development' ? error.message : undefined
 //         });
@@ -1021,3 +1057,338 @@ export default router;
 // });
 
 // export default router;
+
+// restart and final code experimets are over
+import { Router } from "express";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Pinecone } from "@pinecone-database/pinecone";
+import { Object } from "../../models/lib/object.model.js";
+
+const router = Router();
+
+// Initialize services with API keys
+const pinecone = new Pinecone({
+    apiKey: process.env.PINECONE_API_KEY
+});
+
+const pineconeIndex = pinecone.index("my-ai-index");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+
+// Model for converting text to vectors
+const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
+
+// AI personality and behavior configuration
+const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant.
+
+Your core capabilities include:
+1. Storing and retrieving user's notes, tasks, and other information
+2. Answering questions based on stored content
+3. Helping users organize and understand their information
+4. Maintaining context across conversations
+
+When responding without stored context:
+- Introduce yourself as March Assistant
+- Explain that you can help manage and retrieve personal information
+- Offer to store new information or suggest ways to use the system
+
+When responding with context:
+- Directly answer questions using stored information
+- Synthesize multiple pieces of information when relevant
+- Maintain a helpful and professional tone
+- Format responses clearly using markdown when appropriate
+
+Always be:
+- Clear and direct in your responses
+- Helpful in suggesting next steps
+- Honest about what information is or isn't available`;
+
+// Configure chat model with specific parameters
+const chatModel = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    generationConfig: {
+        temperature: 0.7,
+        topP: 0.8,
+        topK: 40,
+        maxOutputTokens: 2048
+    },
+    systemInstruction: SYSTEM_PROMPT
+});
+
+// Retry failed operations with exponential backoff
+async function withRetry (operation, maxRetries = 3, delay = 1000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            if (attempt === maxRetries) throw error;
+            if (error.message.includes('503') || error.message.includes('overloaded')) {
+                await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                continue;
+            }
+            throw error;
+        }
+    }
+}
+
+// Convert text to vector representation for semantic search
+async function generateEmbedding (text) {
+    return withRetry(async () => {
+        try {
+            const result = await embeddingModel.embedContent(text);
+            const embedding = result.embedding.values;
+            if (!embedding || embedding.length === 0) {
+                throw new Error("Empty embedding generated");
+            }
+            return embedding;
+        } catch (error) {
+            console.error("Embedding generation failed:", error);
+            throw error;
+        }
+    });
+}
+
+// Store content in both MongoDB and Pinecone vector database
+async function saveContent (title, content, userId, type = 'note') {
+    try {
+        const embedding = await generateEmbedding(`${title} ${content}`);
+
+        const newObject = await Object.create({
+            title,
+            content,
+            type,
+            user: userId,
+            createdAt: new Date()
+        });
+
+        await pineconeIndex.upsert([{
+            id: newObject._id.toString(),
+            values: embedding,
+            metadata: {
+                title,
+                content,
+                type,
+                userId: userId.toString(),
+                createdAt: new Date().toISOString()
+            }
+        }]);
+
+        return newObject;
+    } catch (error) {
+        console.error("Failed to save content:", error);
+        throw error;
+    }
+}
+
+// Search for relevant content using vector similarity
+async function searchContent (query, userId, options = { limit: 5 }) {
+    try {
+        const queryEmbedding = await generateEmbedding(query);
+
+        const searchResults = await pineconeIndex.query({
+            vector: queryEmbedding,
+            topK: options.limit,
+            filter: { userId: userId.toString() },
+            includeMetadata: true
+        });
+
+        return searchResults.matches.map(match => ({
+            ...match.metadata,
+            score: match.score
+        }));
+    } catch (error) {
+        console.error("Search failed:", error);
+        throw error;
+    }
+}
+
+// Format retrieved content for AI processing
+function formatContextForAI (relevantContent) {
+    return relevantContent.map(item =>
+        `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
+Title: ${item.title}
+Content: ${item.content}
+---`
+    ).join('\n');
+}
+
+// Stream AI responses word-by-word with context handling
+// async function * streamAIResponse (prompt, hasContext = true) {
+//     try {
+//         if (!hasContext) {
+//             const introPrompt = `The user has asked: "${prompt}"
+//             Please respond according to your introduction protocol as March Assistant.`;
+
+//             const result = await chatModel.generateContentStream(introPrompt);
+//             for await (const chunk of result.stream) {
+//                 yield chunk.text();
+//             }
+//             return;
+//         }
+
+//         const result = await chatModel.generateContentStream(prompt);
+//         for await (const chunk of result.stream) {
+//             yield chunk.text();
+//         }
+//     } catch (error) {
+//         if (error.message.includes('503') || error.message.includes('overloaded')) {
+//             yield "I apologize, but I'm experiencing high load. Please try again.";
+//         }
+//         throw error;
+//     }
+// }
+
+async function * streamAIResponse (prompt, hasContext = true) {
+    try {
+        // Check for greeting patterns
+        const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+
+        if (greetingPatterns.test(prompt.trim())) {
+            const greetingResponse = `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you manage your tasks, notes, and information. I can:
+- Store and organize your notes and tasks
+- Answer questions about your stored information
+- Help you stay organized and productive
+
+What would you like help with today?`;
+
+            // Split response into words and yield each
+            const words = greetingResponse.split(/\s+/);
+            for (const word of words) {
+                yield word + ' ';
+            }
+            return;
+        }
+
+        // Original streaming logic for non-greeting queries
+        if (!hasContext) {
+            const introPrompt = `The user has asked: "${prompt}"
+            Please respond according to your introduction protocol as March Assistant.`;
+
+            const result = await chatModel.generateContentStream(introPrompt);
+            for await (const chunk of result.stream) {
+                yield chunk.text();
+            }
+            return;
+        }
+
+        const result = await chatModel.generateContentStream(prompt);
+        for await (const chunk of result.stream) {
+            yield chunk.text();
+        }
+    } catch (error) {
+        if (error.message.includes('503') || error.message.includes('overloaded')) {
+            yield "I apologize, but I'm experiencing high load. Please try again.";
+        }
+        throw error;
+    }
+}
+
+// Handle content creation requests
+router.post("/content", async (req, res) => {
+    try {
+        const { title, content, type } = req.body;
+        const userId = req.user._id;
+
+        if (!title?.trim() || !content?.trim()) {
+            return res.status(400).json({ error: "Title and content are required" });
+        }
+
+        const savedContent = await saveContent(title, content, userId, type);
+        res.json(savedContent);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Add this function to check response content
+export function shouldSkipContextSearch (query) {
+    const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+    return greetingPatterns.test(query.trim());
+}
+
+// Handle streaming question-answering requests
+
+router.get("/ask", async (req, res) => {
+    try {
+        console.log('Query received:', req.query);
+        console.log('User ID:', req.user._id);
+
+        const { query } = req.query;
+        const userId = req.user._id;
+
+        if (!query?.trim()) {
+            return res.status(400).json({ error: "Query is required" });
+        }
+
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        // Skip context search for greetings
+        if (shouldSkipContextSearch(query)) {
+            const stream = streamAIResponse(query, false);
+            for await (const chunk of stream) {
+                console.log('Streaming chunk:', chunk);
+                res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+            }
+            res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+            res.end();
+            return;
+        }
+
+        const relevantContent = await searchContent(query, userId, { limit: 5 });
+        console.log('Search results:', relevantContent);
+
+        res.write(`data: ${JSON.stringify({ matches: relevantContent })}\n\n`);
+        console.log('Sent matches event');
+
+        if (relevantContent.length === 0) {
+            console.log('No relevant content found, using intro mode');
+            const stream = streamAIResponse(query, false);
+            for await (const chunk of stream) {
+                console.log('Streaming chunk:', chunk);
+                res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+            }
+            res.write(`data: ${JSON.stringify({
+                done: true,
+                hasStoredContent: false,
+                suggestion: "Try saving some information first using the /content endpoint"
+            })}\n\n`);
+            console.log('Stream completed - no content case');
+            res.end();
+            return;
+        }
+
+        const context = formatContextForAI(relevantContent);
+        console.log('Formatted context:', context);
+
+        const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
+        console.log('Generated prompt:', prompt);
+
+        const stream = streamAIResponse(prompt, true);
+        for await (const chunk of stream) {
+            console.log('Streaming chunk:', chunk);
+            res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+        }
+
+        console.log('Stream completed successfully');
+        res.write(`data: ${JSON.stringify({
+            done: true,
+            hasStoredContent: true,
+            relevantContent: relevantContent.map(({ title, type, score }) => ({
+                title,
+                type,
+                relevance: score
+            }))
+        })}\n\n`);
+        res.end();
+    } catch (error) {
+        console.error("Error in /ask route:", error);
+        res.write(`data: ${JSON.stringify({
+            error: "An error occurred while processing your request",
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        })}\n\n`);
+        res.end();
+    }
+});
+
+export default router;
