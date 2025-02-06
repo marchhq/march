@@ -9,15 +9,8 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { Message } from "@/src/lib/@types/Items/Chat"
 import { useAskMutation } from "@/src/queries/useAsk"
 
-function MessageBubble({
-  message,
-}: {
-  message: Message | null
-  isStreaming?: boolean
-}) {
-  if (!message) {
-    return null
-  }
+function MessageBubble({ message }: { message: Message | null }) {
+  if (!message) return null
 
   return (
     <div className={`mb-4 ${message.isUser ? "text-right" : "text-left"}`}>
@@ -46,40 +39,30 @@ export const ChatContentPage = () => {
   useEffect(() => {
     if (!mutation.currentChunk) return
 
+    console.log("Current chunk received:", mutation.currentChunk)
+
     setMessages((prevMessages) => {
       const newMessages = [...prevMessages]
-
-      // If we have a streaming message reference and it's the last message
       if (streamingMessageRef.current) {
-        const lastMessageIndex = newMessages.length - 1
-        // Update the content of the last message
-        newMessages[lastMessageIndex] = {
-          ...newMessages[lastMessageIndex],
-          content:
-            newMessages[lastMessageIndex].content + mutation.currentChunk,
-        }
+        // Update the last message if it's still streaming
+        streamingMessageRef.current.content = mutation.currentChunk
+        newMessages[newMessages.length - 1] = { ...streamingMessageRef.current }
       } else {
-        // Create a new message for the first chunk
-        const newMessage = {
-          content: mutation.currentChunk,
-          isUser: false,
-        }
+        // Add new assistant message and store reference
+        const newMessage = { content: mutation.currentChunk, isUser: false }
         newMessages.push(newMessage)
         streamingMessageRef.current = newMessage
       }
-
-      return newMessages
+      return [...newMessages]
     })
   }, [mutation.currentChunk])
 
-  // Reset streaming message ref when request completes
   useEffect(() => {
     if (!mutation.isPending) {
       streamingMessageRef.current = null
     }
   }, [mutation.isPending])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       streamingMessageRef.current = null
@@ -118,17 +101,9 @@ export const ChatContentPage = () => {
 
         {messages.length > 0 ? (
           <ScrollArea className="no-scrollbar h-[50vh] [&>div>div]:!scroll-smooth">
-            <>
-              {messages.map((message, index) => (
-                <MessageBubble
-                  key={index}
-                  message={message}
-                  isStreaming={
-                    index === messages.length - 1 && mutation.isPending
-                  }
-                />
-              ))}
-            </>
+            {messages.map((message, index) => (
+              <MessageBubble key={index} message={message} />
+            ))}
           </ScrollArea>
         ) : (
           <div></div>
