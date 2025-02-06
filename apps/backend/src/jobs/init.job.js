@@ -5,15 +5,14 @@ import { createArray } from "../services/lib/array.service.js";
 import { Type as TypeModel } from "../models/lib/type.model.js";
 
 const processInitJob = async (job) => {
-    console.log("here i am, ", job.data);
     const { user } = job.data;
     const arrayData = { name: "Home", icon: "home", identifier: "home" };
 
     const types = [
-        { "slug": "todo" },
-        { "slug": "note" },
-        { "slug": "bookmark" },
-        { "slug": "meeting" }
+        { "slug": "todo", user },
+        { "slug": "note", user },
+        { "slug": "bookmark", user },
+        { "slug": "meeting", user }
     ];
     // create everything at once
     try {
@@ -28,7 +27,6 @@ const processInitJob = async (job) => {
 };
 
 const initWorker = new Worker('initQueue', async (job) => {
-    console.log("hey");
     await processInitJob(job);
 }, {
     connection: redisConnection,
