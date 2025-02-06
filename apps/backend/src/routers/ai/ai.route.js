@@ -1341,10 +1341,10 @@ router.post("/content", async (req, res) => {
 });
 
 // Add this function to check response content
-export function shouldSkipContextSearch (query) {
-    const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
-    return greetingPatterns.test(query.trim());
-}
+// export function shouldSkipContextSearch (query) {
+//     const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+//     return greetingPatterns.test(query.trim());
+// }
 // sync data with vector db --> lowkey
 router.post("/sync", async (req, res) => {
     console.log("Syncing content...");
@@ -1408,16 +1408,16 @@ router.post("/sync", async (req, res) => {
 
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
-        if (shouldSkipContextSearch(prompt)) {
-            yield `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you:
-            - Store and organize tasks and notes
-            - Answer questions about your information
-            - Create new tasks and reminders
-            - Help you stay organized
+        // if (shouldSkipContextSearch(prompt)) {
+        //     yield `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you:
+        //     - Store and organize tasks and notes
+        //     - Answer questions about your information
+        //     - Create new tasks and reminders
+        //     - Help you stay organized
 
-            What would you like help with today?`;
-            return;
-        }
+        //     What would you like help with today?`;
+        //     return;
+        // }
 
         if (isObjectCreationIntent(prompt)) {
             console.log("Creating object from AI:", prompt);
@@ -1455,7 +1455,7 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
             
             Extract the task details and create a clear title and description. Set the dueDate based on the date/time references found in the text. Only respond with valid JSON, no other text.
             `;
-            
+
             try {
                 const result = await chatModel.generateContent(creationPrompt);
                 const responseText = result.response.text();
@@ -1533,14 +1533,14 @@ router.get("/ask", async (req, res) => {
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
 
-        if (shouldSkipContextSearch(query)) {
-            const stream = streamAIResponse(query, false, userId);
-            for await (const chunk of stream) {
-                res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-            }
-            res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-            return res.end();
-        }
+        // if (shouldSkipContextSearch(query)) {
+        //     const stream = streamAIResponse(query, false, userId);
+        //     for await (const chunk of stream) {
+        //         res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+        //     }
+        //     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+        //     return res.end();
+        // }
 
         const relevantContent = await searchContent(query, userId, { limit: 5 });
 
