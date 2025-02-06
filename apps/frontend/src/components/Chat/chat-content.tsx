@@ -46,27 +46,22 @@ export const ChatContentPage = () => {
   useEffect(() => {
     if (!mutation.currentChunk) return
 
-    // Create a local copy of the current chunk to avoid race conditions
-    const currentChunk = mutation.currentChunk
-
     setMessages((prevMessages) => {
-      // Create a new array to maintain immutability
       const newMessages = [...prevMessages]
-      const lastMessage = newMessages[newMessages.length - 1]
 
-      if (
-        streamingMessageRef.current &&
-        lastMessage === streamingMessageRef.current
-      ) {
-        // Create a new message object instead of mutating the existing one
-        newMessages[newMessages.length - 1] = {
-          ...lastMessage,
-          content: lastMessage.content + currentChunk,
+      // If we have a streaming message reference and it's the last message
+      if (streamingMessageRef.current) {
+        const lastMessageIndex = newMessages.length - 1
+        // Update the content of the last message
+        newMessages[lastMessageIndex] = {
+          ...newMessages[lastMessageIndex],
+          content:
+            newMessages[lastMessageIndex].content + mutation.currentChunk,
         }
       } else {
-        // Create new message object
+        // Create a new message for the first chunk
         const newMessage = {
-          content: currentChunk,
+          content: mutation.currentChunk,
           isUser: false,
         }
         newMessages.push(newMessage)
@@ -77,18 +72,19 @@ export const ChatContentPage = () => {
     })
   }, [mutation.currentChunk])
 
-  useEffect(() => {
-    // Cleanup function for when component unmounts
-    return () => {
-      streamingMessageRef.current = null
-    }
-  }, [])
-
+  // Reset streaming message ref when request completes
   useEffect(() => {
     if (!mutation.isPending) {
       streamingMessageRef.current = null
     }
   }, [mutation.isPending])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      streamingMessageRef.current = null
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
