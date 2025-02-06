@@ -1104,8 +1104,17 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 // Model for converting text to vectors
 const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
 
-// AI personality and behavior configuration
-const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant.
+// AI personality and behavior instructions
+const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant. you are build by march team.Your goal is to directly address the question concisely and to the point, without excessive elaboration.
+
+To generate your answer:
+- Carefully analyze the question and identify the key information needed to address it
+- Concisely summarize the relevant information from the higher-scoring context(s) in your own words
+- Provide a direct answer to the question
+- Use markdown formatting in your answer, including bold, italics, and bullet points as appropriate to improve readability and highlight key points
+- Give detailed and accurate responses for things like 'write a blog' or long-form questions.
+
+If no context is provided, introduce yourself and explain that the user can save content which will allow you to answer questions about that content in the future. Do not provide an answer if no context is provided
 
 Your core capabilities include:
 1. Storing and retrieving user's notes, tasks, and other information
@@ -1292,7 +1301,6 @@ function isObjectCreationIntent (query) {
 
 async function createObjectFromAI (content, userId) {
     try {
-        console.log("ahere i am", content)
         if (!content?.title || !userId) {
             throw new Error("Invalid content or userId");
         }
@@ -1344,6 +1352,7 @@ export function shouldSkipContextSearch (query) {
     const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
     return greetingPatterns.test(query.trim());
 }
+// sync data with vector db --> lowkey
 router.post("/sync", async (req, res) => {
     console.log("Syncing content...");
     try {
