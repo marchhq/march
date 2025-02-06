@@ -1,16 +1,24 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import { ScrollArea } from "../ui/scroll-area"
-import { TextShimmerWave } from "../ui/text-shimmer-wave"
 import { ChatTextarea } from "@/src/components/textarea/chat-textarea"
 import { TextEffect } from "@/src/components/ui/text-effect"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { Message } from "@/src/lib/@types/Items/Chat"
 import { useAskMutation } from "@/src/queries/useAsk"
 
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({
+  message,
+}: {
+  message: Message | null
+  isStreaming?: boolean
+}) {
+  if (!message) {
+    return null
+  }
+
   return (
     <div className={`mb-4 ${message.isUser ? "text-right" : "text-left"}`}>
       <div
@@ -33,29 +41,69 @@ export const ChatContentPage = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const mutation = useAskMutation(session)
+  const streamingMessageRef = useRef<Message | null>(null)
+
+  useEffect(() => {
+    if (!mutation.currentChunk) return
+
+    // Create a local copy of the current chunk to avoid race conditions
+    const currentChunk = mutation.currentChunk
+
+    setMessages((prevMessages) => {
+      // Create a new array to maintain immutability
+      const newMessages = [...prevMessages]
+      const lastMessage = newMessages[newMessages.length - 1]
+
+      if (
+        streamingMessageRef.current &&
+        lastMessage === streamingMessageRef.current
+      ) {
+        // Create a new message object instead of mutating the existing one
+        newMessages[newMessages.length - 1] = {
+          ...lastMessage,
+          content: lastMessage.content + currentChunk,
+        }
+      } else {
+        // Create new message object
+        const newMessage = {
+          content: currentChunk,
+          isUser: false,
+        }
+        newMessages.push(newMessage)
+        streamingMessageRef.current = newMessage
+      }
+
+      return newMessages
+    })
+  }, [mutation.currentChunk])
+
+  useEffect(() => {
+    // Cleanup function for when component unmounts
+    return () => {
+      streamingMessageRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!mutation.isPending) {
+      streamingMessageRef.current = null
+    }
+  }, [mutation.isPending])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmedInput = input.trim()
     if (!trimmedInput) return
 
-    //add user message
     setMessages((prev) => [...prev, { content: trimmedInput, isUser: true }])
     setInput("")
 
-    //trigger ai response
     mutation.mutate(trimmedInput, {
-      onSuccess: (data) => {
-        setMessages((prev) => [
-          ...prev,
-          { content: data.answer, isUser: false },
-        ])
-      },
       onError: () => {
         setMessages((prev) => [
           ...prev,
           {
-            content: "sorry, couldnt process your request. please try again",
+            content: "Sorry, couldn't process your request. Please try again.",
             isUser: false,
           },
         ])
@@ -74,16 +122,17 @@ export const ChatContentPage = () => {
 
         {messages.length > 0 ? (
           <ScrollArea className="no-scrollbar h-[50vh] [&>div>div]:!scroll-smooth">
-            {messages.map((message, index) => (
-              <MessageBubble key={index} message={message} />
-            ))}
-            {mutation.isPending && (
-              <div className="text-center">
-                <TextShimmerWave className="font-mono text-sm" duration={1}>
-                  march assistant is thinking...
-                </TextShimmerWave>
-              </div>
-            )}
+            <>
+              {messages.map((message, index) => (
+                <MessageBubble
+                  key={index}
+                  message={message}
+                  isStreaming={
+                    index === messages.length - 1 && mutation.isPending
+                  }
+                />
+              ))}
+            </>
           </ScrollArea>
         ) : (
           <div></div>

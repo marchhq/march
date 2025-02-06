@@ -2,7 +2,7 @@ import { validateGoogleUser, getUserByEmail, createGoogleUser, createGithubUser,
 import { generateJWTTokenPair } from "../../utils/jwt.service.js";
 import { BlackList } from "../../models/core/black-list.model.js";
 import { logsnag } from "../../loaders/logsnag.loader.js";
-import { typeQueue } from "../../jobs/type.job.js";
+import { initQueue } from "../../loaders/bullmq.loader.js";
 
 const authenticateWithGoogleController = async (req, res, next) => {
     try {
@@ -39,15 +39,7 @@ const authenticateWithGoogleController = async (req, res, next) => {
                     name: user.fullName
                 }
             });
-
-            // Add job to typeQueue
-            await typeQueue.add('typeQueue', { user: user._id }, {
-                attempts: 3,
-                backoff: 1000, // 1 second delay between retries
-                timeout: 30000 // Job timeout set to 30 seconds
-            });
-
-            console.log("Job added to typeueue");
+            await initQueue.add('initQueue', { user: user._id });
         }
 
         const tokenPair = await generateJWTTokenPair(user);
@@ -95,14 +87,8 @@ const authenticateWithGithubController = async (req, res, next) => {
                 }
             });
 
-            // Add job to typeQueue
-            await typeQueue.add('typeQueue', { user: user._id }, {
-                attempts: 3,
-                backoff: 1000, // 1 second delay between retries
-                timeout: 30000 // Job timeout set to 30 seconds
-            });
-
-            console.log("Job added to typeQueue");
+            // Add job to initQueue
+            await initQueue.add('initQueue', { user: user._id });
         }
         const tokenPair = await generateJWTTokenPair(user)
         res.status(200).json({
