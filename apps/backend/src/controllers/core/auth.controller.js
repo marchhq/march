@@ -47,7 +47,7 @@ const authenticateWithGoogleController = async (req, res, next) => {
                 timeout: 30000 // Job timeout set to 30 seconds
             });
 
-            console.log("Job added to typeueue");
+            // console.log("Job added to typeueue");
         }
 
         const tokenPair = await generateJWTTokenPair(user);

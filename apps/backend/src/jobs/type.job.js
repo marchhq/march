@@ -2,9 +2,12 @@ import { Worker } from "bullmq";
 import { typeQueue } from "../loaders/bullmq.loader.js";
 import { redisConnection } from "../loaders/redis.loader.js";
 import { createType } from "../services/lib/type.service.js";
+import { createArray } from "../services/lib/array.service.js";
 
 const processTypeJob = async (job) => {
     const { user } = job.data;
+    const arrayData = { name: "Home", icon: "home", identifier: "home" };
+    await createArray(user, arrayData);
 
     const types = [
         { "slug": "todo" },
@@ -12,7 +15,7 @@ const processTypeJob = async (job) => {
         { "slug": "bookmark" },
         { "slug": "meeting" }
     ];
-
+    // create everything at once
     try {
         for (const type of types) {
             await createType(user, type);

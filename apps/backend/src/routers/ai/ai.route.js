@@ -1059,6 +1059,33 @@
 // export default router;
 
 // restart and final code experimets are over
+
+// Stream AI responses word-by-word with context handling --> steam function without the greeting
+// async function * streamAIResponse (prompt, hasContext = true) {
+//     try {
+//         if (!hasContext) {
+//             const introPrompt = `The user has asked: "${prompt}"
+//             Please respond according to your introduction protocol as March Assistant.`;
+
+//             const result = await chatModel.generateContentStream(introPrompt);
+//             for await (const chunk of result.stream) {
+//                 yield chunk.text();
+//             }
+//             return;
+//         }
+
+//         const result = await chatModel.generateContentStream(prompt);
+//         for await (const chunk of result.stream) {
+//             yield chunk.text();
+//         }
+//     } catch (error) {
+//         if (error.message.includes('503') || error.message.includes('overloaded')) {
+//             yield "I apologize, but I'm experiencing high load. Please try again.";
+//         }
+//         throw error;
+//     }
+// }
+
 import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pinecone } from "@pinecone-database/pinecone";
@@ -1210,32 +1237,6 @@ Content: ${item.content}
 ---`
     ).join('\n');
 }
-
-// Stream AI responses word-by-word with context handling
-// async function * streamAIResponse (prompt, hasContext = true) {
-//     try {
-//         if (!hasContext) {
-//             const introPrompt = `The user has asked: "${prompt}"
-//             Please respond according to your introduction protocol as March Assistant.`;
-
-//             const result = await chatModel.generateContentStream(introPrompt);
-//             for await (const chunk of result.stream) {
-//                 yield chunk.text();
-//             }
-//             return;
-//         }
-
-//         const result = await chatModel.generateContentStream(prompt);
-//         for await (const chunk of result.stream) {
-//             yield chunk.text();
-//         }
-//     } catch (error) {
-//         if (error.message.includes('503') || error.message.includes('overloaded')) {
-//             yield "I apologize, but I'm experiencing high load. Please try again.";
-//         }
-//         throw error;
-//     }
-// }
 
 async function * streamAIResponse (prompt, hasContext = true) {
     try {
