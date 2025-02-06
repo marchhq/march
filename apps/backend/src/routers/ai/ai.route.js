@@ -1109,20 +1109,28 @@ const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serve
 
 Your core capabilities include:
 1. Storing and retrieving user's notes, tasks, and other information
-2. Answering questions based on stored content
-3. Helping users organize and understand their information
-4. Maintaining context across conversations
+2. Creating new tasks and notes based on user requests
+3. Answering questions based on stored content
+4. Helping users organize and understand their information
+5. Maintaining context across conversations
 
 When responding without stored context:
 - Introduce yourself as March Assistant
 - Explain that you can help manage and retrieve personal information
-- Offer to store new information or suggest ways to use the system
+- Offer to store new information or create new tasks/notes
+- Suggest ways to use the system
 
 When responding with context:
 - Directly answer questions using stored information
 - Synthesize multiple pieces of information when relevant
 - Maintain a helpful and professional tone
 - Format responses clearly using markdown when appropriate
+
+When creating new tasks or notes:
+- Extract clear titles and descriptions from user requests
+- Identify and set appropriate due dates if mentioned
+- Confirm creation with relevant details
+- Offer to help find or modify the created items
 
 Always be:
 - Clear and direct in your responses
@@ -1143,29 +1151,36 @@ const chatModel = genAI.getGenerativeModel({
 
 // Retry failed operations with exponential backoff
 async function withRetry (operation, maxRetries = 3, delay = 1000) {
+    let lastError;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             return await operation();
         } catch (error) {
-            if (attempt === maxRetries) throw error;
-            if (error.message.includes('503') || error.message.includes('overloaded')) {
-                await new Promise(resolve => setTimeout(resolve, delay * attempt));
-                continue;
-            }
-            throw error;
+            lastError = error;
+            if (attempt === maxRetries) break;
+
+            const shouldRetry = error.message.includes('503') ||
+                              error.message.includes('overloaded') ||
+                              error.message.includes('timeout');
+
+            if (!shouldRetry) throw error;
+
+            await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
         }
     }
+    throw lastError;
 }
-
 // Convert text to vector representation for semantic search
 async function generateEmbedding (text) {
     return withRetry(async () => {
         try {
             const result = await embeddingModel.embedContent(text);
             const embedding = result.embedding.values;
-            if (!embedding || embedding.length === 0) {
-                throw new Error("Empty embedding generated");
+
+            if (!embedding?.length) {
+                throw new Error("Invalid embedding generated");
             }
+
             return embedding;
         } catch (error) {
             console.error("Embedding generation failed:", error);
@@ -1176,25 +1191,33 @@ async function generateEmbedding (text) {
 
 // Function to clean metadata before saving
 function cleanMetadata (object) {
+    if (!object?.user) {
+        throw new Error("Invalid object: missing user reference");
+    }
+
     return {
-        title: object.title || "",
-        description: object.description || "",
-        type: object.type || "",
-        source: object.source || "",
-        status: object.status || "",
-        dueDate: object.dueDate ?? "", // Convert null to an empty string
-        isCompleted: object.isCompleted ?? false, // Convert null to false
+        title: object.title?.trim() || "",
+        description: object.description?.trim() || "",
+        type: object.type?.toLowerCase() || "",
+        source: object.source?.toLowerCase() || "",
+        status: object.status?.toLowerCase() || "",
+        dueDate: object.dueDate ? new Date(object.dueDate).toISOString() : "",
+        isCompleted: Boolean(object.isCompleted),
         userId: object.user.toString()
     };
 }
 
-// Save content to vector store
+// Enhanced content saving with better error handling
 async function saveContent (object) {
+    if (!object?._id) {
+        throw new Error("Invalid object: missing _id");
+    }
+
     const embedding = await generateEmbedding(
         `${object.title} ${object.description} ${object.type}`
     );
 
-    const metadata = cleanMetadata(object); // Ensure no null values
+    const metadata = cleanMetadata(object);
 
     await withRetry(async () => {
         await pineconeIndex.upsert([{
@@ -1203,24 +1226,22 @@ async function saveContent (object) {
             metadata: metadata
         }]);
     });
+
+    return object;
 }
-// // Store content in both MongoDB and Pinecone vector database
 
 // Search for relevant content using vector similarity
 async function searchContent (query, userId, options = { limit: 8 }) {
     try {
-        // Check if the query contains a source keyword
         const sourcePattern = /(linear|github|march)/i;
         const match = query.match(sourcePattern);
         const sourceFilter = match ? match[0].toLowerCase() : null;
 
-        // Generate embedding for the query
         const queryEmbedding = await generateEmbedding(query);
 
-        // Prepare the filter for the search
         const filter = {
             userId: userId.toString(),
-            ...(sourceFilter ? { source: sourceFilter } : {}) // Apply source filter if matched
+            ...(sourceFilter && { source: sourceFilter })
         };
 
         const searchResults = await pineconeIndex.query({
@@ -1239,15 +1260,67 @@ async function searchContent (query, userId, options = { limit: 8 }) {
         throw error;
     }
 }
-
 // Format retrieved content for AI processing
 function formatContextForAI (relevantContent) {
-    return relevantContent.map(item =>
-        `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
-        Title: ${item.title}
-        Content: ${item.content}
----`
-    ).join('\n');
+    if (!Array.isArray(relevantContent) || relevantContent.length === 0) {
+        return "";
+    }
+
+    return relevantContent
+        .map(item => {
+            if (!item?.title || !item?.type) return null;
+            return `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
+Title: ${item.title}
+Content: ${item.description || "No content available"}
+---`;
+        })
+        .filter(Boolean)
+        .join('\n');
+}
+// create object by ai --> keep it lowkey
+
+function isObjectCreationIntent (query) {
+    const creationPatterns = [
+        /create\s+(a|an)\s+(task|note|todo|reminder)/i,
+        /add\s+(a|an)\s+(task|note|todo|reminder)/i,
+        /make\s+(a|an)\s+(task|note|todo|reminder)/i,
+        /save\s+(a|an)\s+(task|note|todo|reminder)/i,
+        /set\s+(a|an)\s+(reminder|task)/i
+    ];
+    return creationPatterns.some(pattern => pattern.test(query));
+}
+
+async function createObjectFromAI (content, userId) {
+    try {
+        console.log("ahere i am", content)
+        if (!content?.title || !userId) {
+            throw new Error("Invalid content or userId");
+        }
+
+        console.log("Creating object from AI:", content);
+
+        const newObject = new Object({
+            title: content.title.trim(),
+            description: content.description?.trim() || "",
+            type: content.type?.toLowerCase() || "todo",
+            source: "march",
+            status: content.status?.toLowerCase() || "null",
+            dueDate: content.dueDate ? new Date(content.dueDate) : null,
+            user: userId,
+            metadata: {
+                createdByAI: true,
+                originalQuery: content.originalQuery,
+                createdAt: new Date().toISOString()
+            }
+        });
+
+        const savedObject = await newObject.save();
+        await saveContent(savedObject);
+        return savedObject;
+    } catch (error) {
+        console.error("Error creating object from AI:", error);
+        throw error;
+    }
 }
 
 router.post("/content", async (req, res) => {
@@ -1294,38 +1367,130 @@ router.post("/sync", async (req, res) => {
     }
 });
 
-async function * streamAIResponse (prompt, hasContext = true) {
+// async function * streamAIResponse (prompt, hasContext = true) {
+//     try {
+//         // Check for greeting patterns
+//         const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+
+//         if (greetingPatterns.test(prompt.trim())) {
+//             const greetingResponse = `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you manage your tasks, notes, and information. I can:
+//             - Store and organize your notes and tasks
+//             - Answer questions about your stored information
+//             - Help you stay organized and productive
+
+// W           hat would you like help with today?`;
+
+//             yield greetingResponse;
+//             return;
+//         }
+
+//         // Prepare the actual query with or without context
+//         const finalPrompt = hasContext
+//             ? prompt
+//             : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`
+
+//         // Generate response from AI model
+//         const result = await chatModel.generateContentStream(finalPrompt);
+
+//         for await (const chunk of result.stream) {
+//             yield chunk.text(); // Ensure streaming occurs properly
+//         }
+//     } catch (error) {
+//         if (error.message.includes('503') || error.message.includes('overloaded')) {
+//             yield "I apologize, but I'm experiencing high load. Please try again.";
+//             return; // Stop execution to prevent duplicate responses
+//         }
+//         throw error;
+//     }
+// }
+
+async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
-        // Check for greeting patterns
-        const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+        if (shouldSkipContextSearch(prompt)) {
+            yield `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you:
+            - Store and organize tasks and notes
+            - Answer questions about your information
+            - Create new tasks and reminders
+            - Help you stay organized
 
-        if (greetingPatterns.test(prompt.trim())) {
-            const greetingResponse = `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you manage your tasks, notes, and information. I can:
-            - Store and organize your notes and tasks
-            - Answer questions about your stored information
-            - Help you stay organized and productive
-
-W           hat would you like help with today?`;
-
-            yield greetingResponse;
+            What would you like help with today?`;
             return;
         }
 
-        // Prepare the actual query with or without context
+        if (isObjectCreationIntent(prompt)) {
+            const creationPrompt = `
+                Parse this request: "${prompt}"
+                Create a task with these details in JSON format:
+                {
+                    "title": "Clear, specific title",
+                    "description": "Detailed description of the task",
+                    "type": "todo",
+                    "status": "null",
+                    "dueDate": null
+                }
+                Only respond with valid JSON, no other text.
+            `;
+
+            try {
+                const result = await chatModel.generateContent(creationPrompt);
+                const responseText = result.response.text();
+                let objectData;
+                try {
+                    objectData = JSON.parse(responseText.trim());
+                } catch (parseError) {
+                    console.error("JSON Parse Error:", parseError);
+                    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        objectData = JSON.parse(jsonMatch[0]);
+                    } else {
+                        throw parseError;
+                    }
+                }
+
+                // Create default object if parsing failed
+                if (!objectData || !objectData.title) {
+                    objectData = {
+                        title: prompt.replace(/create\s+(a|an)\s+(task|note|todo)/i, '').trim(),
+                        description: "Task created from user request",
+                        type: "todo",
+                        status: "null"
+                    };
+                }
+
+                const createdObject = await createObjectFromAI({
+                    ...objectData,
+                    originalQuery: prompt
+                }, userId);
+
+                // Yield creation confirmation
+                yield `✓ Created new task:\n\n`;
+                yield `Title: ${createdObject.title}\n`;
+                yield `Description: ${createdObject.description}\n`;
+                if (createdObject.dueDate) {
+                    yield `Due Date: ${new Date(createdObject.dueDate).toLocaleDateString()}\n`;
+                }
+                yield `\nTask saved successfully. I can help you find or update it later.`;
+                return;
+            } catch (error) {
+                console.error("Error in object creation:", error);
+                yield "I understood you wanted to create a task, but encountered an issue. Please try again with more details.";
+                return;
+            }
+        }
+
         const finalPrompt = hasContext
             ? prompt
-            : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`
+            : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`;
 
-        // Generate response from AI model
         const result = await chatModel.generateContentStream(finalPrompt);
 
         for await (const chunk of result.stream) {
-            yield chunk.text(); // Ensure streaming occurs properly
+            yield chunk.text();
         }
     } catch (error) {
         if (error.message.includes('503') || error.message.includes('overloaded')) {
-            yield "I apologize, but I'm experiencing high load. Please try again.";
-            return; // Stop execution to prevent duplicate responses
+            yield "I'm experiencing high load right now. Please try again in a moment.";
+            return;
         }
         throw error;
     }
@@ -1333,64 +1498,48 @@ W           hat would you like help with today?`;
 
 router.get("/ask", async (req, res) => {
     try {
-        console.log('Query received:', req.query);
-        console.log('User ID:', req.user._id);
-
         const { query } = req.query;
         const userId = req.user._id;
 
         if (!query?.trim()) {
             return res.status(400).json({ error: "Query is required" });
         }
-
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
 
-        // Skip context search for greetings
         if (shouldSkipContextSearch(query)) {
-            const stream = streamAIResponse(query, false);
+            const stream = streamAIResponse(query, false, userId);
             for await (const chunk of stream) {
-                console.log('Streaming chunk:', chunk);
                 res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
             }
             res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-            return res.end(); // Ensure early return to stop the response flow here
+            return res.end();
         }
 
-        // Handle search and filter based on query
         const relevantContent = await searchContent(query, userId, { limit: 5 });
-        console.log('Search results:', relevantContent);
 
-        // If no relevant content, stream AI response with suggestion
         if (relevantContent.length === 0) {
-            console.log('No relevant content found, using intro mode');
-            const stream = streamAIResponse(query, false);
+            const stream = streamAIResponse(query, false, userId);
             for await (const chunk of stream) {
-                console.log('Streaming chunk:', chunk);
                 res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
             }
             res.write(`data: ${JSON.stringify({
                 done: true,
                 hasStoredContent: false,
-                suggestion: "Try saving some information first using the /content endpoint"
+                suggestion: "Try saving some information or creating new tasks to get started"
             })}\n\n`);
             return res.end();
         }
 
         const context = formatContextForAI(relevantContent);
-        console.log('Formatted context:', context);
-
         const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
-        console.log('Generated prompt:', prompt);
 
-        const stream = streamAIResponse(prompt, true);
+        const stream = streamAIResponse(prompt, true, userId);
         for await (const chunk of stream) {
-            console.log('Streaming chunk:', chunk);
             res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
         }
 
-        console.log('Stream completed successfully');
         res.write(`data: ${JSON.stringify({
             done: true,
             hasStoredContent: true,
@@ -1401,7 +1550,7 @@ router.get("/ask", async (req, res) => {
             }))
         })}\n\n`);
 
-        return res.end(); // Final response sent once the streaming is done
+        return res.end();
     } catch (error) {
         console.error("Error in /ask route:", error);
         res.write(`data: ${JSON.stringify({
