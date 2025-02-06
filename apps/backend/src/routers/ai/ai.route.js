@@ -1107,14 +1107,6 @@ const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
 // AI personality and behavior instructions
 const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant. you are build by march team.Your goal is to directly address the question concisely and to the point, without excessive elaboration.
 
-To generate your answer:
-- Carefully analyze the question and identify the key information needed to address it
-- Concisely summarize the relevant information from the higher-scoring context(s) in your own words
-- Provide a direct answer to the question
-- Use markdown formatting in your answer, including bold, italics, and bullet points as appropriate to improve readability and highlight key points
-- Give detailed and accurate responses for things like 'write a blog' or long-form questions.
-
-If no context is provided, introduce yourself and explain that the user can save content which will allow you to answer questions about that content in the future. Do not provide an answer if no context is provided
 
 Your core capabilities include:
 1. Storing and retrieving user's notes, tasks, and other information
@@ -1124,7 +1116,6 @@ Your core capabilities include:
 5. Maintaining context across conversations
 
 When responding without stored context:
-- Introduce yourself as March Assistant
 - Explain that you can help manage and retrieve personal information
 - Offer to store new information or create new tasks/notes
 - Suggest ways to use the system
@@ -1294,8 +1285,12 @@ function isObjectCreationIntent (query) {
         /add\s+(a|an)\s+(task|note|todo|reminder)/i,
         /make\s+(a|an)\s+(task|note|todo|reminder)/i,
         /save\s+(a|an)\s+(task|note|todo|reminder)/i,
-        /set\s+(a|an)\s+(reminder|task)/i
+        /set\s+(a|an)\s+(reminder|task)/i,
+        /add/i,
+        /save/i,
+        /create/i
     ];
+    // console.log("creationPatterns: ", creationPatterns.some(pattern => pattern.test(query)))
     return creationPatterns.some(pattern => pattern.test(query));
 }
 
@@ -1330,28 +1325,26 @@ async function createObjectFromAI (content, userId) {
         throw error;
     }
 }
-
 router.post("/content", async (req, res) => {
     try {
-        const { title, content, type } = req.body;
-        const userId = req.user._id;
-
-        if (!title?.trim() || !content?.trim()) {
-            return res.status(400).json({ error: "Title and content are required" });
+        const { content } = req.body;
+        if (!content) {
+            return res.status(400).json({ error: "Content is required" });
         }
 
-        const savedContent = await saveContent(title, content, userId, type);
-        res.json(savedContent);
+        const savedContent = await saveContent({ content });
+        res.status(201).json({ message: "Content saved successfully", savedContent });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Error saving content:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
 // Add this function to check response content
-export function shouldSkipContextSearch (query) {
-    const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
-    return greetingPatterns.test(query.trim());
-}
+// export function shouldSkipContextSearch (query) {
+//     const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+//     return greetingPatterns.test(query.trim());
+// }
 // sync data with vector db --> lowkey
 router.post("/sync", async (req, res) => {
     console.log("Syncing content...");
@@ -1415,29 +1408,52 @@ router.post("/sync", async (req, res) => {
 
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
-        if (shouldSkipContextSearch(prompt)) {
-            yield `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you:
-            - Store and organize tasks and notes
-            - Answer questions about your information
-            - Create new tasks and reminders
-            - Help you stay organized
+        // if (shouldSkipContextSearch(prompt)) {
+        //     yield `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you:
+        //     - Store and organize tasks and notes
+        //     - Answer questions about your information
+        //     - Create new tasks and reminders
+        //     - Help you stay organized
 
-            What would you like help with today?`;
-            return;
-        }
+        //     What would you like help with today?`;
+        //     return;
+        // }
 
         if (isObjectCreationIntent(prompt)) {
+            console.log("Creating object from AI:", prompt);
             const creationPrompt = `
-                Parse this request: "${prompt}"
-                Create a task with these details in JSON format:
-                {
-                    "title": "Clear, specific title",
-                    "description": "Detailed description of the task",
-                    "type": "todo",
-                    "status": "null",
-                    "dueDate": null
-                }
-                Only respond with valid JSON, no other text.
+            Parse this request: "${prompt}"
+            Analyze the text for any date/time references including:
+            - Explicit dates (tomorrow, today, next week, next month)
+            - Time references (after school, this evening, tonight)
+            - Day references (on Monday, this Sunday)
+            - Relative dates (in 2 days, in a week)
+            
+            Create a task with these details in JSON format:
+            
+            {
+                "title": "Clear, specific title",
+                "description": "Detailed description of the task",
+                "type": "todo",
+                "status": "null",
+                "dueDate": null // Format rules:
+                // 1. For "today" -> current date in YYYY-MM-DD
+                // 2. For "tomorrow" -> next day in YYYY-MM-DD
+                // 3. For days of week -> next occurrence in YYYY-MM-DD
+                // 4. For "after school" -> current date + default time 3:00 PM
+                // 5. For relative dates -> calculated date in YYYY-MM-DD
+                // 6. If no date mentioned -> null
+            }
+            
+            Examples of date parsing:
+            Input: "buy milk after school" -> dueDate: "2024-02-06T15:00:00Z"
+            Input: "go to gym tomorrow" -> dueDate: "2024-02-07"
+            Input: "submit report next Monday" -> dueDate: "2024-02-12"
+            Input: "call mom in 3 days" -> dueDate: "2024-02-09"
+            Input: "do homework tonight" -> dueDate: "2024-02-06T19:00:00Z"
+            Input: "buy groceries" -> dueDate: null
+            
+            Extract the task details and create a clear title and description. Set the dueDate based on the date/time references found in the text. Only respond with valid JSON, no other text.
             `;
 
             try {
@@ -1517,14 +1533,14 @@ router.get("/ask", async (req, res) => {
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
 
-        if (shouldSkipContextSearch(query)) {
-            const stream = streamAIResponse(query, false, userId);
-            for await (const chunk of stream) {
-                res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-            }
-            res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-            return res.end();
-        }
+        // if (shouldSkipContextSearch(query)) {
+        //     const stream = streamAIResponse(query, false, userId);
+        //     for await (const chunk of stream) {
+        //         res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+        //     }
+        //     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+        //     return res.end();
+        // }
 
         const relevantContent = await searchContent(query, userId, { limit: 5 });
 
