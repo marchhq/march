@@ -31,7 +31,6 @@ app.post("/github/webhook", handleGithubWebhook);
 app.post("/sms", handleSmsItemCreation);
 
 initRoutes(app);
-initWorker;
 // Express error handler
 app.use((err, req, res, next) => {
     console.log(err);
