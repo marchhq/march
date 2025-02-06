@@ -1207,14 +1207,26 @@ async function saveContent (object) {
 // // Store content in both MongoDB and Pinecone vector database
 
 // Search for relevant content using vector similarity
-async function searchContent (query, userId, options = { limit: 5 }) {
+async function searchContent (query, userId, options = { limit: 8 }) {
     try {
+        // Check if the query contains a source keyword
+        const sourcePattern = /(linear|github|march)/i;
+        const match = query.match(sourcePattern);
+        const sourceFilter = match ? match[0].toLowerCase() : null;
+
+        // Generate embedding for the query
         const queryEmbedding = await generateEmbedding(query);
+
+        // Prepare the filter for the search
+        const filter = {
+            userId: userId.toString(),
+            ...(sourceFilter ? { source: sourceFilter } : {}) // Apply source filter if matched
+        };
 
         const searchResults = await pineconeIndex.query({
             vector: queryEmbedding,
             topK: options.limit,
-            filter: { userId: userId.toString() },
+            filter: filter,
             includeMetadata: true
         });
 
@@ -1232,48 +1244,10 @@ async function searchContent (query, userId, options = { limit: 5 }) {
 function formatContextForAI (relevantContent) {
     return relevantContent.map(item =>
         `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
-Title: ${item.title}
-Content: ${item.content}
+        Title: ${item.title}
+        Content: ${item.content}
 ---`
     ).join('\n');
-}
-
-// Handle content creation requests
-async function * streamAIResponse (prompt, hasContext = true) {
-    try {
-        // Check for greeting patterns
-        const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
-
-        if (greetingPatterns.test(prompt.trim())) {
-            const greetingResponse = `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you manage your tasks, notes, and information. I can:
-- Store and organize your notes and tasks
-- Answer questions about your stored information
-- Help you stay organized and productive
-
-What would you like help with today?`;
-
-            yield greetingResponse; // Yield full response instead of word-by-word
-            return;
-        }
-
-        // Prepare the actual query
-        const finalPrompt = hasContext
-            ? prompt
-            : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`
-
-        // Generate response from AI model
-        const result = await chatModel.generateContentStream(finalPrompt);
-
-        for await (const chunk of result.stream) {
-            yield chunk.text(); // Ensure streaming occurs properly
-        }
-    } catch (error) {
-        if (error.message.includes('503') || error.message.includes('overloaded')) {
-            yield "I apologize, but I'm experiencing high load. Please try again.";
-            return; // Stop execution to prevent duplicate responses
-        }
-        throw error;
-    }
 }
 
 router.post("/content", async (req, res) => {
@@ -1320,7 +1294,42 @@ router.post("/sync", async (req, res) => {
     }
 });
 
-// Handle streaming question-answering requests
+async function * streamAIResponse (prompt, hasContext = true) {
+    try {
+        // Check for greeting patterns
+        const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+
+        if (greetingPatterns.test(prompt.trim())) {
+            const greetingResponse = `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you manage your tasks, notes, and information. I can:
+            - Store and organize your notes and tasks
+            - Answer questions about your stored information
+            - Help you stay organized and productive
+
+W           hat would you like help with today?`;
+
+            yield greetingResponse;
+            return;
+        }
+
+        // Prepare the actual query with or without context
+        const finalPrompt = hasContext
+            ? prompt
+            : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`
+
+        // Generate response from AI model
+        const result = await chatModel.generateContentStream(finalPrompt);
+
+        for await (const chunk of result.stream) {
+            yield chunk.text(); // Ensure streaming occurs properly
+        }
+    } catch (error) {
+        if (error.message.includes('503') || error.message.includes('overloaded')) {
+            yield "I apologize, but I'm experiencing high load. Please try again.";
+            return; // Stop execution to prevent duplicate responses
+        }
+        throw error;
+    }
+}
 
 router.get("/ask", async (req, res) => {
     try {
@@ -1349,6 +1358,7 @@ router.get("/ask", async (req, res) => {
             return res.end(); // Ensure early return to stop the response flow here
         }
 
+        // Handle search and filter based on query
         const relevantContent = await searchContent(query, userId, { limit: 5 });
         console.log('Search results:', relevantContent);
 
