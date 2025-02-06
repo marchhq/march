@@ -9,8 +9,7 @@ import { handleGithubWebhook } from "./controllers/integration/github.controller
 import { handleSmsItemCreation } from "./controllers/integration/message.controller.js";
 import bodyParser from "body-parser";
 import { linearWorker } from "./jobs/linear.job.js"
-import { typeWorker } from "./jobs/type.job.js";
-import { addCycleJob } from "./jobs/cycle.job.js";
+import { initWorker } from "./jobs/init.job.js";
 
 const { ValidationError } = Joi;
 const app = express();
@@ -32,7 +31,7 @@ app.post("/github/webhook", handleGithubWebhook);
 app.post("/sms", handleSmsItemCreation);
 
 initRoutes(app);
-addCycleJob();
+initWorker;
 // Express error handler
 app.use((err, req, res, next) => {
     console.log(err);
