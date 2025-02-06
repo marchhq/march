@@ -35,6 +35,19 @@ export const ChatContentPage = () => {
   const [input, setInput] = useState("")
   const mutation = useAskMutation(session)
   const streamingMessageRef = useRef<Message | null>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
+
+  // Function to scroll to bottom
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      const scrollableDiv = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      )
+      if (scrollableDiv) {
+        scrollableDiv.scrollTop = scrollableDiv.scrollHeight
+      }
+    }
+  }
 
   useEffect(() => {
     if (!mutation.currentChunk) return
@@ -55,6 +68,9 @@ export const ChatContentPage = () => {
       }
       return [...newMessages]
     })
+
+    // Scroll to bottom whenever content updates
+    requestAnimationFrame(scrollToBottom)
   }, [mutation.currentChunk])
 
   useEffect(() => {
@@ -77,6 +93,9 @@ export const ChatContentPage = () => {
     setMessages((prev) => [...prev, { content: trimmedInput, isUser: true }])
     setInput("")
 
+    // Scroll to bottom after sending message
+    requestAnimationFrame(scrollToBottom)
+
     mutation.mutate(trimmedInput, {
       onError: () => {
         setMessages((prev) => [
@@ -86,6 +105,8 @@ export const ChatContentPage = () => {
             isUser: false,
           },
         ])
+        // Scroll to bottom on error message
+        requestAnimationFrame(scrollToBottom)
       },
     })
   }
@@ -100,7 +121,10 @@ export const ChatContentPage = () => {
         </h1>
 
         {messages.length > 0 ? (
-          <ScrollArea className="no-scrollbar h-[50vh] [&>div>div]:!scroll-smooth">
+          <ScrollArea
+            ref={scrollAreaRef}
+            className="no-scrollbar h-[50vh] [&>div>div]:!scroll-smooth"
+          >
             {messages.map((message, index) => (
               <MessageBubble key={index} message={message} />
             ))}
