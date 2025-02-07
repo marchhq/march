@@ -5,6 +5,7 @@ import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
 import { Source } from '../../models/lib/source.model.js';
+import { saveContent } from '../../routers/ai/ai.route.js';
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.
@@ -352,7 +353,7 @@ const handleWebhookEvent = async (payload) => {
                     "cycle.endsAt": endsAt,
                     updatedAt: issue.updatedAt
                 }, { new: true });
-
+                saveContent(updatedIssue);
                 message = `Updated issue with ID: ${issue.id}`;
                 action = "update"
                 broadcastObject = updatedIssue;
@@ -378,6 +379,7 @@ const handleWebhookEvent = async (payload) => {
                 });
 
                 const savedIssue = await newIssue.save();
+                saveContent(savedIssue);
                 message = `Created new issue with ID: ${issue.id}`;
                 action = "create"
                 broadcastObject = savedIssue;
