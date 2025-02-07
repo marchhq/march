@@ -40,7 +40,7 @@ const ProfilePage: React.FC = () => {
       <div className="flex items-center space-x-4">
         <Link
           href="/today"
-          className="text-gray-400 transition-colors hover:text-gray-600"
+          className="text-gray-400 hover:text-gray-600 transition-colors"
         >
           <ChevronLeft size={20} />
         </Link>
@@ -50,13 +50,13 @@ const ProfilePage: React.FC = () => {
       {/* Main Content */}
       <div className="space-y-10">
         {/* User Info */}
-        <div className="border-b border-gray-100 pb-6">
+        <div className="pb-6 border-b border-gray-100">
           <UserInfo user={user} />
         </div>
 
         {/* Integrations */}
         <div className="pb-6">
-          <h2 className="mb-4 text-sm font-medium text-gray-900">
+          <h2 className="text-sm font-medium text-gray-900 mb-4">
             Integrations
           </h2>
           <div className="bg-white">
@@ -69,7 +69,7 @@ const ProfilePage: React.FC = () => {
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700"
+            className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             <LogOutIcon size={16} className="mr-2" />
             <span>Log out</span>

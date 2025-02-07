@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/src/lib/constants/cookie"
+import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
 
 /**
  * Asynchronously retrieves the session token.
@@ -36,9 +36,7 @@ const setSession = async (session: string): Promise<void> => {
  * @returns A Promise that resolves to void.
  */
 const clearSession = async (): Promise<void> => {
-  const cookieStore = await cookies()
-  cookieStore.delete(ACCESS_TOKEN)
-  cookieStore.delete(REFRESH_TOKEN)
+  ;(await cookies()).delete(ACCESS_TOKEN)
   return redirect("/")
 }
 
