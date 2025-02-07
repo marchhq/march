@@ -43,7 +43,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   const response = NextResponse.redirect(
-    new URL(res.isNewUser ? "/calendar" : "/today", redirectDomain)
+    new URL(res.isNewUser ? "/calendar" : "/chat", redirectDomain)
   )
 
   response.cookies.set(ACCESS_TOKEN, res.accessToken, {
