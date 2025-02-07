@@ -112,7 +112,7 @@ export const ChatContentPage = () => {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
       <div className="w-full max-w-2xl space-y-8">
         <h1 className="text-center text-4xl font-bold">
           <TextEffect per="char" preset="fade">
