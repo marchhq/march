@@ -17,9 +17,7 @@ export const Navbar = async () => {
   const user = await getUserProfile(accessToken)
 
   return (
-    <nav
-      className={`sticky top-0 ${user === null ? "hidden" : "flex"} h-14 items-center bg-white`}
-    >
+    <nav className={` ${user === null ? "hidden" : "flex"}  h-14 items-center`}>
       <div className="flex w-full items-center justify-between px-8">
         <div className="flex items-center">
           {/* Logo */}
@@ -35,15 +33,18 @@ export const Navbar = async () => {
               <span className="text-base font-medium">march</span>
             </Link>
           </div>
+
           {/* Navigation Dropdown */}
           <div className="ml-2">
             <NavDropdown />
           </div>
         </div>
+
         {/* Profile */}
         <div className="flex items-center pr-4">
           <Link href="/profile" className="flex items-center">
             <div className="flex size-8 items-center justify-center rounded-full bg-gray-100 text-sm font-medium text-gray-700">
+              {/* {user?.userName?.[0]?.toUpperCase() || 'U'} */}
               {user ? (
                 <Image
                   src={user.avatar}
