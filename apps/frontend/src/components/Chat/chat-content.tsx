@@ -36,6 +36,7 @@ export const ChatContentPage = () => {
   const mutation = useAskMutation(session)
   const streamingMessageRef = useRef<Message | null>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Function to scroll to bottom
   const scrollToBottom = () => {
@@ -74,7 +75,8 @@ export const ChatContentPage = () => {
   }, [mutation.currentChunk])
 
   useEffect(() => {
-    if (!mutation.isPending) {
+    if (!mutation.isPending && textareaRef.current) {
+      textareaRef.current.focus()
       streamingMessageRef.current = null
     }
   }, [mutation.isPending])
@@ -134,6 +136,7 @@ export const ChatContentPage = () => {
         )}
 
         <ChatTextarea
+          ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onSubmit={handleSubmit}
