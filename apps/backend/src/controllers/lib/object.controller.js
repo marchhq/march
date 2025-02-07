@@ -1,5 +1,6 @@
 import { createObject, createInboxObject, filterObjects, updateObject, getAllObjectsByBloack, getObject, getObjectFilterByLabel, searchObjectsByTitle, getThisWeekObjectsByDateRange, getUserFavoriteObjects, getSubObjects, getObjectsBySource, getObjectsByTypeAndSource } from "../../services/lib/object.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
+import { saveContent } from "../../routers/ai/ai.route.js"
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -63,6 +64,7 @@ const createInboxObjectController = async (req, res, next) => {
         }
 
         const object = await createInboxObject(user, objectData);
+        saveContent(object);
 
         res.status(200).json({
             response: object

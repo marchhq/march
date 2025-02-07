@@ -1090,6 +1090,7 @@ import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { Object } from "../../models/lib/object.model.js";
+import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
 
 const router = Router();
 
@@ -1103,39 +1104,6 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
 // Model for converting text to vectors
 const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
-
-// AI personality and behavior instructions
-const SYSTEM_PROMPT = `You are a helpful and intelligent AI assistant that serves as a personal knowledge manager. Your name is March Assistant. you are build by march team.Your goal is to directly address the question concisely and to the point, without excessive elaboration.
-
-
-Your core capabilities include:
-1. Storing and retrieving user's notes, tasks, and other information
-2. Creating new tasks and notes based on user requests
-3. Answering questions based on stored content
-4. Helping users organize and understand their information
-5. Maintaining context across conversations
-
-When responding without stored context:
-- Explain that you can help manage and retrieve personal information
-- Offer to store new information or create new tasks/notes
-- Suggest ways to use the system
-
-When responding with context:
-- Directly answer questions using stored information
-- Synthesize multiple pieces of information when relevant
-- Maintain a helpful and professional tone
-- Format responses clearly using markdown when appropriate
-
-When creating new tasks or notes:
-- Extract clear titles and descriptions from user requests
-- Identify and set appropriate due dates if mentioned
-- Confirm creation with relevant details
-- Offer to help find or modify the created items
-
-Always be:
-- Clear and direct in your responses
-- Helpful in suggesting next steps
-- Honest about what information is or isn't available`;
 
 // Configure chat model with specific parameters
 const chatModel = genAI.getGenerativeModel({
@@ -1208,7 +1176,8 @@ function cleanMetadata (object) {
 }
 
 // Enhanced content saving with better error handling
-async function saveContent (object) {
+export async function saveContent (object) {
+    // console.log("Saving content:", object);
     if (!object?._id) {
         throw new Error("Invalid object: missing _id");
     }
@@ -1280,20 +1249,23 @@ Content: ${item.description || "No content available"}
 // create object by ai --> keep it lowkey
 
 function isObjectCreationIntent (query) {
+    if (!query || typeof query !== "string") return false;
+
+    query = query.toLowerCase().trim();
     const creationPatterns = [
-        /create\s+(a|an)\s+(task|note|todo|reminder)/i,
-        /add\s+(a|an)\s+(task|note|todo|reminder)/i,
-        /make\s+(a|an)\s+(task|note|todo|reminder)/i,
-        /save\s+(a|an)\s+(task|note|todo|reminder)/i,
-        /set\s+(a|an)\s+(reminder|task)/i,
-        /add/i,
-        /save/i,
-        /create/i
+        /\b(create|add|make|save|set|schedule|write|record)\s*(task|note|todo|reminder)?\b/i, // Matches full expressions
+        /^\s*\b(create|add|set|schedule)\b\s*/i // Matches "add" and "create" even if alone
     ];
-    // console.log("creationPatterns: ", creationPatterns.some(pattern => pattern.test(query)))
+    const exclusionPatterns = [
+        /\b(check|find|look for|search|show|retrieve|get|see)\b/i
+    ];
+
+    if (exclusionPatterns.some(pattern => pattern.test(query))) {
+        return false;
+    }
+
     return creationPatterns.some(pattern => pattern.test(query));
 }
-
 async function createObjectFromAI (content, userId) {
     try {
         if (!content?.title || !userId) {
