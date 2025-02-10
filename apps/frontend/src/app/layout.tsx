@@ -14,6 +14,7 @@ import classNames from "@/src/utils/classNames"
 
 import "../styles/main.css"
 import "../styles/tiptap.css"
+import "../styles/calendar.css"
 
 // Fonts
 const sansFont = Inter({
