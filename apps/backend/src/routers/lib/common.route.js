@@ -65,7 +65,6 @@ router.route("/overdue/").get(getUserOverdueObjectsController);
 router.route("/favorite/").get(getUserFavoriteObjectsController);
 router.route("/setDate/").post(moveObjecttoDateController);
 router.route("/items/").get(getObjectsByTypeAndSourceController);
-router.route("/:date/").get(getUserObjectsByDateController);
 
 /* Journal Routes
 -------------------------------------------------- */
@@ -94,8 +93,13 @@ router.route("/get-link-preview/").post(linkPreviewGeneratorController);
 
 /* Types Routes
 -------------------------------------------------- */
-router.route("/types/").post(createTypeController);
-router.route("/types/").get(getAllTypesController);
+router.route("/types/")
+    .post(createTypeController)
+    .get(getAllTypesController);
+
 router.route("/types/:slug").get(getTypesBySlugController);
+
+/* Dynamic Date Route */
+router.route("/:date/").get(getUserObjectsByDateController);
 
 export default router;
