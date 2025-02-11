@@ -15,7 +15,7 @@ export const NavDropdown = () => {
     { path: "/chat", label: "chat" },
     { path: "/today", label: "today" },
     { path: "/inbox", label: "inbox" },
-    { path: "/objects", label: "all objects" },
+    //    { path: "/objects", label: "all objects" },
   ]
 
   const defaultRoute = routes[0] // Default to "today"
