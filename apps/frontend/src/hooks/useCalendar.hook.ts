@@ -1,7 +1,6 @@
 import { useState } from "react"
 
 import {
-  CalendarEventExternal,
   createViewDay,
   createViewMonthAgenda,
   createViewMonthGrid,
@@ -15,6 +14,13 @@ import { createEventsServicePlugin } from "@schedule-x/events-service"
 import { useNextCalendarApp } from "@schedule-x/react"
 import { createResizePlugin } from "@schedule-x/resize"
 
+interface CalendarEvent {
+  id: number
+  title: string
+  start: string
+  end: string
+}
+
 interface UseCalendarProps {
   defaultView?: string
   theme?: string
@@ -24,7 +30,7 @@ const useCalendar = ({
   defaultView = viewWeek.name,
   theme = "shadcn",
 }: UseCalendarProps = {}) => {
-  const [events, setEvents] = useState<CalendarEventExternal[]>([])
+  const [events, setEvents] = useState<CalendarEvent[]>([])
   const [eventId, setEventId] = useState(1)
 
   const plugins = [
@@ -50,7 +56,7 @@ const useCalendar = ({
     plugins
   )
 
-  const handleAddEvent = (eventData: Omit<CalendarEventExternal, "id">) => {
+  const handleAddEvent = (eventData: Omit<CalendarEvent, "id">) => {
     const newEvent = {
       id: eventId,
       ...eventData,
