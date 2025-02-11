@@ -1,7 +1,7 @@
 import React from "react"
 
 import { Providers } from "./providers"
-import { SecondNavbar } from "@/src/components/navbar/second-navbar"
+import { Navbar } from "@/src/components/navbar/navbar"
 import PageTracker from "@/src/components/PageTracker"
 import { getInitialData } from "@/src/lib/server/actions/initial-data"
 import { getSession } from "@/src/lib/server/actions/sessions"
@@ -17,7 +17,7 @@ export default async function AppLayout({ children }: Props) {
   return (
     <Providers initialData={initialData}>
       <div className="flex flex-col">
-        <SecondNavbar />
+        <Navbar />
         <main className="">
           <div className="mx-auto max-w-5xl">
             <PageTracker />
