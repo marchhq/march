@@ -40,7 +40,7 @@ const StackConnect: React.FC = () => {
   const handleContinue = () => {
     setIsLoading(true)
     setTimeout(() => {
-      router.push("/today")
+      router.push("/chat")
     }, 1500)
   }
 
