@@ -51,11 +51,13 @@ const createStreamRequest = (
 
 export const useAskMutation = (session: string) => {
   const [currentChunk, setCurrentChunk] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(false)
   const eventSourceRef = useRef<EventSourcePolyfill | null>(null)
 
   const mutation = useMutation({
     mutationFn: async (query: string) => {
       setCurrentChunk("") // Reset at start
+      setIsLoading(true)
 
       // Close previous SSE connection if still active
       if (eventSourceRef.current) {
@@ -71,7 +73,6 @@ export const useAskMutation = (session: string) => {
             (chunk) => {
               setCurrentChunk((prev) => prev + chunk)
             },
-            // Add these callback handlers
             {
               onComplete: () => {
                 resolve(true)
@@ -85,7 +86,12 @@ export const useAskMutation = (session: string) => {
               },
             }
           )
+
+          eventSourceRef.current.onopen = () => {
+            setIsLoading(false)
+          }
         } catch (error) {
+          setIsLoading(false)
           reject(error)
           eventSourceRef.current?.close()
           eventSourceRef.current = null
@@ -93,6 +99,7 @@ export const useAskMutation = (session: string) => {
       })
     },
     onSettled: () => {
+      setIsLoading(false)
       if (eventSourceRef.current) {
         eventSourceRef.current.close()
         eventSourceRef.current = null
@@ -103,5 +110,6 @@ export const useAskMutation = (session: string) => {
   return {
     ...mutation,
     currentChunk,
+    isLoading,
   }
 }
