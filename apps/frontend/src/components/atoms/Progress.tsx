@@ -24,7 +24,7 @@ export const ProgressBar = (): JSX.Element => {
       {paths.map((path, index) => (
         <div
           key={index}
-          className={`size-2 rounded-full ${currentPath === index + 1 ? "bg-gray-100" : "bg-gray-color"}`}
+          className={`size-2 rounded-full ${currentPath === index + 1 ? "bg-primary-foreground" : "bg-gray-color"}`}
         ></div>
       ))}
     </div>

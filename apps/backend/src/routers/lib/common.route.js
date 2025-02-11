@@ -37,6 +37,7 @@ import { uploadFileController } from "../../controllers/lib/fileAsset.controller
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
 import { linkPreviewGeneratorController } from "../../controllers/lib/linkPreview.controller.js";
+import { createTypeController, getAllTypesController, getTypesBySlugController } from "../../controllers/lib/type.controller.js";
 
 const router = Router();
 
@@ -64,7 +65,6 @@ router.route("/overdue/").get(getUserOverdueObjectsController);
 router.route("/favorite/").get(getUserFavoriteObjectsController);
 router.route("/setDate/").post(moveObjecttoDateController);
 router.route("/items/").get(getObjectsByTypeAndSourceController);
-router.route("/:date/").get(getUserObjectsByDateController);
 
 /* Journal Routes
 -------------------------------------------------- */
@@ -90,5 +90,16 @@ router.route("/file-assets/upload/")
 -------------------------------------------------- */
 router.route("/feedback/").post(feedbackController);
 router.route("/get-link-preview/").post(linkPreviewGeneratorController);
+
+/* Types Routes
+-------------------------------------------------- */
+router.route("/types/")
+    .post(createTypeController)
+    .get(getAllTypesController);
+
+router.route("/types/:slug").get(getTypesBySlugController);
+
+/* Dynamic Date Route */
+router.route("/:date/").get(getUserObjectsByDateController);
 
 export default router;
