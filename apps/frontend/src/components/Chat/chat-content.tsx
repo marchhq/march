@@ -9,20 +9,29 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { Message } from "@/src/lib/@types/Items/Chat"
 import { useAskMutation } from "@/src/queries/useAsk"
 
-function MessageBubble({ message }: { message: Message | null }) {
-  if (!message) return null
+interface MessageBubbleProps {
+  message: Message | null
+  isLoading?: boolean
+}
+
+function MessageBubble({ message, isLoading = false }: MessageBubbleProps) {
+  if (!message && !isLoading) return null
 
   return (
-    <div className={`mb-4 ${message.isUser ? "text-right" : "text-left"}`}>
+    <div className={`mb-4 ${message?.isUser ? "text-right" : "text-left"}`}>
       <div
         className={`inline-block rounded-lg p-2 px-4 ${
-          message.isUser
+          message?.isUser
             ? "bg-primary-foreground text-white"
             : "rounded-xl border bg-primary text-black shadow-sm"
         }`}
       >
         <div className="whitespace-pre-wrap text-sm">
-          <p>{message.content}</p>
+          {isLoading ? (
+            <div className="loader"></div>
+          ) : (
+            <p>{message?.content}</p>
+          )}
         </div>
       </div>
     </div>
@@ -128,8 +137,9 @@ export const ChatContentPage = () => {
             className="no-scrollbar h-[50vh] [&>div>div]:!scroll-smooth"
           >
             {messages.map((message, index) => (
-              <MessageBubble key={index} message={message} />
+              <MessageBubble key={index} message={message} isLoading={false} />
             ))}
+            {mutation.isLoading && <MessageBubble message={null} isLoading />}
           </ScrollArea>
         ) : (
           <div></div>
