@@ -2,12 +2,13 @@ import { Object } from "../../models/lib/object.model.js";
 import { getLabelByName } from "./label.service.js";
 
 const getInboxObjects = async (me) => {
+    console.log("hey", me);
     const objects = await Object.find({
         user: me,
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
-        arrays: { $exists: true, $eq: [] },
+        // arrays: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
         "cycle.startsAt": null,
