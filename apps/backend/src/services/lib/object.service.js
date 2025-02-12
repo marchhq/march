@@ -2,7 +2,6 @@ import { Object } from "../../models/lib/object.model.js";
 import { getLabelByName } from "./label.service.js";
 
 const getInboxObjects = async (me) => {
-    console.log("hey", me);
     const objects = await Object.find({
         user: me,
         isCompleted: false,

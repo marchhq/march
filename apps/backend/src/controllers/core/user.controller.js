@@ -63,7 +63,6 @@ const updateUserController = async (req, res, next) => {
 
 const getInboxObjectsController = async (req, res, next) => {
     try {
-        console.log("hey");
         const me = req.user._id;
 
         const objects = await getInboxObjects(me);
@@ -118,7 +117,6 @@ const getThisWeekObjectsController = async (req, res, next) => {
 
 const updateInboxObjectController = async (req, res, next) => {
     try {
-        console.log("updateInboxObjectController");
         const me = req.user._id;
         const { object: id } = req.params;
         const updateData = req.body;
