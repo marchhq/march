@@ -51,7 +51,7 @@ router.route("/objects/without-date/").get(getInboxObjectsController);
 router.route("/objects/with-date/").get(getObjectsWithDateController);
 router.route("/objects/source/").get(getObjectsBySourceController);
 
-router.route("/inbox/:item/")
+router.route("/inbox/:object/")
     .get(getInboxObjectController)
     .put(updateInboxObjectController);
 
