@@ -1,52 +1,45 @@
 "use client"
 
-import {
-  createViewDay,
-  createViewMonthAgenda,
-  createViewMonthGrid,
-  createViewWeek,
-  viewWeek,
-} from "@schedule-x/calendar"
-import { createCurrentTimePlugin } from "@schedule-x/current-time"
-import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop"
-import { createEventModalPlugin } from "@schedule-x/event-modal"
-import { useNextCalendarApp, ScheduleXCalendar } from "@schedule-x/react"
-import { createResizePlugin } from "@schedule-x/resize"
+import React, { useEffect, useRef } from "react"
+
+import { ScheduleXCalendar } from "@schedule-x/react"
 
 import "@schedule-x/theme-shadcn/dist/index.css"
+import { EventModal } from "../../modals/EventModal"
+import useCalendar from "@/src/hooks/useCalendar.hook"
 
 function CalendarBlock() {
-  const plugins = [
-    createDragAndDropPlugin(),
-    createResizePlugin(),
-    createCurrentTimePlugin(),
-    createEventModalPlugin(),
-  ]
+  const { calendar, handleAddEvent } = useCalendar()
+  const calendarRef = useRef<HTMLDivElement>(null)
 
-  const calendar = useNextCalendarApp(
-    {
-      defaultView: viewWeek.name,
-      views: [
-        createViewDay(),
-        createViewWeek(),
-        createViewMonthGrid(),
-        createViewMonthAgenda(),
-      ],
-      events: [
-        {
-          id: "1",
-          title: "march stand up",
-          start: "2025-02-10 10:00",
-          end: "2025-02-10 11:00",
-        },
-      ],
-      theme: "shadcn",
-    },
-    plugins
-  )
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (calendarRef.current) {
+        const { width, height } = calendarRef.current.getBoundingClientRect()
+        calendarRef.current.style.setProperty(
+          "--sx-calendar-width",
+          `${width}px`
+        )
+        calendarRef.current.style.setProperty(
+          "--sx-calendar-height",
+          `${height}px`
+        )
+      }
+    })
+
+    if (calendarRef.current) {
+      resizeObserver.observe(calendarRef.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
   return (
-    <div>
+    <div ref={calendarRef} className="size-full overflow-hidden">
       <ScheduleXCalendar calendarApp={calendar} />
+      <EventModal onAddEvent={handleAddEvent} />
     </div>
   )
 }

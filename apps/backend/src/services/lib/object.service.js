@@ -7,7 +7,7 @@ const getInboxObjects = async (me) => {
         isCompleted: false,
         isArchived: false,
         isDeleted: false,
-        arrays: { $exists: true, $eq: [] },
+        // arrays: { $exists: true, $eq: [] },
         status: { $nin: ["archive", "done"] },
         dueDate: null,
         "cycle.startsAt": null,

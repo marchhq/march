@@ -1,6 +1,10 @@
 .sx-react-calendar-wrapper {
-  width: 1200px;
-  max-width: 100vw;
-  height: 800px;
-  max-height: 90vh;
+  width: var(--sx-calendar-width, 100%) !important;
+  height: var(--sx-calendar-height, 100%) !important;
+  max-width: 70% !important;
+  max-height: 90% !important;
+}
+
+:root {
+  --sx-color-primary: #F04842 !important
 }

@@ -157,3 +157,9 @@ export const getUserDate = (timezone: string | null): Date => {
     return new Date()
   }
 }
+
+export const roundToNext15 = (date: Date) => {
+  const minutes = Math.ceil(date.getMinutes() / 15) * 15
+  date.setMinutes(minutes, 0, 0)
+  return date
+}
