@@ -4,3 +4,7 @@
   max-width: 70% !important;
   max-height: 90% !important;
 }
+
+:root {
+  --sx-color-primary: #F04842 !important
+}
