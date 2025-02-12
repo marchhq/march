@@ -5,6 +5,7 @@ import {
   createViewMonthAgenda,
   createViewMonthGrid,
   createViewWeek,
+  viewDay,
   viewWeek,
 } from "@schedule-x/calendar"
 import { createCurrentTimePlugin } from "@schedule-x/current-time"
@@ -27,7 +28,7 @@ interface UseCalendarProps {
 }
 
 const useCalendar = ({
-  defaultView = viewWeek.name,
+  defaultView = viewDay.name,
   theme = "shadcn",
 }: UseCalendarProps = {}) => {
   const [events, setEvents] = useState<CalendarEvent[]>([])
