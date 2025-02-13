@@ -17,6 +17,7 @@ export const extractMetadata = (object) => {
     return {
         objectId: object._id?.toString() || "",
         title: object.title || "",
+        description: object.description || "",
         type: object.type || "",
         source: object.source || "",
         status: object.status || "",

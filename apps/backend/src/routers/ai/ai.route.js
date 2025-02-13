@@ -410,7 +410,7 @@ router.post("/content", async (req, res) => {
         if (!data) {
             return res.status(400).json({ error: "Content is required" });
         }
-        const object = await Object.create(data);
+        const object = await Object.create({ user: req.user._id, ...data });
         const savedContent = await saveContent(object);
         res.status(201).json({ message: "Content saved successfully", savedContent, object });
     } catch (error) {
