@@ -3,7 +3,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { cleanMetadata } from "../../utils/helper.service.js";
+import { extractMetadata } from "../../utils/helper.service.js";
+// import { extractEnhancedMetadata } from "../../utils/helper.service.js";
 
 const router = Router();
 
@@ -70,23 +71,56 @@ async function generateEmbedding (text) {
     });
 }
 
-// Enhanced content saving with better error handling
+async function generateEnhancedEmbedding (text, context = {}) {
+    //  a rich contextual string by combining the text with relevant context
+    const contextualText = [
+        text,
+        context.type && `type:${context.type}`,
+        context.source && `platform:${context.source}`,
+        context.status && `status:${context.status}`,
+        context.dueDate && `due:${new Date(context.dueDate).toISOString()}`,
+        context.priority && `priority:${context.priority}`,
+        context.labels?.length && `labels:${context.labels.join(',')}`,
+        context.isCompleted && 'state:completed',
+        context.isArchived && 'state:archived',
+        context.relatedTasks?.map(task => `related:${task}`).join(' ')
+    ]
+        .filter(Boolean)
+        .join(' ');
+
+    return await generateEmbedding(contextualText);
+}
+
 export async function saveContent (object) {
     if (!object?._id) {
         throw new Error("Invalid object: missing _id");
     }
 
-    const embedding = await generateEmbedding(
-        `${object.title} ${object.description} ${object.type}`
+    const context = {
+        type: object.type,
+        source: object.source,
+        status: object.status,
+        dueDate: object.dueDate,
+        priority: object.metadata?.priority || 'medium',
+        labels: object.labels?.map(label => label.toString()),
+        isCompleted: object.isCompleted,
+        completedAt: object.completedAt || 'null',
+        isArchived: object.isArchived,
+        relatedTasks: object.arrays?.map(id => id.toString())
+    };
+
+    const embedding = await generateEnhancedEmbedding(
+        `${object.title} ${object.description}`,
+        context
     );
+    const enhancedMetadata = extractMetadata(object);
 
-    const metadata = cleanMetadata(object);
-
+    // save to Pinecone with retry
     await withRetry(async () => {
         await pineconeIndex.upsert([{
             id: object._id.toString(),
             values: embedding,
-            metadata: metadata
+            metadata: enhancedMetadata
         }]);
     });
 
@@ -372,13 +406,13 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
 
 router.post("/content", async (req, res) => {
     try {
-        const { content } = req.body;
-        if (!content) {
+        const data = req.body;
+        if (!data) {
             return res.status(400).json({ error: "Content is required" });
         }
-
-        const savedContent = await saveContent({ content });
-        res.status(201).json({ message: "Content saved successfully", savedContent });
+        const object = await Object.create(data);
+        const savedContent = await saveContent(object);
+        res.status(201).json({ message: "Content saved successfully", savedContent, object });
     } catch (error) {
         console.error("Error saving content:", error);
         res.status(500).json({ error: "Internal Server Error" });
