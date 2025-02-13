@@ -45,9 +45,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     setCurrentItem,
   } = useCycleItemStore()
 
-  const { events, fetchEventsByDate, currentEvent, setCurrentEvent } =
-    useEventsStore()
-
   const {
     items: byDateItems,
     error: byDateError,
@@ -61,10 +58,9 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
 
   useEffect(() => {
     const date = format(selectedDate, "yyyy-MM-dd").toLowerCase()
-    fetchEventsByDate(session, date)
     fetchByDate(session, date)
     fetchOverdue(session, date)
-  }, [session, selectedDate, fetchOverdue, fetchByDate, fetchEventsByDate])
+  }, [session, selectedDate, fetchOverdue, fetchByDate])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -143,12 +139,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     [currentItem, setCurrentItem, isControlHeld]
   )
 
-  const handleMeetingExpand = (item: Event) => {
-    if (!currentEvent || currentEvent.id !== item.id) {
-      setCurrentEvent(item)
-    }
-  }
-
   const handleDone = useCallback(
     (
       event: React.MouseEvent,
@@ -202,7 +192,7 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
     setDate(newDate)
   }
 
-  if (byDateItems.length + overdueItems.length + events.length > 0) {
+  if (byDateItems.length + overdueItems.length > 0) {
     return (
       <div className="no-scrollbar flex h-full flex-col gap-4 pb-5">
         <div>
@@ -217,11 +207,6 @@ export const TodayItems: React.FC<TodayEventsProps> = ({
             </div>
           )}
           <div className="flex flex-col gap-2.5">
-            <ItemList
-              items={events}
-              handleExpand={handleExpand}
-              handleMeetingExpand={handleMeetingExpand}
-            />
             <ItemList
               items={byDateItems}
               handleExpand={handleExpand}
