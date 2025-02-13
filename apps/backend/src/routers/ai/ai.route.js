@@ -1,18 +1,11 @@
 import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Pinecone } from "@pinecone-database/pinecone";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { extractMetadata, generateEmbedding, generateEnhancedEmbedding } from "../../utils/helper.service.js";
+import { saveContent, searchContent } from "../../utils/helper.service.js";
 
 const router = Router();
 
-// Initialize services with API keys
-const pinecone = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY
-});
-
-const pineconeIndex = pinecone.index("my-ai-index");
 export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
 // Configure chat model with specific parameters
@@ -27,94 +20,6 @@ const chatModel = genAI.getGenerativeModel({
     systemInstruction: SYSTEM_PROMPT
 });
 
-// Retry failed operations with exponential backoff
-async function withRetry (operation, maxRetries = 3, delay = 1000) {
-    let lastError;
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            return await operation();
-        } catch (error) {
-            lastError = error;
-            if (attempt === maxRetries) break;
-
-            const shouldRetry = error.message.includes('503') ||
-                              error.message.includes('overloaded') ||
-                              error.message.includes('timeout');
-
-            if (!shouldRetry) throw error;
-
-            await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
-        }
-    }
-    throw lastError;
-}
-
-export async function saveContent (object) {
-    if (!object?._id) {
-        throw new Error("Invalid object: missing _id");
-    }
-
-    const context = {
-        type: object.type,
-        source: object.source,
-        status: object.status,
-        dueDate: object.dueDate,
-        priority: object.metadata?.priority || 'medium',
-        labels: object.labels?.map(label => label.toString()),
-        isCompleted: object.isCompleted,
-        completedAt: object.completedAt || 'null',
-        isArchived: object.isArchived,
-        relatedTasks: object.arrays?.map(id => id.toString())
-    };
-
-    const embedding = await generateEnhancedEmbedding(
-        `${object.title} ${object.description}`,
-        context
-    );
-    const enhancedMetadata = extractMetadata(object);
-
-    // save to Pinecone with retry
-    await withRetry(async () => {
-        await pineconeIndex.upsert([{
-            id: object._id.toString(),
-            values: embedding,
-            metadata: enhancedMetadata
-        }]);
-    });
-
-    return object;
-}
-
-// Search for relevant content using vector similarity
-async function searchContent (query, userId, options = { limit: 8 }) {
-    try {
-        const sourcePattern = /(linear|github|march)/i;
-        const match = query.match(sourcePattern);
-        const sourceFilter = match ? match[0].toLowerCase() : null;
-
-        const queryEmbedding = await generateEmbedding(query);
-
-        const filter = {
-            userId: userId.toString(),
-            ...(sourceFilter && { source: sourceFilter })
-        };
-
-        const searchResults = await pineconeIndex.query({
-            vector: queryEmbedding,
-            topK: options.limit,
-            filter: filter,
-            includeMetadata: true
-        });
-
-        return searchResults.matches.map(match => ({
-            ...match.metadata,
-            score: match.score
-        }));
-    } catch (error) {
-        console.error("Search failed:", error);
-        throw error;
-    }
-}
 // Format retrieved content for AI processing
 function formatContextForAI (relevantContent) {
     if (!Array.isArray(relevantContent) || relevantContent.length === 0) {

@@ -1,6 +1,6 @@
 import { createObject, createInboxObject, filterObjects, updateObject, getAllObjectsByBloack, getObject, getObjectFilterByLabel, searchObjectsByTitle, getThisWeekObjectsByDateRange, getUserFavoriteObjects, getSubObjects, getObjectsBySource, getObjectsByTypeAndSource } from "../../services/lib/object.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
-import { saveContent } from "../../routers/ai/ai.route.js"
+import { saveContent } from "../../utils/helper.service.js";
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;

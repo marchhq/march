@@ -2,8 +2,16 @@ import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Pinecone } from "@pinecone-database/pinecone";
 
 export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+
+// Initialize services with API keys
+const pinecone = new Pinecone({
+    apiKey: process.env.PINECONE_API_KEY
+});
+
+const pineconeIndex = pinecone.index("my-ai-index");
 
 // Model for converting text to vectors
 const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
@@ -102,4 +110,72 @@ export const generateEnhancedEmbedding = async (text, context = {}) => {
         .join(' ');
 
     return await generateEmbedding(contextualText);
+}
+
+export const saveContent = async (object) => {
+    if (!object?._id) {
+        throw new Error("Invalid object: missing _id");
+    }
+
+    const context = {
+        type: object.type,
+        source: object.source,
+        status: object.status,
+        dueDate: object.dueDate,
+        priority: object.metadata?.priority || 'medium',
+        labels: object.labels?.map(label => label.toString()),
+        isCompleted: object.isCompleted,
+        completedAt: object.completedAt || 'null',
+        isArchived: object.isArchived,
+        relatedTasks: object.arrays?.map(id => id.toString())
+    };
+
+    const embedding = await generateEnhancedEmbedding(
+        `${object.title} ${object.description}`,
+        context
+    );
+    const enhancedMetadata = extractMetadata(object);
+
+    // save to Pinecone with retry
+    await withRetry(async () => {
+        await pineconeIndex.upsert([{
+            id: object._id.toString(),
+            values: embedding,
+            metadata: enhancedMetadata
+        }]);
+    });
+
+    return object;
+}
+
+// need to improve
+// Search for relevant content using vector similarity
+export async function searchContent (query, userId, options = { limit: 8 }) {
+    try {
+        const sourcePattern = /(linear|github|march)/i;
+        const match = query.match(sourcePattern);
+        const sourceFilter = match ? match[0].toLowerCase() : null;
+
+        const queryEmbedding = await generateEmbedding(query);
+
+        const filter = {
+            userId: userId.toString(),
+            ...(sourceFilter && { source: sourceFilter })
+        };
+
+        const searchResults = await pineconeIndex.query({
+            vector: queryEmbedding,
+            topK: options.limit,
+            filter: filter,
+            includeMetadata: true
+        });
+
+        return searchResults.matches.map(match => ({
+            ...match.metadata,
+            score: match.score
+        }));
+    } catch (error) {
+        console.error("Search failed:", error);
+        throw error;
+    }
 }

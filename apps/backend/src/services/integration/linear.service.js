@@ -5,7 +5,7 @@ import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
 import { Source } from '../../models/lib/source.model.js';
-import { saveContent } from '../../routers/ai/ai.route.js';
+import { saveContent } from "../../utils/helper.service.js";
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.
