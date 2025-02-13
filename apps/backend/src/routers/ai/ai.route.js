@@ -3,8 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { extractMetadata } from "../../utils/helper.service.js";
-// import { extractEnhancedMetadata } from "../../utils/helper.service.js";
+import { extractMetadata, generateEmbedding, generateEnhancedEmbedding } from "../../utils/helper.service.js";
 
 const router = Router();
 
@@ -14,10 +13,7 @@ const pinecone = new Pinecone({
 });
 
 const pineconeIndex = pinecone.index("my-ai-index");
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-
-// Model for converting text to vectors
-const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
+export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
 // Configure chat model with specific parameters
 const chatModel = genAI.getGenerativeModel({
@@ -51,44 +47,6 @@ async function withRetry (operation, maxRetries = 3, delay = 1000) {
         }
     }
     throw lastError;
-}
-// Convert text to vector representation for semantic search
-async function generateEmbedding (text) {
-    return withRetry(async () => {
-        try {
-            const result = await embeddingModel.embedContent(text);
-            const embedding = result.embedding.values;
-
-            if (!embedding?.length) {
-                throw new Error("Invalid embedding generated");
-            }
-
-            return embedding;
-        } catch (error) {
-            console.error("Embedding generation failed:", error);
-            throw error;
-        }
-    });
-}
-
-async function generateEnhancedEmbedding (text, context = {}) {
-    //  a rich contextual string by combining the text with relevant context
-    const contextualText = [
-        text,
-        context.type && `type:${context.type}`,
-        context.source && `platform:${context.source}`,
-        context.status && `status:${context.status}`,
-        context.dueDate && `due:${new Date(context.dueDate).toISOString()}`,
-        context.priority && `priority:${context.priority}`,
-        context.labels?.length && `labels:${context.labels.join(',')}`,
-        context.isCompleted && 'state:completed',
-        context.isArchived && 'state:archived',
-        context.relatedTasks?.map(task => `related:${task}`).join(' ')
-    ]
-        .filter(Boolean)
-        .join(' ');
-
-    return await generateEmbedding(contextualText);
 }
 
 export async function saveContent (object) {
