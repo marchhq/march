@@ -1312,12 +1312,6 @@ router.post("/content", async (req, res) => {
     }
 });
 
-// Add this function to check response content
-// export function shouldSkipContextSearch (query) {
-//     const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
-//     return greetingPatterns.test(query.trim());
-// }
-// sync data with vector db --> lowkey
 router.post("/sync", async (req, res) => {
     console.log("Syncing content...");
     try {
@@ -1341,58 +1335,269 @@ router.post("/sync", async (req, res) => {
     }
 });
 
-// async function * streamAIResponse (prompt, hasContext = true) {
+// async function * streamAIResponse (prompt, hasContext = true, userId) {
 //     try {
-//         // Check for greeting patterns
-//         const greetingPatterns = /^(hi|hello|hey|good morning|good evening|good afternoon|how are you|help me)/i;
+//         if (isObjectCreationIntent(prompt)) {
+//             console.log("Creating object from AI:", prompt);
+//             const creationPrompt = `
+//             Parse this request: "${prompt}"
+//             Analyze the text for any date/time references including:
+//             - Explicit dates (tomorrow, today, next week, next month)
+//             - Time references (after school, this evening, tonight)
+//             - Day references (on Monday, this Sunday)
+//             - Relative dates (in 2 days, in a week)
+            
+//             Create a task with these details in JSON format:
+            
+//             {
+//                 "title": "Clear, specific title",
+//                 "description": "Detailed description of the task",
+//                 "type": "todo",
+//                 "status": "null",
+//                 "dueDate": null // Format rules:
+//                 // 1. For "today" -> current date in YYYY-MM-DD
+//                 // 2. For "tomorrow" -> next day in YYYY-MM-DD
+//                 // 3. For days of week -> next occurrence in YYYY-MM-DD
+//                 // 4. For "after school" -> current date + default time 3:00 PM
+//                 // 5. For relative dates -> calculated date in YYYY-MM-DD
+//                 // 6. If no date mentioned -> null
+//             }
+            
+//             Examples of date parsing:
+//             Input: "buy milk after school" -> dueDate: "2024-02-06T15:00:00Z"
+//             Input: "go to gym tomorrow" -> dueDate: "2024-02-07"
+//             Input: "submit report next Monday" -> dueDate: "2024-02-12"
+//             Input: "call mom in 3 days" -> dueDate: "2024-02-09"
+//             Input: "do homework tonight" -> dueDate: "2024-02-06T19:00:00Z"
+//             Input: "buy groceries" -> dueDate: null
+            
+//             Extract the task details and create a clear title and description. Set the dueDate based on the date/time references found in the text. Only respond with valid JSON, no other text.
+//             `;
 
-//         if (greetingPatterns.test(prompt.trim())) {
-//             const greetingResponse = `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you manage your tasks, notes, and information. I can:
-//             - Store and organize your notes and tasks
-//             - Answer questions about your stored information
-//             - Help you stay organized and productive
+//             try {
+//                 const result = await chatModel.generateContent(creationPrompt);
+//                 const responseText = result.response.text();
+//                 let objectData;
+//                 try {
+//                     objectData = JSON.parse(responseText.trim());
+//                 } catch (parseError) {
+//                     console.error("JSON Parse Error:", parseError);
+//                     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+//                     if (jsonMatch) {
+//                         objectData = JSON.parse(jsonMatch[0]);
+//                     } else {
+//                         throw parseError;
+//                     }
+//                 }
 
-// W           hat would you like help with today?`;
+//                 // Create default object if parsing failed
+//                 if (!objectData || !objectData.title) {
+//                     objectData = {
+//                         title: prompt.replace(/create\s+(a|an)\s+(task|note|todo)/i, '').trim(),
+//                         description: "Task created from user request",
+//                         type: "todo",
+//                         status: "null"
+//                     };
+//                 }
 
-//             yield greetingResponse;
-//             return;
+//                 const createdObject = await createObjectFromAI({
+//                     ...objectData,
+//                     originalQuery: prompt
+//                 }, userId);
+
+//                 // Yield creation confirmation
+//                 yield `✓ Created new task:\n\n`;
+//                 yield `Title: ${createdObject.title}\n`;
+//                 yield `Description: ${createdObject.description}\n`;
+//                 if (createdObject.dueDate) {
+//                     yield `Due Date: ${new Date(createdObject.dueDate).toLocaleDateString()}\n`;
+//                 }
+//                 yield `\nTask saved successfully. I can help you find or update it later.`;
+//                 return;
+//             } catch (error) {
+//                 console.error("Error in object creation:", error);
+//                 yield "I understood you wanted to create a task, but encountered an issue. Please try again with more details.";
+//                 return;
+//             }
 //         }
 
-//         // Prepare the actual query with or without context
 //         const finalPrompt = hasContext
 //             ? prompt
-//             : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`
+//             : `The user has asked: "${prompt}"\nPlease respond as March`;
 
-//         // Generate response from AI model
 //         const result = await chatModel.generateContentStream(finalPrompt);
-
 //         for await (const chunk of result.stream) {
-//             yield chunk.text(); // Ensure streaming occurs properly
+//             yield chunk.text();
 //         }
 //     } catch (error) {
 //         if (error.message.includes('503') || error.message.includes('overloaded')) {
-//             yield "I apologize, but I'm experiencing high load. Please try again.";
-//             return; // Stop execution to prevent duplicate responses
+//             yield "I'm experiencing high load right now. Please try again in a moment.";
+//             return;
 //         }
 //         throw error;
 //     }
 // }
 
+// router.get("/ask", async (req, res) => {
+//     try {
+//         const { query } = req.query;
+//         const userId = req.user._id;
+
+//         if (!query?.trim()) {
+//             return res.status(400).json({ error: "Query is required" });
+//         }
+//         res.setHeader('Content-Type', 'text/event-stream');
+//         res.setHeader('Cache-Control', 'no-cache');
+//         res.setHeader('Connection', 'keep-alive');
+
+//         const relevantContent = await searchContent(query, userId, { limit: 5 });
+//         console.log("Relevant Content Found:", relevantContent);
+
+//         if (relevantContent.length === 0) {
+//             const stream = streamAIResponse(query, false, userId);
+//             for await (const chunk of stream) {
+//                 console.log("hey saju: ", chunk);
+//                 res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+//             }
+//             res.write(`data: ${JSON.stringify({
+//                 done: true,
+//                 hasStoredContent: false,
+//                 suggestion: "Try saving some information or creating new tasks to get started"
+//             })}\n\n`);
+//             return res.end();
+//         }
+
+//         const context = formatContextForAI(relevantContent);
+//         const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
+
+//         const stream = streamAIResponse(prompt, true, userId);
+//         console.log("stream in line number 1473, ", stream);
+//         for await (const chunk of stream) {
+//             res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+//         }
+
+//         res.write(`data: ${JSON.stringify({
+//             done: true,
+//             hasStoredContent: true,
+//             relevantContent: relevantContent.map(({ title, type, score }) => ({
+//                 title,
+//                 type,
+//                 relevance: score
+//             }))
+//         })}\n\n`);
+
+//         return res.end();
+//     } catch (error) {
+//         console.error("Error in /ask route:", error);
+//         res.write(`data: ${JSON.stringify({
+//             error: "An error occurred while processing your request",
+//             details: process.env.NODE_ENV === 'development' ? error.message : undefined
+//         })}\n\n`);
+//         return res.end();
+//     }
+// });
+
+router.get("/ask", async (req, res) => {
+    try {
+        const { query } = req.query;
+        const userId = req.user._id;
+
+        if (!query?.trim()) {
+            return res.status(400).json({ error: "Query is required" });
+        }
+
+        // Set SSE headers only once at the beginning
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        // Prevent multiple responses by tracking if we've ended the response
+        let hasEnded = false;
+        // Handle client disconnect
+        req.on('close', () => {
+            hasEnded = true;
+        });
+
+        const relevantContent = await searchContent(query, userId, { limit: 5 });
+
+        if (hasEnded) return;
+
+        const sendChunk = (data) => {
+            if (!hasEnded) {
+                res.write(`data: ${JSON.stringify(data)}\n\n`);
+            }
+        };
+
+        if (relevantContent.length === 0) {
+            const stream = streamAIResponse(query, false, userId);
+            try {
+                for await (const chunk of stream) {
+                    if (hasEnded) break;
+                    sendChunk({ chunk });
+                }
+
+                if (!hasEnded) {
+                    sendChunk({
+                        done: true,
+                        hasStoredContent: false,
+                        suggestion: "Try saving some information or creating new tasks to get started"
+                    });
+                }
+            } catch (streamError) {
+                console.error("Stream error:", streamError);
+                if (!hasEnded) {
+                    sendChunk({ error: "Stream processing error" });
+                }
+            }
+        } else {
+            const context = formatContextForAI(relevantContent);
+            const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
+
+            const stream = streamAIResponse(prompt, true, userId);
+            try {
+                for await (const chunk of stream) {
+                    if (hasEnded) break;
+                    sendChunk({ chunk });
+                }
+
+                if (!hasEnded) {
+                    sendChunk({
+                        done: true,
+                        hasStoredContent: true,
+                        relevantContent: relevantContent.map(({ title, type, score }) => ({
+                            title,
+                            type,
+                            relevance: score
+                        }))
+                    });
+                }
+            } catch (streamError) {
+                console.error("Stream error:", streamError);
+                if (!hasEnded) {
+                    sendChunk({ error: "Stream processing error" });
+                }
+            }
+        }
+
+        if (!hasEnded) {
+            res.end();
+        }
+    } catch (error) {
+        console.error("Error in /ask route:", error);
+        if (!res.headersSent) {
+            res.setHeader('Content-Type', 'text/event-stream');
+        }
+        res.write(`data: ${JSON.stringify({
+            error: "An error occurred while processing your request",
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        })}\n\n`);
+        res.end();
+    }
+});
+
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
-        // if (shouldSkipContextSearch(prompt)) {
-        //     yield `Hi! I'm March Assistant, your intelligent knowledge companion. I can help you:
-        //     - Store and organize tasks and notes
-        //     - Answer questions about your information
-        //     - Create new tasks and reminders
-        //     - Help you stay organized
-
-        //     What would you like help with today?`;
-        //     return;
-        // }
-
         if (isObjectCreationIntent(prompt)) {
-            console.log("Creating object from AI:", prompt);
             const creationPrompt = `
             Parse this request: "${prompt}"
             Analyze the text for any date/time references including:
@@ -1402,36 +1607,19 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
             - Relative dates (in 2 days, in a week)
             
             Create a task with these details in JSON format:
-            
             {
                 "title": "Clear, specific title",
                 "description": "Detailed description of the task",
                 "type": "todo",
                 "status": "null",
-                "dueDate": null // Format rules:
-                // 1. For "today" -> current date in YYYY-MM-DD
-                // 2. For "tomorrow" -> next day in YYYY-MM-DD
-                // 3. For days of week -> next occurrence in YYYY-MM-DD
-                // 4. For "after school" -> current date + default time 3:00 PM
-                // 5. For relative dates -> calculated date in YYYY-MM-DD
-                // 6. If no date mentioned -> null
-            }
-            
-            Examples of date parsing:
-            Input: "buy milk after school" -> dueDate: "2024-02-06T15:00:00Z"
-            Input: "go to gym tomorrow" -> dueDate: "2024-02-07"
-            Input: "submit report next Monday" -> dueDate: "2024-02-12"
-            Input: "call mom in 3 days" -> dueDate: "2024-02-09"
-            Input: "do homework tonight" -> dueDate: "2024-02-06T19:00:00Z"
-            Input: "buy groceries" -> dueDate: null
-            
-            Extract the task details and create a clear title and description. Set the dueDate based on the date/time references found in the text. Only respond with valid JSON, no other text.
-            `;
+                "dueDate": null
+            }`;
 
             try {
                 const result = await chatModel.generateContent(creationPrompt);
                 const responseText = result.response.text();
                 let objectData;
+
                 try {
                     objectData = JSON.parse(responseText.trim());
                 } catch (parseError) {
@@ -1444,7 +1632,6 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
                     }
                 }
 
-                // Create default object if parsing failed
                 if (!objectData || !objectData.title) {
                     objectData = {
                         title: prompt.replace(/create\s+(a|an)\s+(task|note|todo)/i, '').trim(),
@@ -1459,14 +1646,10 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
                     originalQuery: prompt
                 }, userId);
 
-                // Yield creation confirmation
-                yield `✓ Created new task:\n\n`;
-                yield `Title: ${createdObject.title}\n`;
-                yield `Description: ${createdObject.description}\n`;
-                if (createdObject.dueDate) {
-                    yield `Due Date: ${new Date(createdObject.dueDate).toLocaleDateString()}\n`;
-                }
-                yield `\nTask saved successfully. I can help you find or update it later.`;
+                // Yield creation confirmation as a single response
+                yield `✓ Created new task:\n\nTitle: ${createdObject.title}\nDescription: ${createdObject.description}${
+                    createdObject.dueDate ? `\nDue Date: ${new Date(createdObject.dueDate).toLocaleDateString()}` : ''
+                }\n\nTask saved successfully. I can help you find or update it later.`;
                 return;
             } catch (error) {
                 console.error("Error in object creation:", error);
@@ -1477,10 +1660,9 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
 
         const finalPrompt = hasContext
             ? prompt
-            : `The user has asked: "${prompt}"\nPlease respond as March Assistant.`;
+            : `The user has asked: "${prompt}"\nPlease respond as March`;
 
         const result = await chatModel.generateContentStream(finalPrompt);
-
         for await (const chunk of result.stream) {
             yield chunk.text();
         }
@@ -1492,70 +1674,4 @@ async function * streamAIResponse (prompt, hasContext = true, userId) {
         throw error;
     }
 }
-
-router.get("/ask", async (req, res) => {
-    try {
-        const { query } = req.query;
-        const userId = req.user._id;
-
-        if (!query?.trim()) {
-            return res.status(400).json({ error: "Query is required" });
-        }
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-
-        // if (shouldSkipContextSearch(query)) {
-        //     const stream = streamAIResponse(query, false, userId);
-        //     for await (const chunk of stream) {
-        //         res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-        //     }
-        //     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-        //     return res.end();
-        // }
-
-        const relevantContent = await searchContent(query, userId, { limit: 5 });
-
-        if (relevantContent.length === 0) {
-            const stream = streamAIResponse(query, false, userId);
-            for await (const chunk of stream) {
-                res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-            }
-            res.write(`data: ${JSON.stringify({
-                done: true,
-                hasStoredContent: false,
-                suggestion: "Try saving some information or creating new tasks to get started"
-            })}\n\n`);
-            return res.end();
-        }
-
-        const context = formatContextForAI(relevantContent);
-        const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
-
-        const stream = streamAIResponse(prompt, true, userId);
-        for await (const chunk of stream) {
-            res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-        }
-
-        res.write(`data: ${JSON.stringify({
-            done: true,
-            hasStoredContent: true,
-            relevantContent: relevantContent.map(({ title, type, score }) => ({
-                title,
-                type,
-                relevance: score
-            }))
-        })}\n\n`);
-
-        return res.end();
-    } catch (error) {
-        console.error("Error in /ask route:", error);
-        res.write(`data: ${JSON.stringify({
-            error: "An error occurred while processing your request",
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        })}\n\n`);
-        return res.end();
-    }
-});
-
 export default router;
