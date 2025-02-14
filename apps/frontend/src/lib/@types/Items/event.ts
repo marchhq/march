@@ -7,6 +7,7 @@ export interface Event {
   created: string
   updated: string
   summary: string
+  description: string
   creator: {
     email: string
   }
@@ -15,11 +16,11 @@ export interface Event {
   }
   start: {
     dateTime: string
-    timeZone: string
+    timeZone?: string
   }
   end: {
     dateTime: string
-    timeZone: string
+    timeZone?: string
   }
   recurringEventId?: string
   originalStartTime?: {
@@ -68,4 +69,25 @@ export interface CalendarEvent {
   title: string
   start: string
   end: string
+}
+
+export interface EventFormData {
+  title: string
+  date: string
+  location: string
+  "start-time": string
+  "end-time": string
+  description: string
+}
+
+export interface EventPayload {
+  summary: string
+  location?: string
+  description?: string
+  start: {
+    dateTime: string
+  }
+  end: {
+    dateTime: string
+  }
 }

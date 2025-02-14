@@ -49,6 +49,7 @@ function CalendarBlock() {
       const formattedEvents = events.map((event) => ({
         id: event.id,
         title: event.summary,
+        description: event.description,
         start: formatEventDate(event.start.dateTime),
         end: formatEventDate(event.end.dateTime),
       }))
