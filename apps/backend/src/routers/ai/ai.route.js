@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
 import { saveContent, searchContent } from "../../utils/helper.service.js";
+import { QueryUnderstanding } from "../../utils/query.service.js";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ const chatModel = genAI.getGenerativeModel({
     },
     systemInstruction: SYSTEM_PROMPT
 });
+const queryUnderstanding = new QueryUnderstanding(chatModel);
 
 // Format retrieved content for AI processing
 function formatContextForAI (relevantContent) {
@@ -89,106 +91,193 @@ async function createObjectFromAI (content, userId) {
     }
 }
 
+// router.get("/ask", async (req, res) => {
+//     try {
+//         const { query } = req.query;
+//         const userId = req.user._id;
+
+//         if (!query?.trim()) {
+//             return res.status(400).json({ error: "Query is required" });
+//         }
+
+//         // Set SSE headers only once at the beginning
+//         res.setHeader('Content-Type', 'text/event-stream');
+//         res.setHeader('Cache-Control', 'no-cache');
+//         res.setHeader('Connection', 'keep-alive');
+
+//         // Prevent multiple responses by tracking if we've ended the response
+//         let hasEnded = false;
+//         // Handle client disconnect
+//         req.on('close', () => {
+//             hasEnded = true;
+//         });
+
+//         const relevantContent = await searchContent(query, userId, { limit: 5 });
+
+//         if (hasEnded) return;
+
+//         const sendChunk = (data) => {
+//             if (!hasEnded) {
+//                 res.write(`data: ${JSON.stringify(data)}\n\n`);
+//             }
+//         };
+
+//         if (relevantContent.length === 0) {
+//             const stream = streamAIResponse(query, false, userId);
+//             try {
+//                 for await (const chunk of stream) {
+//                     if (hasEnded) break;
+//                     sendChunk({ chunk });
+//                 }
+
+//                 if (!hasEnded) {
+//                     sendChunk({
+//                         done: true,
+//                         hasStoredContent: false,
+//                         suggestion: "Try saving some information or creating new tasks to get started"
+//                     });
+//                 }
+//             } catch (streamError) {
+//                 console.error("Stream error:", streamError);
+//                 if (!hasEnded) {
+//                     sendChunk({ error: "Stream processing error" });
+//                 }
+//             }
+//         } else {
+//             const context = formatContextForAI(relevantContent);
+//             const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
+
+//             const stream = streamAIResponse(prompt, true, userId);
+//             try {
+//                 for await (const chunk of stream) {
+//                     if (hasEnded) break;
+//                     sendChunk({ chunk });
+//                 }
+
+//                 if (!hasEnded) {
+//                     sendChunk({
+//                         done: true,
+//                         hasStoredContent: true,
+//                         relevantContent: relevantContent.map(({ title, type, score }) => ({
+//                             title,
+//                             type,
+//                             relevance: score
+//                         }))
+//                     });
+//                 }
+//             } catch (streamError) {
+//                 console.error("Stream error:", streamError);
+//                 if (!hasEnded) {
+//                     sendChunk({ error: "Stream processing error" });
+//                 }
+//             }
+//         }
+
+//         if (!hasEnded) {
+//             res.end();
+//         }
+//     } catch (error) {
+//         console.error("Error in /ask route:", error);
+//         if (!res.headersSent) {
+//             res.setHeader('Content-Type', 'text/event-stream');
+//         }
+//         res.write(`data: ${JSON.stringify({
+//             error: "An error occurred while processing your request",
+//             details: process.env.NODE_ENV === 'development' ? error.message : undefined
+//         })}\n\n`);
+//         res.end();
+//     }
+// });
+
+// router.get("/ask", async (req, res) => {
+//     try {
+//         const { query } = req.query;
+//         const userId = req.user._id;
+
+//         res.setHeader("Content-Type", "application/json");
+//         res.setHeader("Transfer-Encoding", "chunked");
+//         res.write(JSON.stringify({ status: "processing", message: "Analyzing query..." }) + "\n");
+
+//         // Analyze the query first
+//         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
+
+//         // Handle the response based on the analysis
+//         console.log("queryAnalysis: ", queryAnalysis);
+//         switch (queryAnalysis.type) {
+//         case 'creation':
+//             // Handle object creation
+//             const createdObject = await createObjectFromAI(queryAnalysis.data, userId);
+//             // Stream response...
+//             console.log("Created Object:", createdObject);
+//             break;
+
+//         case 'search':
+//             console.log("serching content");
+//             // Handle search with the provided parameters
+//             const relevantContent = await searchContent(query, userId, queryAnalysis.parameters);
+//             // Stream response...
+//             console.log("Relevant Content:", relevantContent);
+//             break;
+
+//         case 'conversation':
+//             // Stream clarification response with suggestions
+//             console.log("clhm", queryAnalysis.response);
+//             streamAIResponse(queryAnalysis.response, false, userId);
+//             break;
+//         }
+//         // ... rest of your existing code
+//     } catch (error) {
+//         // ... error handling
+//     }
+// });
+
 router.get("/ask", async (req, res) => {
     try {
         const { query } = req.query;
         const userId = req.user._id;
 
-        if (!query?.trim()) {
-            return res.status(400).json({ error: "Query is required" });
+        // Set response headers for streaming
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Transfer-Encoding", "chunked");
+
+        // Start streaming the response
+        res.write(JSON.stringify({ status: "processing", message: "Analyzing query..." }) + "\n");
+
+        // Analyze the query
+        const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
+
+        // Stream response based on the analysis type
+        console.log("Query Analysis:", queryAnalysis);
+        switch (queryAnalysis.type) {
+        case 'creation':
+            res.write(JSON.stringify({ status: "processing", message: "Creating object..." }) + "\n");
+            const createdObject = await createObjectFromAI(queryAnalysis.data, userId);
+            res.write(JSON.stringify({ status: "completed", data: createdObject }) + "\n");
+            break;
+
+        case 'search':
+            res.write(JSON.stringify({ status: "processing", message: "Fetching relevant content..." }) + "\n");
+            const relevantContent = await searchContent(query, userId, queryAnalysis.parameters);
+            res.write(JSON.stringify({ status: "completed", data: relevantContent }) + "\n");
+            break;
+
+        case 'conversation':
+            // res.write(JSON.stringify({ status: "clarification_needed", message: queryAnalysis.response });
+            res.write(JSON.stringify({ status: "conversation", data: queryAnalysis.response }) + "\n");
+            break;
         }
 
-        // Set SSE headers only once at the beginning
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-
-        // Prevent multiple responses by tracking if we've ended the response
-        let hasEnded = false;
-        // Handle client disconnect
-        req.on('close', () => {
-            hasEnded = true;
-        });
-
-        const relevantContent = await searchContent(query, userId, { limit: 5 });
-
-        if (hasEnded) return;
-
-        const sendChunk = (data) => {
-            if (!hasEnded) {
-                res.write(`data: ${JSON.stringify(data)}\n\n`);
-            }
-        };
-
-        if (relevantContent.length === 0) {
-            const stream = streamAIResponse(query, false, userId);
-            try {
-                for await (const chunk of stream) {
-                    if (hasEnded) break;
-                    sendChunk({ chunk });
-                }
-
-                if (!hasEnded) {
-                    sendChunk({
-                        done: true,
-                        hasStoredContent: false,
-                        suggestion: "Try saving some information or creating new tasks to get started"
-                    });
-                }
-            } catch (streamError) {
-                console.error("Stream error:", streamError);
-                if (!hasEnded) {
-                    sendChunk({ error: "Stream processing error" });
-                }
-            }
-        } else {
-            const context = formatContextForAI(relevantContent);
-            const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
-
-            const stream = streamAIResponse(prompt, true, userId);
-            try {
-                for await (const chunk of stream) {
-                    if (hasEnded) break;
-                    sendChunk({ chunk });
-                }
-
-                if (!hasEnded) {
-                    sendChunk({
-                        done: true,
-                        hasStoredContent: true,
-                        relevantContent: relevantContent.map(({ title, type, score }) => ({
-                            title,
-                            type,
-                            relevance: score
-                        }))
-                    });
-                }
-            } catch (streamError) {
-                console.error("Stream error:", streamError);
-                if (!hasEnded) {
-                    sendChunk({ error: "Stream processing error" });
-                }
-            }
-        }
-
-        if (!hasEnded) {
-            res.end();
-        }
+        // End the streaming response
+        res.end();
     } catch (error) {
-        console.error("Error in /ask route:", error);
-        if (!res.headersSent) {
-            res.setHeader('Content-Type', 'text/event-stream');
-        }
-        res.write(`data: ${JSON.stringify({
-            error: "An error occurred while processing your request",
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        })}\n\n`);
+        res.write(JSON.stringify({ status: "error", message: error.message }) + "\n");
         res.end();
     }
 });
 
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
+        console.log("Prompt: ", prompt);
         if (isObjectCreationIntent(prompt)) {
             const creationPrompt = `
             Parse this request: "${prompt}"

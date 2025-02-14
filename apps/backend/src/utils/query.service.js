@@ -23,41 +23,59 @@ export class QueryUnderstanding {
     }
 
     async analyzeQuery (query, userId) {
+        console.log("Analyzing query:", query);
         try {
             const analysisPrompt = `
-        Analyze this user query: "${query}"
-        
-        Provide a JSON response with the following structure:
-        {
-          "intent": {
-            "primary": "One of: search, create, update, delete, list, query",
-            "confidence": "Number between 0-1",
-            "action": "Specific action being requested"
-          },
-          "entities": {
-            "source": ["detected sources like github, linear"],
-            "type": ["detected types like todo, note"],
-            "status": ["detected status"],
-            "timeRange": ["detected time references"],
-            "labels": ["detected labels"],
-            "priority": "detected priority level"
-          },
-          "parameters": {
-            "filters": {}, // Extracted filter conditions
-            "sortBy": "", // Sorting preference if any
-            "limit": null // Any limit specified
-          },
-          "context": {
-            "isTimeSpecific": boolean,
-            "requiresSourceContext": boolean,
-            "needsDisambiguation": boolean
-          }
-        }`;
+            Analyze this user query: "${query}"
+            
+            Return only a JSON object (no markdown, no code blocks) with this structure:
+            {
+              "intent": {
+                "primary": "One of: search, create, update, delete, list, query",
+                "confidence": "Number between 0-1",
+                "action": "Specific action being requested"
+              },
+              "entities": {
+                "source": ["detected sources like github, linear"],
+                "type": ["detected types like todo, note"],
+                "status": ["detected status"],
+                "timeRange": ["detected time references"],
+                "labels": ["detected labels"],
+                "priority": "detected priority level"
+              },
+              "parameters": {
+                "filters": {},
+                "sortBy": "", 
+                "limit": null 
+              },
+              "context": {
+                "isTimeSpecific": boolean,
+                "requiresSourceContext": boolean,
+                "needsDisambiguation": boolean
+              }
+            }`;
 
             const result = await this.chatModel.generateContent(analysisPrompt);
-            const analysis = JSON.parse(result.response.text());
+            // console.log("Analysis result:", result.response.text());
+            const responseText = result.response.text();
 
-            return this.processAnalysis(analysis, query, userId);
+            // Clean the response text by removing markdown code blocks
+            const cleanJson = responseText.replace(/```json\n?|\n?```/g, '').trim();
+            // console.log("Cleaned JSON:", cleanJson);
+
+            try {
+                const analysis = JSON.parse(cleanJson);
+                // console.log("Parsed analysis:", analysis);
+                return this.processAnalysis(analysis, query, userId);
+            } catch (parseError) {
+                // If still can't parse, try to extract JSON using regex
+                const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    const analysis = JSON.parse(jsonMatch[0]);
+                    return this.processAnalysis(analysis, query, userId);
+                }
+                throw parseError;
+            }
         } catch (error) {
             console.error("Error analyzing query:", error);
             throw error;
@@ -71,7 +89,7 @@ export class QueryUnderstanding {
             userId,
             timestamp: new Date()
         };
-
+        console.log("Processing analysis:", queryContext);
         switch (analysis.intent.primary) {
         case INTENTS.CREATE:
             return this.handleCreationIntent(analysis, queryContext);
@@ -81,7 +99,7 @@ export class QueryUnderstanding {
             return this.handleSearchIntent(analysis, queryContext);
 
         case INTENTS.UPDATE:
-            return this.handleUpdateIntent(analysis, queryContext);
+            return this.handleUpdateIntent(analysis, queryContext); // TODO: Implement update handler
 
         case INTENTS.QUERY:
             return this.handleGeneralQuery(analysis, queryContext);
@@ -93,6 +111,24 @@ export class QueryUnderstanding {
                 suggestedActions: this.getSuggestedActions(analysis)
             };
         }
+    }
+
+    async handleGeneralQuery (analysis, context) {
+        const conversationPrompt = `
+          Based on user query: "${context.originalQuery}"
+          Provide a brief, direct response. Keep it short and natural.
+          If the query is a greeting or simple acknowledgment, respond casually and briefly.
+          If it's a question, provide a clear, concise answer.`;
+
+        const result = await this.chatModel.generateContent(conversationPrompt);
+
+        return {
+            type: 'conversation',
+            response: result.response.text(),
+            metadata: {
+                confidence: analysis.intent.confidence
+            }
+        };
     }
 
     async handleCreationIntent (analysis, context) {
