@@ -1,3 +1,5 @@
+import { useRef, useState } from "react"
+
 import {
   CalendarEvent,
   createViewDay,
@@ -25,13 +27,17 @@ const useCalendar = ({
   defaultView = viewDay.name,
   theme = "shadcn",
 }: UseCalendarProps = {}) => {
+  const calendarRef = useRef<HTMLDivElement>(null)
+  const [selectedDate, setSelectedDate] = useState<string>("")
+  const calendarControls = createCalendarControlsPlugin()
+
   const plugins = [
     createDragAndDropPlugin(),
     createResizePlugin(),
     createCurrentTimePlugin(),
     createEventModalPlugin(),
     createEventsServicePlugin(),
-    createCalendarControlsPlugin(),
+    calendarControls,
   ]
 
   const calendar = useNextCalendarApp(
@@ -45,12 +51,26 @@ const useCalendar = ({
       ],
       events,
       theme,
+      callbacks: {
+        onRender($app) {
+          const date = calendarControls.getDate()
+          console.log("Calendar initialized with date:", date)
+        },
+        onSelectedDateUpdate($app) {
+          const newDate = calendarControls.getDate()
+          setSelectedDate(newDate)
+          console.log("Date changed to:", newDate)
+        },
+      },
     },
     plugins
   )
 
   return {
     calendar,
+    calendarControls,
+    calendarRef,
+    selectedDate,
   }
 }
 

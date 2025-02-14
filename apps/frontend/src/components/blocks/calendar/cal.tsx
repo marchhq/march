@@ -14,9 +14,7 @@ import { formatEventDate } from "@/src/utils/datetime"
 function CalendarBlock() {
   const { session } = useAuth()
 
-  const { calendar } = useCalendar()
-  const calendarRef = useRef<HTMLDivElement>(null)
-  const date = new Date().toISOString().split("T")[0]
+  const { calendar, selectedDate, calendarRef } = useCalendar()
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
@@ -42,7 +40,7 @@ function CalendarBlock() {
     }
   }, [])
 
-  const { data: events, isLoading, error } = useEvents(session, date)
+  const { data: events, isLoading, error } = useEvents(session, selectedDate)
 
   useEffect(() => {
     if (Array.isArray(events)) {
