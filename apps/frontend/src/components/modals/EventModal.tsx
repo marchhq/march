@@ -1,5 +1,7 @@
 "use client"
 
+import { title } from "process"
+
 import { FormEvent, useEffect, useState } from "react"
 
 import { DialogTitle } from "@radix-ui/react-dialog"
@@ -10,48 +12,37 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Textarea } from "../ui/textarea"
+import { useAuth } from "@/src/contexts/AuthContext"
+import { useEventMutation } from "@/src/queries/useEvents"
 import { roundToNext15 } from "@/src/utils/datetime"
 
-interface EventModalProps {
-  onAddEvent: (eventData: {
-    title: string
-    start: string
-    end: string
-    location?: string
-    description?: string
-  }) => void
-}
-
-export const EventModal = ({ onAddEvent }: EventModalProps) => {
+export const EventModal = () => {
+  const { session } = useAuth()
+  const createEventMutation = useEventMutation(session)
   const [isOpen, setIsOpen] = useState(false)
   const [defaultDate] = useState(new Date().toISOString().split("T")[0])
   const now = new Date()
   const startTime = roundToNext15(new Date(now)) // Rounded current time
   const endTime = new Date(startTime.getTime() + 15 * 60000) // +15 min
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
-    const title = formData.get("title") as string
-    const date = formData.get("date") as string
-    const startTime = formData.get("start-time") as string
-    const endTime = formData.get("end-time") as string
-    const location = formData.get("location") as string
-    const description = formData.get("description") as string
+    const eventData = {
+      title: formData.get("title") as string,
+      date: formData.get("date") as string,
+      location: formData.get("location") as string,
+      "start-time": formData.get("start-time") as string,
+      "end-time": formData.get("end-time") as string,
+      description: formData.get("description") as string,
+    }
 
-    const start = `${date} ${startTime}`
-    const end = `${date} ${endTime}`
-
-    onAddEvent({
-      title,
-      start,
-      end,
-      location,
-      description,
+    createEventMutation.mutateAsync(eventData, {
+      onSuccess: () => {
+        setIsOpen(false)
+      },
     })
-
-    setIsOpen(false)
   }
 
   useEffect(() => {
