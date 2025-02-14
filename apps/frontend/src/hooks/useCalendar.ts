@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 
 import { useAuth } from "../contexts/AuthContext"
 import { BACKEND_URL } from "../lib/constants/urls"
+import useUserStore from "../lib/store/user.store"
 
 interface GoogleCalendarHooks {
   handleLogin: () => Promise<void>
@@ -16,6 +17,7 @@ const useGoogleCalendarLogin = (
 ): GoogleCalendarHooks => {
   const router = useRouter()
   const { session } = useAuth()
+  const { fetchUser } = useUserStore()
 
   const handleLogin = useCallback(async () => {
     try {
@@ -40,12 +42,14 @@ const useGoogleCalendarLogin = (
           Authorization: `Bearer ${session}`,
         },
       })
-      router.push(redirectAfterAuth)
+      // Refresh user data to update integration status
+      await fetchUser(session)
+      router.refresh()
     } catch (error) {
       console.error("Failed to revoke Google Calendar access:", error)
       throw error
     }
-  }, [router, redirectAfterAuth, session])
+  }, [router, session, fetchUser])
 
   return { handleLogin, handleRevoke }
 }

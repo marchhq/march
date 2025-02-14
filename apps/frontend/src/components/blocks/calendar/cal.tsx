@@ -1,45 +1,20 @@
 "use client"
 
-import React, { useEffect, useRef } from "react"
+import React from "react"
 
-import { ScheduleXCalendar } from "@schedule-x/react"
-
-import "@schedule-x/theme-shadcn/dist/index.css"
-import { EventModal } from "../../modals/EventModal"
-import useCalendar from "@/src/hooks/useCalendar.hook"
+import Calendar from "@/src/components/Calendar"
+import { useEvents } from "@/src/hooks/useEvents"
 
 function CalendarBlock() {
-  const { calendar, handleAddEvent } = useCalendar()
-  const calendarRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(() => {
-      if (calendarRef.current) {
-        const { width, height } = calendarRef.current.getBoundingClientRect()
-        calendarRef.current.style.setProperty(
-          "--sx-calendar-width",
-          `${width}px`
-        )
-        calendarRef.current.style.setProperty(
-          "--sx-calendar-height",
-          `${height}px`
-        )
-      }
-    })
-
-    if (calendarRef.current) {
-      resizeObserver.observe(calendarRef.current)
-    }
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [])
+  const { events, addEvent, updateEvent, deleteEvent } = useEvents()
+  const currentDate = new Date()
 
   return (
-    <div ref={calendarRef} className="size-full overflow-hidden">
-      <ScheduleXCalendar calendarApp={calendar} />
-      <EventModal onAddEvent={handleAddEvent} />
+    <div className="size-full overflow-hidden bg-white">
+      <Calendar 
+        currentDate={currentDate}
+        initialEvents={events}
+      />
     </div>
   )
 }

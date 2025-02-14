@@ -1,93 +1,120 @@
 "use client"
 import * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { addDays, format, startOfDay, addHours, isSameDay } from "date-fns"
 
-import { type EventApi } from "@fullcalendar/core"
-import interactionPlugin from "@fullcalendar/interaction"
-import FullCalendar from "@fullcalendar/react"
-import timeGridPlugin from "@fullcalendar/timegrid"
+import { Button } from "@/src/components/ui/button"
+import { Separator } from "@/src/components/ui/separator"
+import { EventCard } from "@/src/components/calendar/event-card"
+import { TimeGrid } from "@/src/components/calendar/time-grid"
+import { cn } from "@/src/utils/utils"
 
-let eventGuid = 0
-const createEventId = (): string => {
-  return String(eventGuid++)
+interface Event {
+  id: string
+  title: string
+  description?: string
+  date: Date
+  duration: number
+  type: "work" | "personal" | "meeting"
 }
 
 interface Props {
   currentDate: Date
-  initialEvents: any[]
+  initialEvents: Event[]
 }
 
-const DayCalendar: React.FC<Props> = ({ currentDate, initialEvents }) => {
-  const [currentEvents, setCurrentEvents] = React.useState<EventApi[]>([])
+const DayCalendar: React.FC<Props> = ({ currentDate, initialEvents = [] }) => {
+  const [date, setDate] = React.useState<Date>(currentDate)
+  const [view, setView] = React.useState<"day" | "week">("day")
 
-  console.log(currentEvents)
-  const handleDateSelect = (selectInfo): void => {
-    const title = prompt("Please enter a new title for your event")
-    const calendarApi = selectInfo.view.calendar
+  // Sample events data
+  const events: Event[] = initialEvents.length > 0 ? initialEvents : [
+    {
+      id: "1",
+      title: "Team Sync",
+      description: "Weekly team sync meeting",
+      date: addHours(startOfDay(date), 10),
+      duration: 60,
+      type: "meeting",
+    },
+    {
+      id: "2",
+      title: "Project Review",
+      description: "Review Q3 project progress",
+      date: addHours(startOfDay(date), 13),
+      duration: 90,
+      type: "work",
+    },
+    {
+      id: "3",
+      title: "Lunch with Sarah",
+      description: "Catch up over lunch",
+      date: addHours(startOfDay(date), 12),
+      duration: 60,
+      type: "personal",
+    },
+  ]
 
-    calendarApi.unselect() // clear date selection
-
-    if (title !== null) {
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-      })
-    }
-  }
-
-  const handleEventClick = (clickInfo): void => {
-    if (
-      confirm(
-        `Are you sure you want to delete the event '${clickInfo.event.title}'`
-      )
-    ) {
-      clickInfo.event.remove()
-    }
-  }
-
-  const handleEvents = (events: EventApi[]): void => {
-    setCurrentEvents(events)
-  }
-
-  return (
-    <section className="h-full overflow-hidden rounded-lg border border-white/10 bg-white/10 shadow-lg backdrop-blur-lg">
-      <FullCalendar
-        plugins={[timeGridPlugin, interactionPlugin]}
-        headerToolbar={false}
-        // headerToolbar={{
-        //   left: "prev,next",
-        //   right: "today",
-        // }}
-        initialView="timeGridDay"
-        initialDate={currentDate}
-        editable={true}
-        selectable={true}
-        selectMirror={true}
-        dayMaxEvents={true}
-        weekends={true}
-        initialEvents={initialEvents} // alternatively, use the `events` setting to fetch from a feed
-        select={handleDateSelect}
-        eventContent={renderEventContent}
-        eventClick={handleEventClick}
-        eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-        /* you can update a remote database when these fire:
-          eventAdd={function(){}}
-          eventChange={function(){}}
-          eventRemove={function(){}}
-          */
-      />
-    </section>
+  const filteredEvents = events.filter((event) =>
+    view === "day" ? isSameDay(event.date, date) : event.date >= date && event.date <= addDays(date, 7),
   )
-}
 
-const renderEventContent = (eventInfo): React.ReactNode => {
   return (
-    <span className="flex gap-1 p-1">
-      <b>{eventInfo.timeText}</b>
-      <span>{eventInfo.event.title}</span>
-    </span>
+    <div className="flex h-full flex-col">
+      <div className="calendar-header">
+        <div className="calendar-nav">
+          <span className="date-text">
+            {format(date, "d, MMMM").toLowerCase()} {format(date, "yy")}
+          </span>
+          <Button
+            variant="ghost"
+            className="nav-button"
+            onClick={() => setDate(addDays(date, -1))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            className="nav-button"
+            onClick={() => setDate(addDays(date, 1))}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="view-controls">
+          <div className="view-button-group">
+            <Button
+              variant="ghost"
+              className={cn(
+                "view-button",
+                view === "day" ? "view-button-active" : "view-button-inactive"
+              )}
+              onClick={() => setView("day")}
+            >
+              Day
+            </Button>
+            <Button
+              variant="ghost"
+              className={cn(
+                "view-button",
+                view === "week" ? "view-button-active" : "view-button-inactive"
+              )}
+              onClick={() => setView("week")}
+            >
+              Week
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="calendar-container flex-1">
+        <TimeGrid date={date} view={view}>
+          {filteredEvents.map((event) => (
+            <EventCard key={event.id} event={event} view={view} />
+          ))}
+        </TimeGrid>
+      </div>
+    </div>
   )
 }
 
