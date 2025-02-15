@@ -22,23 +22,6 @@ const chatModel = genAI.getGenerativeModel({
 });
 const queryUnderstanding = new QueryUnderstanding(chatModel);
 
-// Format retrieved content for AI processing
-function formatContextForAI (relevantContent) {
-    if (!Array.isArray(relevantContent) || relevantContent.length === 0) {
-        return "";
-    }
-
-    return relevantContent
-        .map(item => {
-            if (!item?.title || !item?.type) return null;
-            return `CONTENT(type=${item.type}, relevance=${item.score.toFixed(2)}):
-Title: ${item.title}
-Content: ${item.description || "No content available"}
----`;
-        })
-        .filter(Boolean)
-        .join('\n');
-}
 // create object by ai --> keep it lowkey
 
 function isObjectCreationIntent (query) {
@@ -65,26 +48,10 @@ async function createObjectFromAI (content, userId) {
             throw new Error("Invalid content or userId");
         }
 
-        console.log("Creating object from AI:", content);
+        const object = await Object.create({ ...content });
 
-        const newObject = new Object({
-            title: content.title.trim(),
-            description: content.description?.trim() || "",
-            type: content.type?.toLowerCase() || "todo",
-            source: "march",
-            status: content.status?.toLowerCase() || "null",
-            dueDate: content.dueDate ? new Date(content.dueDate) : null,
-            user: userId,
-            metadata: {
-                createdByAI: true,
-                originalQuery: content.originalQuery,
-                createdAt: new Date().toISOString()
-            }
-        });
-
-        const savedObject = await newObject.save();
-        await saveContent(savedObject);
-        return savedObject;
+        await saveContent(object);
+        return object;
     } catch (error) {
         console.error("Error creating object from AI:", error);
         throw error;
@@ -262,7 +229,6 @@ router.get("/ask", async (req, res) => {
             break;
 
         case 'conversation':
-            // res.write(JSON.stringify({ status: "clarification_needed", message: queryAnalysis.response });
             res.write(JSON.stringify({ status: "conversation", data: queryAnalysis.response }) + "\n");
             break;
         }

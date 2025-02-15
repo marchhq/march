@@ -1,4 +1,3 @@
-import { extractMetadata } from "../utils/helper.service.js"
 const INTENTS = {
     SEARCH: 'search',
     CREATE: 'create',
@@ -9,17 +8,50 @@ const INTENTS = {
 };
 // Entity types that can be extracted from queries
 const ENTITY_TYPES = {
-    SOURCE: 'source', // e.g., github, linear, notion
-    TYPE: 'type', // e.g., todo, note, reminder
-    STATUS: 'status', // e.g., completed, pending
-    TIME_RANGE: 'time', // e.g., today, this week
-    LABEL: 'label', // e.g., important, work
-    PRIORITY: 'priority' // e.g., high, medium, low
+    SOURCE: 'source',
+    TYPE: 'type',
+    STATUS: 'status',
+    TIME_RANGE: 'time',
+    LABEL: 'label',
+    PRIORITY: 'priority'
+};
+const TYPE_CHOICES = {
+    NOTE: 'note',
+    TODO: 'todo',
+    MEETING: 'meeting'
+};
+
+const STATUS_CHOICES = {
+    NULL: 'null',
+    TODO: 'todo',
+    IN_PROGRESS: 'in progress',
+    DONE: 'done',
+    ARCHIVE: 'archive'
 };
 
 export class QueryUnderstanding {
+    // constructor (chatModel) {
+    //     this.chatModel = chatModel;
+    // }
     constructor (chatModel) {
         this.chatModel = chatModel;
+        // Cache the metadata keys
+        // this.metadataKeys = Object.keys(extractMetadata({}));
+    }
+
+    // Helper to validate and get correct type
+    validateType (type) {
+        const normalizedType = type?.toLowerCase();
+        return TYPE_CHOICES[normalizedType] ||
+            Object.values(TYPE_CHOICES).includes(normalizedType)
+            ? normalizedType : TYPE_CHOICES.TODO;
+    }
+
+    validateStatus (status) {
+        const normalizedStatus = status?.toLowerCase();
+        return STATUS_CHOICES[normalizedStatus] ||
+               Object.values(STATUS_CHOICES).includes(normalizedStatus)
+            ? normalizedStatus : STATUS_CHOICES.NULL;
     }
 
     async analyzeQuery (query, userId) {
@@ -83,15 +115,17 @@ export class QueryUnderstanding {
     }
 
     async processAnalysis (analysis, originalQuery, userId) {
+        console.log("Processing analysis:", analysis);
         const queryContext = {
             intent: analysis.intent,
             originalQuery,
             userId,
             timestamp: new Date()
         };
-        console.log("Processing analysis:", queryContext);
+        console.log("Processing analysis: sajda", queryContext);
         switch (analysis.intent.primary) {
         case INTENTS.CREATE:
+            // console.log("Create intent detected");
             return this.handleCreationIntent(analysis, queryContext);
 
         case INTENTS.SEARCH:
@@ -131,31 +165,73 @@ export class QueryUnderstanding {
         };
     }
 
+    async generateTitle (query, analysis) {
+        const titlePrompt = `
+        Given this user request: "${query}"
+        Context: ${JSON.stringify(analysis.entities)}
+        
+        Generate a clear, concise title for this ${analysis.entities.type[0] || 'task'}.
+        
+        Requirements:
+        - Keep it under meaningfull and easy to understand
+        - Make it descriptive and specific
+        - Don't include words like "TODO" or "BUG" unless they're part of the actual title
+        - Return ONLY the title text, nothing else
+        
+        Example outputs:
+        - "Website Navigation Menu Broken"
+        - "Update User Profile Page"
+        - "Fix Payment Gateway Error"`;
+
+        try {
+            const result = await this.chatModel.generateContent(titlePrompt);
+
+            return result.response.text()
+                .trim()
+                .replace(/^["']|["']$/g, '')
+                .replace(/```/g, '')
+                .replace(/\n/g, '');
+        } catch (error) {
+            console.warn("Title generation failed:", error);
+            // Fallback to a basic title extraction
+            return query
+                .replace(/^(create|add|make)\s+(a|an)?\s*/i, '')
+                .replace(/\s*(in|on|at|for)\s+(linear|notion|github)\s*/i, '')
+                .replace(/\s*(as|like|type)\s+(a|an)?\s*(bug|todo|note|task)\s*/i, '') ||
+                'Untitled';
+        }
+    }
+
     async handleCreationIntent (analysis, context) {
-        const creationPrompt = `
-      Based on this analysis: ${JSON.stringify(analysis)}
-      Create a structured object for: "${context.originalQuery}"
-      
-      Return a JSON object with these fields from the metadata:
-      ${Object.keys(extractMetadata({})).join(', ')}
-      
-      Include any detected:
-      - Time references
-      - Source specifications
-      - Labels or categories
-      - Priority levels
-      - Status indicators`;
+        // Generate title using AI
+        const title = await this.generateTitle(context.originalQuery, analysis);
 
-        const result = await this.chatModel.generateContent(creationPrompt);
-        const objectData = JSON.parse(result.response.text());
+        // Create the base object with the AI-generated title
+        const baseObject = {
+            title,
+            type: analysis.entities.type[0]?.toLowerCase() || 'todo',
+            source: analysis.entities.source[0] || 'march',
+            status: 'todo',
+            isCompleted: false,
+            isArchived: false,
+            isFavorite: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            userId: context.userId,
+            labels: analysis.entities.labels || []
+        };
 
+        // Add description based on context
+        if (analysis.entities.labels?.length > 0) {
+            baseObject.description = `Issue related to ${analysis.entities.labels.join(', ')}`;
+        }
         return {
             type: 'creation',
-            data: objectData,
-            source: analysis.entities.source[0] || 'default',
+            data: baseObject,
+            source: analysis.entities.source[0] || 'march',
             metadata: {
                 confidence: analysis.intent.confidence,
-                needsConfirmation: analysis.context.needsDisambiguation
+                needsConfirmation: false
             }
         };
     }
