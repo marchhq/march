@@ -91,6 +91,37 @@ const fetchUserInfo = async (linearToken, user) => {
     }
 };
 
+export const getLinearTeams = async (accessToken) => {
+    try {
+        const response = await axios.post(
+            'https://api.linear.app/graphql',
+            {
+                query: `
+                    query {
+                        teams {
+                            nodes {
+                                id
+                                name
+                            }
+                        }
+                    }
+                `
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        return response.data.data.teams.nodes;
+    } catch (error) {
+        console.error('Error fetching Linear teams:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 /**
  * Saves issues to the database, updating existing ones or creating new entries.
  *

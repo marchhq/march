@@ -2,6 +2,7 @@ import { environment } from "../../loaders/environment.loader.js";
 import {
     getAccessToken,
     fetchUserInfo,
+    getLinearTeams,
     handleWebhookEvent,
     revokeLinearAccess
 } from "../../services/integration/linear.service.js";
@@ -29,6 +30,7 @@ const getAccessTokenController = async (req, res, next) => {
     try {
         const accessToken = await getAccessToken(code, user);
         const userInfo = await fetchUserInfo(accessToken, user);
+        const teams = await getLinearTeams(accessToken);
 
         await linearQueue.add(
             "linearQueue",
