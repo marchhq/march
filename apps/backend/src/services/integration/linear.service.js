@@ -70,6 +70,7 @@ const fetchUserInfo = async (linearToken, user) => {
             }
         });
         const userInfo = response.data.data.viewer
+        const teams = await getLinearTeams(linearToken);
         user.integration.linear.userId = userInfo.id;
         user.integration.linear.connected = true;
         await user.save();
