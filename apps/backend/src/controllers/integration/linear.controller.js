@@ -2,7 +2,6 @@ import { environment } from "../../loaders/environment.loader.js";
 import {
     getAccessToken,
     fetchUserInfo,
-    getLinearTeams,
     handleWebhookEvent,
     revokeLinearAccess
 } from "../../services/integration/linear.service.js";

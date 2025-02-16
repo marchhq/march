@@ -70,8 +70,12 @@ const fetchUserInfo = async (linearToken, user) => {
             }
         });
         const userInfo = response.data.data.viewer
-        const teams = await getLinearTeams(linearToken);
+        const teams = await getUserTeamId(linearToken);
         user.integration.linear.userId = userInfo.id;
+        user.integration.linear.linearTeam = {
+            teamName: teams[0].name,
+            teamId: teams[0].id
+        }
         user.integration.linear.connected = true;
         await user.save();
         if (user.integration.linear.connected) {
@@ -92,17 +96,23 @@ const fetchUserInfo = async (linearToken, user) => {
     }
 };
 
-export const getLinearTeams = async (accessToken) => {
+export const getUserTeamId = async (accessToken) => {
     try {
         const response = await axios.post(
-            'https://api.linear.app/graphql',
+            "https://api.linear.app/graphql",
             {
                 query: `
                     query {
-                        teams {
-                            nodes {
-                                id
-                                name
+                        viewer {
+                            id
+                            name
+                            teamMemberships {
+                                nodes {
+                                    team {
+                                        id
+                                        name
+                                    }
+                                }
                             }
                         }
                     }
@@ -110,15 +120,15 @@ export const getLinearTeams = async (accessToken) => {
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
             }
         );
 
-        return response.data.data.teams.nodes;
+        return response.data.data.viewer.teamMemberships.nodes.map((membership) => membership.team);
     } catch (error) {
-        console.error('Error fetching Linear teams:', error.response ? error.response.data : error.message);
+        console.error("Error fetching user's team:", error.response ? error.response.data : error.message);
         throw error;
     }
 };
