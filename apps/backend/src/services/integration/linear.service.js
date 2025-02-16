@@ -467,11 +467,56 @@ const revokeLinearAccess = async (accessToken) => {
     }
 };
 
+const createLinearIssue = async (accessToken, teamId, title, description) => {
+    try {
+        const response = await axios.post(
+            "https://api.linear.app/graphql",
+            {
+                query: `
+                    mutation CreateIssue($input: IssueCreateInput!) {
+                        issueCreate(input: $input) {
+                            success
+                            issue {
+                                id
+                                title
+                                url
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    input: {
+                        teamId,
+                        title,
+                        description
+                    }
+                }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        if (response.data.data.issueCreate.success) {
+            return response.data.data.issueCreate.issue;
+        } else {
+            throw new Error("Failed to create issue in Linear");
+        }
+    } catch (error) {
+        console.error("Error creating issue in Linear:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
     fetchAssignedIssues,
     saveIssuesToDatabase,
     handleWebhookEvent,
-    revokeLinearAccess
+    revokeLinearAccess,
+    createLinearIssue
 }

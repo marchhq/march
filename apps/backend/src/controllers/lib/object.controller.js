@@ -1,6 +1,7 @@
 import { createObject, createInboxObject, filterObjects, updateObject, getAllObjectsByBloack, getObject, getObjectFilterByLabel, searchObjectsByTitle, getThisWeekObjectsByDateRange, getUserFavoriteObjects, getSubObjects, getObjectsBySource, getObjectsByTypeAndSource } from "../../services/lib/object.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 import { saveContent } from "../../utils/helper.service.js";
+import { createLinearIssue } from "../../services/integration/linear.service.js";
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -52,9 +53,27 @@ const createInboxObjectController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const requestedData = req.body;
-        const { type } = requestedData;
+        let linearIssue = null;
+        const { title = "", description = "", type, source } = requestedData;
 
-        let objectData = requestedData;
+        let objectData = { ...requestedData, description };
+
+        if (source === "linear") {
+            const teamId = req.user.integration.linear?.linearTeam?.teamId;
+            const accessToken = req.user.integration.linear?.accessToken;
+
+            if (!teamId || !accessToken) {
+                return res.status(400).json({ error: "Linear integration is not configured for this user." });
+            }
+
+            linearIssue = await createLinearIssue(accessToken, teamId, title, description || "");
+
+            if (!linearIssue || !linearIssue.id) {
+                return res.status(500).json({ error: "Failed to create issue in Linear." });
+            }
+
+            objectData = { ...objectData, id: linearIssue.id, metadata: { ...objectData.metadata, url: linearIssue.url } };
+        }
 
         if (type === "bookmark" && extractUrl(requestedData.title)) {
             const updatedData = await generateLinkPreview(requestedData);
@@ -62,7 +81,6 @@ const createInboxObjectController = async (req, res, next) => {
                 objectData = updatedData;
             }
         }
-
         const object = await createInboxObject(user, objectData);
         saveContent(object);
 
