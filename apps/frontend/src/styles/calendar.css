@@ -104,22 +104,100 @@
 }
 
 /* Event Types */
+.event-color-1 {
+  @apply border-l-4;
+  border-left-color: #ffcccb;
+  background-color: rgba(255, 204, 203, 0.2);
+}
 
-.event-type-default {
+.event-color-1:hover {
+  background-color: rgba(255, 204, 203, 0.3);
+}
+
+.event-color-2 {
+  @apply border-l-4;
+  border-left-color: #ffdab9;
+  background-color: rgba(255, 218, 185, 0.2);
+}
+
+.event-color-2:hover {
+  background-color: rgba(255, 218, 185, 0.3);
+}
+
+.event-color-3 {
+  @apply border-l-4;
+  border-left-color: #fffacd;
+  background-color: rgba(255, 250, 205, 0.2);
+}
+
+.event-color-3:hover {
+  background-color: rgba(255, 250, 205, 0.3);
+}
+
+.event-color-4 {
+  @apply border-l-4;
+  border-left-color: #98fb98;
+  background-color: rgba(152, 251, 152, 0.2);
+}
+
+.event-color-4:hover {
+  background-color: rgba(152, 251, 152, 0.3);
+}
+
+.event-color-5 {
+  @apply border-l-4;
+  border-left-color: #e0ffff;
+  background-color: rgba(224, 255, 255, 0.2);
+}
+
+.event-color-5:hover {
+  background-color: rgba(224, 255, 255, 0.3);
+}
+
+.event-color-6 {
+  @apply border-l-4;
+  border-left-color: #e6e6fa;
+  background-color: rgba(230, 230, 250, 0.2);
+}
+
+.event-color-6:hover {
+  background-color: rgba(230, 230, 250, 0.3);
+}
+
+.event-color-7 {
+  @apply border-l-4;
+  border-left-color: #dda0dd;
+  background-color: rgba(221, 160, 221, 0.2);
+}
+
+.event-color-7:hover {
+  background-color: rgba(221, 160, 221, 0.3);
+}
+
+.event-color-8 {
+  @apply border-l-4;
+  border-left-color: #f0e68c;
+  background-color: rgba(240, 230, 140, 0.2);
+}
+
+.event-color-8:hover {
+  background-color: rgba(240, 230, 140, 0.3);
+}
+
+.event-color-9 {
+  @apply border-l-4;
+  border-left-color: #d3d3d3;
+  background-color: rgba(211, 211, 211, 0.2);
+}
+
+.event-color-9:hover {
+  background-color: rgba(211, 211, 211, 0.3);
+}
+
+.event-color-default {
   @apply border-l-4 border-gray-400 bg-gray-50/50 hover:bg-gray-100/50;
 }
 
-.event-type-work {
-  @apply border-l-4 border-blue-400 bg-blue-50/50 hover:bg-blue-100/50;
-}
-
-.event-type-personal {
-  @apply border-l-4 border-green-400 bg-green-50/50 hover:bg-green-100/50;
-}
-
-.event-type-meeting {
-  @apply border-l-4 border-purple-400 bg-purple-50/50 hover:bg-purple-100/50;
-}
 
 /* Responsive adjustments */
 @media (max-width: 640px) {

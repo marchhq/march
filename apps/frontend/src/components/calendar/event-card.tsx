@@ -5,6 +5,7 @@ import { format } from "date-fns"
 import Link from "next/link"
 
 import { CalendarEvent } from "@/src/lib/@types/Items/event"
+import { cn } from "@/src/utils/utils"
 
 interface EventCardProps {
   event: CalendarEvent
@@ -23,21 +24,23 @@ export function EventCard({ event, view }: EventCardProps) {
     height: `${duration}px`,
     gridColumn: "1 / -1", // Always full width for day view
   }
+  // Get color class based on colorId
+  const colorClass = event.colorId
+    ? `event-color-${event.colorId}`
+    : "event-color-default"
 
   return (
-    <div
-      className={`event-card event-type-${event.type || "default"}`}
-      style={style}
-    >
-      <div className="event-title">{event.title}</div>
-      <div className="event-time">{format(startTime, "h:mm a")}</div>
+    <div className={cn("event-card", colorClass)} style={style}>
+      <div className="event-title font-medium">{event.title}</div>
+      <div className="event-time text-xs opacity-75">
+        {format(startTime, "h:mm a")}
+      </div>
       {event.description && (
         <Link
           href={event.description}
           target="_blank"
-          className="event-description hover:underline"
+          className="event-description mt-1 text-xs hover:underline"
         >
-          {" "}
           join with meet
         </Link>
       )}

@@ -97,6 +97,20 @@ export interface CalendarEvent {
     dateTime: Date
     timeZone?: string
   }
-  type?: string
+  colorId?: string
   description?: string
+}
+
+export interface CreateEventInput {
+  summary: string
+  description?: string
+  start: {
+    dateTime: string
+    timeZone?: string
+  }
+  end: {
+    dateTime: string
+    timeZone?: string
+  }
+  colorId?: string
 }

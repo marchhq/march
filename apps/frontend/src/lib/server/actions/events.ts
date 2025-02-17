@@ -2,7 +2,7 @@
 
 import axios from "axios"
 
-import { EventPayload } from "../../@types/Items/event"
+import { CreateEventInput } from "../../@types/Items/event"
 import { BACKEND_URL } from "../../constants/urls"
 
 export const getEventsByDate = async (session: string, date: string) => {
@@ -14,7 +14,7 @@ export const getEventsByDate = async (session: string, date: string) => {
   return response.data
 }
 
-export const createEvent = async (session: string, event: EventPayload) => {
+export const createEvent = async (session: string, event: CreateEventInput) => {
   const response = await axios.post(`${BACKEND_URL}/calendar/events/`, event, {
     headers: {
       Authorization: `Bearer ${session}`,

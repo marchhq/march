@@ -9,6 +9,8 @@ import {
   differenceInDays,
 } from "date-fns"
 
+import { useDateStore } from "../lib/store/date.store"
+
 export const getOrdinalSuffix = (day) => {
   if (day > 3 && day < 21) return "th"
   switch (day % 10) {

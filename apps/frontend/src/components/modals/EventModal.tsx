@@ -1,8 +1,6 @@
 "use client"
 
-import { title } from "process"
-
-import { FormEvent, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { DialogTitle } from "@radix-ui/react-dialog"
 import { AlignLeft, Clock, MapPin, MoveRight } from "lucide-react"
@@ -11,73 +9,131 @@ import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select"
 import { Textarea } from "../ui/textarea"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useEventMutation } from "@/src/queries/useEvents"
-import { roundToNext15 } from "@/src/utils/datetime"
+import { CreateEventInput } from "@/src/lib/@types/Items/event"
+import { useCreateEvent } from "@/src/queries/useEvents"
+import { eventColors } from "@/src/utils/colors"
 
 export const EventModal = () => {
-  const { session } = useAuth()
-  const createEventMutation = useEventMutation(session)
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [date, setDate] = useState("")
+  const [startDateTime, setStartDateTime] = useState("")
+  const [endDateTime, setEndDateTime] = useState("")
+  const [colorId, setColorId] = useState("1")
   const [isOpen, setIsOpen] = useState(false)
-  const [defaultDate] = useState(new Date().toISOString().split("T")[0])
-  const now = new Date()
-  const startTime = roundToNext15(new Date(now)) // Rounded current time
-  const endTime = new Date(startTime.getTime() + 15 * 60000) // +15 min
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-
-    const eventData = {
-      title: formData.get("title") as string,
-      date: formData.get("date") as string,
-      location: formData.get("location") as string,
-      "start-time": formData.get("start-time") as string,
-      "end-time": formData.get("end-time") as string,
-      description: formData.get("description") as string,
-    }
-
-    createEventMutation.mutateAsync(eventData, {
-      onSuccess: () => {
-        setIsOpen(false)
-      },
-    })
-  }
+  const { session } = useAuth()
+  const createEventMutation = useCreateEvent(session)
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Check if the pressed key is 'c' and ctrl key is held
       if (event.ctrlKey && event.key.toLowerCase() === "c") {
-        // Prevent the default browser copy behavior
         event.preventDefault()
         setIsOpen(true)
       }
     }
 
-    // Add event listener
     document.addEventListener("keydown", handleKeyDown)
-
-    // Cleanup function to remove event listener
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, []) // Empty dependency array means this effect runs once on mount
+  }, [])
 
-  const formatTime = (date: Date) => date.toTimeString().slice(0, 5)
-  const [defaultStartTime] = useState(formatTime(startTime))
-  const [defaultEndTime] = useState(formatTime(endTime))
+  const combineDateTimeToISO = (timeString: string): string => {
+    if (!timeString || !date) {
+      throw new Error("Date and time are required")
+    }
+
+    const selectedDate = new Date(date)
+    const [hours, minutes] = timeString.split(":")
+
+    const dateTime = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      parseInt(hours),
+      parseInt(minutes)
+    )
+
+    return dateTime.toISOString()
+  }
+
+  const handleSubmit = async () => {
+    try {
+      // Validate required fields
+      if (!date || !startDateTime || !endDateTime || !title) {
+        throw new Error("Please fill in all required fields")
+      }
+
+      const eventData: CreateEventInput = {
+        summary: title,
+        description,
+        start: {
+          dateTime: combineDateTimeToISO(startDateTime),
+        },
+        end: {
+          dateTime: combineDateTimeToISO(endDateTime),
+        },
+        colorId,
+      }
+
+      createEventMutation.mutate(eventData)
+      // Handle success
+    } catch (error) {
+      // Handle error
+      console.error("Failed to create event:", error)
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="p-4 sm:max-w-[425px]">
+      <DialogContent className="p-4">
         <DialogHeader>
-          <DialogTitle></DialogTitle>
+          <DialogTitle>Create Event</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="title">Event</Label>
-            <Input id="title" name="title" placeholder="add Title" required />
+            <div className="flex items-center gap-2">
+              <Select value={colorId} onValueChange={setColorId}>
+                <SelectTrigger className="h-[30px] w-[40px] px-2">
+                  <div
+                    className="size-4 rounded-full"
+                    style={{
+                      backgroundColor: eventColors[Number(colorId) - 1]?.value,
+                    }}
+                  />
+                </SelectTrigger>
+                <SelectContent className="min-w-[120px] border-none">
+                  <div className="grid grid-cols-4 gap-1">
+                    {eventColors.map((color, index) => (
+                      <SelectItem
+                        key={color.value}
+                        value={(index + 1).toString()}
+                        className="flex cursor-pointer items-center justify-center rounded-sm p-1 focus:bg-neutral-100"
+                      >
+                        <div
+                          className="size-4 rounded-full"
+                          style={{ backgroundColor: color.value }}
+                        />
+                      </SelectItem>
+                    ))}
+                  </div>
+                </SelectContent>
+              </Select>
+              <Input
+                id="title"
+                name="title"
+                placeholder="Add Title"
+                value={title}
+                className="grow"
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="date">Date</Label>
@@ -85,16 +141,9 @@ export const EventModal = () => {
               id="date"
               type="date"
               name="date"
-              defaultValue={defaultDate}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="size-4 text-primary-foreground" />
-            <Input
-              id="location"
-              name="location"
-              placeholder="add location"
-              className="grow"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -104,8 +153,9 @@ export const EventModal = () => {
                 id="start-time"
                 name="start-time"
                 type="time"
+                value={startDateTime}
+                onChange={(e) => setStartDateTime(e.target.value)}
                 className="grow"
-                defaultValue={defaultStartTime}
               />
             </div>
             <div className="flex items-center gap-2">
@@ -114,8 +164,9 @@ export const EventModal = () => {
                 id="end-time"
                 name="end-time"
                 type="time"
+                value={endDateTime}
+                onChange={(e) => setEndDateTime(e.target.value)}
                 className="grow"
-                defaultValue={defaultEndTime}
               />
             </div>
           </div>
@@ -124,7 +175,9 @@ export const EventModal = () => {
             <Textarea
               id="description"
               name="description"
-              placeholder="add description"
+              placeholder="Add description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="grow"
             />
           </div>
