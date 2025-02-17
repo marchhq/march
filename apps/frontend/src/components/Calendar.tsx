@@ -1,93 +1,58 @@
 "use client"
 import * as React from "react"
 
-import { type EventApi } from "@fullcalendar/core"
-import interactionPlugin from "@fullcalendar/interaction"
-import FullCalendar from "@fullcalendar/react"
-import timeGridPlugin from "@fullcalendar/timegrid"
+import { format, isSameDay } from "date-fns"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
-let eventGuid = 0
-const createEventId = (): string => {
-  return String(eventGuid++)
-}
+import { Event } from "../lib/@types/Items/event"
+import { useDateStore } from "../lib/store/date.store"
+import { transformEvents } from "../utils/event"
+import { EventCard } from "@/src/components/calendar/event-card"
+import { TimeGrid } from "@/src/components/calendar/time-grid"
+import { Button } from "@/src/components/ui/button"
 
 interface Props {
-  currentDate: Date
-  initialEvents: any[]
+  initialEvents: Event[]
 }
 
-const DayCalendar: React.FC<Props> = ({ currentDate, initialEvents }) => {
-  const [currentEvents, setCurrentEvents] = React.useState<EventApi[]>([])
+const DayCalendar: React.FC<Props> = ({ initialEvents = [] }) => {
+  const { currentDate, nextDay, previousDay } = useDateStore()
+  const [view, setView] = React.useState<"day" | "week">("day")
 
-  console.log(currentEvents)
-  const handleDateSelect = (selectInfo): void => {
-    const title = prompt("Please enter a new title for your event")
-    const calendarApi = selectInfo.view.calendar
-
-    calendarApi.unselect() // clear date selection
-
-    if (title !== null) {
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-      })
-    }
-  }
-
-  const handleEventClick = (clickInfo): void => {
-    if (
-      confirm(
-        `Are you sure you want to delete the event '${clickInfo.event.title}'`
-      )
-    ) {
-      clickInfo.event.remove()
-    }
-  }
-
-  const handleEvents = (events: EventApi[]): void => {
-    setCurrentEvents(events)
-  }
-
-  return (
-    <section className="h-full overflow-hidden rounded-lg border border-white/10 bg-white/10 shadow-lg backdrop-blur-lg">
-      <FullCalendar
-        plugins={[timeGridPlugin, interactionPlugin]}
-        headerToolbar={false}
-        // headerToolbar={{
-        //   left: "prev,next",
-        //   right: "today",
-        // }}
-        initialView="timeGridDay"
-        initialDate={currentDate}
-        editable={true}
-        selectable={true}
-        selectMirror={true}
-        dayMaxEvents={true}
-        weekends={true}
-        initialEvents={initialEvents} // alternatively, use the `events` setting to fetch from a feed
-        select={handleDateSelect}
-        eventContent={renderEventContent}
-        eventClick={handleEventClick}
-        eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-        /* you can update a remote database when these fire:
-          eventAdd={function(){}}
-          eventChange={function(){}}
-          eventRemove={function(){}}
-          */
-      />
-    </section>
+  // Transform the initial events
+  const events = React.useMemo(
+    () => transformEvents(initialEvents),
+    [initialEvents]
   )
-}
 
-const renderEventContent = (eventInfo): React.ReactNode => {
+  const filteredEvents = events.filter((event) =>
+    isSameDay(event.date, currentDate)
+  )
   return (
-    <span className="flex gap-1 p-1">
-      <b>{eventInfo.timeText}</b>
-      <span>{eventInfo.event.title}</span>
-    </span>
+    <div className="flex h-full flex-col">
+      <div className="calendar-header">
+        <div className="calendar-nav">
+          <span className="date-text">
+            {format(currentDate, "d, MMMM").toLowerCase()}{" "}
+            {format(currentDate, "yy")}
+          </span>
+          <Button variant="ghost" className="nav-button" onClick={previousDay}>
+            <ChevronLeft className="size-4" />
+          </Button>
+          <Button variant="ghost" className="nav-button" onClick={nextDay}>
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="calendar-container flex-1">
+        <TimeGrid date={currentDate} view={view}>
+          {filteredEvents.map((event) => (
+            <EventCard key={event.id} event={event} view={view} />
+          ))}
+        </TimeGrid>
+      </div>
+    </div>
   )
 }
 

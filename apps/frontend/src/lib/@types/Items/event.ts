@@ -64,13 +64,6 @@ export interface Events {
   events: Event[]
 }
 
-export interface CalendarEvent {
-  id: number
-  title: string
-  start: string
-  end: string
-}
-
 export interface EventFormData {
   title: string
   date: string
@@ -90,4 +83,20 @@ export interface EventPayload {
   end: {
     dateTime: string
   }
+}
+
+export interface CalendarEvent {
+  id: string
+  title: string
+  date: Date
+  start: {
+    dateTime: Date
+    timeZone?: string
+  }
+  end: {
+    dateTime: Date
+    timeZone?: string
+  }
+  type?: string
+  description?: string
 }

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 
 import { ChevronDown, ChevronRight } from "lucide-react"
 
@@ -32,6 +32,19 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
   onConnect,
   onRevoke,
 }) => {
+  const [isDisconnecting, setIsDisconnecting] = React.useState(false)
+
+  const handleRevoke = async () => {
+    try {
+      setIsDisconnecting(true)
+      await onRevoke()
+    } catch (error) {
+      console.error(`Failed to disconnect ${integration.name}:`, error)
+    } finally {
+      setIsDisconnecting(false)
+    }
+  }
+
   return (
     <div className="flex items-center py-2.5">
       <div className="flex items-center min-w-0 flex-1">
@@ -53,17 +66,21 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
       <div className="flex-shrink-0">
         {connected ? (
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center text-xs text-gray-500 hover:text-gray-700">
+            <DropdownMenuTrigger 
+              className="flex items-center text-xs text-gray-500 hover:text-gray-700"
+              disabled={isDisconnecting}
+            >
               <div className="size-2 rounded-full bg-green-500 mr-1.5"></div>
-              <span>Connected</span>
+              <span>{isDisconnecting ? 'Disconnecting...' : 'Connected'}</span>
               <ChevronDown size={14} className="ml-0.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={onRevoke}
+                onClick={handleRevoke}
                 className="text-red-600 hover:text-red-700"
+                disabled={isDisconnecting}
               >
-                Disconnect
+                {isDisconnecting ? 'Disconnecting...' : 'Disconnect'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

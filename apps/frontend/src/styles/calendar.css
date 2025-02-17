@@ -1,10 +1,282 @@
-.sx-react-calendar-wrapper {
-  width: var(--sx-calendar-width, 100%) !important;
-  height: var(--sx-calendar-height, 100%) !important;
-  max-width: 70% !important;
-  max-height: 90% !important;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.calendar-container {
+  @apply h-full w-full overflow-hidden rounded-lg border bg-white text-gray-900;
+}
+
+/* Header and Navigation */
+.calendar-header {
+  @apply flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.calendar-nav {
+  @apply flex items-center gap-1;
+}
+
+.nav-button {
+  @apply inline-flex h-7 w-7 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-gray-600 hover:bg-gray-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+}
+
+.date-button {
+  @apply inline-flex h-9 items-center justify-start rounded-lg bg-transparent px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 disabled:pointer-events-none disabled:opacity-50;
+  min-width: 200px;
+}
+
+.date-text {
+  @apply text-sm font-normal text-gray-600;
+}
+
+.view-controls {
+  @apply flex items-center gap-4;
+}
+
+.view-button-group {
+  @apply inline-flex rounded-full bg-gray-100/80 p-[2px];
+}
+
+.view-button {
+  @apply inline-flex min-w-[40px] items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+}
+
+.view-button-active {
+  @apply bg-white text-gray-900 shadow-sm;
+}
+
+.view-button-inactive {
+  @apply text-gray-500 hover:text-gray-900;
+}
+
+/* Time Grid */
+.time-grid {
+  @apply grid h-[800px] grid-cols-[auto_1fr] gap-4 p-4;
+}
+
+.time-labels {
+  @apply space-y-[60px] py-[30px] pr-4 text-right text-xs text-gray-500 sm:text-sm;
+  min-width: 48px;
+}
+
+.calendar-grid {
+  @apply relative grid grid-cols-1 gap-4;
+}
+
+.week-header {
+  @apply absolute inset-x-0 -top-[14px] grid grid-cols-7 gap-4 border-b border-gray-200 pb-2 text-center;
+}
+
+.week-header-day {
+  @apply flex flex-col items-center;
+}
+
+.week-day-name {
+  @apply text-xs font-medium text-gray-500;
+}
+
+.week-day-number {
+  @apply mt-1 text-sm font-semibold text-gray-900;
+}
+
+.week-day-number.current {
+  @apply rounded-full bg-gray-900 px-2 py-0.5 text-white;
+}
+
+.hour-line {
+  @apply border-t border-gray-100;
+}
+
+/* Event Card */
+.event-card {
+  @apply absolute left-0 right-2 cursor-pointer select-none rounded-lg p-2 text-left shadow-sm transition-shadow hover:shadow-md;
+}
+
+.event-title {
+  @apply text-xs font-medium text-gray-900 sm:text-sm;
+}
+
+.event-time {
+  @apply text-[10px] text-gray-500 sm:text-xs;
+}
+
+.event-description {
+  @apply mt-0.5 hidden text-xs text-gray-500 sm:block;
+}
+
+/* Event Types */
+
+.event-type-default {
+  @apply border-l-4 border-gray-400 bg-gray-50/50 hover:bg-gray-100/50;
+}
+
+.event-type-work {
+  @apply border-l-4 border-blue-400 bg-blue-50/50 hover:bg-blue-100/50;
+}
+
+.event-type-personal {
+  @apply border-l-4 border-green-400 bg-green-50/50 hover:bg-green-100/50;
+}
+
+.event-type-meeting {
+  @apply border-l-4 border-purple-400 bg-purple-50/50 hover:bg-purple-100/50;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .calendar-header {
+    @apply gap-2;
+  }
+
+  .date-button {
+    @apply text-xs;
+    min-width: 160px;
+  }
+
+  .view-button {
+    @apply px-2 py-1 text-xs;
+  }
+
+  .event-card {
+    @apply p-1;
+  }
+
+  .event-description {
+    @apply hidden;
+  }
+}
+
+/* Current time indicator */
+.current-time-indicator {
+  @apply absolute left-0 right-0 border-t-2 border-red-500;
+  z-index: 1;
+}
+
+/* Calendar styles */
+.calendar-custom {
+  @apply h-full w-full;
+}
+
+/* Header styling */
+.calendar-custom .fc-toolbar {
+  @apply p-4 md:p-6 flex justify-between items-center gap-4;
+}
+
+.calendar-custom .fc-toolbar-title {
+  @apply text-lg font-medium text-gray-900;
+}
+
+.calendar-custom .fc-button {
+  @apply h-8 w-8 p-0 bg-transparent border border-gray-200 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300;
+}
+
+.calendar-custom .fc-button:hover {
+  @apply bg-gray-100 text-gray-700;
+}
+
+.calendar-custom .fc-button-active {
+  @apply bg-gray-100 text-gray-700;
+}
+
+/* Time grid styling */
+.calendar-custom .fc-timegrid {
+  @apply border-0;
+}
+
+.calendar-custom .fc-timegrid-slot {
+  @apply h-14 border-b border-gray-100;
+}
+
+.calendar-custom .fc-timegrid-axis {
+  @apply p-2 text-sm text-gray-500;
+}
+
+.calendar-custom .fc-timegrid-axis-cushion {
+  @apply text-gray-500;
+}
+
+.calendar-custom .fc-timegrid-slots td {
+  @apply border-t-0;
+}
+
+.calendar-custom .fc-timegrid-divider {
+  @apply hidden;
+}
+
+/* Event styling */
+.calendar-custom .fc-timegrid-event-harness-inset .fc-timegrid-event {
+  @apply border-0 bg-transparent;
+}
+
+.calendar-custom .fc-timegrid-event-harness {
+  @apply mx-2;
+}
+
+.calendar-custom .fc-timegrid-event {
+  @apply rounded-md p-2 shadow-sm transition-shadow hover:shadow-md;
+}
+
+/* Event types */
+.calendar-custom .event-type-work {
+  @apply bg-red-50 border-l-2 border-red-400;
+}
+
+.calendar-custom .event-type-meeting {
+  @apply bg-gray-50 border-l-2 border-gray-400;
+}
+
+.calendar-custom .event-type-personal {
+  @apply bg-green-50 border-l-2 border-green-400;
+}
+
+/* All-day section */
+.calendar-custom .fc-daygrid-event {
+  @apply bg-green-50 rounded-md p-2 mx-2;
+}
+
+/* Navigation */
+.calendar-custom .fc-prev-button,
+.calendar-custom .fc-next-button {
+  @apply w-8 p-0;
+}
+
+/* View selector */
+.calendar-custom .fc-button-group {
+  @apply flex gap-2;
+}
+
+/* Current time indicator */
+.calendar-custom .fc-timegrid-now-indicator-line {
+  @apply border-dashed border-red-500;
+}
+
+.calendar-custom .fc-timegrid-now-indicator-arrow {
+  @apply border-solid border-red-500;
 }
 
 :root {
-  --sx-color-primary: #F04842 !important
+  --sx-color-primary: #F04842 !important;
+  --fc-border-color: #f0f0f0;
+  --fc-today-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+  --fc-list-event-hover-bg-color: rgba(0, 0, 0, 0.02);
+}
+
+.calendar-custom {
+  --fc-border-color: transparent;
+  --fc-today-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+  --fc-page-bg-color: transparent;
+  background: transparent;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Responsive container */
+.calendar-container {
+  @apply h-full w-full overflow-hidden rounded-lg border bg-white text-gray-900;
+}
+
+@media (max-width: 768px) {
+  .calendar-container {
+    height: calc(100vh - 64px);
+  }
 }
