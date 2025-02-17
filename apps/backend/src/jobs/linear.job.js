@@ -1,7 +1,8 @@
 import { linearQueue } from '../loaders/bullmq.loader.js';
 import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
-import { fetchAssignedIssues, saveIssuesToDatabase } from '../services/integration/linear.service.js';
+import { fetchAssignedIssues, saveIssuesToDatabase, createLinearIssue } from '../services/integration/linear.service.js';
+import { updateInboxObject } from '../services/lib/object.service.js';
 
 /**
  * Processes a job from the Linear queue to fetch and save assigned issues.
@@ -10,11 +11,38 @@ import { fetchAssignedIssues, saveIssuesToDatabase } from '../services/integrati
  * @returns {Promise<void>}
  * @throws Will throw an error if processing the job fails.
  */
+// const processLinearJob = async (job) => {
+//     const { accessToken, linearUserId, userId } = job.data;
+//     try {
+//         const issues = await fetchAssignedIssues(accessToken, linearUserId);
+//         await saveIssuesToDatabase(issues, userId);
+//     } catch (error) {
+//         console.error('Error processing Linear job:', error);
+//         throw error;
+//     }
+// };
+
 const processLinearJob = async (job) => {
-    const { accessToken, linearUserId, userId } = job.data;
+    const { type, accessToken, linearUserId, userId, teamId, title, description, objectId } = job.data;
+
     try {
-        const issues = await fetchAssignedIssues(accessToken, linearUserId);
-        await saveIssuesToDatabase(issues, userId);
+        if (type === "fetchIssues") {
+            const issues = await fetchAssignedIssues(accessToken, linearUserId);
+            await saveIssuesToDatabase(issues, userId);
+        } else if (type === "createIssue") {
+            const linearIssue = await createLinearIssue(accessToken, teamId, title, description);
+
+            if (!linearIssue || !linearIssue.id) {
+                throw new Error("Failed to create issue in Linear.");
+            }
+
+            await updateInboxObject(objectId, userId, {
+                id: linearIssue.id,
+                "metadata.url": linearIssue.url
+            });
+
+            console.log(`Updated issue ${objectId} with Linear ID: ${linearIssue.id}`);
+        }
     } catch (error) {
         console.error('Error processing Linear job:', error);
         throw error;
