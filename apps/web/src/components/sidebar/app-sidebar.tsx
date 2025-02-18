@@ -48,6 +48,7 @@ export function AppSidebar() {
             <SidebarMenuButton asChild>
               <Link href="#">
                 <UserCircle />
+                <span className="font-medium">john doe</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
