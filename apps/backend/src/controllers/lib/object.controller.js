@@ -57,22 +57,6 @@ const createInboxObjectController = async (req, res, next) => {
 
         let objectData = { ...requestedData, description };
 
-        // if (source === "linear") {
-        //     const teamId = req.user.integration.linear?.linearTeam?.teamId;
-        //     const accessToken = req.user.integration.linear?.accessToken;
-
-        //     if (!teamId || !accessToken) {
-        //         return res.status(400).json({ error: "Linear integration is not configured for this user." });
-        //     }
-
-        //     linearIssue = await createLinearIssue(accessToken, teamId, title, description || "");
-
-        //     if (!linearIssue || !linearIssue.id) {
-        //         return res.status(500).json({ error: "Failed to create issue in Linear." });
-        //     }
-
-        //     objectData = { ...objectData, id: linearIssue.id, metadata: { ...objectData.metadata, url: linearIssue.url } };
-        // }
         if (source === "linear") {
             const teamId = req.user.integration.linear?.linearTeam?.teamId;
             const accessToken = req.user.integration.linear?.accessToken;
@@ -83,17 +67,19 @@ const createInboxObjectController = async (req, res, next) => {
 
             const object = await createInboxObject(user, objectData);
 
-            // Queue Linear issue creation
-            console.log(`Creating issue in Linear for object ${object._id}`);
             await linearQueue.add('createIssue', {
                 type: "createIssue",
                 accessToken,
                 teamId,
+                user,
                 title,
                 description,
                 objectId: object._id
-            });
-            console.log(`Queued Linear issue creation for object ${object._id}`);
+            }, {
+                attempts: 3, // Retry up to 3 times
+                backoff: 1000, // Wait 1 second before retrying
+                removeOnComplete: true
+            })
             saveContent(object);
 
             return res.status(200).json({

@@ -23,12 +23,12 @@ import { updateInboxObject } from '../services/lib/object.service.js';
 // };
 
 const processLinearJob = async (job) => {
-    const { type, accessToken, linearUserId, userId, teamId, title, description, objectId } = job.data;
-
+    const { type, accessToken, linearUserId, user, teamId, title, description, objectId } = job.data;
+    console.log(`Processing Linear job with type ${job.data}`);
     try {
         if (type === "fetchIssues") {
             const issues = await fetchAssignedIssues(accessToken, linearUserId);
-            await saveIssuesToDatabase(issues, userId);
+            await saveIssuesToDatabase(issues, user);
         } else if (type === "createIssue") {
             console.log(`Creating issue in Linear for object ${objectId}`);
             const linearIssue = await createLinearIssue(accessToken, teamId, title, description);
@@ -36,8 +36,7 @@ const processLinearJob = async (job) => {
             if (!linearIssue || !linearIssue.id) {
                 throw new Error("Failed to create issue in Linear.");
             }
-
-            await updateInboxObject(objectId, userId, {
+            await updateInboxObject(objectId, user, {
                 id: linearIssue.id,
                 "metadata.url": linearIssue.url
             });
@@ -59,6 +58,10 @@ const linearWorker = new Worker('linearQueue', async (job) => {
 }, {
     connection: redisConnection,
     concurrency: 5
+});
+
+linearWorker.on('active', (job) => {
+    console.log(`Processing job: ${job.id}, Type: ${job.data.type}`);
 });
 
 /**
