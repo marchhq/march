@@ -11,11 +11,8 @@ interface Props {
 }
 
 export default async function AppLayout({ children }: Props) {
-  const session = await getSession()
-  const initialData = await getInitialData(session)
-
   return (
-    <Providers initialData={initialData}>
+    <Providers>
       <div className="flex flex-col">
         <Navbar />
         <main className="">

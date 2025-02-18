@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import { DialogTitle } from "@radix-ui/react-dialog"
 import { AlignLeft, Clock, MapPin, MoveRight } from "lucide-react"
@@ -61,7 +61,8 @@ export const EventModal = () => {
     return dateTime.toISOString()
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     try {
       // Validate required fields
       if (!date || !startDateTime || !endDateTime || !title) {
@@ -80,7 +81,8 @@ export const EventModal = () => {
         colorId,
       }
 
-      createEventMutation.mutate(eventData)
+      console.log("event data: ", eventData)
+      createEventMutation.mutateAsync(eventData)
       // Handle success
     } catch (error) {
       // Handle error

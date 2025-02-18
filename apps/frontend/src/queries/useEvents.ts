@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
+import { queryClient } from "../app/(app)/providers"
 import { CreateEventInput, Event } from "../lib/@types/Items/event"
 import { createEvent, getEventsByDate } from "../lib/server/actions/events"
 
@@ -15,8 +16,6 @@ export const useEvents = (session: string, date: string) => {
 }
 
 export const useCreateEvent = (session: string) => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationKey: ["createEvent"],
     mutationFn: (eventData: CreateEventInput) =>
