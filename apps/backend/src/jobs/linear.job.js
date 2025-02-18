@@ -30,6 +30,7 @@ const processLinearJob = async (job) => {
             const issues = await fetchAssignedIssues(accessToken, linearUserId);
             await saveIssuesToDatabase(issues, userId);
         } else if (type === "createIssue") {
+            console.log(`Creating issue in Linear for object ${objectId}`);
             const linearIssue = await createLinearIssue(accessToken, teamId, title, description);
 
             if (!linearIssue || !linearIssue.id) {
@@ -53,6 +54,7 @@ const processLinearJob = async (job) => {
  * Worker setup and event handling
  */
 const linearWorker = new Worker('linearQueue', async (job) => {
+    console.log(`Processing job with id ${job.id}`);
     await processLinearJob(job);
 }, {
     connection: redisConnection,
