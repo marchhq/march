@@ -31,8 +31,9 @@ const getAccessTokenController = async (req, res, next) => {
         const userInfo = await fetchUserInfo(accessToken, user);
 
         await linearQueue.add(
-            "linearQueue",
+            "fetchIssues",
             {
+                type: "fetchIssues",
                 accessToken,
                 linearUserId: userInfo.id,
                 userId: user._id
@@ -53,7 +54,6 @@ const getAccessTokenController = async (req, res, next) => {
 };
 
 const handleWebhook = async (req, res, next) => {
-    console.log("hi from handle webhook");
     const rawBody = req.body.toString();
     const payload = JSON.parse(rawBody);
     const signature = crypto

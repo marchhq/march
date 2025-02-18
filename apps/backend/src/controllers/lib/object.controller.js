@@ -1,6 +1,7 @@
 import { createObject, createInboxObject, filterObjects, updateObject, getAllObjectsByBloack, getObject, getObjectFilterByLabel, searchObjectsByTitle, getThisWeekObjectsByDateRange, getUserFavoriteObjects, getSubObjects, getObjectsBySource, getObjectsByTypeAndSource } from "../../services/lib/object.service.js";
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
-import { saveContent } from "../../routers/ai/ai.route.js"
+import { saveContent } from "../../utils/helper.service.js";
+import { linearQueue } from "../../loaders/bullmq.loader.js";
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -52,9 +53,39 @@ const createInboxObjectController = async (req, res, next) => {
     try {
         const user = req.user._id;
         const requestedData = req.body;
-        const { type } = requestedData;
+        const { title = "", description = "", type, source } = requestedData;
 
-        let objectData = requestedData;
+        let objectData = { ...requestedData, description };
+
+        if (source === "linear") {
+            const teamId = req.user.integration.linear?.linearTeam?.teamId;
+            const accessToken = req.user.integration.linear?.accessToken;
+
+            if (!teamId || !accessToken) {
+                return res.status(400).json({ error: "Linear integration is not configured for this user." });
+            }
+
+            const object = await createInboxObject(user, objectData);
+
+            await linearQueue.add('createIssue', {
+                type: "createIssue",
+                accessToken,
+                teamId,
+                user,
+                title,
+                description,
+                objectId: object._id
+            }, {
+                attempts: 3, // Retry up to 3 times
+                backoff: 1000, // Wait 1 second before retrying
+                removeOnComplete: true
+            })
+            saveContent(object);
+
+            return res.status(200).json({
+                response: object
+            });
+        }
 
         if (type === "bookmark" && extractUrl(requestedData.title)) {
             const updatedData = await generateLinkPreview(requestedData);
@@ -62,7 +93,6 @@ const createInboxObjectController = async (req, res, next) => {
                 objectData = updatedData;
             }
         }
-
         const object = await createInboxObject(user, objectData);
         saveContent(object);
 

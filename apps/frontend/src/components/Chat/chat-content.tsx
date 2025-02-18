@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react"
 
+import MarkdownRenderer from "../atoms/MarkdownRenderer"
 import { ScrollArea } from "../ui/scroll-area"
 import { ChatTextarea } from "@/src/components/textarea/chat-textarea"
 import { TextEffect } from "@/src/components/ui/text-effect"
@@ -30,7 +31,7 @@ function MessageBubble({ message, isLoading = false }: MessageBubbleProps) {
           {isLoading ? (
             <div className="loader"></div>
           ) : (
-            <p>{message?.content}</p>
+            <MarkdownRenderer content={message?.content} />
           )}
         </div>
       </div>
@@ -123,36 +124,46 @@ export const ChatContentPage = () => {
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-      <div className="w-full max-w-2xl space-y-8">
-        <h1 className="text-center text-4xl font-bold">
-          <TextEffect per="char" preset="fade">
-            what do you need done?
-          </TextEffect>
-        </h1>
-
-        {messages.length > 0 ? (
+    <main className="relative flex h-full flex-col">
+      <div className="absolute inset-x-0 bottom-24 top-0 overflow-hidden">
+        {messages.length === 0 ? (
+          <div className="flex h-full items-center justify-center">
+            <h1 className="text-center text-4xl font-bold">
+              <TextEffect per="char" preset="fade">
+                what do you need done?
+              </TextEffect>
+            </h1>
+          </div>
+        ) : (
           <ScrollArea
             ref={scrollAreaRef}
-            className="no-scrollbar h-[50vh] [&>div>div]:!scroll-smooth"
+            className="h-full [&>div>div]:!scroll-smooth"
           >
-            {messages.map((message, index) => (
-              <MessageBubble key={index} message={message} isLoading={false} />
-            ))}
-            {mutation.isLoading && <MessageBubble message={null} isLoading />}
+            <div className="px-8 pt-6">
+              {messages.map((message, index) => (
+                <MessageBubble
+                  key={index}
+                  message={message}
+                  isLoading={false}
+                />
+              ))}
+              {mutation.isLoading && <MessageBubble message={null} isLoading />}
+            </div>
           </ScrollArea>
-        ) : (
-          <div></div>
         )}
+      </div>
 
-        <ChatTextarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onSubmit={handleSubmit}
-          placeholder="describe your request in detail..."
-          disabled={mutation.isPending}
-        />
+      <div className="absolute inset-x-0 bottom-0 bg-background">
+        <div className="mx-auto max-w-2xl p-4">
+          <ChatTextarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onSubmit={handleSubmit}
+            placeholder="describe your request in detail..."
+            disabled={mutation.isPending}
+          />
+        </div>
       </div>
     </main>
   )

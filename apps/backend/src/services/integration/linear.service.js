@@ -5,7 +5,7 @@ import { User } from '../../models/core/user.model.js';
 import { getOrCreateLabels } from "../../services/lib/label.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
 import { Source } from '../../models/lib/source.model.js';
-import { saveContent } from '../../routers/ai/ai.route.js';
+import { saveContent } from "../../utils/helper.service.js";
 
 /**
  * Retrieves an access token from Linear using the provided authorization code.
@@ -70,7 +70,12 @@ const fetchUserInfo = async (linearToken, user) => {
             }
         });
         const userInfo = response.data.data.viewer
+        const teams = await getUserTeamId(linearToken);
         user.integration.linear.userId = userInfo.id;
+        user.integration.linear.linearTeam = {
+            teamName: teams[0].name,
+            teamId: teams[0].id
+        }
         user.integration.linear.connected = true;
         await user.save();
         if (user.integration.linear.connected) {
@@ -87,6 +92,43 @@ const fetchUserInfo = async (linearToken, user) => {
         return userInfo;
     } catch (error) {
         console.error('Error fetching user info:', error);
+        throw error;
+    }
+};
+
+export const getUserTeamId = async (accessToken) => {
+    try {
+        const response = await axios.post(
+            "https://api.linear.app/graphql",
+            {
+                query: `
+                    query {
+                        viewer {
+                            id
+                            name
+                            teamMemberships {
+                                nodes {
+                                    team {
+                                        id
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        return response.data.data.viewer.teamMemberships.nodes.map((membership) => membership.team);
+    } catch (error) {
+        console.error("Error fetching user's team:", error.response ? error.response.data : error.message);
         throw error;
     }
 };
@@ -425,11 +467,56 @@ const revokeLinearAccess = async (accessToken) => {
     }
 };
 
+const createLinearIssue = async (accessToken, teamId, title, description) => {
+    try {
+        const response = await axios.post(
+            "https://api.linear.app/graphql",
+            {
+                query: `
+                    mutation CreateIssue($input: IssueCreateInput!) {
+                        issueCreate(input: $input) {
+                            success
+                            issue {
+                                id
+                                title
+                                url
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    input: {
+                        teamId,
+                        title,
+                        description
+                    }
+                }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        if (response.data.data.issueCreate.success) {
+            return response.data.data.issueCreate.issue;
+        } else {
+            throw new Error("Failed to create issue in Linear");
+        }
+    } catch (error) {
+        console.error("Error creating issue in Linear:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 export {
     getAccessToken,
     fetchUserInfo,
     fetchAssignedIssues,
     saveIssuesToDatabase,
     handleWebhookEvent,
-    revokeLinearAccess
+    revokeLinearAccess,
+    createLinearIssue
 }
