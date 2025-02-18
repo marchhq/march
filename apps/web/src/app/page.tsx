@@ -1,3 +1,9 @@
+import ListBlock from "@/components/blocks/list/list";
+
 export default function Home() {
-  return <h1>landing page</h1>;
+  return (
+    <main className="min-h-screen pt-4">
+      <ListBlock header="Inbox" />
+    </main>
+  );
 }
