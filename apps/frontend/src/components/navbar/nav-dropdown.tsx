@@ -12,7 +12,6 @@ export const NavDropdown = () => {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const routes = [
-    { path: "/chat", label: "chat" },
     { path: "/today", label: "today" },
     { path: "/inbox", label: "inbox" },
     //    { path: "/objects", label: "all objects" },

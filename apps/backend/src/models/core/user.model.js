@@ -93,6 +93,7 @@ const UserSchema = new Schema({
         linear: {
             accessToken: String,
             userId: String,
+            linearTeam: { type: Schema.Types.Mixed },
             connected: { type: Boolean, default: false }
         },
         googleCalendar: {

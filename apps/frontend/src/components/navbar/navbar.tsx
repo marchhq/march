@@ -6,6 +6,7 @@ import Link from "next/link"
 import { NavDropdown } from "./nav-dropdown"
 // import { useAuth } from "@/src/contexts/AuthContext"
 // import useUserStore from "@/src/lib/store/user.store"
+import { Chat } from "../Chat/ChatTrigger"
 import { ACCESS_TOKEN } from "@/src/lib/constants/cookie"
 import { getUserProfile } from "@/src/lib/server/fetcher/getMyProfile"
 
@@ -41,7 +42,7 @@ export const Navbar = async () => {
         </div>
 
         {/* Profile */}
-        <div className="flex items-center pr-4">
+        <div className="flex items-center gap-4 pr-4">
           <Link href="/profile" className="flex items-center">
             <div className="flex size-8 items-center justify-center rounded-full bg-gray-100 text-sm font-medium text-gray-700">
               {/* {user?.userName?.[0]?.toUpperCase() || 'U'} */}
@@ -58,6 +59,9 @@ export const Navbar = async () => {
               )}
             </div>
           </Link>
+          <div>
+            <Chat />
+          </div>
         </div>
       </div>
     </nav>
