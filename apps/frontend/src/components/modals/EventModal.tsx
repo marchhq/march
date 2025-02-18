@@ -83,6 +83,7 @@ export const EventModal = () => {
 
       console.log("event data: ", eventData)
       createEventMutation.mutateAsync(eventData)
+      setIsOpen(false)
       // Handle success
     } catch (error) {
       // Handle error
