@@ -69,20 +69,18 @@ export const getXAccessTokenController = async (req, res) => {
     }
 };
 
-// Cleanup function to remove expired entries (older than 5 minutes)
-function cleanupTempStore() {
+// cleanup function to remove expired entries (older than 5 minutes)
+function cleanupTempStore () {
     const fiveMinutes = 5 * 60 * 1000;
     const now = Date.now();
-    
+
     console.log("=== Cleanup Store ===");
     console.log("Store size before cleanup:", tempOAuthStore.size);
-    
+
     for (const [state, data] of tempOAuthStore.entries()) {
         if (now - data.timestamp > fiveMinutes) {
             console.log("Removing expired state:", state);
             tempOAuthStore.delete(state);
         }
     }
-    
-    console.log("Store size after cleanup:", tempOAuthStore.size);
 }
