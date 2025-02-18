@@ -14,7 +14,7 @@ export const transformEvents = (googleEvents: any[]): CalendarEvent[] => {
       dateTime: new Date(event.end.dateTime),
       timeZone: event.end.timeZone,
     },
-    type: "default",
+    colorId: event.colorId || "9",
     description: event.hangoutLink ? `${event.hangoutLink}` : undefined,
   }))
 }

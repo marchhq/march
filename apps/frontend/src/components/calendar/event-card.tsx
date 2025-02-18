@@ -29,6 +29,8 @@ export function EventCard({ event, view }: EventCardProps) {
     ? `event-color-${event.colorId}`
     : "event-color-default"
 
+  console.log("event card -- color id: ", event.colorId)
+
   return (
     <div className={cn("event-card", colorClass)} style={style}>
       <div className="event-title font-medium">{event.title}</div>
