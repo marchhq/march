@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     if (token) {
       const isValidToken = await verifyToken(token)
       if (isValidToken && path === "/") {
-        return NextResponse.redirect(new URL("/chat", request.url))
+        return NextResponse.redirect(new URL("/today", request.url))
       }
     }
     return NextResponse.next()

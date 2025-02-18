@@ -17,7 +17,6 @@ import { Integration, User } from "@/src/lib/@types/auth/user"
 import { Cal } from "@/src/lib/icons/Calendar"
 import { GithubDark } from "@/src/lib/icons/Github"
 import { LinearDark } from "@/src/lib/icons/LinearCircle"
-import useUserStore from "@/src/lib/store/user.store"
 
 interface IntegrationItemProps {
   integration: Integration
@@ -47,31 +46,31 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
 
   return (
     <div className="flex items-center py-2.5">
-      <div className="flex items-center min-w-0 flex-1">
-        <div className="size-6 flex items-center justify-center mr-3">
+      <div className="flex min-w-0 flex-1 items-center">
+        <div className="mr-3 flex size-6 items-center justify-center">
           {integration.icon}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center">
-            <h3 className="text-sm font-medium text-gray-900 whitespace-nowrap">
+            <h3 className="whitespace-nowrap text-sm font-medium text-gray-900">
               {integration.name}
             </h3>
-            <span className="text-xs text-gray-500 truncate ml-2 mr-4">
+            <span className="ml-2 mr-4 truncate text-xs text-gray-500">
               {integration.description}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {connected ? (
           <DropdownMenu>
-            <DropdownMenuTrigger 
+            <DropdownMenuTrigger
               className="flex items-center text-xs text-gray-500 hover:text-gray-700"
               disabled={isDisconnecting}
             >
-              <div className="size-2 rounded-full bg-green-500 mr-1.5"></div>
-              <span>{isDisconnecting ? 'Disconnecting...' : 'Connected'}</span>
+              <div className="mr-1.5 size-2 rounded-full bg-green-500"></div>
+              <span>{isDisconnecting ? "Disconnecting..." : "Connected"}</span>
               <ChevronDown size={14} className="ml-0.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -80,7 +79,7 @@ const IntegrationItem: React.FC<IntegrationItemProps> = ({
                 className="text-red-600 hover:text-red-700"
                 disabled={isDisconnecting}
               >
-                {isDisconnecting ? 'Disconnecting...' : 'Disconnect'}
+                {isDisconnecting ? "Disconnecting..." : "Disconnect"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
