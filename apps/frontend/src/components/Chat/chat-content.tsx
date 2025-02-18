@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react"
 
+import MarkdownRenderer from "../atoms/MarkdownRenderer"
 import { ScrollArea } from "../ui/scroll-area"
 import { ChatTextarea } from "@/src/components/textarea/chat-textarea"
 import { TextEffect } from "@/src/components/ui/text-effect"
@@ -30,7 +31,7 @@ function MessageBubble({ message, isLoading = false }: MessageBubbleProps) {
           {isLoading ? (
             <div className="loader"></div>
           ) : (
-            <p>{message?.content}</p>
+            <MarkdownRenderer content={message?.content} />
           )}
         </div>
       </div>
