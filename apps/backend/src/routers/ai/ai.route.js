@@ -208,7 +208,7 @@ router.get("/ask", async (req, res) => {
         res.setHeader("Transfer-Encoding", "chunked");
 
         // Start streaming the response
-        res.write(JSON.stringify({ status: "processing", message: "Analyzing query..." }) + "\n");
+        // res.write(JSON.stringify({ status: "processing", message: "Analyzing query..." }) + "\n");
 
         // Analyze the query
         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
@@ -217,13 +217,13 @@ router.get("/ask", async (req, res) => {
         console.log("Query Analysis:", queryAnalysis);
         switch (queryAnalysis.type) {
         case 'creation':
-            res.write(JSON.stringify({ status: "processing", message: "Creating object..." }) + "\n");
+            // res.write(JSON.stringify({ status: "processing", message: "Creating object..." }) + "\n");
             const createdObject = await createObjectFromAI(queryAnalysis.data, userId);
             res.write(JSON.stringify({ status: "completed", data: createdObject }) + "\n");
             break;
 
         case 'search':
-            res.write(JSON.stringify({ status: "processing", message: "Fetching relevant content..." }) + "\n");
+            // res.write(JSON.stringify({ status: "processing", message: "Fetching relevant content..." }) + "\n");
             const relevantContent = await searchContent(query, userId, queryAnalysis.parameters);
             res.write(JSON.stringify({ status: "completed", data: relevantContent }) + "\n");
             break;

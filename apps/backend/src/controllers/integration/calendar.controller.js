@@ -78,6 +78,7 @@ const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
 const addGoogleCalendarEventController = async (req, res, next) => {
     const user = req.user;
     const event = req.body;
+
     try {
         const newEvent = await addGoogleCalendarEvent(user, event);
         res.status(200).json({
