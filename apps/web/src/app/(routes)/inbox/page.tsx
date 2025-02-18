@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 export default function Inbox() {
   return (
-    <div className="container mx-auto px-4 py-8 w-full">
+    <div className="container max-w-2xl px-4 py-8">
       <ErrorBoundary
         fallback={<div>Error loading inbox. Please try again later.</div>}
       >

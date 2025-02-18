@@ -8,7 +8,7 @@ interface Props {
 
 export default function ListBlock({ header }: Props) {
   return (
-    <section className="border-2 border-red-500 w-full">
+    <section className="w-full">
       <header>
         <h1 className="font-medium text-lg mb-4">{header}</h1>
       </header>
