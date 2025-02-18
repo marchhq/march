@@ -37,7 +37,7 @@ export const redirectXOAuthLoginController = async (req, res) => {
 export const getXAccessTokenController = async (req, res) => {
     try {
         const { state, code } = req.query;
-
+        const user = req.user;
         const storedData = tempOAuthStore.get(state);
 
         if (!storedData) {
@@ -53,8 +53,10 @@ export const getXAccessTokenController = async (req, res) => {
             codeVerifier: storedData.codeVerifier,
             redirectUri: CALLBACK_URL
         });
-
-        console.log("Logged in as:", loggedClient);
+        user.integration.x.accessToken = accessToken;
+        user.integration.x.refreshToken = refreshToken;
+        user.integration.x.connected = true;
+        await user.save()
         res.json({
             message: "Twitter authentication successful",
             accessToken,
@@ -73,9 +75,6 @@ export const getXAccessTokenController = async (req, res) => {
 function cleanupTempStore () {
     const fiveMinutes = 5 * 60 * 1000;
     const now = Date.now();
-
-    console.log("=== Cleanup Store ===");
-    console.log("Store size before cleanup:", tempOAuthStore.size);
 
     for (const [state, data] of tempOAuthStore.entries()) {
         if (now - data.timestamp > fiveMinutes) {
