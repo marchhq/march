@@ -1,108 +1,77 @@
 import { TwitterApi } from "twitter-api-v2";
-import { Object } from "../../models/object.model";
+import { Object } from "../../models/lib/object.model.js"
 
-export const convertBookmarkToObject = (bookmark, userId) => {
-    const author = bookmark.author;
+export const refreshTwitterToken = async (refreshToken) => {
+    try {
+        const client = new TwitterApi({
+            clientId: process.env.X_CLIENT_ID,
+            clientSecret: process.env.X_CLIENT_SECRET
+        });
 
-    return {
-        title: bookmark.text.substring(0, 200),
-        type: "bookmark",
-        source: "x",
-        description: bookmark.text,
-        metadata: {
-            tweet_id: bookmark.id,
-            author: {
-                id: author.id,
-                name: author.name,
-                username: author.username,
-                profile_image_url: author.profile_image_url
-            },
-            metrics: bookmark.metrics,
-            entities: bookmark.entities,
-            created_at: bookmark.created_at,
-            media: bookmark.media
-        },
-        user: userId,
-        createdAt: new Date(bookmark.created_at),
-        updatedAt: new Date()
-    };
+        const { accessToken, refreshToken: newRefreshToken, expiresIn } =
+            await client.refreshOAuth2Token(refreshToken);
+
+        console.log("New Access Token:", accessToken);
+        console.log("New Refresh Token:", newRefreshToken);
+        console.log("Expires In:", expiresIn, "seconds");
+
+        return { accessToken, newRefreshToken };
+    } catch (error) {
+        console.error("Error refreshing Twitter token:", error);
+        throw error;
+    }
 };
 
 export const syncXBookmarks = async (accessToken, userId) => {
     try {
-        const userClient = new TwitterApi(accessToken);
+        const twitterClient = new TwitterApi(accessToken);
 
-        const bookmarks = await userClient.v2.bookmarks({
-            "tweet.fields": [
-                "created_at",
-                "author_id",
-                "conversation_id",
-                "public_metrics",
-                "entities",
-                "context_annotations"
-            ],
-            "user.fields": [
-                "name",
-                "username",
-                "profile_image_url"
-            ],
-            "media.fields": [
-                "url",
-                "preview_image_url",
-                "type"
-            ],
-            expansions: [
-                "author_id",
-                "attachments.media_keys"
-            ],
+        const bookmarks = await twitterClient.v2.bookmarks({
+            "tweet.fields": ["created_at", "text", "author_id"],
             max_results: 100
         });
 
-        const processedBookmarks = bookmarks.data.map(tweet => {
-            const author = bookmarks.includes.users.find(user => user.id === tweet.author_id);
+        if (!bookmarks || !bookmarks.data.data || bookmarks.data.data.length === 0) {
+            console.log("No bookmarks found.");
+            return [];
+        }
+        const savedBookmarks = [];
 
-            return {
+        for (const tweet of bookmarks.data.data) {
+            const newBookmark = {
+                user: userId,
                 id: tweet.id,
-                text: tweet.text,
-                created_at: tweet.created_at,
-                author: {
-                    id: author.id,
-                    name: author.name,
-                    username: author.username,
-                    profile_image_url: author.profile_image_url
+                title: tweet.text.substring(0, 50) + (tweet.text.length > 50 ? '...' : ''),
+                description: tweet.text,
+                source: "X",
+                type: "bookmark",
+                metadata: {
+                    tweetId: tweet.id,
+                    authorId: tweet.author_id,
+                    text: tweet.text,
+                    url: `https://twitter.com/i/web/status/${tweet.id}`
                 },
-                metrics: tweet.public_metrics,
-                entities: tweet.entities,
-                media: tweet.attachments?.media_keys?.map(key =>
-                    bookmarks.includes.media.find(media => media.media_key === key)
-                ).filter(Boolean)
+                createdAt: tweet.created_at ? new Date(tweet.created_at) : new Date(),
+                updatedAt: new Date()
             };
-        });
 
-        const savePromises = processedBookmarks.map(async (bookmark) => {
-            const existingBookmark = await Object.findOne({
-                'metadata.tweet_id': bookmark.id,
-                user: userId
-            });
-
-            if (!existingBookmark) {
-                const objectData = convertBookmarkToObject(bookmark, userId);
-                const newObject = new Object(objectData);
-                return newObject.save();
+            try {
+                const savedObject = await Object.findOneAndUpdate(
+                    { id: tweet.id, user: userId },
+                    newBookmark,
+                    { upsert: true, new: true }
+                );
+                savedBookmarks.push(savedObject);
+            } catch (dbError) {
+                console.error(`Error saving bookmark ${tweet.id}:`, dbError);
+                continue;
             }
-            return null;
-        });
+        }
 
-        const savedObjects = await Promise.all(savePromises);
-        const newBookmarks = savedObjects.filter(Boolean);
-
-        return {
-            success: true,
-            totalBookmarks: processedBookmarks.length,
-            newBookmarks: newBookmarks
-        };
+        console.log(`Successfully saved ${savedBookmarks.length} bookmarks.`);
+        return savedBookmarks;
     } catch (error) {
-        console.error("Error syncing X bookmarks:", error);
-        throw new Error(`Failed to sync X bookmarks: ${error.message}`);
+        console.error("Error syncing bookmarks:", error);
+        throw error;
     }
 };

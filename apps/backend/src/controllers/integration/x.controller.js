@@ -1,4 +1,5 @@
 import { TwitterApi } from "twitter-api-v2";
+import { XQueue } from "../../loaders/bullmq.loader.js";
 
 const twitterClient = new TwitterApi({
     clientId: process.env.X_CLIENT_ID,
@@ -12,7 +13,7 @@ const tempOAuthStore = new Map();
 export const redirectXOAuthLoginController = async (req, res) => {
     try {
         const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(CALLBACK_URL, {
-            scope: ["tweet.read", "users.read", "offline.access"]
+            scope: ["tweet.read", "users.read", "bookmark.read", "offline.access"]
         });
 
         tempOAuthStore.set(state, {
@@ -57,6 +58,15 @@ export const getXAccessTokenController = async (req, res) => {
         user.integration.x.refreshToken = refreshToken;
         user.integration.x.connected = true;
         await user.save()
+
+        await XQueue.add(
+            "XQueue",
+            {
+                accessToken,
+                userId: user._id
+            }
+        );
+
         res.json({
             message: "Twitter authentication successful",
             accessToken,

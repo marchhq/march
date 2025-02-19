@@ -1,15 +1,15 @@
 import { XQueue } from '../loaders/bullmq.loader.js';
 import { Worker } from "bullmq";
 import { redisConnection } from "../loaders/redis.loader.js";
-import { syncXBookmarks } from "../"
+import { syncXBookmarks } from "../services/integration/x.service.js";
 
 const processXJob = async (job) => {
-    const { accessToken, user } = job.data;
-    console.log(`Processing Linear job with type ${job.data}`);
+    const { accessToken, userId } = job.data;
+    console.log(`Processing x job with  ${accessToken}`);
     try {
-        syncXBookmarks(accessToken, user)
+        await syncXBookmarks(accessToken, userId)
     } catch (error) {
-        console.error('Error processing Linear job:', error);
+        console.error('Error processing X job:', error);
         throw error;
     }
 };
@@ -26,7 +26,7 @@ const XWorker = new Worker('XQueue', async (job) => {
 });
 
 XWorker.on('active', (job) => {
-    console.log(`Processing job: ${job.id}, Type: ${job.data.type}`);
+    console.log(`Processing job: ${job.id}`);
 });
 
 /**
