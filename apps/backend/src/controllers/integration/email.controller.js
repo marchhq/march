@@ -104,6 +104,7 @@ import { Object } from "../../models/lib/object.model.js";
 
 // Webhook to handle incoming push notifications from Gmail
 const handlePushNotification = async (req, res) => {
+    console.log("req.body: ", req.body);
     const message = Buffer.from(req.body.message.data, 'base64').toString('utf-8');
     const parsedMessage = JSON.parse(message);
     const userEmail = parsedMessage.emailAddress;
@@ -189,6 +190,7 @@ const handlePushNotification = async (req, res) => {
 // }
 
 const createIssueFromEmail = async (email, user) => {
+    console.log('Creating issue from email:', email);
     const getEmailBody = (payload) => {
         if (payload.parts) {
             for (const part of payload.parts) {

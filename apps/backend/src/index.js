@@ -10,6 +10,7 @@ import { handleSmsItemCreation } from "./controllers/integration/message.control
 import bodyParser from "body-parser";
 import { linearWorker } from "./jobs/linear.job.js"
 import { initWorker } from "./jobs/init.job.js";
+import { XWorker } from "./jobs/x.job.js";
 
 const { ValidationError } = Joi;
 const app = express();
