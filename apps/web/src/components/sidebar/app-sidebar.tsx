@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 
@@ -21,6 +22,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
+            <SidebarGroupLabel>arrays</SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
