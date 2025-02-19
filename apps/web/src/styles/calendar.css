@@ -1,0 +1,44 @@
+.fc {
+  background-color: white;
+}
+
+.fc .fc-day-today {
+  background-color: inherit !important;
+  background: none !important;
+}
+
+.fc .fc-timegrid-col .fc-day-today {
+  background-color: inherit !important;
+}
+
+/* All day */
+.fc-timegrid-axis-cushion {
+  font-size: 14px !important;
+  padding-right: 8px !important;
+}
+
+.fc .fc-daygrid-day-events {
+  /* Control the margin/padding to fine-tune the height */
+  margin-bottom: 0 !important;
+  padding: 2px 0 !important;
+}
+
+.fc .fc-timegrid-divider {
+  display: none !important
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+  font-size: 14px !important
+}
+
+/* time slot*/
+
+.fc-timegrid-slots td {
+  border-top: none !important;
+  border-right: none !important;
+  border-left: none !important;
+}
+
+.fc .fc-timegrid-axis th {
+  border: none;
+}
