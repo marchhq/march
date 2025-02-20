@@ -4,6 +4,7 @@ import { google } from "googleapis";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
 import { Object } from "../../models/lib/object.model.js";
+import { saveContent } from "../../utils/helper.service.js";
 
 // async function processGmailNotification (req, res) {
 //     const data = req.body
@@ -226,7 +227,8 @@ const createIssueFromEmail = async (email, user) => {
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
-            await newIssue.save();
+            const savedIssue = await newIssue.save();
+            await saveContent(savedIssue);
             console.log('Created new issue:', newIssue._id);
             return newIssue;
         }
