@@ -1,5 +1,6 @@
 /* Reset background colors */
-html, body {
+html,
+body {
   background: #ffffff;
 }
 
@@ -164,7 +165,7 @@ html, body {
 }
 
 .fc-event {
-  border-radius: 4px !important;
+  border-radius: 6px !important;
   border: none !important;
   padding: 4px 8px !important;
 }
@@ -177,7 +178,7 @@ html, body {
 }
 
 .fc-timegrid-event {
-  padding: 4px 0 !important;
+  padding: 6px !important;
   margin: 0 4px !important;
   border: none !important;
   min-height: 28px !important;
@@ -372,8 +373,8 @@ html, body {
   border: none !important;
 }
 
-.fc .fc-scrollgrid-section-header > td,
-.fc .fc-scrollgrid-section-body > td {
+.fc .fc-scrollgrid-section-header>td,
+.fc .fc-scrollgrid-section-body>td {
   border-right: none !important;
 }
 
