@@ -18,13 +18,13 @@ export function ListItems() {
               <Checkbox 
                 id={`item-${item.id}`}
                 className="h-[18px] w-[18px]"
-                checked={item.completed}
+                checked={item.checked}
               />
               <label 
                 htmlFor={`item-${item.id}`}
                 className={cn(
                   "text-sm cursor-pointer select-none",
-                  item.completed && "text-gray-500 line-through"
+                  item.checked && "text-gray-500 line-through"
                 )}
               >
                 {item.text}
