@@ -1,5 +1,6 @@
 "use client";
-import { Plus, UserCircle } from "lucide-react";
+import { LogOut, Plus, Settings, UserCircle } from "lucide-react";
+import { useState } from "react";
 
 import {
   Sidebar,
@@ -13,9 +14,19 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { IntegrationsDialog } from "@/components/integrations-dialog";
 import Link from "next/link";
 
 export function AppSidebar() {
+  const [integrationsOpen, setIntegrationsOpen] = useState(false);
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -59,15 +70,29 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="#" className="flex items-center gap-3 px-2 py-1.5 text-sm">
-                <UserCircle className="h-4 w-4" />
-                <span>john doe</span>
-              </Link>
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-3 px-2 py-1.5 text-sm w-full hover:bg-accent hover:text-accent-foreground">
+                  <UserCircle className="h-4 w-4" />
+                  <span>john doe</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem onSelect={() => setIntegrationsOpen(true)}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Integrations</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      <IntegrationsDialog open={integrationsOpen} onOpenChange={setIntegrationsOpen} />
     </Sidebar>
   );
 }
