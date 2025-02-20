@@ -15,16 +15,16 @@ export function ListItems() {
         <React.Fragment key={item.id}>
           <div className="flex items-center w-full p-2 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="flex items-center space-x-3 w-full">
-              <Checkbox 
+              <Checkbox
                 id={`item-${item.id}`}
                 className="h-[18px] w-[18px]"
                 checked={item.checked}
               />
-              <label 
+              <label
                 htmlFor={`item-${item.id}`}
                 className={cn(
                   "text-sm cursor-pointer select-none",
-                  item.checked && "text-gray-500 line-through"
+                  item.checked && "text-gray-500 line-through",
                 )}
               >
                 {item.text}
