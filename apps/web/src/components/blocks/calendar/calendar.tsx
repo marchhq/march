@@ -74,24 +74,10 @@ const events = [
 
 export default function CalendarBlock() {
   return (
-    <div className="calendar-container">
-      <div className="calendar-header">
-        <div className="header-left">
-          <span className="calendar-title">Calendar</span>
-          <span className="calendar-date">20, february 25</span>
-          <div className="nav-buttons">
-            <button className="nav-button" aria-label="Previous">
-              ←
-            </button>
-            <button className="nav-button" aria-label="Next">
-              →
-            </button>
-            <button className="nav-button" aria-label="Return to Present">
-              ↩
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="w-full h-full p-4">
+      <header className="mb-4">
+        <h1 className="font-medium text-lg text-gray-900">Calendar</h1>
+      </header>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridDay"

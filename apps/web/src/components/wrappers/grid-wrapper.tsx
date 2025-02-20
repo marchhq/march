@@ -20,11 +20,11 @@ const GridWrapper: React.FC<GridWrapperProps> = ({
   const flexBasis = `${100 / Math.min(childCount, maxChildren)}%`;
 
   return (
-    <div className="flex flex-col md:flex-row w-full h-full min-h-screen gap-4 p-4">
+    <div className="flex flex-col md:flex-row w-full h-full gap-3">
       {React.Children.map(children, (child, index) =>
         index < maxChildren ? (
           <div
-            className="flex-1 rounded-xl bg-white p-4 min-h-[200px] md:min-h-min"
+            className="flex-1 rounded-lg bg-white min-h-[200px] md:min-h-min overflow-hidden"
             style={{ flexBasis }}
           >
             {child}

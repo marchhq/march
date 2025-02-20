@@ -7,8 +7,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full bg-[#F2F2F2]">
-        <SidebarTrigger />
-        <div className="container px-4">{children}</div>
+        <div className="h-12 border-b bg-white flex items-center px-4 gap-3">
+          <SidebarTrigger />
+          <h1 className="font-medium text-base">Today</h1>
+        </div>
+        <div className="container">{children}</div>
         <AssistantModal />
       </main>
     </SidebarProvider>
