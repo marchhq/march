@@ -114,6 +114,11 @@ const UserSchema = new Schema({
             userName: String,
             connected: { type: Boolean, default: false }
         },
+        x: {
+            accessToken: String,
+            refreshToken: String,
+            connected: { type: Boolean, default: false }
+        },
         notion: {
             accessToken: String,
             userId: String,

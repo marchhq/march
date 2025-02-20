@@ -17,11 +17,16 @@ const initQueue = new Queue('initQueue', {
     connection: redisConnection
 });
 
+const XQueue = new Queue('XQueue', {
+    connection: redisConnection
+});
+
 console.log('Queues setup completed.');
 
 export {
     linearQueue,
     notionQueue,
     cycleQueue,
-    initQueue
+    initQueue,
+    XQueue
 };

@@ -48,6 +48,7 @@
     "nodemailer-sendgrid": "^1.0.3",
     "path": "^0.12.7",
     "twilio": "^5.3.0",
+    "twitter-api-v2": "^1.20.1",
     "uuid": "^10.0.0",
     "ws": "^8.18.0"
   },
