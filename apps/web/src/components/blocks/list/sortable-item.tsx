@@ -5,9 +5,14 @@ import { cn } from "@/lib/utils";
 interface SortableItemProps {
   id: string | number;
   children: React.ReactNode;
+  data: {
+    type: string;
+    text: string;
+    checked: boolean;
+  };
 }
 
-export function SortableItem({ id, children }: SortableItemProps) {
+export function SortableItem({ id, children, data }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -15,7 +20,10 @@ export function SortableItem({ id, children }: SortableItemProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({
+    id,
+    data,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -28,7 +36,7 @@ export function SortableItem({ id, children }: SortableItemProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={cn("touch-none", isDragging && "opacity-50")}
+      className={cn("touch-none cursor-move", isDragging && "opacity-50")}
     >
       {children}
     </div>

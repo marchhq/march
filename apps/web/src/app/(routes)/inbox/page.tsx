@@ -1,3 +1,4 @@
+import { Block } from "@/components/blocks/block";
 import ListBlock from "@/components/blocks/list/list";
 import { ErrorBoundary } from "@/components/error/error-boundary";
 import { InboxSkeleton } from "@/components/skeleton/inbox-skeleton";
@@ -10,7 +11,9 @@ export default function Inbox() {
         fallback={<div>Error loading inbox. Please try again later.</div>}
       >
         <Suspense fallback={<InboxSkeleton />}>
-          <ListBlock header="Inbox" />
+          <Block id="list-only">
+            <ListBlock header="Inbox" />
+          </Block>
         </Suspense>
       </ErrorBoundary>
     </div>
