@@ -4,6 +4,8 @@ import { google } from "googleapis";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
 import { Object } from "../../models/lib/object.model.js";
+import { saveContent } from "../../utils/helper.service.js";
+import { broadcastToUser } from "../../loaders/websocket.loader.js";
 
 // async function processGmailNotification (req, res) {
 //     const data = req.body
@@ -155,6 +157,9 @@ const handlePushNotification = async (req, res) => {
 };
 
 const createIssueFromEmail = async (email, user) => {
+    let message = "";
+    let action = null;
+    let broadcastObject = null;
     const getEmailBody = (payload) => {
         let htmlContent = null;
         let plainTextContent = null;
@@ -213,8 +218,10 @@ const createIssueFromEmail = async (email, user) => {
                 updatedAt: new Date()
             });
             await existingIssue.save();
+            message = `Updated issue from email: ${subject}`;
+            action = "update";
+            broadcastObject = existingIssue;
             console.log('Updated existing issue:', existingIssue._id);
-            return existingIssue;
         } else {
             const newIssue = new Object({
                 title: subject,
@@ -226,10 +233,25 @@ const createIssueFromEmail = async (email, user) => {
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
-            await newIssue.save();
-            console.log('Created new issue:', newIssue._id);
-            return newIssue;
+            const savedIssue = await newIssue.save();
+            await saveContent(savedIssue);
+            message = `Created new issue from email: ${subject}`;
+            action = "create";
+            broadcastObject = savedIssue;
+            console.log('Created new issue:', savedIssue._id);
         }
+        if (user._id) {
+            const broadcastData = {
+                type: "gmail",
+                message,
+                action,
+                item: broadcastObject
+            };
+
+            broadcastToUser(user._id.toString(), broadcastData, true);
+        }
+
+        return broadcastObject;
     } catch (error) {
         console.error('Error processing email:', error);
         throw error;
