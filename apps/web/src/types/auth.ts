@@ -9,3 +9,7 @@ export interface GitHubAuthResponse {
   refreshToken: string;
   isNewUser: boolean;
 }
+
+export interface TokenVerificationResponse {
+  isValidUser: boolean;
+}
