@@ -58,7 +58,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     if (token) {
       const isValidToken = await verifyToken(token);
 
-      // Redirect authenticated users from home to dashboard
       if (isValidToken && path === PUBLIC_PATHS.HOME) {
         return createRedirectResponse(
           request,

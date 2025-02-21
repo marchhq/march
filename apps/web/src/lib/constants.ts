@@ -17,5 +17,5 @@ export const PUBLIC_PATHS = Object.freeze({
 
 export const REDIRECT_PATHS = Object.freeze({
   AUTHENTICATED_HOME: "/inbox",
-  UNAUTHENTICATED_HOME: "/",
+  UNAUTHENTICATED_HOME: "/signin",
 } as const);
