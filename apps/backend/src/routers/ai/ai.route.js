@@ -2,7 +2,7 @@ import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { saveContent, searchContent } from "../../utils/helper.service.js";
+import { saveContent, SearchHandler, pineconeIndex } from "../../utils/helper.service.js";
 import { QueryUnderstanding } from "../../utils/query.service.js";
 
 const router = Router();
@@ -189,9 +189,10 @@ router.get("/ask", async (req, res) => {
 
         // Analyze the query
         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
+        const searchHandler = new SearchHandler(pineconeIndex);
 
-        // Stream response based on the analysis type
         console.log("Query Analysis:", queryAnalysis);
+
         switch (queryAnalysis.type) {
         case 'creation':
             // res.write(JSON.stringify({ status: "processing", message: "Creating object..." }) + "\n");
@@ -200,9 +201,13 @@ router.get("/ask", async (req, res) => {
             break;
 
         case 'search':
-            // res.write(JSON.stringify({ status: "processing", message: "Fetching relevant content..." }) + "\n");
-            const relevantContent = await searchContent(query, userId, queryAnalysis.parameters);
-            res.write(JSON.stringify({ status: "search", data: relevantContent }) + "\n");
+            // eslint-disable-next-line no-case-declarations
+            const searchResults = await searchHandler.searchContent(query, userId, queryAnalysis.parameters);
+
+            res.write(JSON.stringify({
+                status: "search",
+                data: searchResults
+            }) + "\n");
             break;
 
         case 'conversation':

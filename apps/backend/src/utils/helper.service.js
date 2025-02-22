@@ -11,7 +11,7 @@ const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY
 });
 
-const pineconeIndex = pinecone.index("my-ai-index");
+export const pineconeIndex = pinecone.index("my-ai-index");
 
 // Model for converting text to vectors
 const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
@@ -150,32 +150,165 @@ export const saveContent = async (object) => {
 
 // need to improve
 // Search for relevant content using vector similarity
-export async function searchContent (query, userId, options = { limit: 8 }) {
-    try {
-        const sourcePattern = /(linear|github|march)/i;
-        const match = query.match(sourcePattern);
-        const sourceFilter = match ? match[0].toLowerCase() : null;
+// export async function searchContent (query, userId, options = { limit: 8 }) {
+//     try {
+//         const sourcePattern = /(linear|github|march)/i;
+//         const match = query.match(sourcePattern);
+//         const sourceFilter = match ? match[0].toLowerCase() : null;
 
-        const queryEmbedding = await generateEmbedding(query);
+//         const queryEmbedding = await generateEmbedding(query);
 
-        const filter = {
-            userId: userId.toString(),
-            ...(sourceFilter && { source: sourceFilter })
+//         const filter = {
+//             userId: userId.toString(),
+//             ...(sourceFilter && { source: sourceFilter })
+//         };
+
+//         const searchResults = await pineconeIndex.query({
+//             vector: queryEmbedding,
+//             topK: options.limit,
+//             filter: filter,
+//             includeMetadata: true
+//         });
+
+//         return searchResults.matches.map(match => ({
+//             ...match.metadata,
+//             score: match.score
+//         }));
+//     } catch (error) {
+//         console.error("Search failed:", error);
+//         throw error;
+//     }
+// }
+
+const SEARCH_PARAMS = {
+    SORT_OPTIONS: {
+        PRIORITY: 'priority',
+        DUE_DATE: 'dueDate',
+        CREATED: 'createdAt',
+        UPDATED: 'updatedAt'
+    },
+    TIME_RANGES: {
+        TODAY: 'today',
+        YESTERDAY: 'yesterday',
+        THIS_WEEK: 'this_week',
+        LAST_WEEK: 'last_week',
+        THIS_MONTH: 'this_month',
+        OVERDUE: 'overdue'
+    },
+    PRIORITY_LEVELS: ['high', 'medium', 'low']
+};
+
+export class SearchHandler {
+    constructor (pineconeIndex) {
+        this.pineconeIndex = pineconeIndex;
+    }
+
+    async searchContent (query, userId, parameters) {
+        const baseFilter = {
+            userId: userId
         };
 
-        const searchResults = await pineconeIndex.query({
+        // Apply source filters
+        if (parameters.filters.source) {
+            baseFilter.source = parameters.filters.source;
+        }
+
+        // Apply type filters
+        if (parameters.filters.type) {
+            baseFilter.type = parameters.filters.type;
+        }
+
+        // Apply status filters
+        if (parameters.filters.status) {
+            baseFilter.status = parameters.filters.status;
+        }
+
+        // Apply time-based filters
+        if (parameters.filters.timeRange) {
+            Object.assign(baseFilter, this.buildTimeFilter(parameters.filters.timeRange));
+        }
+
+        // Apply priority filter if specified
+        if (parameters.filters.priority) {
+            baseFilter.priority = parameters.filters.priority;
+        }
+
+        // Generate embedding for semantic search
+        const queryEmbedding = await generateEnhancedEmbedding(query, {
+            userId,
+            ...parameters.filters
+        });
+
+        // Perform vector search with metadata filtering
+        const searchResults = await this.pineconeIndex.query({
             vector: queryEmbedding,
-            topK: options.limit,
-            filter: filter,
+            filter: baseFilter,
+            topK: parameters.limit || 10,
             includeMetadata: true
         });
 
-        return searchResults.matches.map(match => ({
+        // Post-process and sort results
+        return this.processSearchResults(searchResults, parameters.sortBy);
+    }
+
+    buildTimeFilter (timeRange) {
+        const now = new Date();
+        const filter = {};
+
+        switch (timeRange) {
+        case SEARCH_PARAMS.TIME_RANGES.TODAY:
+            filter.createdAt = {
+                $gte: new Date(now.setHours(0, 0, 0, 0)).toISOString()
+            };
+            break;
+
+        case SEARCH_PARAMS.TIME_RANGES.THIS_WEEK:
+            // eslint-disable-next-line no-case-declarations
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            filter.createdAt = {
+                $gte: weekStart.toISOString()
+            };
+            break;
+
+        case SEARCH_PARAMS.TIME_RANGES.OVERDUE:
+            filter.dueDate = {
+                $lt: now.toISOString()
+            };
+            filter.isCompleted = false;
+            break;
+        }
+
+        return filter;
+    }
+
+    processSearchResults (results, sortBy) {
+        // eslint-disable-next-line prefer-const
+        let processedResults = results.matches.map(match => ({
             ...match.metadata,
             score: match.score
         }));
-    } catch (error) {
-        console.error("Search failed:", error);
-        throw error;
+
+        // Apply sorting
+        switch (sortBy) {
+        case SEARCH_PARAMS.SORT_OPTIONS.PRIORITY:
+            processedResults.sort((a, b) => {
+                const priorityOrder = { high: 3, medium: 2, low: 1 };
+                return priorityOrder[b.priority] - priorityOrder[a.priority];
+            });
+            break;
+
+        case SEARCH_PARAMS.SORT_OPTIONS.DUE_DATE:
+            processedResults.sort((a, b) =>
+                new Date(a.dueDate) - new Date(b.dueDate)
+            );
+            break;
+
+        default:
+            // Default to relevance score
+            processedResults.sort((a, b) => b.score - a.score);
+        }
+
+        return processedResults;
     }
 }
