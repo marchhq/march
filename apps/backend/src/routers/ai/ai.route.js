@@ -22,26 +22,6 @@ const chatModel = genAI.getGenerativeModel({
 });
 const queryUnderstanding = new QueryUnderstanding(chatModel);
 
-// create object by ai --> keep it lowkey
-
-function isObjectCreationIntent (query) {
-    if (!query || typeof query !== "string") return false;
-
-    query = query.toLowerCase().trim();
-    const creationPatterns = [
-        /\b(create|add|make|save|set|schedule|write|record)\s*(task|note|todo|reminder)?\b/i, // Matches full expressions
-        /^\s*\b(create|add|set|schedule)\b\s*/i // Matches "add" and "create" even if alone
-    ];
-    const exclusionPatterns = [
-        /\b(check|find|look for|search|show|retrieve|get|see)\b/i
-    ];
-
-    if (exclusionPatterns.some(pattern => pattern.test(query))) {
-        return false;
-    }
-
-    return creationPatterns.some(pattern => pattern.test(query));
-}
 async function createObjectFromAI (content, userId) {
     try {
         if (!content?.title || !userId) {
@@ -207,9 +187,6 @@ router.get("/ask", async (req, res) => {
         res.setHeader("Content-Type", "application/json");
         res.setHeader("Transfer-Encoding", "chunked");
 
-        // Start streaming the response
-        // res.write(JSON.stringify({ status: "processing", message: "Analyzing query..." }) + "\n");
-
         // Analyze the query
         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
 
@@ -225,7 +202,7 @@ router.get("/ask", async (req, res) => {
         case 'search':
             // res.write(JSON.stringify({ status: "processing", message: "Fetching relevant content..." }) + "\n");
             const relevantContent = await searchContent(query, userId, queryAnalysis.parameters);
-            res.write(JSON.stringify({ status: "completed", data: relevantContent }) + "\n");
+            res.write(JSON.stringify({ status: "search", data: relevantContent }) + "\n");
             break;
 
         case 'conversation':
@@ -244,67 +221,6 @@ router.get("/ask", async (req, res) => {
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
         console.log("Prompt: ", prompt);
-        if (isObjectCreationIntent(prompt)) {
-            const creationPrompt = `
-            Parse this request: "${prompt}"
-            Analyze the text for any date/time references including:
-            - Explicit dates (tomorrow, today, next week, next month)
-            - Time references (after school, this evening, tonight)
-            - Day references (on Monday, this Sunday)
-            - Relative dates (in 2 days, in a week)
-            
-            Create a task with these details in JSON format:
-            {
-                "title": "Clear, specific title",
-                "description": "Detailed description of the task",
-                "type": "todo",
-                "status": "null",
-                "dueDate": null
-            }`;
-
-            try {
-                const result = await chatModel.generateContent(creationPrompt);
-                const responseText = result.response.text();
-                let objectData;
-
-                try {
-                    objectData = JSON.parse(responseText.trim());
-                } catch (parseError) {
-                    console.error("JSON Parse Error:", parseError);
-                    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        objectData = JSON.parse(jsonMatch[0]);
-                    } else {
-                        throw parseError;
-                    }
-                }
-
-                if (!objectData || !objectData.title) {
-                    objectData = {
-                        title: prompt.replace(/create\s+(a|an)\s+(task|note|todo)/i, '').trim(),
-                        description: "Task created from user request",
-                        type: "todo",
-                        status: "null"
-                    };
-                }
-
-                const createdObject = await createObjectFromAI({
-                    ...objectData,
-                    originalQuery: prompt
-                }, userId);
-
-                // Yield creation confirmation as a single response
-                yield `✓ Created new task:\n\nTitle: ${createdObject.title}\nDescription: ${createdObject.description}${
-                    createdObject.dueDate ? `\nDue Date: ${new Date(createdObject.dueDate).toLocaleDateString()}` : ''
-                }\n\nTask saved successfully. I can help you find or update it later.`;
-                return;
-            } catch (error) {
-                console.error("Error in object creation:", error);
-                yield "I understood you wanted to create a task, but encountered an issue. Please try again with more details.";
-                return;
-            }
-        }
-
         const finalPrompt = hasContext
             ? prompt
             : `The user has asked: "${prompt}"\nPlease respond as March`;
