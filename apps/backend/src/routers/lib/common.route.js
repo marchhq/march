@@ -12,6 +12,7 @@ import {
 import {
     getInboxObjectsController,
     getObjectsWithDateController,
+    reorderObjectsController,
     getInboxObjectController,
     updateInboxObjectController,
     getUserTodayObjectsController,
@@ -46,6 +47,8 @@ const router = Router();
 router.route("/inbox/")
     .get(getInboxObjectsController)
     .post(createInboxObjectController);
+
+router.route("/reorder/").put(reorderObjectsController)
 
 router.route("/objects/without-date/").get(getInboxObjectsController);
 router.route("/objects/with-date/").get(getObjectsWithDateController);
