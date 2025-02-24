@@ -207,11 +207,11 @@ router.get("/ask", async (req, res) => {
 
             res.write(JSON.stringify({
                 status: "search",
-                data: searchResults,
-                metadata: {
-                    filters: queryAnalysis.parameters.filters,
-                    sortBy: queryAnalysis.parameters.sortBy
-                }
+                data: searchResults
+                // metadata: {
+                //     filters: queryAnalysis.parameters.filters,
+                //     sortBy: queryAnalysis.parameters.sortBy
+                // }
             }) + "\n");
             break;
 
