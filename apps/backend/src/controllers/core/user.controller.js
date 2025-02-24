@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getInboxObject, getObjectsWithDate, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
+import { getInboxObject, getObjectsWithDate, reorderObjects, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
@@ -74,6 +74,7 @@ const getInboxObjectsController = async (req, res, next) => {
         next(err);
     }
 };
+
 export const getObjectsWithDateController = async (req, res, next) => {
     try {
         const me = req.user._id;
@@ -87,6 +88,13 @@ export const getObjectsWithDateController = async (req, res, next) => {
         next(err);
     }
 };
+
+export const reorderObjectsController = async (req, res, next) => {
+    const { orderedItems } = req.body;
+    await reorderObjects(orderedItems)
+
+    res.json({ success: true, message: "Order updated" });
+}
 
 const getInboxObjectController = async (req, res, next) => {
     try {

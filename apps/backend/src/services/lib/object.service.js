@@ -12,7 +12,7 @@ const getInboxObjects = async (me) => {
         dueDate: null,
         "cycle.startsAt": null,
         "cycle.endsAt": null
-    }).sort({ createdAt: -1 });
+    }).sort({ order: 1 });
 
     return objects;
 }
@@ -28,6 +28,17 @@ export const getObjectsWithDate = async (me) => {
     }).sort({ dueDate: 1, createdAt: -1 });
 
     return objects;
+}
+
+export const reorderObjects = async (orderedItems) => {
+    const bulkOps = orderedItems.map(({ id, order }) => ({
+        updateOne: {
+            filter: { _id: id },
+            update: { $set: { order } }
+        }
+    }));
+
+    await Object.bulkWrite(bulkOps);
 }
 
 const getInboxObject = async (me, id) => {
