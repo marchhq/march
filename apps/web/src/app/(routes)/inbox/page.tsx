@@ -12,7 +12,7 @@ export default function Inbox() {
       >
         <Suspense fallback={<InboxSkeleton />}>
           <Block id="list-only">
-            <ListBlock header="Inbox" />
+            <ListBlock header="Inbox" arrayType="inbox" />
           </Block>
         </Suspense>
       </ErrorBoundary>

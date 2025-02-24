@@ -7,7 +7,7 @@ export default function Today() {
   return (
     <Block id="list-and-calendar">
       <GridWrapper>
-        <ListBlock header="Today" />
+        <ListBlock header="Today" arrayType="today" />
         <CalendarBlock />
       </GridWrapper>
     </Block>
