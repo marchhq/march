@@ -30,6 +30,17 @@ export const getObjectsWithDate = async (me) => {
     return objects;
 }
 
+export const reorderObjects = async (orderedItems) => {
+    const bulkOps = orderedItems.map(({ id, order }) => ({
+        updateOne: {
+            filter: { _id: id },
+            update: { $set: { order } }
+        }
+    }));
+
+    await Object.bulkWrite(bulkOps);
+}
+
 const getInboxObject = async (me, id) => {
     const objects = await Object.findOne({
         user: me,

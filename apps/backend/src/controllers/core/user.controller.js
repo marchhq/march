@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { getInboxObject, getObjectsWithDate, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
+import { getInboxObject, getObjectsWithDate, reorderObjects, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 
 const { ValidationError } = Joi;
@@ -91,14 +91,7 @@ export const getObjectsWithDateController = async (req, res, next) => {
 
 export const reorderObjectsController = async (req, res, next) => {
     const { orderedItems } = req.body;
-    const bulkOps = orderedItems.map(({ id, order }) => ({
-        updateOne: {
-            filter: { _id: id },
-            update: { $set: { order } }
-        }
-    }));
-
-    await Object.bulkWrite(bulkOps);
+    await reorderObjects(orderedItems)
 
     res.json({ success: true, message: "Order updated" });
 }
