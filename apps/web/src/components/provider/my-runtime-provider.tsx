@@ -7,48 +7,58 @@ import {
   useLocalRuntime,
   type ChatModelAdapter,
 } from "@assistant-ui/react";
+import { apiClient } from "@/lib/api";
+import axios from "axios";
 import { BACKEND_URL } from "@/lib/constants";
+import { useAuth } from "@/contexts/auth-context";
+import { extractMessageData } from "@/lib/utils";
 
-const MyModelAdapter: ChatModelAdapter = {
+interface MyModelAdapterConfig {
+  session: string;
+}
+
+const createModelAdapter = (
+  config: MyModelAdapterConfig
+): ChatModelAdapter => ({
   async run({ messages, abortSignal }) {
     // Get the last message and extract its text content
     const lastMessage = messages[messages.length - 1];
     const textContent =
       lastMessage.content.find(
-        (part): part is TextContentPart => part.type === "text",
+        (part): part is TextContentPart => part.type === "text"
       )?.text || "";
 
-    // Make the request to your endpoint
-    const result = await fetch(
+    const data = await axios.get(
       `${BACKEND_URL}/ai/ask?query=${encodeURIComponent(textContent)}`,
       {
-        method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.session}`,
         },
         signal: abortSignal,
-      },
+      }
     );
 
-    const data = await result.json();
+    const text = extractMessageData(data);
 
     return {
       content: [
         {
           type: "text",
-          text: data.data,
+          text: text,
         },
       ],
     };
   },
-};
+});
 
 export function MyRuntimeProvider({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const runtime = useLocalRuntime(MyModelAdapter);
+  const { session } = useAuth();
+  const modelAdapter = createModelAdapter({ session });
+  const runtime = useLocalRuntime(modelAdapter);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
