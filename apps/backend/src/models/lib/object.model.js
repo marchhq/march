@@ -13,6 +13,11 @@ const ObjectSchema = new Schema(
         title: {
             type: String
         },
+        order: {
+            type: Number,
+            default: 0,
+            index: true
+        },
         icon: {
             type: String,
             default: ''

@@ -74,6 +74,7 @@ const getInboxObjectsController = async (req, res, next) => {
         next(err);
     }
 };
+
 export const getObjectsWithDateController = async (req, res, next) => {
     try {
         const me = req.user._id;
@@ -87,6 +88,20 @@ export const getObjectsWithDateController = async (req, res, next) => {
         next(err);
     }
 };
+
+export const reorderObjectsController = async (req, res, next) => {
+    const { orderedItems } = req.body;
+    const bulkOps = orderedItems.map(({ id, order }) => ({
+        updateOne: {
+            filter: { _id: id },
+            update: { $set: { order } }
+        }
+    }));
+
+    await Object.bulkWrite(bulkOps);
+
+    res.json({ success: true, message: "Order updated" });
+}
 
 const getInboxObjectController = async (req, res, next) => {
     try {

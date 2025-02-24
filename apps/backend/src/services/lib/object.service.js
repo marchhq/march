@@ -12,7 +12,7 @@ const getInboxObjects = async (me) => {
         dueDate: null,
         "cycle.startsAt": null,
         "cycle.endsAt": null
-    }).sort({ createdAt: -1 });
+    }).sort({ order: 1 });
 
     return objects;
 }
