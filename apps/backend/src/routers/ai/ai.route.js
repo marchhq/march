@@ -201,12 +201,17 @@ router.get("/ask", async (req, res) => {
             break;
 
         case 'search':
+
             // eslint-disable-next-line no-case-declarations
             const searchResults = await searchHandler.searchContent(query, userId, queryAnalysis.parameters);
 
             res.write(JSON.stringify({
                 status: "search",
-                data: searchResults
+                data: searchResults,
+                metadata: {
+                    filters: queryAnalysis.parameters.filters,
+                    sortBy: queryAnalysis.parameters.sortBy
+                }
             }) + "\n");
             break;
 

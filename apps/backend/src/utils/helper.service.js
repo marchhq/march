@@ -257,7 +257,7 @@ export class SearchHandler {
 
         switch (timeRange) {
         case SEARCH_PARAMS.TIME_RANGES.TODAY:
-            filter.createdAt = {
+            filter.dueDate = {
                 $gte: new Date(now.setHours(0, 0, 0, 0)).toISOString()
             };
             break;
@@ -266,7 +266,7 @@ export class SearchHandler {
             // eslint-disable-next-line no-case-declarations
             const weekStart = new Date(now);
             weekStart.setDate(now.getDate() - now.getDay());
-            filter.createdAt = {
+            filter.dueDate = {
                 $gte: weekStart.toISOString()
             };
             break;
