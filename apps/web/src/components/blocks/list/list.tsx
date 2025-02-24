@@ -8,9 +8,9 @@ interface Props {
 
 export default function ListBlock({ header }: Props) {
   return (
-    <div className="w-full max-w-2xl mx-auto -mt-1">
-      <header className="mb-3">
-        <h1 className="font-semibold text-xl text-gray-900">{header}</h1>
+    <div className="w-full h-full p-4">
+      <header className="mb-4">
+        <h1 className="font-medium text-lg text-gray-900">{header}</h1>
       </header>
       <section className="space-y-3">
         <InputBox className="w-full" />
