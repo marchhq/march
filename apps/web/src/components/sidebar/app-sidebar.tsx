@@ -15,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -41,6 +42,7 @@ export function AppSidebar() {
             <SidebarGroupLabel>Arrays</SidebarGroupLabel>
           </div>
           <SidebarGroupContent>
+            <SidebarGroupLabel>arrays</SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>

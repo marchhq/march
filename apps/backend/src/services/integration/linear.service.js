@@ -395,7 +395,7 @@ const handleWebhookEvent = async (payload) => {
                     "cycle.endsAt": endsAt,
                     updatedAt: issue.updatedAt
                 }, { new: true });
-                saveContent(updatedIssue);
+                await saveContent(updatedIssue);
                 message = `Updated issue with ID: ${issue.id}`;
                 action = "update"
                 broadcastObject = updatedIssue;
@@ -421,7 +421,7 @@ const handleWebhookEvent = async (payload) => {
                 });
 
                 const savedIssue = await newIssue.save();
-                saveContent(savedIssue);
+                await saveContent(savedIssue);
                 message = `Created new issue with ID: ${issue.id}`;
                 action = "create"
                 broadcastObject = savedIssue;

@@ -1,3 +1,4 @@
+import { Block } from "@/components/blocks/block";
 import ListBlock from "@/components/blocks/list/list";
 import { ErrorBoundary } from "@/components/error/error-boundary";
 import { InboxSkeleton } from "@/components/skeleton/inbox-skeleton";
