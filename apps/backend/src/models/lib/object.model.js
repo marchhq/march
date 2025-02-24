@@ -123,7 +123,7 @@ const ObjectSchema = new Schema(
     }
 );
 
-ObjectSchema.pre("save", function (next) {
+ObjectSchema.pre("save", async function (next) {
     if (this.status === "done") {
         this.isCompleted = true;
     } else {
@@ -132,6 +132,14 @@ ObjectSchema.pre("save", function (next) {
 
     if (this.isCompleted && !this.completedAt) {
         this.completedAt = new Date();
+    }
+
+    if (this.isNew) {
+        const lastItem = await this.constructor
+            .findOne(this.parent ? { parent: this.parent } : {})
+            .sort({ order: -1 });
+
+        this.order = lastItem ? lastItem.order + 1 : 0;
     }
 
     next();
