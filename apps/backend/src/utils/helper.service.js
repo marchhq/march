@@ -148,38 +148,6 @@ export const saveContent = async (object) => {
     return object;
 }
 
-// need to improve
-// Search for relevant content using vector similarity
-// export async function searchContent (query, userId, options = { limit: 8 }) {
-//     try {
-//         const sourcePattern = /(linear|github|march)/i;
-//         const match = query.match(sourcePattern);
-//         const sourceFilter = match ? match[0].toLowerCase() : null;
-
-//         const queryEmbedding = await generateEmbedding(query);
-
-//         const filter = {
-//             userId: userId.toString(),
-//             ...(sourceFilter && { source: sourceFilter })
-//         };
-
-//         const searchResults = await pineconeIndex.query({
-//             vector: queryEmbedding,
-//             topK: options.limit,
-//             filter: filter,
-//             includeMetadata: true
-//         });
-
-//         return searchResults.matches.map(match => ({
-//             ...match.metadata,
-//             score: match.score
-//         }));
-//     } catch (error) {
-//         console.error("Search failed:", error);
-//         throw error;
-//     }
-// }
-
 const SEARCH_PARAMS = {
     SORT_OPTIONS: {
         PRIORITY: 'priority',
@@ -289,7 +257,7 @@ export class SearchHandler {
             score: match.score
         }));
 
-        // Apply sorting
+        // Apply sorting here
         switch (sortBy) {
         case SEARCH_PARAMS.SORT_OPTIONS.PRIORITY:
             processedResults.sort((a, b) => {
@@ -305,7 +273,6 @@ export class SearchHandler {
             break;
 
         default:
-            // Default to relevance score
             processedResults.sort((a, b) => b.score - a.score);
         }
 
