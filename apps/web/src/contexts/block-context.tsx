@@ -5,28 +5,36 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { CalendarEvent } from "@/types/calendar";
 import { arrayMove } from "@dnd-kit/sortable";
 import { mockEvents, mockListItems } from "@/lib/mock-data";
+import { Objects } from "@/types/objects";
+import { BlockType } from "@/types/blocks";
+import { useInboxObjects, useTodayObjects } from "@/hooks/use-objects";
 
 interface BlockContextType {
-  items: any[];
+  items: Objects[];
   events: CalendarEvent[];
   handleDragEnd: (event: DragEndEvent) => void;
   handleInternalListSort: (event: DragEndEvent) => void;
   handleCalendarDrop: (draggedItem: any) => void;
+  isLoading: boolean;
+  error: Error | null;
 }
 
 const BlockContext = createContext<BlockContextType | undefined>(undefined);
 
 interface BlockProviderProps {
   children: ReactNode;
-  blockId: string;
+  arrayType: "inbox" | "today";
 }
 
-export function BlockProvider({ children, blockId }: BlockProviderProps) {
-  const [items, setItems] = useState(mockListItems);
+export function BlockProvider({ children, arrayType }: BlockProviderProps) {
+  const query = arrayType === "inbox" ? useInboxObjects() : useTodayObjects();
+
+  const { data: items = [], isLoading, error } = query;
+
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
 
   const handleInternalListSort = (event: DragEndEvent) => {
-    const { active, over } = event;
+    /* const { active, over } = event;
     if (!over) return;
 
     if (
@@ -38,7 +46,7 @@ export function BlockProvider({ children, blockId }: BlockProviderProps) {
         const newIndex = items.findIndex((item) => item.id === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
-    }
+    } */
   };
 
   const handleCalendarDrop = (draggedItem: any) => {
@@ -72,6 +80,8 @@ export function BlockProvider({ children, blockId }: BlockProviderProps) {
   const value = {
     items,
     events,
+    isLoading,
+    error,
     handleDragEnd,
     handleInternalListSort,
     handleCalendarDrop,

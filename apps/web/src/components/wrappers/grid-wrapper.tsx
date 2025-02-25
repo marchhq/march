@@ -13,7 +13,7 @@ const GridWrapper: React.FC<GridWrapperProps> = ({
 
   if (childCount > maxChildren) {
     console.warn(
-      `GridWrapper: Number of children (${childCount}) exceeds maximum allowed (${maxChildren})`,
+      `GridWrapper: Number of children (${childCount}) exceeds maximum allowed (${maxChildren})`
     );
   }
 
@@ -21,10 +21,10 @@ const GridWrapper: React.FC<GridWrapperProps> = ({
     <div className="grid auto-cols-[minmax(0,1fr)] grid-flow-col w-full h-full gap-3">
       {React.Children.map(children, (child, index) =>
         index < maxChildren ? (
-          <div className="rounded-lg bg-white min-h-[200px] md:min-h-min overflow-hidden">
+          <div className="rounded-lg p-4 bg-white min-h-[200px] md:min-h-min overflow-hidden">
             {child}
           </div>
-        ) : null,
+        ) : null
       )}
     </div>
   );

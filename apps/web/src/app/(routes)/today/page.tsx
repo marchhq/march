@@ -8,7 +8,7 @@ export default function Today() {
     <section className="h-full pt-2 pl-2 pr-4">
       <Block id="list-and-calendar">
         <GridWrapper>
-          <ListBlock header="Inbox" />
+          <ListBlock header="Today" arrayType="today" />
           <CalendarBlock />
         </GridWrapper>
       </Block>
