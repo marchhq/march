@@ -14,13 +14,15 @@ import { useBlock } from "@/contexts/block-context";
 export function ListItems() {
   const { items } = useBlock();
 
+  const sortedItems = [...items].reverse();
+
   return (
     <SortableContext
-      items={items.map((item) => item._id)}
+      items={sortedItems.map((item) => item._id)}
       strategy={verticalListSortingStrategy}
     >
       <div className="space-y-1">
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <SortableItem
             key={item._id}
             id={item._id}
