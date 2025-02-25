@@ -1,35 +1,31 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import CalendarHeader from "./calendar-header";
 import { useDroppable } from "@dnd-kit/core";
-import { useBlock } from "@/contexts/block-context";
+import { useCalendar } from "@/contexts/calendar-context";
+import CalendarHeader from "./calendar-header";
 import moment from "moment";
-import { useCallback, useState } from "react";
-import { useEvents } from "@/hooks/use-events";
-import type { DatesSetArg } from "@fullcalendar/core/index.js";
 
-export default function CalendarBlock() {
-  const [currentDate, setCurrentDate] = useState(moment().format("YYYY-MM-DD"));
-  const { data: events = [] } = useEvents(currentDate);
-
-  console.log("events: ", events);
-
-  const handleDatesSet = useCallback((arg: DatesSetArg) => {
-    // Get the start date of the current view
-    const viewStart = moment(arg.start).format("YYYY-MM-DD");
-    setCurrentDate(viewStart);
-  }, []);
+export function CalendarBlock() {
+  const calendarRef = useRef<any>(null);
+  const { events, handleDatesSet, setCalendarApi } = useCalendar();
 
   const { setNodeRef, isOver } = useDroppable({
     id: "calendar-drop-area",
-    data: {
-      type: "calendar",
-    },
+    data: { type: "calendar" },
   });
+
+  // Set calendar API on mount
+  useEffect(() => {
+    if (calendarRef.current) {
+      const api = calendarRef.current.getApi();
+      setCalendarApi(api);
+    }
+  }, []);
 
   return (
     <div
@@ -38,6 +34,7 @@ export default function CalendarBlock() {
     >
       <CalendarHeader />
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridDay"
         headerToolbar={false}
