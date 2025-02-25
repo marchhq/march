@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { BACKEND_URL } from "./constants";
 import { getSession } from "@/actions/session";
 
