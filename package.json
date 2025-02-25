@@ -26,10 +26,13 @@
   },
   "dependencies": {
     "@types/event-source-polyfill": "^1.0.5",
+    "bun": "^1.2.3",
+    "dev": "^0.1.3",
     "event-source-polyfill": "^1.0.31",
     "next": "^14.2.5",
     "next-themes": "^0.4.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "run": "^1.5.0"
   }
 }
