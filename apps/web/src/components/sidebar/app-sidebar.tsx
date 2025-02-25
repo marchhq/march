@@ -1,5 +1,12 @@
 "use client";
-import { LogOut, Plus, Settings, UserCircle, Inbox, Calendar } from "lucide-react";
+import {
+  LogOut,
+  Plus,
+  Settings,
+  UserCircle,
+  Inbox,
+  Calendar,
+} from "lucide-react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -15,8 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,34 +53,40 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link 
-                    href="/inbox" 
+                  <Link
+                    href="/inbox"
                     className={cn(
                       "flex items-center gap-3 px-2 py-1.5 text-sm",
-                      pathname === "/inbox" && "bg-accent text-accent-foreground"
+                      pathname === "/inbox" &&
+                        "bg-accent text-accent-foreground"
                     )}
                   >
-                    <Inbox className={cn(
-                      "h-4 w-4 text-foreground/70",
-                      pathname === "/inbox" && "text-accent-foreground"
-                    )} />
+                    <Inbox
+                      className={cn(
+                        "h-4 w-4 text-foreground/70",
+                        pathname === "/inbox" && "text-accent-foreground"
+                      )}
+                    />
                     <span>Inbox</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link 
-                    href="/today" 
+                  <Link
+                    href="/today"
                     className={cn(
                       "flex items-center gap-3 px-2 py-1.5 text-sm",
-                      pathname === "/today" && "bg-accent text-accent-foreground"
+                      pathname === "/today" &&
+                        "bg-accent text-accent-foreground"
                     )}
                   >
-                    <Calendar className={cn(
-                      "h-4 w-4 text-foreground/70",
-                      pathname === "/today" && "text-accent-foreground"
-                    )} />
+                    <Calendar
+                      className={cn(
+                        "h-4 w-4 text-foreground/70",
+                        pathname === "/today" && "text-accent-foreground"
+                      )}
+                    />
                     <span>Today</span>
                   </Link>
                 </SidebarMenuButton>
@@ -115,7 +128,10 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <IntegrationsDialog open={integrationsOpen} onOpenChange={setIntegrationsOpen} />
+      <IntegrationsDialog
+        open={integrationsOpen}
+        onOpenChange={setIntegrationsOpen}
+      />
     </Sidebar>
   );
 }
