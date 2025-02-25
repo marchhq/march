@@ -8,9 +8,21 @@ import CalendarHeader from "./calendar-header";
 import { useDroppable } from "@dnd-kit/core";
 import { useBlock } from "@/contexts/block-context";
 import moment from "moment";
+import { useCallback, useState } from "react";
+import { useEvents } from "@/hooks/use-events";
+import type { DatesSetArg } from "@fullcalendar/core/index.js";
 
 export default function CalendarBlock() {
-  const { events } = useBlock();
+  const [currentDate, setCurrentDate] = useState(moment().format("YYYY-MM-DD"));
+  const { data: events = [] } = useEvents(currentDate);
+
+  console.log("events: ", events);
+
+  const handleDatesSet = useCallback((arg: DatesSetArg) => {
+    // Get the start date of the current view
+    const viewStart = moment(arg.start).format("YYYY-MM-DD");
+    setCurrentDate(viewStart);
+  }, []);
 
   const { setNodeRef, isOver } = useDroppable({
     id: "calendar-drop-area",
@@ -36,6 +48,7 @@ export default function CalendarBlock() {
         expandRows={true}
         height="calc(100vh - 48px)"
         events={events}
+        datesSet={handleDatesSet}
         nowIndicator={true}
         scrollTime={`${moment().format("HH:mm:ss")}`}
         eventDisplay="block"
