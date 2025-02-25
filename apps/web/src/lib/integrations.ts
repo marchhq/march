@@ -11,8 +11,10 @@ export interface Integration {
 }
 
 interface IntegrationHandlers {
-  calendarHandler?: () => Promise<void>;
-  githubHandler?: () => Promise<void>;
+  calendarConnectHandler?: () => Promise<void>;
+  calendarDisconnectHandler?: () => Promise<void>;
+  githubConnectHandler?: () => Promise<void>;
+  githubDisconnectHandler?: () => Promise<void>;
   // Add other handlers as needed
 }
 
@@ -23,7 +25,9 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
       title: "Calendar",
       icon: "/icons/calendar.svg",
       iconType: "image",
-      handler: handlers.calendarHandler,
+      handler: user.integrations.googleCalendar.connected 
+        ? handlers.calendarDisconnectHandler 
+        : handlers.calendarConnectHandler,
       isConnected: user.integrations.googleCalendar.connected
     },
     { 
@@ -31,7 +35,9 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
       title: "GitHub", 
       icon: Github, 
       iconType: "component",
-      handler: handlers.githubHandler,
+      handler: user.integrations.github.connected
+        ? handlers.githubDisconnectHandler
+        : handlers.githubConnectHandler,
       isConnected: user.integrations.github.connected
     },
     // Add more integrations here...

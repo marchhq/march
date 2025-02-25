@@ -8,7 +8,8 @@ import { useUser } from "@/hooks/use-user";
 
 const IntegrationsList = () => {
   const { data: user } = useUser();
-  const handleCalendarLogin = useGoogleCalendarLogin("/today");
+  const { handleCalendarLogin, handleRevokeAccess } =
+    useGoogleCalendarLogin("/today");
 
   if (!user) {
     return null;
@@ -16,7 +17,8 @@ const IntegrationsList = () => {
 
   const integrations = getIntegrations(
     {
-      calendarHandler: handleCalendarLogin,
+      calendarConnectHandler: handleCalendarLogin,
+      calendarDisconnectHandler: handleRevokeAccess,
     },
     user
   );

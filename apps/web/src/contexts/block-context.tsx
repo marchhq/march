@@ -8,6 +8,8 @@ import { mockEvents, mockListItems } from "@/lib/mock-data";
 import { Objects } from "@/types/objects";
 import { BlockType } from "@/types/blocks";
 import { useInboxObjects, useTodayObjects } from "@/hooks/use-objects";
+import { useEvents } from "@/hooks/use-events";
+import moment from "moment";
 
 interface BlockContextType {
   items: Objects[];
@@ -31,7 +33,8 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
 
   const { data: items = [], isLoading, error } = query;
 
-  const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
+  const today = moment().format("YYYY-MM-DD");
+  const { data: events = [] } = useEvents(today);
 
   const handleInternalListSort = (event: DragEndEvent) => {
     /* const { active, over } = event;
@@ -50,7 +53,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   };
 
   const handleCalendarDrop = (draggedItem: any) => {
-    const dropDate = new Date();
+    /* const dropDate = new Date();
     const endDate = new Date(dropDate.getTime() + 60 * 60 * 1000);
 
     const newEvent: CalendarEvent = {
@@ -63,7 +66,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
       borderColor: "#E3F2FD",
     };
 
-    setEvents((prev) => [...prev, newEvent]);
+    setEvents((prev) => [...prev, newEvent]); */
   };
 
   const handleDragEnd = (event: DragEndEvent) => {

@@ -1,7 +1,8 @@
 import { Block } from "@/components/blocks/block";
-import CalendarBlock from "@/components/blocks/calendar/calendar";
 import GridWrapper from "@/components/wrappers/grid-wrapper";
 import ListBlock from "@/components/blocks/list/list";
+import { CalendarBlock } from "@/components/blocks/calendar/calendar";
+import { CalendarProvider } from "@/contexts/calendar-context";
 
 export default function Today() {
   return (
@@ -9,7 +10,9 @@ export default function Today() {
       <Block id="list-and-calendar">
         <GridWrapper>
           <ListBlock header="Today" arrayType="today" />
-          <CalendarBlock />
+          <CalendarProvider>
+            <CalendarBlock />
+          </CalendarProvider>
         </GridWrapper>
       </Block>
     </section>
