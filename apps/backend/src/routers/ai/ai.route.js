@@ -192,7 +192,6 @@ router.get("/ask", async (req, res) => {
         const searchHandler = new SearchHandler(pineconeIndex);
 
         console.log("Query Analysis:", queryAnalysis);
-        console.log("Query filters:", queryAnalysis.parameters.filters);
 
         switch (queryAnalysis.type) {
         case 'creation':
@@ -210,10 +209,10 @@ router.get("/ask", async (req, res) => {
                 status: "search",
                 data: searchResults,
                 // remove this part before commite
-                metadata: {
-                    filters: queryAnalysis.parameters.filters,
-                    sortBy: queryAnalysis.parameters.sortBy
-                }
+                // metadata: {
+                //     filters: queryAnalysis.parameters.filters,
+                //     sortBy: queryAnalysis.parameters.sortBy
+                // }
             }) + "\n");
             break;
 

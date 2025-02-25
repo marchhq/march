@@ -169,113 +169,279 @@ const SEARCH_PARAMS = {
 export class SearchHandler {
     constructor (pineconeIndex) {
         this.pineconeIndex = pineconeIndex;
+        this.cacheEnabled = true;
+        this.cache = new Map();
+        this.cacheTTL = 5 * 60 * 1000; // 5 minutes cache lifetime
     }
 
+    /**
+     * Search content based on query and parameters
+     * @param {string} query - User query string
+     * @param {string} userId - User ID for filtering
+     * @param {Object} parameters - Search parameters from QueryUnderstanding
+     * @returns {Promise<Array>} - Processed search results
+     */
     async searchContent (query, userId, parameters) {
-        const baseFilter = {
-            userId: userId
+        // Check cache for identical searches
+        const cacheKey = this.getCacheKey(query, userId, parameters);
+        if (this.cacheEnabled && this.cache.has(cacheKey)) {
+            return this.cache.get(cacheKey);
+        }
+
+        // Use filters directly from QueryUnderstanding without rebuilding them
+        const rawFilter = { userId, ...parameters.filters };
+        const filter = this.preprocessFilters(rawFilter);
+        // const filter = { userId, ...parameters.filters };
+
+        try {
+            // Generate embedding for semantic search
+            const queryEmbedding = await generateEnhancedEmbedding(query, {
+                userId,
+                ...parameters.filters
+            });
+
+            // Perform vector search with metadata filtering...
+            const searchResults = await this.pineconeIndex.query({
+                vector: queryEmbedding,
+                filter,
+                topK: parameters.limit || 10,
+                includeMetadata: true
+            });
+
+            // Apply post-processing and sorting
+            const processedResults = this.processSearchResults(
+                searchResults,
+                parameters.sortBy || SEARCH_PARAMS.SORT_OPTIONS.RELEVANCE
+            );
+
+            // Cache results
+            if (this.cacheEnabled) {
+                this.cache.set(cacheKey, processedResults);
+                setTimeout(() => this.cache.delete(cacheKey), this.cacheTTL);
+            }
+
+            return processedResults;
+        } catch (error) {
+            console.error("Search error:", error);
+            throw new Error(`Search failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Generate cache key for query caching
+     */
+    getCacheKey (query, userId, parameters) {
+        const filterString = JSON.stringify(parameters.filters || {});
+        const sortBy = parameters.sortBy || 'relevance';
+        const limit = parameters.limit || 10;
+        return `${userId}:${query.toLowerCase().trim()}:${filterString}:${sortBy}:${limit}`;
+    }
+
+    preprocessFilters (filters) {
+        const processedFilters = JSON.parse(JSON.stringify(filters));
+
+        // Process date fields in filters
+        const processObject = (obj) => {
+            for (const key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                // Process nested objects
+                    processObject(obj[key]);
+                } else if (
+                // Check if value looks like a date string
+                    typeof obj[key] === 'string' &&
+                /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj[key])
+                ) {
+                // Convert date string to timestamp (milliseconds)
+                    obj[key] = new Date(obj[key]).getTime();
+                }
+            }
         };
 
-        // Apply source filters
-        if (parameters.filters.source) {
-            baseFilter.source = parameters.filters.source;
-        }
-
-        // Apply type filters
-        if (parameters.filters.type) {
-            baseFilter.type = parameters.filters.type;
-        }
-
-        // Apply status filters
-        if (parameters.filters.status) {
-            baseFilter.status = parameters.filters.status;
-        }
-
-        // Apply time-based filters
-        if (parameters.filters.timeRange) {
-            Object.assign(baseFilter, this.buildTimeFilter(parameters.filters.timeRange));
-        }
-
-        // Apply priority filter if specified
-        if (parameters.filters.priority) {
-            baseFilter.priority = parameters.filters.priority;
-        }
-
-        // Generate embedding for semantic search
-        const queryEmbedding = await generateEnhancedEmbedding(query, {
-            userId,
-            ...parameters.filters
-        });
-
-        // Perform vector search with metadata filtering
-        const searchResults = await this.pineconeIndex.query({
-            vector: queryEmbedding,
-            filter: baseFilter,
-            topK: parameters.limit || 10,
-            includeMetadata: true
-        });
-
-        // Post-process and sort results
-        return this.processSearchResults(searchResults, parameters.sortBy);
+        processObject(processedFilters);
+        return processedFilters;
     }
 
-    buildTimeFilter (timeRange) {
-        const now = new Date();
-        const filter = {};
-
-        switch (timeRange) {
-        case SEARCH_PARAMS.TIME_RANGES.TODAY:
-            filter.dueDate = {
-                $gte: new Date(now.setHours(0, 0, 0, 0)).toISOString()
-            };
-            break;
-
-        case SEARCH_PARAMS.TIME_RANGES.THIS_WEEK:
-            // eslint-disable-next-line no-case-declarations
-            const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - now.getDay());
-            filter.dueDate = {
-                $gte: weekStart.toISOString()
-            };
-            break;
-
-        case SEARCH_PARAMS.TIME_RANGES.OVERDUE:
-            filter.dueDate = {
-                $lt: now.toISOString()
-            };
-            filter.isCompleted = false;
-            break;
-        }
-
-        return filter;
-    }
-
+    /**
+     * Process and sort search results
+     */
     processSearchResults (results, sortBy) {
-        // eslint-disable-next-line prefer-const
-        let processedResults = results.matches.map(match => ({
+        if (!results.matches || results.matches.length === 0) {
+            return [];
+        }
+
+        // Extract metadata and scores
+        const processedResults = results.matches.map(match => ({
             ...match.metadata,
-            score: match.score
+            score: match.score,
+            id: match.id
         }));
 
-        // Apply sorting here
+        // Apply sorting based on sortBy parameter
         switch (sortBy) {
         case SEARCH_PARAMS.SORT_OPTIONS.PRIORITY:
-            processedResults.sort((a, b) => {
-                const priorityOrder = { high: 3, medium: 2, low: 1 };
-                return priorityOrder[b.priority] - priorityOrder[a.priority];
-            });
-            break;
+            return this.sortByPriority(processedResults);
 
         case SEARCH_PARAMS.SORT_OPTIONS.DUE_DATE:
-            processedResults.sort((a, b) =>
-                new Date(a.dueDate) - new Date(b.dueDate)
+            return this.sortByDueDate(processedResults);
+
+        case SEARCH_PARAMS.SORT_OPTIONS.CREATED:
+            return processedResults.sort((a, b) =>
+                new Date(b.createdAt) - new Date(a.createdAt)
             );
-            break;
 
+        case SEARCH_PARAMS.SORT_OPTIONS.UPDATED:
+            return processedResults.sort((a, b) =>
+                new Date(b.updatedAt) - new Date(a.updatedAt)
+            );
+
+        case SEARCH_PARAMS.SORT_OPTIONS.RELEVANCE:
         default:
-            processedResults.sort((a, b) => b.score - a.score);
+            // Default to relevance (vector similarity score)
+            return processedResults.sort((a, b) => b.score - a.score);
         }
+    }
 
-        return processedResults;
+    /**
+     * Sort results by priority
+     */
+    sortByPriority (results) {
+        const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
+        return results.sort((a, b) => {
+            // First sort by priority
+            const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+            if (priorityDiff !== 0) return priorityDiff;
+
+            // Then by score as tiebreaker
+            return b.score - a.score;
+        });
+    }
+
+    /**
+     * Sort results by due date
+     */
+    sortByDueDate (results) {
+        return results.sort((a, b) => {
+            // Handle items without due dates
+            if (!a.dueDate && !b.dueDate) return b.score - a.score;
+            if (!a.dueDate) return 1;
+            if (!b.dueDate) return -1;
+
+            // Sort by due date, earliest first
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        });
     }
 }
+
+// export class SearchHandler {
+//     constructor (pineconeIndex) {
+//         this.pineconeIndex = pineconeIndex;
+//     }
+
+//     async searchContent (query, userId, parameters) {
+//         const baseFilter = {
+//             userId: userId
+//         };
+
+//         // Apply source filters
+//         if (parameters.filters.source) {
+//             baseFilter.source = parameters.filters.source;
+//         }
+
+//         // Apply type filters
+//         if (parameters.filters.type) {
+//             baseFilter.type = parameters.filters.type;
+//         }
+
+//         // Apply status filters
+//         if (parameters.filters.status) {
+//             baseFilter.status = parameters.filters.status;
+//         }
+
+//         // Apply time-based filters
+//         if (parameters.filters.timeRange) {
+//             Object.assign(baseFilter, this.buildTimeFilter(parameters.filters.timeRange));
+//         }
+
+//         // Apply priority filter if specified
+//         if (parameters.filters.priority) {
+//             baseFilter.priority = parameters.filters.priority;
+//         }
+
+//         // Generate embedding for semantic search
+//         const queryEmbedding = await generateEnhancedEmbedding(query, {
+//             userId,
+//             ...parameters.filters
+//         });
+
+//         // Perform vector search with metadata filtering
+//         const searchResults = await this.pineconeIndex.query({
+//             vector: queryEmbedding,
+//             filter: baseFilter,
+//             topK: parameters.limit || 10,
+//             includeMetadata: true
+//         });
+
+//         // Post-process and sort results
+//         return this.processSearchResults(searchResults, parameters.sortBy);
+//     }
+
+//     buildTimeFilter (timeRange) {
+//         const now = new Date();
+//         const filter = {};
+
+//         switch (timeRange) {
+//         case SEARCH_PARAMS.TIME_RANGES.TODAY:
+//             filter.dueDate = {
+//                 $gte: new Date(now.setHours(0, 0, 0, 0)).toISOString()
+//             };
+//             break;
+
+//         case SEARCH_PARAMS.TIME_RANGES.THIS_WEEK:
+//             // eslint-disable-next-line no-case-declarations
+//             const weekStart = new Date(now);
+//             weekStart.setDate(now.getDate() - now.getDay());
+//             filter.dueDate = {
+//                 $gte: weekStart.toISOString()
+//             };
+//             break;
+
+//         case SEARCH_PARAMS.TIME_RANGES.OVERDUE:
+//             filter.dueDate = {
+//                 $lt: now.toISOString()
+//             };
+//             filter.isCompleted = false;
+//             break;
+//         }
+
+//         return filter;
+//     }
+
+//     processSearchResults (results, sortBy) {
+//         // eslint-disable-next-line prefer-const
+//         let processedResults = results.matches.map(match => ({
+//             ...match.metadata,
+//             score: match.score
+//         }));
+
+//         // Apply sorting here
+//         switch (sortBy) {
+//         case SEARCH_PARAMS.SORT_OPTIONS.PRIORITY:
+//             processedResults.sort((a, b) => {
+//                 const priorityOrder = { high: 3, medium: 2, low: 1 };
+//                 return priorityOrder[b.priority] - priorityOrder[a.priority];
+//             });
+//             break;
+
+//         case SEARCH_PARAMS.SORT_OPTIONS.DUE_DATE:
+//             processedResults.sort((a, b) =>
+//                 new Date(a.dueDate) - new Date(b.dueDate)
+//             );
+//             break;
+
+//         default:
+//             processedResults.sort((a, b) => b.score - a.score);
+//         }
+
+//         return processedResults;
+//     }
+// }
