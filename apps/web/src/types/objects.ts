@@ -49,4 +49,11 @@ interface ObjectsResponse {
   response: Objects[]
 }
 
-export type { Objects, Cycle, Metadata, ObjectsResponse };
+interface TodayObjectResponse {
+  response: {
+    todayObjects: Objects[],
+    overdueObjects: Objects[]
+  }
+}
+
+export type { Objects, Cycle, Metadata, ObjectsResponse, TodayObjectResponse };

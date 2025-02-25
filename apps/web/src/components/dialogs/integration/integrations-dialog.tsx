@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Github, Linkedin, Twitter } from "lucide-react"
-import * as z from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Github, Linkedin, Twitter } from "lucide-react";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -11,29 +11,29 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import IntegrationsList from "./integration-list";
 
 const formSchema = z.object({
   email: z.string().email(),
   receiveFeedback: z.boolean().default(false),
-})
+});
 
 export function IntegrationsDialog({
   open,
   onOpenChange,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,54 +41,38 @@ export function IntegrationsDialog({
       email: "",
       receiveFeedback: false,
     },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+    console.log(values);
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Integrations</DialogTitle>
           <DialogDescription>
-            Complete verification to publish GPTs to everyone.
-            Verify your identity by adding billing details or verifying ownership of a public domain name.
+            Complete verification to publish GPTs to everyone. Verify your
+            identity by adding billing details or verifying ownership of a
+            public domain name.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-8 py-4">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Links</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Linkedin className="h-5 w-5" />
-                  <span>LinkedIn</span>
-                </div>
-                <Button variant="outline" size="sm">Add</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Github className="h-5 w-5" />
-                  <span>GitHub</span>
-                </div>
-                <Button variant="outline" size="sm">Add</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Twitter className="h-5 w-5" />
-                  <span>X</span>
-                </div>
-                <Button variant="outline" size="sm">Add</Button>
-              </div>
+              <IntegrationsList />
             </div>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Email</h3>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="email"
@@ -123,5 +107,5 @@ export function IntegrationsDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
