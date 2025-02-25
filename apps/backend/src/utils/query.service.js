@@ -76,7 +76,7 @@ export class QueryUnderstanding {
 
     validatePriority (priority) {
         if (!priority) return null;
-        console.log("hey")
+        console.log("hey: ", priority)
         const normalizedPriority = priority?.toLowerCase();
         return SEARCH_PARAMS.PRIORITY_LEVELS.includes(normalizedPriority) ? normalizedPriority : null;
     }
@@ -207,45 +207,21 @@ export class QueryUnderstanding {
         }
     }
 
-    // async handleSearchIntent (analysis, context) {
-    //     const searchParams = {
-    //         filters: {
-    //             ...this.buildSourceFilters(analysis.entities.source),
-    //             ...this.buildTypeFilters(analysis.entities.type),
-    //             ...this.buildStatusFilters(analysis.entities.status),
-    //             ...this.buildTimeFilters(analysis.entities.timeRange),
-    //             ...this.buildDueDateFilter(analysis.entities.dueDate),
-    //             ...this.buildPriorityFilter(analysis.entities.priority),
-    //             ...this.buildLabelFilters(analysis.entities.labels)
-    //         },
-    //         userId: context.userId,
-    //         sortBy: analysis.parameters.sortBy || SEARCH_PARAMS.SORT_OPTIONS.RELEVANCE,
-    //         limit: analysis.parameters.limit || 10,
-    //         searchMode: analysis.parameters.searchMode || 'semantic'
-    //     };
-
-    //     return {
-    //         type: 'search',
-    //         parameters: searchParams,
-    //         metadata: {
-    //             confidence: analysis.intent.confidence,
-    //             requiresSourceContext: analysis.context.requiresSourceContext,
-    //             originalQuery: context.originalQuery
-    //         }
-    //     };
-    // }
     async handleSearchIntent (analysis, context) {
-        // Build search parameters based on entities and context
         const searchParams = {
             filters: {
                 ...this.buildSourceFilters(analysis.entities.source),
                 ...this.buildTypeFilters(analysis.entities.type),
                 ...this.buildStatusFilters(analysis.entities.status),
-                ...this.buildTimeFilters(analysis.entities.timeRange)
+                ...this.buildTimeFilters(analysis.entities.timeRange),
+                ...this.buildDueDateFilter(analysis.entities.dueDate),
+                ...this.buildPriorityFilter(analysis.entities.priority),
+                ...this.buildLabelFilters(analysis.entities.labels)
             },
             userId: context.userId,
-            sortBy: analysis.parameters.sortBy || 'createdAt',
+            sortBy: analysis.parameters.sortBy || SEARCH_PARAMS.SORT_OPTIONS.RELEVANCE,
             limit: analysis.parameters.limit || 10
+            // searchMode: analysis.parameters.searchMode || 'semantic' --> improve the search model
         };
 
         return {
@@ -253,7 +229,8 @@ export class QueryUnderstanding {
             parameters: searchParams,
             metadata: {
                 confidence: analysis.intent.confidence,
-                requiresSourceContext: analysis.context.requiresSourceContext
+                requiresSourceContext: analysis.context.requiresSourceContext,
+                originalQuery: context.originalQuery
             }
         };
     }
@@ -304,7 +281,7 @@ export class QueryUnderstanding {
     }
 
     buildPriorityFilter (priority) {
-        if (!priority) return {};
+        if (!priority || priority.length === 0) return {};
 
         const validPriority = this.validatePriority(priority);
         if (!validPriority) return {};
