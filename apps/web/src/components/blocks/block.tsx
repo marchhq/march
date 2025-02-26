@@ -15,6 +15,7 @@ import { useBlock } from "@/contexts/block-context";
 interface BlockProps {
   id: string;
   children: React.ReactNode;
+  blockId: string;
 }
 
 export function Block({ id, children }: BlockProps) {

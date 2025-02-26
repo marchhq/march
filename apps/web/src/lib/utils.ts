@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const extractMessageData = (response: any) => {
   if (response?.data?.data) {
     return response.data.data;

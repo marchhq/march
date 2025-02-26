@@ -7,7 +7,7 @@ import {
   useLocalRuntime,
   type ChatModelAdapter,
 } from "@assistant-ui/react";
-import { apiClient } from "@/lib/api";
+// import { apiClient } from "@/lib/api";
 import axios from "axios";
 import { BACKEND_URL } from "@/lib/constants";
 import { useAuth } from "@/contexts/auth-context";
