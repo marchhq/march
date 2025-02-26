@@ -1,10 +1,20 @@
 import { getUser } from "@/actions/user"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const useUser = () => {
-  return useQuery({
+  const queryClient = useQueryClient()
+  const query = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
     retry: false,
   })
+
+  const refreshUser= () => {
+    return queryClient.invalidateQueries({queryKey: ["user"]})
+  }
+
+  return {
+    ...query,
+    refreshUser
+  }
 }
