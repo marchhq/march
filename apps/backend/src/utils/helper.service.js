@@ -199,7 +199,6 @@ export class SearchHandler {
                 userId,
                 ...parameters.filters
             });
-
             // Perform vector search with metadata filtering...
             const searchResults = await this.pineconeIndex.query({
                 vector: queryEmbedding,
@@ -207,8 +206,12 @@ export class SearchHandler {
                 topK: parameters.limit || 10,
                 includeMetadata: true
             });
-
+            console.log("seaech result:", searchResults)
             // Apply post-processing and sorting
+            // const processedResults = this.processSearchResults(
+            //     searchResults,
+            //     parameters.sortBy || SEARCH_PARAMS.SORT_OPTIONS.RELEVANCE
+            // );
             const processedResults = this.processSearchResults(
                 searchResults,
                 parameters.sortBy || SEARCH_PARAMS.SORT_OPTIONS.RELEVANCE

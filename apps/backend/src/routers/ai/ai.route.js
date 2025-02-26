@@ -193,7 +193,7 @@ router.get("/ask", async (req, res) => {
 
             res.write(JSON.stringify({
                 status: "search",
-                data: searchResults
+                data: searchResults,
                 // remove this part before commite
                 // metadata: {
                 //     filters: queryAnalysis.parameters.filters,
