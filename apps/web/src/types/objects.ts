@@ -37,7 +37,9 @@ interface Objects {
   metadata: Metadata;
   
   // Arrays
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   arrays: any[]; 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   blocks: any[]; 
   labels: string[];
   

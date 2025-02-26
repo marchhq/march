@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createObject, getInboxObjects, getTodayObjects } from "@/actions/objects";
-import { CreateObject, Objects } from "@/types/objects";
+import { CreateObject } from "@/types/objects";
 
 export function useInboxObjects() {
   return useQuery({
@@ -23,10 +23,12 @@ export function useCreateObject() {
   return useMutation({
     mutationKey: ["create-object"],
     mutationFn: (object: CreateObject) => createObject(object),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onMutate: async (newObject) => {
       // Cancel any outgoing refetches to avoid overwriting our optimistic update
       await queryClient.cancelQueries({ queryKey: ["inbox-objects"] });
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSuccess: (data) => {
       // Force a refetch instead of just invalidating
       queryClient.refetchQueries({
