@@ -13,6 +13,10 @@ export interface EventResponse {
   events: Event[];
 }
 
+export interface CreateEventResponse {
+  newEvent: Event
+}
+
 // Main event interface
 export interface Event {
   kind: string;

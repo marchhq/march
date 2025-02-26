@@ -40,7 +40,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const { data: items = [], isLoading, error } = query;
 
   const today = moment().format("YYYY-MM-DD");
-  const { data: events = [] } = useEvents(today);
+  const { data: events = [], addEvent } = useEvents(today);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleInternalListSort = (event: DragEndEvent) => {

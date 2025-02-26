@@ -1,7 +1,7 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
-import { EventResponse } from "@/types/calendar";
+import { CreateEventResponse, Event, EventResponse } from "@/types/calendar";
 
 export async function getEventsByDate(date: string) {
   const response = await apiClient.get<EventResponse>(
@@ -13,4 +13,12 @@ export async function getEventsByDate(date: string) {
   }
 
   return response.events;
+}
+
+export async function createEvent(event: Partial<Event>) {
+  const response = await apiClient.post<CreateEventResponse, Partial<Event>>(
+    "/calendar/events",
+    event
+  );
+  return response.newEvent;
 }
