@@ -15,19 +15,23 @@ import { useBlock } from "@/contexts/block-context";
 interface BlockProps {
   id: string;
   children: React.ReactNode;
-  blockId: string;
+  arrayType: "inbox" | "today";
 }
 
-export function Block({ id, children }: BlockProps) {
+export function Block({ id, children, arrayType }: BlockProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 4,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
   return (
-    <BlockProvider blockId={id}>
+    <BlockProvider arrayType={arrayType}>
       <BlockContent sensors={sensors}>{children}</BlockContent>
     </BlockProvider>
   );

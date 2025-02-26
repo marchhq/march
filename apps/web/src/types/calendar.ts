@@ -50,7 +50,7 @@ export interface EventPerson {
 // DateTime interface with timezone
 export interface EventDateTime {
   dateTime: string;
-  timeZone: string;
+  timeZone?: string;
 }
 
 // Attendee interface
