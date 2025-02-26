@@ -56,4 +56,9 @@ interface TodayObjectResponse {
   }
 }
 
-export type { Objects, Cycle, Metadata, ObjectsResponse, TodayObjectResponse };
+interface CreateObject {
+  title: string,
+  dueDate?: string | null,
+}
+
+export type { Objects, Cycle, Metadata, ObjectsResponse, TodayObjectResponse, CreateObject };

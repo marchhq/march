@@ -19,24 +19,24 @@ export const apiClient = {
   },
 
   // POST request
-  post: async <T>(url: string, data?: RequestData) => {
+  post: async <TResponse, TData = unknown>(url: string, data?: TData) => {
     const session = await getSession();
     const headers = session ? { Authorization: `Bearer ${session}` } : {};
-    const response = await api.post<T>(url, data, { headers });
+    const response = await api.post<TResponse>(url, data, { headers });
     return response.data;
   },
 
   // PUT request
-  put: async <T>(url: string, data?: RequestData) => {
+  put: async <TResponse, TData = unknown>(url: string, data?: TData) => {
     const session = await getSession();
     const headers = session ? { Authorization: `Bearer ${session}` } : {};
-    const response = await api.put<T>(url, data, { headers });
+    const response = await api.put<TResponse>(url, data, { headers });
     return response.data;
   },
 
   // DELETE request
   delete: async <T>(url: string) => {
-    const session = await getSession()
+    const session = await getSession();
     const headers = session ? { Authorization: `Bearer ${session}` } : {};
     const response = await api.delete<T>(url, { headers });
     return response.data;

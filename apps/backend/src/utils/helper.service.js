@@ -244,14 +244,12 @@ export class SearchHandler {
         const processObject = (obj) => {
             for (const key in obj) {
                 if (typeof obj[key] === 'object' && obj[key] !== null) {
-                // Process nested objects
                     processObject(obj[key]);
                 } else if (
-                // Check if value looks like a date string
+                // Check if value looks like a date string...
                     typeof obj[key] === 'string' &&
                 /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj[key])
                 ) {
-                // Convert date string to timestamp (milliseconds)
                     obj[key] = new Date(obj[key]).getTime();
                 }
             }
@@ -331,117 +329,3 @@ export class SearchHandler {
         });
     }
 }
-
-// export class SearchHandler {
-//     constructor (pineconeIndex) {
-//         this.pineconeIndex = pineconeIndex;
-//     }
-
-//     async searchContent (query, userId, parameters) {
-//         const baseFilter = {
-//             userId: userId
-//         };
-
-//         // Apply source filters
-//         if (parameters.filters.source) {
-//             baseFilter.source = parameters.filters.source;
-//         }
-
-//         // Apply type filters
-//         if (parameters.filters.type) {
-//             baseFilter.type = parameters.filters.type;
-//         }
-
-//         // Apply status filters
-//         if (parameters.filters.status) {
-//             baseFilter.status = parameters.filters.status;
-//         }
-
-//         // Apply time-based filters
-//         if (parameters.filters.timeRange) {
-//             Object.assign(baseFilter, this.buildTimeFilter(parameters.filters.timeRange));
-//         }
-
-//         // Apply priority filter if specified
-//         if (parameters.filters.priority) {
-//             baseFilter.priority = parameters.filters.priority;
-//         }
-
-//         // Generate embedding for semantic search
-//         const queryEmbedding = await generateEnhancedEmbedding(query, {
-//             userId,
-//             ...parameters.filters
-//         });
-
-//         // Perform vector search with metadata filtering
-//         const searchResults = await this.pineconeIndex.query({
-//             vector: queryEmbedding,
-//             filter: baseFilter,
-//             topK: parameters.limit || 10,
-//             includeMetadata: true
-//         });
-
-//         // Post-process and sort results
-//         return this.processSearchResults(searchResults, parameters.sortBy);
-//     }
-
-//     buildTimeFilter (timeRange) {
-//         const now = new Date();
-//         const filter = {};
-
-//         switch (timeRange) {
-//         case SEARCH_PARAMS.TIME_RANGES.TODAY:
-//             filter.dueDate = {
-//                 $gte: new Date(now.setHours(0, 0, 0, 0)).toISOString()
-//             };
-//             break;
-
-//         case SEARCH_PARAMS.TIME_RANGES.THIS_WEEK:
-//             // eslint-disable-next-line no-case-declarations
-//             const weekStart = new Date(now);
-//             weekStart.setDate(now.getDate() - now.getDay());
-//             filter.dueDate = {
-//                 $gte: weekStart.toISOString()
-//             };
-//             break;
-
-//         case SEARCH_PARAMS.TIME_RANGES.OVERDUE:
-//             filter.dueDate = {
-//                 $lt: now.toISOString()
-//             };
-//             filter.isCompleted = false;
-//             break;
-//         }
-
-//         return filter;
-//     }
-
-//     processSearchResults (results, sortBy) {
-//         // eslint-disable-next-line prefer-const
-//         let processedResults = results.matches.map(match => ({
-//             ...match.metadata,
-//             score: match.score
-//         }));
-
-//         // Apply sorting here
-//         switch (sortBy) {
-//         case SEARCH_PARAMS.SORT_OPTIONS.PRIORITY:
-//             processedResults.sort((a, b) => {
-//                 const priorityOrder = { high: 3, medium: 2, low: 1 };
-//                 return priorityOrder[b.priority] - priorityOrder[a.priority];
-//             });
-//             break;
-
-//         case SEARCH_PARAMS.SORT_OPTIONS.DUE_DATE:
-//             processedResults.sort((a, b) =>
-//                 new Date(a.dueDate) - new Date(b.dueDate)
-//             );
-//             break;
-
-//         default:
-//             processedResults.sort((a, b) => b.score - a.score);
-//         }
-
-//         return processedResults;
-//     }
-// }
