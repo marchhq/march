@@ -11,6 +11,7 @@ import CalendarHeader from "./calendar-header";
 import moment from "moment";
 
 export function CalendarBlock() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const calendarRef = useRef<any>(null);
   const { events, handleDatesSet, setCalendarApi } = useCalendar();
 

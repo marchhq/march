@@ -85,6 +85,7 @@ const ThreadWelcome: FC = () => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ThreadWelcomeSuggestions: FC = () => {
   return (
     <div className="mt-3 flex w-full items-stretch justify-center gap-4">

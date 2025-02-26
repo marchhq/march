@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await axios.get(`${BACKEND_URL}/calendar/getAccessToken`, {
       params: { code },
       headers: {

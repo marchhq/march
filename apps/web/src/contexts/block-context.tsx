@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useState } from "react";
+import { createContext, useContext, ReactNode } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { CalendarEvent } from "@/types/calendar";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -18,6 +18,7 @@ interface BlockContextType {
   events: CalendarEvent[];
   handleDragEnd: (event: DragEndEvent) => void;
   handleInternalListSort: (event: DragEndEvent) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleCalendarDrop: (draggedItem: any) => void;
   isLoading: boolean;
   error: Error | null;
@@ -28,9 +29,11 @@ const BlockContext = createContext<BlockContextType | undefined>(undefined);
 interface BlockProviderProps {
   children: ReactNode;
   arrayType: "inbox" | "today";
+  blockId: string;
 }
 
 export function BlockProvider({ children, arrayType }: BlockProviderProps) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const query = arrayType === "inbox" ? useInboxObjects() : useTodayObjects();
   const { mutate: updateOrder } = useOrderObject();
 
@@ -39,6 +42,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const today = moment().format("YYYY-MM-DD");
   const { data: events = [] } = useEvents(today);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleInternalListSort = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Github, Calendar } from "lucide-react";
+// import { Github, Calendar } from "lucide-react";
 import Image from "next/image";
 import useGoogleCalendarLogin from "@/hooks/use-calendar-login";
 import { getIntegrations, Integration } from "@/lib/integrations";
@@ -35,6 +35,7 @@ const IntegrationsList = () => {
         await integration.handler();
         await refreshUser();
         toast.success(`${integration.title} removed successfully`);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error("Failed to remove integration");
       } finally {
@@ -52,6 +53,7 @@ const IntegrationsList = () => {
       return <IconComponent className="h-5 w-5" />;
     } else if (integration.iconType === "image") {
       return (
+        
         <Image
           src={integration.icon}
           alt={`${integration.title} icon`}

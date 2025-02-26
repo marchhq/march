@@ -8,6 +8,7 @@ interface BaseAccount {
 /**
  * Local account specific properties
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface LocalAccount extends BaseAccount {}
 
 /**

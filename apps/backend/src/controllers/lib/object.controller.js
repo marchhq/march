@@ -2,6 +2,7 @@ import { createObject, createInboxObject, filterObjects, updateObject, getAllObj
 import { linkPreviewGenerator } from "../../services/lib/linkPreview.service.js";
 import { saveContent } from "../../utils/helper.service.js";
 import { linearQueue } from "../../loaders/bullmq.loader.js";
+import { Object } from "../../models/lib/object.model.js";
 
 const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -262,6 +263,47 @@ const getObjectsBySourceController = async (req, res, next) => {
         res.json({ objects });
     } catch (error) {
         next(error);
+    }
+}
+
+export async function createObjectFromAI (content, user) {
+    try {
+        if (!content?.title || !user?._id) {
+            throw new Error("Invalid content or user");
+        }
+
+        // Create object
+        const object = await Object.create({ ...content });
+
+        // Handle Linear-specific logic
+        if (content.source === "linear") {
+            const teamId = user.integration?.linear?.linearTeam?.teamId;
+            const accessToken = user.integration?.linear?.accessToken;
+
+            if (!teamId || !accessToken) {
+                throw new Error("Linear integration is not configured for this user.");
+            }
+
+            await linearQueue.add('createIssue', {
+                type: "createIssue",
+                accessToken,
+                teamId,
+                user: user._id,
+                title: content.title,
+                description: content.description,
+                objectId: object._id
+            }, {
+                attempts: 3,
+                backoff: 1000,
+                removeOnComplete: true
+            });
+        }
+
+        await saveContent(object);
+        return object;
+    } catch (error) {
+        console.error("Error creating object from AI:", error);
+        throw error;
     }
 }
 
