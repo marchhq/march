@@ -21,7 +21,7 @@ export function ListItems() {
       items={sortedItems.map((item) => item._id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="space-y-1 px-0">
+      <div className="space-y-1">
         {sortedItems.map((item) => (
           <SortableItem
             key={item._id}
