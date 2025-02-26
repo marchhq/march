@@ -4,6 +4,7 @@ import Providers from "./providers";
 
 import "../styles/globals.css";
 import "../styles/calendar.css";
+import "../styles/sidebar-custom.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

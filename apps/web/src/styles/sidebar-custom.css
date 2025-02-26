@@ -1,0 +1,74 @@
+/* Custom sidebar styles */
+[data-sidebar="sidebar"] {
+  background-color: white !important;
+  border-right: 1px solid #e5e7eb !important; /* Tailwind gray-200 */
+}
+
+.bg-sidebar {
+  background-color: white !important;
+}
+
+/* Style the sidebar header title */
+[data-sidebar="sidebar"] [data-sidebar="header"] h2 {
+  margin: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Hide the title text when sidebar is collapsed but keep the space */
+[data-state="collapsed"] [data-sidebar="sidebar"] [data-sidebar="header"] h2 {
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Increase icon size */
+[data-sidebar="sidebar"] svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Increase text size */
+[data-sidebar="sidebar"] span {
+  font-size: 14px !important;
+}
+
+/* Center icons in collapsed state */
+[data-state="collapsed"] [data-sidebar="sidebar"] a,
+[data-state="collapsed"] [data-sidebar="sidebar"] button {
+  padding: 0.75rem 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Hide the text in collapsed state to ensure proper centering, except in footer */
+[data-state="collapsed"] [data-sidebar="sidebar"] [data-sidebar="content"] span {
+  display: none !important;
+}
+
+/* Fix the menu item width and alignment */
+[data-state="collapsed"] [data-sidebar="sidebar"] [data-sidebar="menu-item"] {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Make icons slightly dull when sidebar is collapsed */
+[data-state="collapsed"] [data-sidebar="sidebar"] svg {
+  color: #9ca3af !important; /* Tailwind gray-400 - less dull than gray-300 */
+  margin: 0 !important; /* Remove any margin that might affect centering */
+}
+
+/* Restore icon color when active/hovered */
+[data-state="collapsed"] [data-sidebar="sidebar"] a:hover svg,
+[data-state="collapsed"] [data-sidebar="sidebar"] button:hover svg,
+[data-state="collapsed"] [data-sidebar="sidebar"] [data-active="true"] svg {
+  color: #4b5563 !important; /* Tailwind gray-600 */
+}
+
+/* Ensure footer profile is visible */
+[data-sidebar="sidebar"] [data-sidebar="footer"] {
+  margin-top: auto !important;
+  padding-bottom: 0.5rem !important;
+}

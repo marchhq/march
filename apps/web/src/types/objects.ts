@@ -9,25 +9,25 @@ interface Metadata {
   createdAt: string;
 }
 
-interface Objects {
+export interface Objects {
   _id: string;
   uuid: string;
   title: string;
-  description: string;
+  description?: string;
   type: 'todo'; 
   source: string;
   icon: string;
   cover_image: string;
   
   // Date fields
-  dueDate: Date | null;
+  dueDate?: string; // ISO date string
   completedAt: Date | null;
   createdAt: string;
   updatedAt: string;
   
   // Status fields
   status: string | null;
-  isCompleted: boolean;
+  isCompleted?: boolean;
   isArchived: boolean;
   isDeleted: boolean;
   isFavorite: boolean;
@@ -40,6 +40,7 @@ interface Objects {
   arrays: any[]; 
   blocks: any[]; 
   labels: string[];
+  tags?: string[];
   
   // Reference fields
   user: string; 

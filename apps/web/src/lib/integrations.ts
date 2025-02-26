@@ -1,10 +1,10 @@
 import { User } from '@/types/user';
-import { Github } from 'lucide-react';
+import { Github, Twitter } from 'lucide-react';
 
 export interface Integration {
   id: number;
   title: string;
-  icon: string | typeof Github;
+  icon: string | typeof Github | typeof Twitter;
   iconType: 'image' | 'component';
   handler?: () => Promise<void>;
   isConnected?: boolean
@@ -15,6 +15,10 @@ interface IntegrationHandlers {
   calendarDisconnectHandler?: () => Promise<void>;
   githubConnectHandler?: () => Promise<void>;
   githubDisconnectHandler?: () => Promise<void>;
+  twitterConnectHandler?: () => Promise<void>;
+  twitterDisconnectHandler?: () => Promise<void>;
+  linearConnectHandler?: () => Promise<void>;
+  linearDisconnectHandler?: () => Promise<void>;
   // Add other handlers as needed
 }
 
@@ -40,6 +44,25 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
         : handlers.githubConnectHandler,
       isConnected: user.integrations.github.connected
     },
-    // Add more integrations here...
+    { 
+      id: 3, 
+      title: "Twitter", 
+      icon: Twitter, 
+      iconType: "component",
+      handler: user.integrations.twitter?.connected
+        ? handlers.twitterDisconnectHandler
+        : handlers.twitterConnectHandler,
+      isConnected: user.integrations.twitter?.connected || false
+    },
+    { 
+      id: 4, 
+      title: "Linear", 
+      icon: "/icons/linear.svg", 
+      iconType: "image",
+      handler: user.integrations.linear?.connected
+        ? handlers.linearDisconnectHandler
+        : handlers.linearConnectHandler,
+      isConnected: user.integrations.linear?.connected || false
+    }
   ];
 }

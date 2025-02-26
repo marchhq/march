@@ -6,6 +6,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Custom styles */
+[data-sidebar="sidebar"] {
+  background-color: white !important;
+}
+
+.bg-sidebar {
+  background-color: white !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -86,8 +95,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
-
 
 @layer base {
   * {

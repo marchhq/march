@@ -40,12 +40,11 @@ export default function InputBox({
   return (
     <form onSubmit={handleSubmit} className="relative">
       <div className={cn(
-        "flex items-center gap-3 px-0 py-2 rounded-md",
-        isFocused ? "bg-gray-100" : "bg-transparent",
-        "transition-colors"
+        "flex items-center gap-3 py-2 rounded-md",
+        isFocused ? "bg-gray-50" : "bg-gray-50",
       )}>
-        <div className="flex items-center justify-center" style={{ width: '18px' }}>
-          <Checkbox className="h-[18px] w-[18px] opacity-40" />
+        <div className="flex items-center justify-center ml-3" style={{ width: '18px' }}>
+          <Checkbox className="h-[18px] w-[18px] border-gray-300" />
         </div>
         <Input
           name="todo"

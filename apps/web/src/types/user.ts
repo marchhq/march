@@ -40,6 +40,10 @@ interface Integrations {
   gmail: IntegrationStatus;
   github: IntegrationStatus;
   notion: IntegrationStatus;
+  twitter?: {
+    connected: boolean;
+    username?: string;
+  };
 }
 
 /**
@@ -62,5 +66,22 @@ export interface User {
   roles: string[];
   timezone: string;
   accounts: UserAccounts;
-  integrations: Integrations;
+  integrations: {
+    googleCalendar: {
+      connected: boolean;
+      email?: string;
+    };
+    github: {
+      connected: boolean;
+      username?: string;
+    };
+    twitter?: {
+      connected: boolean;
+      username?: string;
+    };
+    linear?: {
+      connected: boolean;
+      workspaceId?: string;
+    };
+  };
 }

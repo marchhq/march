@@ -1,0 +1,9 @@
+/* Custom sidebar styles */
+[data-sidebar="sidebar"] {
+  background-color: white !important;
+  border-right: 1px solid #e5e7eb !important; /* Tailwind gray-200 */
+}
+
+.bg-sidebar {
+  background-color: white !important;
+}
