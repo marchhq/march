@@ -7,15 +7,15 @@ const INTENTS = {
     QUERY: 'query'
 };
 
-const ENTITY_TYPES = {
-    SOURCE: 'source',
-    TYPE: 'type',
-    STATUS: 'status',
-    TIME_RANGE: 'time',
-    DUE_DATE: 'dueDate',
-    LABEL: 'label',
-    PRIORITY: 'priority'
-};
+// const ENTITY_TYPES = {
+//     SOURCE: 'source',
+//     TYPE: 'type',
+//     STATUS: 'status',
+//     TIME_RANGE: 'time',
+//     DUE_DATE: 'dueDate',
+//     LABEL: 'label',
+//     PRIORITY: 'priority'
+// };
 
 const TYPE_CHOICES = {
     NOTE: 'note',
