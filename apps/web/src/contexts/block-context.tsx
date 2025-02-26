@@ -93,15 +93,6 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
-
-    // For debugging
-    console.log("Drag end event:", {
-      activeId: active.id,
-      activeData: active.data.current,
-      overId: over.id,
-      overData: over.data.current,
-    });
-
     // Skip calendar drop check for now and directly handle internal sorting
     handleInternalListSort(event);
   };

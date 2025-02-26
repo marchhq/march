@@ -1,5 +1,4 @@
 "use client";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -10,16 +9,33 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableItem } from "./sortable-item";
 import { useBlock } from "@/contexts/block-context";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { useUpdateObject } from "@/hooks/use-objects";
 
 export function ListItems() {
   const { items, handleDragEnd } = useBlock();
+  const { mutate: updateObject } = useUpdateObject();
 
   // Sort items by order property
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
 
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 4,
+    },
+  });
+
+  const sensors = useSensors(pointerSensor);
+
   return (
     <DndContext
+      sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={(event) => {
         handleDragEnd(event);
@@ -46,6 +62,12 @@ export function ListItems() {
                     id={`item-${item._id}`}
                     className="h-[18px] w-[18px]"
                     checked={item.isCompleted}
+                    onCheckedChange={() => {
+                      updateObject({
+                        _id: item._id,
+                        isCompleted: !item.isCompleted,
+                      });
+                    }}
                   />
                   <label
                     htmlFor={`item-${item._id}`}
