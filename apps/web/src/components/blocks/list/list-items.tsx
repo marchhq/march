@@ -21,7 +21,7 @@ export function ListItems() {
       items={sortedItems.map((item) => item._id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="space-y-1">
+      <div className="space-y-1 px-0">
         {sortedItems.map((item) => (
           <SortableItem
             key={item._id}
@@ -32,25 +32,27 @@ export function ListItems() {
               checked: item.isCompleted,
             }}
           >
-            <div className="flex items-center w-full p-2 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="flex items-center space-x-3 w-full">
-                <Checkbox
-                  id={`item-${item._id}`}
-                  className="h-[18px] w-[18px]"
-                  checked={item.isCompleted}
-                />
+            <div className="flex items-center w-full py-2 px-0 rounded-md hover:bg-gray-50 transition-colors">
+              <div className="flex items-center gap-3 w-full">
+                <div className="flex items-center justify-center" style={{ width: '18px' }}>
+                  <Checkbox
+                    id={`item-${item._id}`}
+                    className="h-[18px] w-[18px] border-gray-300"
+                    checked={item.isCompleted}
+                  />
+                </div>
                 <label
                   htmlFor={`item-${item._id}`}
                   className={cn(
                     "text-sm cursor-pointer select-none",
-                    item.isCompleted && "text-gray-500 line-through"
+                    item.isCompleted ? "text-gray-400 line-through" : "text-gray-700"
                   )}
                 >
                   {item.title}
                 </label>
               </div>
             </div>
-            <Separator className="last:hidden opacity-30" />
+            <Separator className="last:hidden opacity-20" />
           </SortableItem>
         ))}
       </div>

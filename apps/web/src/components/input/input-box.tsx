@@ -1,10 +1,10 @@
 "use client";
 
 import { Input } from "../ui/input";
-import { Plus } from "lucide-react";
+import { Checkbox } from "../ui/checkbox";
 import { cn } from "@/lib/utils";
 import { CreateObject } from "@/types/objects";
-import React from "react";
+import React, { useState } from "react";
 
 interface InputBoxProps {
   className?: string;
@@ -17,6 +17,8 @@ export default function InputBox({
   onSubmit,
   arrayType,
 }: InputBoxProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -32,20 +34,37 @@ export default function InputBox({
     }
 
     form.reset();
+    setIsFocused(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <Plus className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-      <Input
-        name="todo"
-        placeholder="Add new todo here"
-        className={cn(
-          "bg-gray-100 border-none pl-10",
-          "focus-visible:ring-0 focus:outline-none focus:bg-gray-50 transition-colors",
-          className
-        )}
-      />
+      <div className={cn(
+        "flex items-center gap-3 px-0 py-2 rounded-md",
+        isFocused ? "bg-gray-100" : "bg-transparent",
+        "transition-colors"
+      )}>
+        <div className="flex items-center justify-center" style={{ width: '18px' }}>
+          <Checkbox className="h-[18px] w-[18px] opacity-40" />
+        </div>
+        <Input
+          name="todo"
+          placeholder="Add object"
+          className={cn(
+            "border-none shadow-none p-0 h-auto",
+            "focus-visible:ring-0 focus:outline-none",
+            "bg-transparent text-sm placeholder:text-gray-400",
+            className
+          )}
+          onFocus={() => setIsFocused(true)}
+          onBlur={(e) => {
+            // Only set to false if the form is not being submitted
+            if (e.relatedTarget?.tagName !== 'BUTTON') {
+              setIsFocused(false);
+            }
+          }}
+        />
+      </div>
     </form>
   );
 }
