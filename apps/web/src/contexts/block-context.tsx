@@ -3,11 +3,13 @@
 import { createContext, useContext, ReactNode } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { CalendarEvent } from "@/types/calendar";
-// import { arrayMove } from "@dnd-kit/sortable";
-// import { mockEvents, mockListItems } from "@/lib/mock-data";
+import { arrayMove } from "@dnd-kit/sortable";
 import { Objects } from "@/types/objects";
-// import { BlockType } from "@/types/blocks";
-import { useInboxObjects, useTodayObjects } from "@/hooks/use-objects";
+import {
+  useInboxObjects,
+  useOrderObject,
+  useTodayObjects,
+} from "@/hooks/use-objects";
 import { useEvents } from "@/hooks/use-events";
 import moment from "moment";
 
@@ -33,6 +35,7 @@ interface BlockProviderProps {
 export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const query = arrayType === "inbox" ? useInboxObjects() : useTodayObjects();
+  const { mutate: updateOrder } = useOrderObject();
 
   const { data: items = [], isLoading, error } = query;
 
@@ -41,22 +44,39 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleInternalListSort = (event: DragEndEvent) => {
-    /* const { active, over } = event;
+    const { active, over } = event;
     if (!over) return;
 
-    if (
-      active.data.current?.type === "list-item" &&
-      over.data.current?.type === "list-item"
-    ) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    } */
+    // Check if both items are list items
+    const isActiveListItem = active.data.current?.type === "list-item";
+    const isOverListItem = over.data.current?.type === "list-item";
+
+    if (isActiveListItem && isOverListItem) {
+      const activeId = active.id as string;
+      const overId = over.id as string;
+
+      const oldIndex = items.findIndex((item) => item._id === activeId);
+      const newIndex = items.findIndex((item) => item._id === overId);
+
+      if (oldIndex !== newIndex) {
+        // Create a new array with the item moved to the new position
+        const newItems = arrayMove(items, oldIndex, newIndex);
+
+        const orderedItems = newItems.map((item, index) => ({
+          id: item._id,
+          order: index,
+        }));
+
+        // Call the mutation to update the order in the backend
+        updateOrder({
+          orderedItems: orderedItems,
+        });
+      }
+    } else {
+      console.log("Items are not both list items, skipping sort");
+    }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   const handleCalendarDrop = (draggedItem: any) => {
     /* const dropDate = new Date();
     const endDate = new Date(dropDate.getTime() + 60 * 60 * 1000);
@@ -77,12 +97,8 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
-
-    if (over.id === "calendar-drop-area") {
-      handleCalendarDrop(active.data.current);
-    } else {
-      handleInternalListSort(event);
-    }
+    // Skip calendar drop check for now and directly handle internal sorting
+    handleInternalListSort(event);
   };
 
   const value = {

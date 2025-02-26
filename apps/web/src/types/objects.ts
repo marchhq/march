@@ -14,6 +14,7 @@ interface Objects {
   uuid: string;
   title: string;
   description: string;
+  order: number,
   type: 'todo'; 
   source: string;
   icon: string;
@@ -61,6 +62,19 @@ interface TodayObjectResponse {
 interface CreateObject {
   title: string,
   dueDate?: string | null,
+  isCompleted: boolean,
 }
 
-export type { Objects, Cycle, Metadata, ObjectsResponse, TodayObjectResponse, CreateObject };
+interface OrderObject {
+  orderedItems: {
+    id: string,
+    order: number
+  }[]
+}
+
+interface OrderObjectResponse {
+  orderedItems: OrderObject[]
+}
+
+
+export type { Objects, OrderObject, OrderObjectResponse, ObjectsResponse, TodayObjectResponse, CreateObject };
