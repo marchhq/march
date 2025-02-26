@@ -5,10 +5,14 @@ import Image from "next/image";
 import useGoogleCalendarLogin from "@/hooks/use-calendar-login";
 import { getIntegrations, Integration } from "@/lib/integrations";
 import { useUser } from "@/hooks/use-user";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 const IntegrationsList = () => {
-  const { data: user } = useUser();
-  const handleCalendarLogin = useGoogleCalendarLogin("/today");
+  const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null);
+  const { data: user, refreshUser } = useUser();
+  const { handleCalendarLogin, handleRevokeAccess } =
+    useGoogleCalendarLogin("/today");
 
   if (!user) {
     return null;
@@ -16,10 +20,31 @@ const IntegrationsList = () => {
 
   const integrations = getIntegrations(
     {
-      calendarHandler: handleCalendarLogin,
+      calendarConnectHandler: handleCalendarLogin,
+      calendarDisconnectHandler: handleRevokeAccess,
     },
     user
   );
+
+  const handleIntegrationAction = async (integration: Integration) => {
+    if (!integration.handler) return;
+
+    if (integration.isConnected) {
+      setIsDisconnecting(integration.id);
+      try {
+        await integration.handler();
+        await refreshUser();
+        toast.success(`${integration.title} removed successfully`);
+      } catch (error) {
+        toast.error("Failed to remove integration");
+      } finally {
+        setIsDisconnecting(null);
+      }
+    } else {
+      await integration.handler();
+      toast.success(`${integration.title} is connected to emptyarray!`);
+    }
+  };
 
   const renderIcon = (integration: Integration) => {
     if (integration.iconType === "component") {
@@ -48,10 +73,17 @@ const IntegrationsList = () => {
           </div>
           <Button
             variant={integration.isConnected ? "default" : "outline"}
-            size="sm"
-            onClick={integration.handler}
+            onClick={() => handleIntegrationAction(integration)}
+            disabled={isDisconnecting === integration.id}
+            className="w-20 h-7"
           >
-            {integration.isConnected ? "Remove" : "Add"}
+            {isDisconnecting === integration.id ? (
+              <Spinner />
+            ) : integration.isConnected ? (
+              "Remove"
+            ) : (
+              "Add"
+            )}
           </Button>
         </div>
       ))}
