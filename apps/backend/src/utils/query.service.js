@@ -142,6 +142,7 @@ export class QueryUnderstanding {
             - "show high priority tasks from github due this week" -> priority: "high", source: ["github"], timeRange: ["this_week"]
             - "find overdue items sorted by priority" -> timeRange: ["overdue"], sortBy: "priority"
             - "show pending pr assigned to me" -> source:["github"]
+            - "show all my tasks" -> intent: "list", type: ["todo"]
             `;
 
             const result = await this.chatModel.generateContent(analysisPrompt);
