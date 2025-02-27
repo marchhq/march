@@ -1,7 +1,7 @@
 const INTENTS = {
     SEARCH: 'search',
     CREATE: 'create',
-    UPDATE: 'update',
+    // UPDATE: 'update',
     DELETE: 'delete',
     LIST: 'list',
     QUERY: 'query'
@@ -76,7 +76,6 @@ export class QueryUnderstanding {
 
     validatePriority (priority) {
         if (!priority) return null;
-        console.log("hey: ", priority)
         const normalizedPriority = priority?.toLowerCase();
         return SEARCH_PARAMS.PRIORITY_LEVELS.includes(normalizedPriority) ? normalizedPriority : null;
     }
@@ -204,9 +203,9 @@ export class QueryUnderstanding {
         case INTENTS.LIST:
             return this.handleSearchIntent(analysis, queryContext);
 
-        case INTENTS.UPDATE:
-            // TODO: Implement update handler
-            return this.handleUpdateIntent(analysis, queryContext);
+            // case INTENTS.UPDATE:
+            //     // TODO: Implement update handler
+            //     return this.handleUpdateIntent(analysis, queryContext);
 
         case INTENTS.QUERY:
             return this.handleGeneralQuery(analysis, queryContext);
