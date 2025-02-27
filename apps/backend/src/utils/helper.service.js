@@ -206,7 +206,7 @@ export class SearchHandler {
                 topK: parameters.limit || 10,
                 includeMetadata: true
             });
-            console.log("seaech result:", searchResults)
+            // console.log("seaech result:", searchResults)
             // Apply post-processing and sorting
             // const processedResults = this.processSearchResults(
             //     searchResults,
@@ -330,5 +330,233 @@ export class SearchHandler {
             // Sort by due date, earliest first
             return new Date(a.dueDate) - new Date(b.dueDate);
         });
+    }
+}
+
+/**
+ * Add this class to implement day planning functionality
+ */
+export class DayPlanner {
+    constructor (searchHandler, chatModel) {
+        this.searchHandler = searchHandler;
+        this.chatModel = chatModel;
+    }
+
+    /**
+     * Plan the user's day based on their undone tasks
+     * @param {string} userId - User ID
+     * @param {Object} parameters - Planning parameters (timeBlocks, focus, etc)
+     * @returns {Promise<Object>} - Day plan with scheduled tasks
+     */
+    async planDay (userId, parameters = {}) {
+        try {
+            // 1. Fetch all undone items for the user
+            const undoneItems = await this.fetchUndoneItems(userId);
+            if (!undoneItems || undoneItems.length === 0) {
+                return {
+                    status: "empty",
+                    message: "You don't have any pending tasks to plan.",
+                    plan: []
+                };
+            }
+
+            // 2. Generate a day plan using AI
+            const plan = await this.generatePlan(undoneItems, parameters);
+            return {
+                status: "success",
+                message: "Here's your plan for today.",
+                plan: plan
+            };
+        } catch (error) {
+            console.error("Day planning error:", error);
+            return {
+                status: "error",
+                message: `Failed to create plan: ${error.message}`,
+                plan: []
+            };
+        }
+    }
+
+    /**
+     * Fetch all undone items for a user
+     */
+    async fetchUndoneItems (userId) {
+        // Use your existing search functionality but with specific filters
+        const parameters = {
+            filters: {
+                status: { $ne: "done" },
+                isCompleted: false,
+                isArchived: false
+            },
+            sortBy: "priority",
+            limit: 50 // Get a reasonable number of tasks
+        };
+
+        return await this.searchHandler.searchContent("", userId, parameters);
+    }
+
+    /**
+     * Generate a day plan based on undone items and user preferences
+     */
+    async generatePlan (items, parameters) {
+        // Extract important info from each item to reduce token usage
+        const simplifiedItems = items.map(item => ({
+            id: item.id,
+            title: item.title,
+            priority: item.priority || "medium",
+            dueDate: item.dueDate,
+            estimatedTime: item.estimatedTime || "unknown",
+            type: item.type,
+            labels: item.labels || []
+        }));
+
+        // Set up default parameters
+        const planningParams = {
+            workHours: parameters.workHours || { start: "9:00", end: "17:00" },
+            breaks: parameters.breaks || [{ time: "12:00", duration: 60 }],
+            focusAreas: parameters.focusAreas || [],
+            timeBlocks: parameters.timeBlocks || 30, // minutes per block
+            ...parameters
+        };
+
+        const prompt = `
+        Create a day plan for a user based on their undone tasks:
+        ${JSON.stringify(simplifiedItems)}
+        
+        Planning parameters:
+        ${JSON.stringify(planningParams)}
+        
+        Return a JSON object with this structure:
+        {
+            "summary": "Brief 1-2 sentence summary of the day plan",
+            "timeBlocks": [
+            {
+                "startTime": "HH:MM",
+                "endTime": "HH:MM",
+                "taskId": "id of the task (or null for breaks)",
+                "title": "Task title or 'Break'",
+                "notes": "Optional planning notes"
+            }
+            ],
+            "unscheduled": [
+            {
+                "id": "task id",
+                "title": "Task title",
+                "reason": "Reason this couldn't be scheduled"
+            }
+            ]
+        }
+        
+        Planning guidelines:
+        - Prioritize tasks with approaching due dates
+        - Prioritize high priority tasks
+        - Group similar tasks together when possible
+        - Add short breaks between different types of work
+        - Suggest specific time blocks based on the task priority and complexity
+        - Include all appropriate breaks specified in the parameters
+        - If there are too many tasks to schedule, list the most important ones first and put the rest in "unscheduled"
+        
+        Return ONLY the JSON object, no introduction or explanation.
+        `;
+
+        try {
+            const result = await this.chatModel.generateContent(prompt);
+            const responseText = result.response.text();
+
+            // Clean and parse the JSON response
+            const cleanJson = responseText.replace(/```json\n?|\n?```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (error) {
+            console.error("Error generating plan:", error);
+            throw new Error("Failed to generate day plan");
+        }
+    }
+}
+
+export class PrioritizationHandler {
+    constructor (searchHandler, chatModel) {
+        this.searchHandler = searchHandler;
+        this.chatModel = chatModel;
+    }
+
+    async prioritizeTasks (userId, parameters) {
+        try {
+            const tasks = await this.searchHandler.searchContent("", userId, parameters.filters);
+
+            if (!tasks || tasks.length === 0) {
+                return {
+                    status: "empty",
+                    message: "No tasks found to prioritize. Try creating some tasks first."
+                };
+            }
+
+            const prioritizedTasks = await this.generatePrioritization(tasks, parameters.criteria);
+            return {
+                status: "success",
+                prioritizedTasks: prioritizedTasks
+            };
+        } catch (error) {
+            console.error("Error prioritizing tasks:", error);
+            return {
+                status: "error",
+                message: "Failed to prioritize tasks: " + error.message
+            };
+        }
+    }
+
+    async generatePrioritization (tasks, criteria) {
+        const taskData = tasks.map(task => ({
+            id: task._id,
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            dueDate: task.dueDate,
+            status: task.status,
+            labels: task.labels
+        }));
+
+        // the prompt for the AI to prioritize
+        const prompt = `
+            I need to prioritize these tasks based on the following criteria: ${criteria.join(', ')}.
+            
+            Here are the tasks:
+            ${JSON.stringify(taskData)}
+            
+            For each task, consider:
+            1. Urgency: How soon does it need to be completed?
+            2. Importance: How significant is this task to overall goals?
+            3. Effort: How much time/energy will this task require?
+            4. Dependencies: Are other tasks dependent on this one?
+            
+            Return a JSON object with:
+            1. An array of prioritizedTasks with the following structure:
+               [{
+                  "id": "task id",
+                  "title": "task title", 
+                  "rank": number (1 being highest priority),
+                  "rationale": "brief explanation of why this task has this rank"
+               }]
+            2. A "nextSteps" array with suggestions for the top 3 tasks
+            3. A "summary" string that explains the prioritization logic
+            
+            IMPORTANT: Make sure to include the task "title" property in each prioritizedTask object.
+        `;
+
+        const result = await this.chatModel.generateContent(prompt);
+        const responseText = result.response.text();
+
+        // Extract the JSON from the response
+        try {
+            const cleanJson = responseText.replace(/```json\n?|\n?```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (error) {
+            console.error("Error parsing prioritization result:", error);
+            // Attempt to extract JSON using regex as fallback
+            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+            throw new Error("Could not parse prioritization result");
+        }
     }
 }
