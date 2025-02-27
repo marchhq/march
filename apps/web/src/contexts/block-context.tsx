@@ -2,7 +2,7 @@
 
 import { createContext, useContext, ReactNode } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
-import { CalendarEvent } from "@/types/calendar";
+import { CalendarEvent, Event } from "@/types/calendar";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Objects } from "@/types/objects";
 import {
@@ -29,7 +29,6 @@ const BlockContext = createContext<BlockContextType | undefined>(undefined);
 interface BlockProviderProps {
   children: ReactNode;
   arrayType: "inbox" | "today";
-  blockId: string;
 }
 
 export function BlockProvider({ children, arrayType }: BlockProviderProps) {
@@ -40,7 +39,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const { data: items = [], isLoading, error } = query;
 
   const today = moment().format("YYYY-MM-DD");
-  const { data: events = [] } = useEvents(today);
+  const { data: events = [], addEvent } = useEvents(today);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleInternalListSort = (event: DragEndEvent) => {
@@ -78,27 +77,34 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   };
 
   const handleCalendarDrop = (draggedItem: any) => {
-    /* const dropDate = new Date();
+    if (!draggedItem) return;
+
+    const dropDate = new Date();
     const endDate = new Date(dropDate.getTime() + 60 * 60 * 1000);
 
-    const newEvent: CalendarEvent = {
-      id: `event-${Date.now()}`,
-      title: draggedItem.text,
-      start: dropDate.toISOString(),
-      end: endDate.toISOString(),
-      backgroundColor: "#E3F2FD",
-      textColor: "#0D47A1",
-      borderColor: "#E3F2FD",
+    const newEvent: Partial<Event> = {
+      summary: draggedItem.text || "New Event",
+      start: {
+        dateTime: dropDate.toISOString(),
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+      },
     };
 
-    setEvents((prev) => [...prev, newEvent]); */
+    addEvent(newEvent);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
     // Skip calendar drop check for now and directly handle internal sorting
-    handleInternalListSort(event);
+    if (over.id === "calendar-drop-area") {
+      handleCalendarDrop(active.data.current);
+    } else {
+      // Otherwise, handle internal list sorting
+      handleInternalListSort(event);
+    }
   };
 
   const value = {
