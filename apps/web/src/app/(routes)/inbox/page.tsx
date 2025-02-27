@@ -5,8 +5,8 @@ import { Suspense } from "react";
 
 export default function Inbox() {
   return (
-    <section className="h-full pt-2 pl-2 pr-4">
-      <div className="w-full rounded-lg bg-white min-h-[200px] md:min-h-min overflow-hidden">
+    <section className="pt-2 pl-2 pr-4">
+      <div className="w-full rounded-lg bg-white shadow-sm h-[calc(100vh-80px)] overflow-auto border border-gray-100">
         <ErrorBoundary
           fallback={<div>Error loading inbox. Please try again later.</div>}
         >
