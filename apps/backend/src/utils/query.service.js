@@ -4,7 +4,8 @@ const INTENTS = {
     // UPDATE: 'update',
     DELETE: 'delete',
     LIST: 'list',
-    QUERY: 'query'
+    QUERY: 'query',
+    PRIORITIZE: 'prioritize'
 };
 
 // const ENTITY_TYPES = {
@@ -118,7 +119,8 @@ export class QueryUnderstanding {
                 "labels": ["detected labels"],
                 "priority": "detected priority level (urgent, high, medium, low)",
                 "workStart": "detected work start time",
-                "workEnd": "detected work end time"
+                "workEnd": "detected work end time",
+                "prioritizationCriteria": ["detected prioritization criteria like due date, importance, effort"]
               },
               "parameters": {
                 "filters": {},
@@ -132,7 +134,8 @@ export class QueryUnderstanding {
                 "requiresSourceContext": boolean,
                 "needsDisambiguation": boolean,
                 "isSimpleList": boolean,
-                "isDayPlanning": boolean
+                "isDayPlanning": boolean,
+                 "isPrioritization": boolean
               }
             }
 
@@ -151,6 +154,11 @@ export class QueryUnderstanding {
             - "organize my tasks for today" -> intent: "plan", context.isDayPlanning: true
             - "help me schedule my day with my todos" -> intent: "plan", context.isDayPlanning: true
             - "create a schedule from 9am to 5pm with my tasks" -> intent: "plan", workStart: "9am", workEnd: "5pm"
+            - "prioritize my tasks" -> intent: "prioritize", context.isPrioritization: true
+            - "organize my todos based on importance" -> intent: "prioritize", prioritizationCriteria: ["importance"]
+            - "sort my tasks by deadline" -> intent: "prioritize", prioritizationCriteria: ["due date"]
+            - "help me sort out my most important work" -> intent: "prioritize", prioritizationCriteria: ["importance"]
+            - "what should I work on first?" -> intent: "prioritize", context.isPrioritization: true
             `;
 
             const result = await this.chatModel.generateContent(analysisPrompt);
@@ -203,6 +211,9 @@ export class QueryUnderstanding {
         case INTENTS.LIST:
             return this.handleSearchIntent(analysis, queryContext);
 
+        case INTENTS.PRIORITIZE:
+            return this.handlePrioritizationIntent(analysis, queryContext);
+
             // case INTENTS.UPDATE:
             //     // TODO: Implement update handler
             //     return this.handleUpdateIntent(analysis, queryContext);
@@ -242,6 +253,35 @@ export class QueryUnderstanding {
             metadata: {
                 confidence: analysis.intent.confidence,
                 requiresSourceContext: analysis.context.requiresSourceContext,
+                originalQuery: context.originalQuery
+            }
+        };
+    }
+
+    async handlePrioritizationIntent (analysis, context) {
+        const criteria = analysis.entities.prioritizationCriteria || ['importance', 'urgency', 'due date'];
+
+        const taskFilters = {
+            status: { $ne: 'done' },
+            userId: context.userId,
+            ...this.buildSourceFilters(analysis.entities.source),
+            ...this.buildTypeFilters(analysis.entities.type),
+            ...this.buildTimeFilters(analysis.entities.timeRange),
+            ...this.buildLabelFilters(analysis.entities.labels)
+        };
+
+        const prioritizationPrompt = await this.buildPrioritizationPrompt(criteria, context);
+
+        return {
+            type: 'prioritization',
+            parameters: {
+                filters: taskFilters,
+                criteria,
+                prompt: prioritizationPrompt,
+                userId: context.userId
+            },
+            metadata: {
+                confidence: analysis.intent.confidence,
                 originalQuery: context.originalQuery
             }
         };
@@ -439,6 +479,25 @@ export class QueryUnderstanding {
         return timeFilters.$or.length > 0 ? timeFilters : {};
     }
 
+    async buildPrioritizationPrompt (criteria, context) {
+        const criteriaStr = criteria.join(', ');
+
+        return `
+        Analyze and prioritize the user's tasks based on the following criteria: ${criteriaStr}.
+        
+        For each task, consider:
+        1. Urgency: How soon does this need to be completed?
+        2. Importance: How significant is this task to the user's goals?
+        3. Effort: How much time/energy will this task require?
+        4. Dependencies: Are other tasks dependent on this one?
+        
+        Original query: "${context.originalQuery}"
+        
+        Return a prioritized list with brief explanations for why each task is ranked where it is.
+        Also include suggested next steps or action items for the top 3 tasks.
+        `;
+    }
+
     async handleGeneralQuery (analysis, context) {
         const conversationPrompt = `
           Based on user query: "${context.originalQuery}"
@@ -550,7 +609,7 @@ export class QueryUnderstanding {
                 end: this.extractTimeFromText(analysis.entities.workEnd) || "17:00"
             },
             focusAreas: analysis.entities.labels || []
-            // you can add other params in needed in future
+
         };
 
         return {
