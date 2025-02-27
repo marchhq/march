@@ -472,3 +472,91 @@ export class DayPlanner {
         }
     }
 }
+
+export class PrioritizationHandler {
+    constructor (searchHandler, chatModel) {
+        this.searchHandler = searchHandler;
+        this.chatModel = chatModel;
+    }
+
+    async prioritizeTasks (userId, parameters) {
+        try {
+            const tasks = await this.searchHandler.searchContent("", userId, parameters.filters);
+
+            if (!tasks || tasks.length === 0) {
+                return {
+                    status: "empty",
+                    message: "No tasks found to prioritize. Try creating some tasks first."
+                };
+            }
+
+            const prioritizedTasks = await this.generatePrioritization(tasks, parameters.criteria);
+            return {
+                status: "success",
+                prioritizedTasks: prioritizedTasks
+            };
+        } catch (error) {
+            console.error("Error prioritizing tasks:", error);
+            return {
+                status: "error",
+                message: "Failed to prioritize tasks: " + error.message
+            };
+        }
+    }
+
+    async generatePrioritization (tasks, criteria) {
+        const taskData = tasks.map(task => ({
+            id: task._id,
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            dueDate: task.dueDate,
+            status: task.status,
+            labels: task.labels
+        }));
+
+        // the prompt for the AI to prioritize
+        const prompt = `
+            I need to prioritize these tasks based on the following criteria: ${criteria.join(', ')}.
+            
+            Here are the tasks:
+            ${JSON.stringify(taskData)}
+            
+            For each task, consider:
+            1. Urgency: How soon does it need to be completed?
+            2. Importance: How significant is this task to overall goals?
+            3. Effort: How much time/energy will this task require?
+            4. Dependencies: Are other tasks dependent on this one?
+            
+            Return a JSON object with:
+            1. An array of prioritizedTasks with the following structure:
+               [{
+                  "id": "task id",
+                  "title": "task title", 
+                  "rank": number (1 being highest priority),
+                  "rationale": "brief explanation of why this task has this rank"
+               }]
+            2. A "nextSteps" array with suggestions for the top 3 tasks
+            3. A "summary" string that explains the prioritization logic
+            
+            IMPORTANT: Make sure to include the task "title" property in each prioritizedTask object.
+        `;
+
+        const result = await this.chatModel.generateContent(prompt);
+        const responseText = result.response.text();
+
+        // Extract the JSON from the response
+        try {
+            const cleanJson = responseText.replace(/```json\n?|\n?```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (error) {
+            console.error("Error parsing prioritization result:", error);
+            // Attempt to extract JSON using regex as fallback
+            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+            throw new Error("Could not parse prioritization result");
+        }
+    }
+}

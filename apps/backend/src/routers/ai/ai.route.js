@@ -2,7 +2,7 @@ import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { saveContent, SearchHandler, pineconeIndex, DayPlanner } from "../../utils/helper.service.js";
+import { saveContent, SearchHandler, pineconeIndex, DayPlanner, PrioritizationHandler } from "../../utils/helper.service.js";
 import { QueryUnderstanding } from "../../utils/query.service.js";
 import { createObjectFromAI } from "../../controllers/lib/object.controller.js";
 
@@ -36,19 +36,21 @@ chatModel.generateResponse = async function (context) {
 
         const result = await this.generateContent(prompt);
         return result.response.text();
-    } else if (context.type === 'day_planning') {
-        const prompt = `
-            The user requested day planning with: "${context.query}"
-            Here is the generated plan:
-            ${JSON.stringify(context.plan)}
-            
-            Please provide a helpful, natural language response that presents this plan.
-            Highlight key tasks, meetings, and priorities for the day.
-        `;
-
-        const result = await this.generateContent(prompt);
-        return result.response.text();
     }
+    // TODO: improve this
+    // else if (context.type === 'day_planning') {
+    //     const prompt = `
+    //         The user requested day planning with: "${context.query}"
+    //         Here is the generated plan:
+    //         ${JSON.stringify(context.plan)}
+
+    //         Please provide a helpful, natural language response that presents this plan.
+    //         Highlight key tasks, meetings, and priorities for the day.
+    //     `;
+
+    //     const result = await this.generateContent(prompt);
+    //     return result.response.text();
+    // }
 };
 const queryUnderstanding = new QueryUnderstanding(chatModel);
 
@@ -65,6 +67,7 @@ router.get("/ask", async (req, res) => {
         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
         const searchHandler = new SearchHandler(pineconeIndex);
         const dayPlanner = new DayPlanner(searchHandler, chatModel);
+        const prioritizationHandler = new PrioritizationHandler(searchHandler, chatModel);
 
         console.log("Query Analysis:", queryAnalysis);
 
@@ -101,6 +104,35 @@ router.get("/ask", async (req, res) => {
                 data: formatPlanResponse(plan, queryAnalysis)
 
             }));
+            break;
+
+        case 'prioritization':
+            // eslint-disable-next-line no-case-declarations
+            const prioritizationResult = await prioritizationHandler.prioritizeTasks(
+                userId,
+                queryAnalysis.parameters
+            );
+            if (prioritizationResult.status === "success") {
+                // eslint-disable-next-line no-case-declarations
+                const prioritizationResponse = await chatModel.generateResponse({
+                    query,
+                    plan: prioritizationResult.prioritizedTasks,
+                    parameters: queryAnalysis.parameters
+                });
+
+                res.write(JSON.stringify({
+                    status: "prioritized",
+                    data: formatPrioritizationResponse({
+                        status: "success",
+                        prioritizedTasks: prioritizationResult.prioritizedTasks
+                    }, queryAnalysis)
+                }) + "\n");
+            } else {
+                res.write(JSON.stringify({
+                    status: prioritizationResult.status,
+                    data: formatPrioritizationResponse(prioritizationResult, queryAnalysis)
+                }) + "\n");
+            }
             break;
 
         case 'conversation':
@@ -160,6 +192,33 @@ function formatPlanResponse (plan, analysis) {
     // };
 }
 
+function formatPrioritizationResponse (result, analysis) {
+    if (result.status === "empty") {
+        return {
+            message: result.message,
+            suggestions: [
+                "Create a new task",
+                "What would you like to work on today?"
+            ]
+        };
+    }
+
+    if (result.status === "error") {
+        return {
+            message: result.message,
+            suggestions: [
+                "Try prioritizing with fewer constraints",
+                "Show me my tasks instead"
+            ]
+        };
+    }
+
+    const prioritizedList = result.prioritizedTasks.prioritizedTasks.map(task => {
+        return `${task.rank}. ${task.title} - ${task.rationale}`;
+    }).join('\n');
+
+    return `${result.prioritizedTasks.summary}\n\nPrioritized tasks:\n${prioritizedList}`
+}
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
         console.log("Prompt: ", prompt);
