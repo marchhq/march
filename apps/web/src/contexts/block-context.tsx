@@ -4,7 +4,7 @@ import { createContext, useContext, ReactNode } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { CalendarEvent, Event } from "@/types/calendar";
 import { arrayMove } from "@dnd-kit/sortable";
-import { Objects } from "@/types/objects";
+import { Objects, OrderObject, SortableObject } from "@/types/objects";
 import {
   useInboxObjects,
   useOrderObject,
@@ -18,8 +18,7 @@ interface BlockContextType {
   events: CalendarEvent[];
   handleDragEnd: (event: DragEndEvent) => void;
   handleInternalListSort: (event: DragEndEvent) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleCalendarDrop: (draggedItem: any) => void;
+  handleCalendarDrop: (draggedItem: SortableObject) => void;
   isLoading: boolean;
   error: Error | null;
 }
@@ -41,7 +40,6 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const today = moment().format("YYYY-MM-DD");
   const { data: events = [], addEvent } = useEvents(today);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleInternalListSort = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -61,22 +59,22 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
         // Create a new array with the item moved to the new position
         const newItems = arrayMove(items, oldIndex, newIndex);
 
-        const orderedItems = newItems.map((item, index) => ({
-          id: item._id,
-          order: index,
-        }));
+        const orderObject: OrderObject = {
+          orderedItems: newItems.map((item, index) => ({
+            id: item._id,
+            order: index,
+          })),
+        };
 
         // Call the mutation to update the order in the backend
-        updateOrder({
-          orderedItems: orderedItems,
-        });
+        updateOrder(orderObject);
       }
     } else {
       console.log("Items are not both list items, skipping sort");
     }
   };
 
-  const handleCalendarDrop = (draggedItem: any) => {
+  const handleCalendarDrop = (draggedItem: SortableObject) => {
     if (!draggedItem) return;
 
     const dropDate = new Date();
@@ -100,7 +98,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
     if (!over) return;
     // Skip calendar drop check for now and directly handle internal sorting
     if (over.id === "calendar-drop-area") {
-      handleCalendarDrop(active.data.current);
+      handleCalendarDrop(active.data.current as SortableObject);
     } else {
       // Otherwise, handle internal list sorting
       handleInternalListSort(event);

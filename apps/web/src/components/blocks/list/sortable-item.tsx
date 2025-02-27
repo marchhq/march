@@ -1,15 +1,12 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
+import { SortableObject } from "@/types/objects";
 
 interface SortableItemProps {
   id: string | number;
   children: React.ReactNode;
-  data: {
-    type: string;
-    text: string;
-    checked: boolean;
-  };
+  data: SortableObject;
 }
 
 export function SortableItem({ id, children, data }: SortableItemProps) {

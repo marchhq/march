@@ -1,4 +1,5 @@
 import { CalendarEvent, Event } from "@/types/calendar";
+import { Objects, OrderObject } from "@/types/objects";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -25,4 +26,18 @@ export function transformGoogleEventToCalendarEvent(event: Event): CalendarEvent
     borderColor: "#E3F2FD",
     allDay: !event.start.dateTime, // If dateTime is missing, it's an all-day event
   }
+}
+
+export function updateOrderInArray(items: Objects[], newOrder: OrderObject): Objects[] {
+  const updatedItems = [...items];
+  newOrder.orderedItems.forEach(({ id, order }) => {
+    const itemIndex = updatedItems.findIndex(item => item._id === id);
+    if (itemIndex !== -1) {
+      updatedItems[itemIndex] = {
+        ...updatedItems[itemIndex],
+        order
+      };
+    }
+  });
+  return updatedItems;
 }
