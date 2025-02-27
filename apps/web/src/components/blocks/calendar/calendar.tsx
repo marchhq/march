@@ -26,7 +26,7 @@ export function CalendarBlock() {
       const api = calendarRef.current.getApi();
       setCalendarApi(api);
     }
-  }, []);
+  }, [setCalendarApi]);
 
   return (
     <div
