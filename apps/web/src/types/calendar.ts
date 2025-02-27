@@ -13,6 +13,10 @@ export interface EventResponse {
   events: Event[];
 }
 
+export interface CreateEventResponse {
+  newEvent: Event
+}
+
 // Main event interface
 export interface Event {
   kind: string;
@@ -46,7 +50,7 @@ export interface EventPerson {
 // DateTime interface with timezone
 export interface EventDateTime {
   dateTime: string;
-  timeZone: string;
+  timeZone?: string;
 }
 
 // Attendee interface

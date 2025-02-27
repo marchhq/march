@@ -6,8 +6,8 @@ import { CalendarProvider } from "@/contexts/calendar-context";
 
 export default function Today() {
   return (
-    <section className="pt-2 pl-2 pr-4">
-      <Block id="list-and-calendar">
+    <section className="h-full pt-2 pl-2 pr-4">
+      <Block id="list-and-calendar" arrayType="today">
         <GridWrapper>
           <ListBlock header="Today" arrayType="today" />
           <CalendarProvider>

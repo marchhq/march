@@ -1,8 +1,9 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { BACKEND_URL } from "./constants";
 import { getSession } from "@/actions/session";
 
 // Generic type for API request data
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type RequestData = Record<string, unknown>;
 
 export const api = axios.create({

@@ -4,6 +4,7 @@ import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
 import { saveContent, SearchHandler, pineconeIndex } from "../../utils/helper.service.js";
 import { QueryUnderstanding } from "../../utils/query.service.js";
+import { createObjectFromAI } from "../../controllers/lib/object.controller.js";
 
 const router = Router();
 
@@ -21,22 +22,6 @@ const chatModel = genAI.getGenerativeModel({
     systemInstruction: SYSTEM_PROMPT
 });
 const queryUnderstanding = new QueryUnderstanding(chatModel);
-
-async function createObjectFromAI (content, userId) {
-    try {
-        if (!content?.title || !userId) {
-            throw new Error("Invalid content or userId");
-        }
-
-        const object = await Object.create({ ...content });
-
-        await saveContent(object);
-        return object;
-    } catch (error) {
-        console.error("Error creating object from AI:", error);
-        throw error;
-    }
-}
 
 // router.get("/ask", async (req, res) => {
 //     try {
@@ -196,6 +181,7 @@ router.get("/ask", async (req, res) => {
         switch (queryAnalysis.type) {
         case 'creation':
             // res.write(JSON.stringify({ status: "processing", message: "Creating object..." }) + "\n");
+            // eslint-disable-next-line no-case-declarations
             const createdObject = await createObjectFromAI(queryAnalysis.data, userId);
             res.write(JSON.stringify({ status: "completed", data: createdObject }) + "\n");
             break;
@@ -207,7 +193,7 @@ router.get("/ask", async (req, res) => {
 
             res.write(JSON.stringify({
                 status: "search",
-                data: searchResults
+                data: searchResults,
                 // remove this part before commite
                 // metadata: {
                 //     filters: queryAnalysis.parameters.filters,
