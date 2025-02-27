@@ -1,4 +1,5 @@
 import { AssistantModal } from "@/components/assistant-ui/assistant-modal";
+import { SearchDialog } from "@/components/dialogs/search/search-dialog";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
         <div className="container">{children}</div>
         <AssistantModal />
+        <SearchDialog />
         <Toaster />
       </main>
     </SidebarProvider>
