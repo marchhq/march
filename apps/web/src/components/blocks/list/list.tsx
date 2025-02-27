@@ -2,7 +2,6 @@
 
 import InputBox from "@/components/input/input-box";
 import { ListItems } from "./list-items";
-import { Separator } from "@/components/ui/separator";
 import { BlockProvider } from "@/contexts/block-context";
 import { useCreateObject } from "@/hooks/use-objects";
 import { CreateObject } from "@/types/objects";
@@ -22,18 +21,17 @@ export default function ListBlock({ header, arrayType }: Props) {
   return (
     <div className="w-full max-w-2xl mx-auto -mt-1">
       <BlockProvider arrayType={arrayType}>
-        <header className="mb-3">
+        <header className="pt-3 pb-2 mb-2 px-3">
           <h1 className="font-semibold text-xl text-gray-900">{header}</h1>
         </header>
-        <section className="space-y-3">
+        <section className="space-y-3 px-3">
           <InputBox
             className="w-full"
             onSubmit={handleSubmit}
             arrayType={arrayType}
           />
-          <Separator className="my-2" />
         </section>
-        <section className="pt-2">
+        <section className="pt-1 px-3">
           <ListItems />
         </section>
       </BlockProvider>
