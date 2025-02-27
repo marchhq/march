@@ -206,7 +206,7 @@ export class SearchHandler {
                 topK: parameters.limit || 10,
                 includeMetadata: true
             });
-            console.log("seaech result:", searchResults)
+            // console.log("seaech result:", searchResults)
             // Apply post-processing and sorting
             // const processedResults = this.processSearchResults(
             //     searchResults,
@@ -330,5 +330,145 @@ export class SearchHandler {
             // Sort by due date, earliest first
             return new Date(a.dueDate) - new Date(b.dueDate);
         });
+    }
+}
+
+/**
+ * Add this class to implement day planning functionality
+ */
+export class DayPlanner {
+    constructor (searchHandler, chatModel) {
+        this.searchHandler = searchHandler;
+        this.chatModel = chatModel;
+    }
+
+    /**
+     * Plan the user's day based on their undone tasks
+     * @param {string} userId - User ID
+     * @param {Object} parameters - Planning parameters (timeBlocks, focus, etc)
+     * @returns {Promise<Object>} - Day plan with scheduled tasks
+     */
+    async planDay (userId, parameters = {}) {
+        try {
+            // 1. Fetch all undone items for the user
+            const undoneItems = await this.fetchUndoneItems(userId);
+            if (!undoneItems || undoneItems.length === 0) {
+                return {
+                    status: "empty",
+                    message: "You don't have any pending tasks to plan.",
+                    plan: []
+                };
+            }
+
+            // 2. Generate a day plan using AI
+            const plan = await this.generatePlan(undoneItems, parameters);
+            return {
+                status: "success",
+                message: "Here's your plan for today.",
+                plan: plan
+            };
+        } catch (error) {
+            console.error("Day planning error:", error);
+            return {
+                status: "error",
+                message: `Failed to create plan: ${error.message}`,
+                plan: []
+            };
+        }
+    }
+
+    /**
+     * Fetch all undone items for a user
+     */
+    async fetchUndoneItems (userId) {
+        // Use your existing search functionality but with specific filters
+        const parameters = {
+            filters: {
+                status: { $ne: "done" },
+                isCompleted: false,
+                isArchived: false
+            },
+            sortBy: "priority",
+            limit: 50 // Get a reasonable number of tasks
+        };
+
+        return await this.searchHandler.searchContent("", userId, parameters);
+    }
+
+    /**
+     * Generate a day plan based on undone items and user preferences
+     */
+    async generatePlan (items, parameters) {
+        // Extract important info from each item to reduce token usage
+        const simplifiedItems = items.map(item => ({
+            id: item.id,
+            title: item.title,
+            priority: item.priority || "medium",
+            dueDate: item.dueDate,
+            estimatedTime: item.estimatedTime || "unknown",
+            type: item.type,
+            labels: item.labels || []
+        }));
+
+        // Set up default parameters
+        const planningParams = {
+            workHours: parameters.workHours || { start: "9:00", end: "17:00" },
+            breaks: parameters.breaks || [{ time: "12:00", duration: 60 }],
+            focusAreas: parameters.focusAreas || [],
+            timeBlocks: parameters.timeBlocks || 30, // minutes per block
+            ...parameters
+        };
+
+        const prompt = `
+        Create a day plan for a user based on their undone tasks:
+        ${JSON.stringify(simplifiedItems)}
+        
+        Planning parameters:
+        ${JSON.stringify(planningParams)}
+        
+        Return a JSON object with this structure:
+        {
+            "summary": "Brief 1-2 sentence summary of the day plan",
+            "timeBlocks": [
+            {
+                "startTime": "HH:MM",
+                "endTime": "HH:MM",
+                "taskId": "id of the task (or null for breaks)",
+                "title": "Task title or 'Break'",
+                "notes": "Optional planning notes"
+            }
+            ],
+            "unscheduled": [
+            {
+                "id": "task id",
+                "title": "Task title",
+                "reason": "Reason this couldn't be scheduled"
+            }
+            ]
+        }
+        
+        Planning guidelines:
+        - Prioritize tasks with approaching due dates
+        - Prioritize high priority tasks
+        - Group similar tasks together when possible
+        - Add short breaks between different types of work
+        - Suggest specific time blocks based on the task priority and complexity
+        - Include all appropriate breaks specified in the parameters
+        - If there are too many tasks to schedule, list the most important ones first and put the rest in "unscheduled"
+        
+        Return ONLY the JSON object, no introduction or explanation.
+        `;
+
+        try {
+            const result = await this.chatModel.generateContent(prompt);
+            const responseText = result.response.text();
+
+            // Clean and parse the JSON response
+            const cleanJson = responseText.replace(/```json\n?|\n?```/g, '').trim();
+            return JSON.parse(cleanJson);
+        } catch (error) {
+            console.error("Error generating plan:", error);
+            throw new Error("Failed to generate day plan");
+        }
     }
 }

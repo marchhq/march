@@ -2,7 +2,7 @@ import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { saveContent, SearchHandler, pineconeIndex } from "../../utils/helper.service.js";
+import { saveContent, SearchHandler, pineconeIndex, DayPlanner } from "../../utils/helper.service.js";
 import { QueryUnderstanding } from "../../utils/query.service.js";
 import { createObjectFromAI } from "../../controllers/lib/object.controller.js";
 
@@ -175,6 +175,7 @@ router.get("/ask", async (req, res) => {
         // Analyze the query
         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
         const searchHandler = new SearchHandler(pineconeIndex);
+        const dayPlanner = new DayPlanner(searchHandler, chatModel);
 
         console.log("Query Analysis:", queryAnalysis);
 
@@ -193,13 +194,25 @@ router.get("/ask", async (req, res) => {
 
             res.write(JSON.stringify({
                 status: "search",
-                data: searchResults,
+                data: searchResults
                 // remove this part before commite
                 // metadata: {
                 //     filters: queryAnalysis.parameters.filters,
                 //     sortBy: queryAnalysis.parameters.sortBy
                 // }
             }) + "\n");
+            break;
+
+        case 'day_planning': // New case
+            // eslint-disable-next-line no-case-declarations
+            const plan = await dayPlanner.planDay(userId, queryAnalysis.parameters);
+            console.log("sa: ", plan)
+            // return formatPlanResponse(plan, queryAnalysis);
+            res.write(JSON.stringify({
+                status: "plan",
+                data: formatPlanResponse(plan, queryAnalysis)
+
+            }));
             break;
 
         case 'conversation':
@@ -214,6 +227,50 @@ router.get("/ask", async (req, res) => {
         res.end();
     }
 });
+
+function formatPlanResponse (plan, analysis) {
+    if (plan.status === "empty") {
+        return {
+            message: plan.message,
+            suggestions: [
+                "Create a new task",
+                "What would you like to work on today?"
+            ]
+        };
+    }
+
+    if (plan.status === "error") {
+        return {
+            message: plan.message,
+            suggestions: [
+                "Try planning with fewer constraints",
+                "Show me my tasks instead"
+            ]
+        };
+    }
+
+    // Create a formatted schedule display
+    const schedule = plan.plan.timeBlocks.map(block => {
+        return `${block.startTime} - ${block.endTime}: ${block.title}${block.notes ? ` (${block.notes})` : ''}`;
+    }).join('\n');
+
+    // Create a list of unscheduled tasks if any
+    const unscheduled = plan.plan.unscheduled && plan.plan.unscheduled.length > 0
+        ? "\n\nUnscheduled tasks:\n" + plan.plan.unscheduled.map(task =>
+            `- ${task.title}`
+        ).join('\n')
+        : "";
+    return `${plan.plan.summary}\n\nHere's your schedule:\n${schedule}${unscheduled}`
+    // {
+    // message: `${plan.plan.summary}\n\nHere's your schedule:\n${schedule}${unscheduled}`,
+    // dayPlan: plan.plan, // Include structured data for UI rendering
+    // suggestions: [
+    //     "Adjust this plan",
+    //     "Focus on high priority tasks only",
+    //     "Show me what's due today"
+    // ]
+    // };
+}
 
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {

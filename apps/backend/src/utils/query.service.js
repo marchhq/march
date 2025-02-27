@@ -117,18 +117,23 @@ export class QueryUnderstanding {
                 "timeRange": ["detected time references like today, this_week, next_week, overdue"],
                 "dueDate": "specific due date if mentioned",
                 "labels": ["detected labels"],
-                "priority": "detected priority level (urgent, high, medium, low)"
+                "priority": "detected priority level (urgent, high, medium, low)",
+                "workStart": "detected work start time",
+                "workEnd": "detected work end time"
               },
               "parameters": {
                 "filters": {},
                 "sortBy": "One of: priority, dueDate, createdAt, updatedAt, relevance", 
                 "limit": null,
-                "searchMode": "One of: exact, fuzzy, semantic"
+                "searchMode": "One of: exact, fuzzy, semantic",
+                "format": "One of: default, title_only, summary"
               },
               "context": {
                 "isTimeSpecific": boolean,
                 "requiresSourceContext": boolean,
-                "needsDisambiguation": boolean
+                "needsDisambiguation": boolean,
+                "isSimpleList": boolean,
+                "isDayPlanning": boolean
               }
             }
 
@@ -143,6 +148,10 @@ export class QueryUnderstanding {
             - "find overdue items sorted by priority" -> timeRange: ["overdue"], sortBy: "priority"
             - "show pending pr assigned to me" -> source:["github"]
             - "show all my tasks" -> intent: "list", type: ["todo"]
+            - "plan my day" -> intent: "plan", context.isDayPlanning: true
+            - "organize my tasks for today" -> intent: "plan", context.isDayPlanning: true
+            - "help me schedule my day with my todos" -> intent: "plan", context.isDayPlanning: true
+            - "create a schedule from 9am to 5pm with my tasks" -> intent: "plan", workStart: "9am", workEnd: "5pm"
             `;
 
             const result = await this.chatModel.generateContent(analysisPrompt);
@@ -185,6 +194,9 @@ export class QueryUnderstanding {
         };
 
         switch (analysis.intent.primary) {
+        case 'plan':
+            return this.handlePlanningIntent(analysis, queryContext);
+
         case INTENTS.CREATE:
             return this.handleCreationIntent(analysis, queryContext);
 
@@ -529,6 +541,52 @@ export class QueryUnderstanding {
                 needsConfirmation: false
             }
         };
+    }
+
+    async handlePlanningIntent (analysis, context) {
+        // Extracting planning parameters from the analysis
+        const planningParams = {
+            workHours: {
+                start: this.extractTimeFromText(analysis.entities.workStart) || "9:00",
+                end: this.extractTimeFromText(analysis.entities.workEnd) || "17:00"
+            },
+            focusAreas: analysis.entities.labels || []
+            // you can add other params in needed in future
+        };
+
+        return {
+            type: 'day_planning',
+            parameters: planningParams,
+            userId: context.userId,
+            metadata: {
+                confidence: analysis.intent.confidence,
+                originalQuery: context.originalQuery
+            }
+        };
+    }
+
+    /**
+       * Helper method to extract time from text
+       */
+    extractTimeFromText (timeText) {
+        if (!timeText) return null;
+
+        // Simple regex to match common time formats like "9am", "10:30", "3 pm", etc.
+        const timeRegex = /(\d{1,2})(?::(\d{2}))?(?:\s*)?(am|pm)?/i;
+        const match = timeText.match(timeRegex);
+
+        if (!match) return null;
+
+        let hours = parseInt(match[1]);
+        const minutes = match[2] ? parseInt(match[2]) : 0;
+        const period = match[3] ? match[3].toLowerCase() : null;
+
+        // Handle 12-hour format conversion
+        if (period === 'pm' && hours < 12) hours += 12;
+        if (period === 'am' && hours === 12) hours = 0;
+
+        // Format as HH:MM
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
     getSuggestedActions (analysis) {
