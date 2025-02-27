@@ -2,7 +2,7 @@ import { Router } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Object } from "../../models/lib/object.model.js";
 import { SYSTEM_PROMPT } from "../../prompts/system.prompt.js";
-import { saveContent, SearchHandler, pineconeIndex } from "../../utils/helper.service.js";
+import { saveContent, SearchHandler, pineconeIndex, DayPlanner, PrioritizationHandler } from "../../utils/helper.service.js";
 import { QueryUnderstanding } from "../../utils/query.service.js";
 import { createObjectFromAI } from "../../controllers/lib/object.controller.js";
 
@@ -10,7 +10,7 @@ const router = Router();
 
 export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
-// Configure chat model with specific parameters
+// Configure chat model
 const chatModel = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     generationConfig: {
@@ -21,147 +21,38 @@ const chatModel = genAI.getGenerativeModel({
     },
     systemInstruction: SYSTEM_PROMPT
 });
+
+chatModel.generateResponse = async function (context) {
+    if (context.results) {
+        const prompt = `
+            The user searched for: "${context.query}"
+            Here are the search results:
+            ${JSON.stringify(context.results)}
+            
+            Please provide a helpful, natural language response that summarizes these results.
+            If there are no results, explain that nothing was found.
+            If there are results, highlight key information like titles, priorities, and due dates.
+        `;
+
+        const result = await this.generateContent(prompt);
+        return result.response.text();
+    }
+    // TODO: improve this
+    // else if (context.type === 'day_planning') {
+    //     const prompt = `
+    //         The user requested day planning with: "${context.query}"
+    //         Here is the generated plan:
+    //         ${JSON.stringify(context.plan)}
+
+    //         Please provide a helpful, natural language response that presents this plan.
+    //         Highlight key tasks, meetings, and priorities for the day.
+    //     `;
+
+    //     const result = await this.generateContent(prompt);
+    //     return result.response.text();
+    // }
+};
 const queryUnderstanding = new QueryUnderstanding(chatModel);
-
-// router.get("/ask", async (req, res) => {
-//     try {
-//         const { query } = req.query;
-//         const userId = req.user._id;
-
-//         if (!query?.trim()) {
-//             return res.status(400).json({ error: "Query is required" });
-//         }
-
-//         // Set SSE headers only once at the beginning
-//         res.setHeader('Content-Type', 'text/event-stream');
-//         res.setHeader('Cache-Control', 'no-cache');
-//         res.setHeader('Connection', 'keep-alive');
-
-//         // Prevent multiple responses by tracking if we've ended the response
-//         let hasEnded = false;
-//         // Handle client disconnect
-//         req.on('close', () => {
-//             hasEnded = true;
-//         });
-
-//         const relevantContent = await searchContent(query, userId, { limit: 5 });
-
-//         if (hasEnded) return;
-
-//         const sendChunk = (data) => {
-//             if (!hasEnded) {
-//                 res.write(`data: ${JSON.stringify(data)}\n\n`);
-//             }
-//         };
-
-//         if (relevantContent.length === 0) {
-//             const stream = streamAIResponse(query, false, userId);
-//             try {
-//                 for await (const chunk of stream) {
-//                     if (hasEnded) break;
-//                     sendChunk({ chunk });
-//                 }
-
-//                 if (!hasEnded) {
-//                     sendChunk({
-//                         done: true,
-//                         hasStoredContent: false,
-//                         suggestion: "Try saving some information or creating new tasks to get started"
-//                     });
-//                 }
-//             } catch (streamError) {
-//                 console.error("Stream error:", streamError);
-//                 if (!hasEnded) {
-//                     sendChunk({ error: "Stream processing error" });
-//                 }
-//             }
-//         } else {
-//             const context = formatContextForAI(relevantContent);
-//             const prompt = `Based on the following information:\n${context}\nQuestion: "${query}"\nPlease provide a helpful response.`;
-
-//             const stream = streamAIResponse(prompt, true, userId);
-//             try {
-//                 for await (const chunk of stream) {
-//                     if (hasEnded) break;
-//                     sendChunk({ chunk });
-//                 }
-
-//                 if (!hasEnded) {
-//                     sendChunk({
-//                         done: true,
-//                         hasStoredContent: true,
-//                         relevantContent: relevantContent.map(({ title, type, score }) => ({
-//                             title,
-//                             type,
-//                             relevance: score
-//                         }))
-//                     });
-//                 }
-//             } catch (streamError) {
-//                 console.error("Stream error:", streamError);
-//                 if (!hasEnded) {
-//                     sendChunk({ error: "Stream processing error" });
-//                 }
-//             }
-//         }
-
-//         if (!hasEnded) {
-//             res.end();
-//         }
-//     } catch (error) {
-//         console.error("Error in /ask route:", error);
-//         if (!res.headersSent) {
-//             res.setHeader('Content-Type', 'text/event-stream');
-//         }
-//         res.write(`data: ${JSON.stringify({
-//             error: "An error occurred while processing your request",
-//             details: process.env.NODE_ENV === 'development' ? error.message : undefined
-//         })}\n\n`);
-//         res.end();
-//     }
-// });
-
-// router.get("/ask", async (req, res) => {
-//     try {
-//         const { query } = req.query;
-//         const userId = req.user._id;
-
-//         res.setHeader("Content-Type", "application/json");
-//         res.setHeader("Transfer-Encoding", "chunked");
-//         res.write(JSON.stringify({ status: "processing", message: "Analyzing query..." }) + "\n");
-
-//         // Analyze the query first
-//         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
-
-//         // Handle the response based on the analysis
-//         console.log("queryAnalysis: ", queryAnalysis);
-//         switch (queryAnalysis.type) {
-//         case 'creation':
-//             // Handle object creation
-//             const createdObject = await createObjectFromAI(queryAnalysis.data, userId);
-//             // Stream response...
-//             console.log("Created Object:", createdObject);
-//             break;
-
-//         case 'search':
-//             console.log("serching content");
-//             // Handle search with the provided parameters
-//             const relevantContent = await searchContent(query, userId, queryAnalysis.parameters);
-//             // Stream response...
-//             console.log("Relevant Content:", relevantContent);
-//             break;
-
-//         case 'conversation':
-//             // Stream clarification response with suggestions
-//             console.log("clhm", queryAnalysis.response);
-//             streamAIResponse(queryAnalysis.response, false, userId);
-//             break;
-//         }
-//         // ... rest of your existing code
-//     } catch (error) {
-//         // ... error handling
-//     }
-// });
 
 router.get("/ask", async (req, res) => {
     try {
@@ -175,31 +66,73 @@ router.get("/ask", async (req, res) => {
         // Analyze the query
         const queryAnalysis = await queryUnderstanding.analyzeQuery(query, userId);
         const searchHandler = new SearchHandler(pineconeIndex);
+        const dayPlanner = new DayPlanner(searchHandler, chatModel);
+        const prioritizationHandler = new PrioritizationHandler(searchHandler, chatModel);
 
         console.log("Query Analysis:", queryAnalysis);
 
         switch (queryAnalysis.type) {
         case 'creation':
-            // res.write(JSON.stringify({ status: "processing", message: "Creating object..." }) + "\n");
             // eslint-disable-next-line no-case-declarations
             const createdObject = await createObjectFromAI(queryAnalysis.data, userId);
             res.write(JSON.stringify({ status: "completed", data: createdObject }) + "\n");
             break;
 
         case 'search':
-
             // eslint-disable-next-line no-case-declarations
             const searchResults = await searchHandler.searchContent(query, userId, queryAnalysis.parameters);
 
+            // eslint-disable-next-line no-case-declarations
+            const aiResponse = await chatModel.generateResponse({
+                query,
+                results: searchResults,
+                parameters: queryAnalysis.parameters
+            });
+
             res.write(JSON.stringify({
                 status: "search",
-                data: searchResults,
-                // remove this part before commite
-                // metadata: {
-                //     filters: queryAnalysis.parameters.filters,
-                //     sortBy: queryAnalysis.parameters.sortBy
-                // }
+                data: aiResponse
             }) + "\n");
+            break;
+
+        case 'day_planning': // New case
+            // eslint-disable-next-line no-case-declarations
+            const plan = await dayPlanner.planDay(userId, queryAnalysis.parameters);
+            // return formatPlanResponse(plan, queryAnalysis);
+            res.write(JSON.stringify({
+                status: "plan",
+                data: formatPlanResponse(plan, queryAnalysis)
+
+            }));
+            break;
+
+        case 'prioritization':
+            // eslint-disable-next-line no-case-declarations
+            const prioritizationResult = await prioritizationHandler.prioritizeTasks(
+                userId,
+                queryAnalysis.parameters
+            );
+            if (prioritizationResult.status === "success") {
+                // eslint-disable-next-line no-case-declarations
+                const prioritizationResponse = await chatModel.generateResponse({
+                    query,
+                    plan: prioritizationResult.prioritizedTasks,
+                    parameters: queryAnalysis.parameters
+                });
+
+                res.write(JSON.stringify({
+                    status: "prioritized",
+                    data: formatPrioritizationResponse({
+                        status: "success",
+                        prioritizedTasks: prioritizationResult.prioritizedTasks
+                    }, queryAnalysis)
+                }) + "\n");
+            } else {
+                res.write(JSON.stringify({
+                    status: prioritizationResult.status,
+                    data: formatPrioritizationResponse(prioritizationResult, queryAnalysis)
+                }) + "\n");
+            }
             break;
 
         case 'conversation':
@@ -215,6 +148,77 @@ router.get("/ask", async (req, res) => {
     }
 });
 
+function formatPlanResponse (plan, analysis) {
+    if (plan.status === "empty") {
+        return {
+            message: plan.message,
+            suggestions: [
+                "Create a new task",
+                "What would you like to work on today?"
+            ]
+        };
+    }
+
+    if (plan.status === "error") {
+        return {
+            message: plan.message,
+            suggestions: [
+                "Try planning with fewer constraints",
+                "Show me my tasks instead"
+            ]
+        };
+    }
+
+    // Create a formatted schedule display
+    const schedule = plan.plan.timeBlocks.map(block => {
+        return `${block.startTime} - ${block.endTime}: ${block.title}${block.notes ? ` (${block.notes})` : ''}`;
+    }).join('\n');
+
+    // Create a list of unscheduled tasks if any
+    const unscheduled = plan.plan.unscheduled && plan.plan.unscheduled.length > 0
+        ? "\n\nUnscheduled tasks:\n" + plan.plan.unscheduled.map(task =>
+            `- ${task.title}`
+        ).join('\n')
+        : "";
+    return `${plan.plan.summary}\n\nHere's your schedule:\n${schedule}${unscheduled}`
+    // {
+    // message: `${plan.plan.summary}\n\nHere's your schedule:\n${schedule}${unscheduled}`,
+    // dayPlan: plan.plan, // Include structured data for UI rendering
+    // suggestions: [
+    //     "Adjust this plan",
+    //     "Focus on high priority tasks only",
+    //     "Show me what's due today"
+    // ]
+    // };
+}
+
+function formatPrioritizationResponse (result, analysis) {
+    if (result.status === "empty") {
+        return {
+            message: result.message,
+            suggestions: [
+                "Create a new task",
+                "What would you like to work on today?"
+            ]
+        };
+    }
+
+    if (result.status === "error") {
+        return {
+            message: result.message,
+            suggestions: [
+                "Try prioritizing with fewer constraints",
+                "Show me my tasks instead"
+            ]
+        };
+    }
+
+    const prioritizedList = result.prioritizedTasks.prioritizedTasks.map(task => {
+        return `${task.rank}. ${task.title} - ${task.rationale}`;
+    }).join('\n');
+
+    return `${result.prioritizedTasks.summary}\n\nPrioritized tasks:\n${prioritizedList}`
+}
 async function * streamAIResponse (prompt, hasContext = true, userId) {
     try {
         console.log("Prompt: ", prompt);
