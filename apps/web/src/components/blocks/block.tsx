@@ -18,7 +18,7 @@ interface BlockProps {
   arrayType: "inbox" | "today";
 }
 
-export function Block({ id, children, arrayType }: BlockProps) {
+export function Block({ children, arrayType }: BlockProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {

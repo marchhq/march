@@ -35,7 +35,7 @@ const IntegrationsList = () => {
         await integration.handler();
         await refreshUser();
         toast.success(`${integration.title} removed successfully`);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error("Failed to remove integration");
       } finally {
@@ -48,12 +48,17 @@ const IntegrationsList = () => {
   };
 
   const renderIcon = (integration: Integration) => {
-    if (integration.iconType === "component") {
+    if (
+      integration.iconType === "component" &&
+      typeof integration.icon !== "string"
+    ) {
       const IconComponent = integration.icon;
       return <IconComponent className="h-5 w-5" />;
-    } else if (integration.iconType === "image") {
+    } else if (
+      integration.iconType === "image" &&
+      typeof integration.icon === "string"
+    ) {
       return (
-        
         <Image
           src={integration.icon}
           alt={`${integration.title} icon`}
