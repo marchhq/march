@@ -55,14 +55,14 @@ interface ObjectsResponse {
 interface TodayObjectResponse {
   response: {
     todayObjects: Objects[],
-    overdueObjects: Objects[]
+    overdueObjects?: Objects[]
   }
 }
 
 interface CreateObject {
   title: string,
   dueDate?: string | null,
-  isCompleted: boolean,
+  isCompleted?: boolean,
 }
 
 interface OrderObject {
@@ -72,9 +72,19 @@ interface OrderObject {
   }[]
 }
 
-interface OrderObjectResponse {
+interface OrderObjectRequest {
   orderedItems: OrderObject[]
 }
 
+interface SortableObject {
+  type: string;
+  text: string;
+  checked: boolean;
+}
 
-export type { Objects, OrderObject, OrderObjectResponse, ObjectsResponse, TodayObjectResponse, CreateObject };
+interface OrderResponse {
+    success: boolean;
+    message: string;
+}
+
+export type { Objects, OrderObject, OrderObjectRequest, OrderResponse, ObjectsResponse, TodayObjectResponse, CreateObject, SortableObject };

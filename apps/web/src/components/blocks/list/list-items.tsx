@@ -9,29 +9,14 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableItem } from "./sortable-item";
 import { useBlock } from "@/contexts/block-context";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
 import { useUpdateObject } from "@/hooks/use-objects";
 
 export function ListItems() {
-  const { items, handleDragEnd } = useBlock();
+  const { items } = useBlock();
   const { mutate: updateObject } = useUpdateObject();
 
   // Sort items by order property
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
-
-  const pointerSensor = useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 4,
-    },
-  });
-
-  const sensors = useSensors(pointerSensor);
 
   return (
     <SortableContext
