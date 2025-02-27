@@ -1,4 +1,5 @@
 import { AssistantModal } from "@/components/assistant-ui/assistant-modal";
+// import { SearchDialog } from "@/components/dialogs/search/search-dialog";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   SidebarInset,
