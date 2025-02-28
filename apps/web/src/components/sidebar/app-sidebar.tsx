@@ -1,97 +1,114 @@
 "use client";
-import { Plus, Calendar, Inbox } from "lucide-react";
-// import { useState } from "react";
+import { Calendar, Inbox, Bot } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import IntegrationMenu from "../dialogs/integration/integration";
 
+// Custom styles to override hover effects
+const noHoverStyles =
+  "!hover:bg-transparent !hover:text-inherit !active:bg-transparent !data-[active=true]:bg-transparent";
+
 export function AppSidebar() {
   const pathname = usePathname();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-white border-r">
       <SidebarHeader>
-        <div className="p-2" />
+        <div className="p-4 flex justify-start pl-4">
+          {/* Empty header space */}
+        </div>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <div className="px-2">
-            <SidebarGroupLabel>Arrays</SidebarGroupLabel>
-          </div>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href="/inbox"
-                    className={cn(
-                      "flex items-center gap-3 px-2 py-1.5 text-sm",
-                      pathname === "/inbox" &&
-                        "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <Inbox
-                      className={cn(
-                        "h-4 w-4 text-foreground/70",
-                        pathname === "/inbox" && "text-accent-foreground"
-                      )}
-                    />
-                    <span>Inbox</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href="/today"
-                    className={cn(
-                      "flex items-center gap-3 px-2 py-1.5 text-sm",
-                      pathname === "/today" &&
-                        "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <Calendar
-                      className={cn(
-                        "h-4 w-4 text-foreground/70",
-                        pathname === "/today" && "text-accent-foreground"
-                      )}
-                    />
-                    <span>Today</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <button className="flex items-center gap-2 px-2 py-1.5 text-sm w-full text-muted-foreground hover:text-foreground">
-                    <Plus className="h-4 w-4 text-foreground/70" />
-                    <span>Create array</span>
-                  </button>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
+      <SidebarContent className="mt-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <IntegrationMenu />
+            <SidebarMenuButton asChild className={noHoverStyles}>
+              <Link
+                href="/inbox"
+                className={cn(
+                  "flex items-center text-sm rounded-md",
+                  isCollapsed
+                    ? "justify-center py-3 px-0 mx-auto w-full"
+                    : "gap-3 px-4 py-2.5",
+                  pathname === "/inbox"
+                    ? "text-black font-medium"
+                    : "text-[#6E6E6E]"
+                )}
+              >
+                <Inbox
+                  className={cn(
+                    pathname === "/inbox" ? "text-black" : "text-[#6E6E6E]",
+                    isCollapsed ? "h-7 w-7" : "h-5 w-5"
+                  )}
+                />
+                {!isCollapsed && <span>Inbox</span>}
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className={noHoverStyles}>
+              <Link
+                href="/agenda"
+                className={cn(
+                  "flex items-center text-sm rounded-md",
+                  isCollapsed
+                    ? "justify-center py-3 px-0 mx-auto w-full"
+                    : "gap-3 px-4 py-2.5",
+                  pathname === "/agenda"
+                    ? "text-black font-medium"
+                    : "text-[#6E6E6E]"
+                )}
+              >
+                <Calendar
+                  className={cn(
+                    pathname === "/agenda" ? "text-black" : "text-[#6E6E6E]",
+                    isCollapsed ? "h-7 w-7" : "h-5 w-5"
+                  )}
+                />
+                {!isCollapsed && <span>Agenda</span>}
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className={noHoverStyles}>
+              <Link
+                href="/agent"
+                className={cn(
+                  "flex items-center text-sm w-full text-[#6E6E6E] rounded-md",
+                  isCollapsed
+                    ? "justify-center py-3 px-0 mx-auto"
+                    : "gap-3 px-4 py-2.5",
+                  pathname === "/agent" ? "text-black" : "text-[#6E6E6E]"
+                )}
+              >
+                <Bot
+                  className={cn(
+                    pathname === "/agent" ? "text-black" : "text-[#6E6E6E]",
+                    isCollapsed ? "h-7 w-7" : "h-5 w-5"
+                  )}
+                />
+                {!isCollapsed && <span>Agent</span>}
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter className="p-4">
+        <IntegrationMenu />
       </SidebarFooter>
     </Sidebar>
   );

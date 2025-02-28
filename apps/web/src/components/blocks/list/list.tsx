@@ -7,11 +7,11 @@ import { useCreateObject } from "@/hooks/use-objects";
 import { CreateObject } from "@/types/objects";
 
 interface Props {
-  header: string;
+  header?: string;
   arrayType: "inbox" | "today";
 }
 
-export default function ListBlock({ header, arrayType }: Props) {
+export default function ListBlock({ arrayType }: Props) {
   const { mutate: createObject } = useCreateObject();
 
   const handleSubmit = (data: CreateObject) => {
@@ -19,19 +19,16 @@ export default function ListBlock({ header, arrayType }: Props) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto -mt-1">
+    <div className="w-full mx-auto">
       <BlockProvider arrayType={arrayType}>
-        <header className="pt-3 pb-2 mb-2 px-3">
-          <h1 className="font-semibold text-xl text-gray-900">{header}</h1>
-        </header>
-        <section className="space-y-3 px-3">
+        <section className="space-y-3 px-4 pt-2">
           <InputBox
             className="w-full"
             onSubmit={handleSubmit}
             arrayType={arrayType}
           />
         </section>
-        <section className="pt-1 px-3">
+        <section className="pt-3 px-4">
           <ListItems />
         </section>
       </BlockProvider>
