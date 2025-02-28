@@ -7,7 +7,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useDroppable } from "@dnd-kit/core";
 import { useCalendar } from "@/contexts/calendar-context";
-import CalendarHeader from "./calendar-header";
 import moment from "moment";
 
 export function CalendarBlock() {

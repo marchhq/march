@@ -11,7 +11,7 @@ interface Props {
   arrayType: "inbox" | "today";
 }
 
-export default function ListBlock({ header, arrayType }: Props) {
+export default function ListBlock({ arrayType }: Props) {
   const { mutate: createObject } = useCreateObject();
 
   const handleSubmit = (data: CreateObject) => {
