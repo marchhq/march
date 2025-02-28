@@ -1,9 +1,11 @@
 "use client"
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createObject, getInboxObjects, getTodayObjects, orderObject, updateObject } from "@/actions/objects";
-import { CreateObject, Objects, ObjectsResponse, OrderObject, OrderResponse, TodayObjectResponse } from "@/types/objects";
+import { CreateObject, Objects, OrderObject } from "@/types/objects";
 import { toast } from "sonner";
-import { updateOrderInArray } from "@/lib/utils";
 
 // Query keys as constants to avoid typos and make refactoring easier
 const QUERY_KEYS = {
@@ -26,10 +28,13 @@ export function useTodayObjects() {
   });
 }
 
-// Add the MutationContext interface
-interface MutationContext {
-  inbox: ObjectsResponse | undefined;
-  today: TodayObjectResponse | undefined;
+interface Item {
+  _id: string;
+  [key: string]: any; // To allow additional properties
+}
+
+interface QueryData {
+  items?: Item[];
 }
 
 // Factory function for creating mutations with shared logic
@@ -40,41 +45,54 @@ function CreateObjectMutation<T extends CreateObject | Partial<Objects>>(
 ) {
   const queryClient = useQueryClient();
   
-  return useMutation<Objects[], Error, T, MutationContext>({
+  return useMutation({
     mutationKey,
     mutationFn,
-    onMutate: async (newData) => {
+    onMutate: async (newData: any) => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.INBOX });
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.TODAY });
       
-      const previousData: MutationContext = {
-        inbox: queryClient.getQueryData<ObjectsResponse>(QUERY_KEYS.INBOX),
-        today: queryClient.getQueryData<TodayObjectResponse>(QUERY_KEYS.TODAY)
+      const previousData = {
+        inbox: queryClient.getQueryData(QUERY_KEYS.INBOX),
+        today: queryClient.getQueryData(QUERY_KEYS.TODAY)
       };
       
       // Apply optimistic updates to the queries
       const isCreate = mutationKey[0] === "create-object";
-      
-      [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach(queryKey => {
-        queryClient.setQueryData<ObjectsResponse>(queryKey, (oldData): ObjectsResponse => {
-          if (!oldData) {
-            return { response: [] };
-          }
+       [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach(queryKey => {
+        queryClient.setQueryData(queryKey, (oldData: QueryData) => {
+          if (!oldData) return oldData;
 
-          return {
-            response: isCreate
-              ? [...oldData.response, { ...(newData as Partial<Objects>), _id: 'temp-' + Date.now() } as Objects]
-              : oldData.response.map(item => 
-                  item._id === (newData as Partial<Objects>)._id ? { ...item, ...newData } : item
-                )
-          };
+          // Handle array data structure
+          if (Array.isArray(oldData)) {
+            if (isCreate) {
+              // For creation, add new item
+              return [...oldData, { ...newData, _id: newData._id || `temp-${Date.now()}` }];
+            } else {
+              // For updates, update existing item
+              return oldData.map(item => 
+                item._id === newData._id ? { ...item, ...newData } : item
+              );
+            }
+          } 
+          // Handle object with items array
+          else if (oldData.items && Array.isArray(oldData.items)) {
+            return {
+              ...oldData,
+              items: isCreate
+                ? [...oldData.items, { ...newData, _id: newData._id || `temp-${Date.now()}` }]
+                : oldData.items.map(item => 
+                    item._id === newData._id ? { ...item, ...newData } : item
+                  )
+            };
+          }
+          return oldData;
         });
       });
       
       return previousData;
     },
-    
-    onError: (err: Error, _: T, context: MutationContext | undefined) => {
+    onError: (err, _: T, context: any) => {
       if (context) {
         queryClient.setQueryData(QUERY_KEYS.INBOX, context.inbox);
         queryClient.setQueryData(QUERY_KEYS.TODAY, context.today);
@@ -83,7 +101,6 @@ function CreateObjectMutation<T extends CreateObject | Partial<Objects>>(
       toast.error(errorMessage);
       console.error(`${errorMessage}:`, err);
     },
-    
     onSettled: () => {
       // Ensure data consistency after mutation settles
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INBOX });
@@ -113,7 +130,7 @@ export function useUpdateObject() {
 export function useOrderObject() {
   const queryClient = useQueryClient();
   
-  return useMutation<OrderResponse, Error, OrderObject, MutationContext>({
+  return useMutation({
     mutationKey: ["order-object"],
     mutationFn: async (object: OrderObject) => {
       const result = await orderObject(object);
@@ -126,40 +143,46 @@ export function useOrderObject() {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.INBOX });
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.TODAY });
       
-      const previousData: MutationContext = {
-        inbox: queryClient.getQueryData(QUERY_KEYS.INBOX),
-        today: queryClient.getQueryData(QUERY_KEYS.TODAY)
-      };
+      const previousInboxItems = queryClient.getQueryData(QUERY_KEYS.INBOX);
+      const previousTodayItems = queryClient.getQueryData(QUERY_KEYS.TODAY);
 
-      // Handle Inbox data
-      queryClient.setQueryData<Objects[]>(QUERY_KEYS.INBOX, (oldData) => {
-        if (!oldData) {
-          return [];
-        }
-        return updateOrderInArray(oldData, newOrder);
+      // Optimistically update to the new value
+      [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach(key => {
+        queryClient.setQueryData(key, (old: Objects[] | undefined) => {
+          if (!old) return old;
+
+          // Create a copy of the items
+          const updatedItems = [...old];
+
+          // Update the order of each item based on the newOrder
+          newOrder.orderedItems.forEach(({ id, order }) => {
+            const itemIndex = updatedItems.findIndex(item => item._id === id);
+            if (itemIndex !== -1) {
+              updatedItems[itemIndex] = {
+                ...updatedItems[itemIndex],
+                order
+              };
+            }
+          });
+
+          return updatedItems;
+        });
       });
 
-      // Handle Today data
-      queryClient.setQueryData<Objects[]>(QUERY_KEYS.TODAY, (oldData) => {
-        if (!oldData) {
-          return [];
-        }
-        return updateOrderInArray(oldData, newOrder);
-      });
-      
-      return previousData;
+      return { previousInboxItems, previousTodayItems };
     },
-    onError: (err: Error, _, context: MutationContext | undefined) => {
+    onError: (err, _, context: any) => {
       if (context) {
-        queryClient.setQueryData(QUERY_KEYS.INBOX, context.inbox);
-        queryClient.setQueryData(QUERY_KEYS.TODAY, context.today);
+        queryClient.setQueryData(QUERY_KEYS.INBOX, context.previousInboxItems);
+        queryClient.setQueryData(QUERY_KEYS.TODAY, context.previousTodayItems);
       }
       toast.error("Failed to reorder items");
       console.error("Failed to reorder items:", err);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INBOX });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TODAY });
+      [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach(key => {
+        queryClient.invalidateQueries({ queryKey: key });
+      });
     }
   });
 }
