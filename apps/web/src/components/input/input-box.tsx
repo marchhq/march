@@ -37,11 +37,17 @@ export default function InputBox({
     setIsFocused(false);
   };
 
+  const placeholderText = arrayType === "inbox" 
+    ? "Add a new object..." 
+    : "Add an object for today...";
+
   return (
     <form onSubmit={handleSubmit} className="relative">
       <div className={cn(
-        "flex items-center gap-3 px-0 py-2 rounded-md",
-        isFocused ? "bg-gray-100" : "bg-transparent",
+        "flex items-center gap-2 px-1 py-2 rounded-md",
+        isFocused 
+          ? "bg-white border border-gray-200" 
+          : "bg-white border border-gray-100",
         "transition-colors"
       )}>
         <div className="flex items-center justify-center" style={{ width: '18px' }}>
@@ -49,7 +55,7 @@ export default function InputBox({
         </div>
         <Input
           name="todo"
-          placeholder="Add object"
+          placeholder={placeholderText}
           className={cn(
             "border-none shadow-none p-0 h-auto",
             "focus-visible:ring-0 focus:outline-none",

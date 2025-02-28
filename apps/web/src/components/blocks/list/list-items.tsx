@@ -18,12 +18,20 @@ export function ListItems() {
   // Sort items by order property
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
 
+  if (sortedItems.length === 0) {
+    return (
+      <div className="py-4 text-center text-gray-500 text-sm">
+        No items yet. Add one above.
+      </div>
+    );
+  }
+
   return (
     <SortableContext
       items={sortedItems.map((item) => item._id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         {sortedItems.map((item) => (
           <SortableItem
             key={item._id}
@@ -34,15 +42,19 @@ export function ListItems() {
               checked: item.isCompleted,
             }}
           >
-            <div className="flex items-center w-full py-2 px-0 rounded-md hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3 w-full">
+            <div className="flex items-center w-full py-2 px-1 rounded-md hover:bg-gray-50 transition-colors group">
+              <div className="flex items-center gap-2 w-full">
                 <div
                   className="flex items-center justify-center"
-                  style={{ width: "18px" }}
+                  style={{ width: '18px' }}
                 >
                   <Checkbox
                     id={`item-${item._id}`}
-                    className="h-[18px] w-[18px] border-gray-300"
+                    className={cn(
+                      "h-[18px] w-[18px] border-gray-300",
+                      "transition-all duration-200",
+                      item.isCompleted ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+                    )}
                     checked={item.isCompleted}
                     onCheckedChange={() => {
                       updateObject({
@@ -65,7 +77,7 @@ export function ListItems() {
                 </label>
               </div>
             </div>
-            <Separator className="last:hidden opacity-20" />
+            <Separator className="last:hidden opacity-20 my-0" />
           </SortableItem>
         ))}
       </div>
