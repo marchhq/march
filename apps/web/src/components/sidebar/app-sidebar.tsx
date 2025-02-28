@@ -1,8 +1,9 @@
 "use client";
-import { Plus, Calendar, Inbox } from "lucide-react";
+import { Plus, Calendar, Inbox, Bot } from "lucide-react";
 // import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 import {
   Sidebar,
@@ -23,15 +24,22 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-white border-r">
       <SidebarHeader>
-        <div className="p-2" />
+        <div className="p-4 flex justify-start pl-4">
+          {/* Logo hidden for now
+          <Image 
+            src="/icons/logo.svg" 
+            alt="Logo" 
+            width={24} 
+            height={24} 
+            className="h-6 w-auto"
+          />
+          */}
+        </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="mt-2">
         <SidebarGroup>
-          <div className="px-2">
-            <SidebarGroupLabel>Arrays</SidebarGroupLabel>
-          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -39,15 +47,18 @@ export function AppSidebar() {
                   <Link
                     href="/inbox"
                     className={cn(
-                      "flex items-center gap-3 px-2 py-1.5 text-sm",
-                      pathname === "/inbox" &&
-                        "bg-accent text-accent-foreground"
+                      "flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors",
+                      pathname === "/inbox"
+                        ? "bg-accent text-accent-foreground font-medium"
+                        : "text-[#6E6E6E] hover:text-foreground hover:bg-[#F5F5F5]"
                     )}
                   >
                     <Inbox
                       className={cn(
-                        "h-4 w-4 text-foreground/70",
-                        pathname === "/inbox" && "text-accent-foreground"
+                        "h-5 w-5",
+                        pathname === "/inbox" 
+                          ? "text-accent-foreground" 
+                          : "text-[#6E6E6E]"
                       )}
                     />
                     <span>Inbox</span>
@@ -59,26 +70,29 @@ export function AppSidebar() {
                   <Link
                     href="/today"
                     className={cn(
-                      "flex items-center gap-3 px-2 py-1.5 text-sm",
-                      pathname === "/today" &&
-                        "bg-accent text-accent-foreground"
+                      "flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors",
+                      pathname === "/today"
+                        ? "bg-accent text-accent-foreground font-medium"
+                        : "text-[#6E6E6E] hover:text-foreground hover:bg-[#F5F5F5]"
                     )}
                   >
                     <Calendar
                       className={cn(
-                        "h-4 w-4 text-foreground/70",
-                        pathname === "/today" && "text-accent-foreground"
+                        "h-5 w-5",
+                        pathname === "/today" 
+                          ? "text-accent-foreground" 
+                          : "text-[#6E6E6E]"
                       )}
                     />
-                    <span>Today</span>
+                    <span>Agenda</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <button className="flex items-center gap-2 px-2 py-1.5 text-sm w-full text-muted-foreground hover:text-foreground">
-                    <Plus className="h-4 w-4 text-foreground/70" />
-                    <span>Create array</span>
+                  <button className="flex items-center gap-3 px-4 py-2.5 text-sm w-full text-[#6E6E6E] hover:text-foreground rounded-md transition-colors hover:bg-[#F5F5F5]">
+                    <Bot className="h-5 w-5 text-[#6E6E6E]" />
+                    <span>Agent</span>
                   </button>
                 </SidebarMenuButton>
               </SidebarMenuItem>
