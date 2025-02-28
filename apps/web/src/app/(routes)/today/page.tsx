@@ -11,7 +11,7 @@ export default function Today() {
         <div className="max-w-4xl">
           <Block id="list-and-calendar" arrayType="today">
             <GridWrapper>
-              <ListBlock header="Today" arrayType="today" />
+              <ListBlock arrayType="today" />
               <CalendarProvider>
                 <CalendarBlock />
               </CalendarProvider>

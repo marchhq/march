@@ -18,10 +18,10 @@ const GridWrapper: React.FC<GridWrapperProps> = ({
   }
 
   return (
-    <div className="grid auto-cols-[minmax(0,1fr)] grid-flow-col w-full h-full gap-3">
+    <div className="grid auto-cols-[minmax(0,1fr)] grid-flow-col w-full h-full gap-6">
       {React.Children.map(children, (child, index) =>
         index < maxChildren ? (
-          <div className="rounded-lg bg-white min-h-[200px] max-h-[calc(100vh-80px)] overflow-auto shadow-sm border border-gray-100">
+          <div className="rounded-lg bg-white min-h-[200px] max-h-[calc(100vh-80px)] overflow-auto">
             {child}
           </div>
         ) : null

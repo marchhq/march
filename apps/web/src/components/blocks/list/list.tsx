@@ -21,19 +21,14 @@ export default function ListBlock({ header, arrayType }: Props) {
   return (
     <div className="w-full mx-auto">
       <BlockProvider arrayType={arrayType}>
-        {header && (
-          <header className="pt-3 pb-2 mb-2 px-1">
-            <h1 className="font-semibold text-xl text-gray-900">{header}</h1>
-          </header>
-        )}
-        <section className="space-y-3 px-1 pt-3">
+        <section className="space-y-3 px-4 pt-2">
           <InputBox
             className="w-full"
             onSubmit={handleSubmit}
             arrayType={arrayType}
           />
         </section>
-        <section className="pt-2 px-1">
+        <section className="pt-3 px-4">
           <ListItems />
         </section>
       </BlockProvider>
