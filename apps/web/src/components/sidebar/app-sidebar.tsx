@@ -17,7 +17,8 @@ import Link from "next/link";
 import IntegrationMenu from "../dialogs/integration/integration";
 
 // Custom styles to override hover effects
-const noHoverStyles = "!hover:bg-transparent !hover:text-inherit !active:bg-transparent !data-[active=true]:bg-transparent";
+const noHoverStyles =
+  "!hover:bg-transparent !hover:text-inherit !active:bg-transparent !data-[active=true]:bg-transparent";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -39,8 +40,8 @@ export function AppSidebar() {
                 href="/inbox"
                 className={cn(
                   "flex items-center text-sm rounded-md",
-                  isCollapsed 
-                    ? "justify-center py-3 px-0 mx-auto w-full" 
+                  isCollapsed
+                    ? "justify-center py-3 px-0 mx-auto w-full"
                     : "gap-3 px-4 py-2.5",
                   pathname === "/inbox"
                     ? "text-black font-medium"
@@ -49,9 +50,7 @@ export function AppSidebar() {
               >
                 <Inbox
                   className={cn(
-                    pathname === "/inbox" 
-                      ? "text-black" 
-                      : "text-[#6E6E6E]",
+                    pathname === "/inbox" ? "text-black" : "text-[#6E6E6E]",
                     isCollapsed ? "h-7 w-7" : "h-5 w-5"
                   )}
                 />
@@ -66,8 +65,8 @@ export function AppSidebar() {
                 href="/agenda"
                 className={cn(
                   "flex items-center text-sm rounded-md",
-                  isCollapsed 
-                    ? "justify-center py-3 px-0 mx-auto w-full" 
+                  isCollapsed
+                    ? "justify-center py-3 px-0 mx-auto w-full"
                     : "gap-3 px-4 py-2.5",
                   pathname === "/agenda"
                     ? "text-black font-medium"
@@ -76,9 +75,7 @@ export function AppSidebar() {
               >
                 <Calendar
                   className={cn(
-                    pathname === "/agenda" 
-                      ? "text-black" 
-                      : "text-[#6E6E6E]",
+                    pathname === "/agenda" ? "text-black" : "text-[#6E6E6E]",
                     isCollapsed ? "h-7 w-7" : "h-5 w-5"
                   )}
                 />
@@ -88,18 +85,24 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className={noHoverStyles}>
-              <button className={cn(
-                "flex items-center text-sm w-full text-[#6E6E6E] rounded-md",
-                isCollapsed 
-                  ? "justify-center py-3 px-0 mx-auto" 
-                  : "gap-3 px-4 py-2.5"
-              )}>
-                <Bot className={cn(
-                  "text-[#6E6E6E]",
-                  isCollapsed ? "h-7 w-7" : "h-5 w-5"
-                )} />
+              <Link
+                href="/agent"
+                className={cn(
+                  "flex items-center text-sm w-full text-[#6E6E6E] rounded-md",
+                  isCollapsed
+                    ? "justify-center py-3 px-0 mx-auto"
+                    : "gap-3 px-4 py-2.5",
+                  pathname === "/agent" ? "text-black" : "text-[#6E6E6E]"
+                )}
+              >
+                <Bot
+                  className={cn(
+                    pathname === "/agent" ? "text-black" : "text-[#6E6E6E]",
+                    isCollapsed ? "h-7 w-7" : "h-5 w-5"
+                  )}
+                />
                 {!isCollapsed && <span>Agent</span>}
-              </button>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
