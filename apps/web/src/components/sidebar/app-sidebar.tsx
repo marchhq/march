@@ -16,6 +16,9 @@ import {
 import Link from "next/link";
 import IntegrationMenu from "../dialogs/integration/integration";
 
+// Custom styles to override hover effects
+const noHoverStyles = "!hover:bg-transparent !hover:text-inherit !active:bg-transparent !data-[active=true]:bg-transparent";
+
 export function AppSidebar() {
   const pathname = usePathname();
   const { state } = useSidebar();
@@ -31,23 +34,23 @@ export function AppSidebar() {
       <SidebarContent className="mt-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className={noHoverStyles}>
               <Link
                 href="/inbox"
                 className={cn(
-                  "flex items-center text-sm rounded-md transition-colors",
+                  "flex items-center text-sm rounded-md",
                   isCollapsed 
                     ? "justify-center py-3 px-0 mx-auto w-full" 
                     : "gap-3 px-4 py-2.5",
                   pathname === "/inbox"
-                    ? "bg-accent text-accent-foreground font-medium"
-                    : "text-[#6E6E6E] hover:text-foreground hover:bg-[#F5F5F5]"
+                    ? "text-black font-medium"
+                    : "text-[#6E6E6E]"
                 )}
               >
                 <Inbox
                   className={cn(
                     pathname === "/inbox" 
-                      ? "text-accent-foreground" 
+                      ? "text-black" 
                       : "text-[#6E6E6E]",
                     isCollapsed ? "h-7 w-7" : "h-5 w-5"
                   )}
@@ -58,23 +61,23 @@ export function AppSidebar() {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className={noHoverStyles}>
               <Link
-                href="/today"
+                href="/agenda"
                 className={cn(
-                  "flex items-center text-sm rounded-md transition-colors",
+                  "flex items-center text-sm rounded-md",
                   isCollapsed 
                     ? "justify-center py-3 px-0 mx-auto w-full" 
                     : "gap-3 px-4 py-2.5",
-                  pathname === "/today"
-                    ? "bg-accent text-accent-foreground font-medium"
-                    : "text-[#6E6E6E] hover:text-foreground hover:bg-[#F5F5F5]"
+                  pathname === "/agenda"
+                    ? "text-black font-medium"
+                    : "text-[#6E6E6E]"
                 )}
               >
                 <Calendar
                   className={cn(
-                    pathname === "/today" 
-                      ? "text-accent-foreground" 
+                    pathname === "/agenda" 
+                      ? "text-black" 
                       : "text-[#6E6E6E]",
                     isCollapsed ? "h-7 w-7" : "h-5 w-5"
                   )}
@@ -84,9 +87,9 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className={noHoverStyles}>
               <button className={cn(
-                "flex items-center text-sm w-full text-[#6E6E6E] hover:text-foreground rounded-md transition-colors hover:bg-[#F5F5F5]",
+                "flex items-center text-sm w-full text-[#6E6E6E] rounded-md",
                 isCollapsed 
                   ? "justify-center py-3 px-0 mx-auto" 
                   : "gap-3 px-4 py-2.5"
@@ -101,12 +104,8 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <IntegrationMenu />
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarFooter className="p-4">
+        <IntegrationMenu />
       </SidebarFooter>
     </Sidebar>
   );
