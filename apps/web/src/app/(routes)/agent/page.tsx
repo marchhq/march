@@ -1,5 +1,6 @@
 import { Agent } from "@/components/agent/agent";
 import { ErrorBoundary } from "@/components/error/error-boundary";
+import { MyRuntimeProvider } from "@/components/provider/my-runtime-provider";
 
 export default function AgentPage() {
   return (
@@ -9,7 +10,9 @@ export default function AgentPage() {
           <ErrorBoundary
             fallback={<div>Error loading agent. Please try again later.</div>}
           >
-            <Agent />
+            <MyRuntimeProvider>
+              <Agent />
+            </MyRuntimeProvider>
           </ErrorBoundary>
         </div>
       </div>
