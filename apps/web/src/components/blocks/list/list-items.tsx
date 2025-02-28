@@ -10,6 +10,8 @@ import {
 import { SortableItem } from "./sortable-item";
 import { useBlock } from "@/contexts/block-context";
 import { useUpdateObject } from "@/hooks/use-objects";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import ExpandedView from "@/components/object/expanded-view";
 
 export function ListItems() {
   const { items } = useBlock();
@@ -64,17 +66,21 @@ export function ListItems() {
                     }}
                   />
                 </div>
-                <label
-                  htmlFor={`item-${item._id}`}
-                  className={cn(
-                    "text-sm cursor-pointer select-none",
-                    item.isCompleted
-                      ? "text-gray-400 line-through"
-                      : "text-gray-700"
-                  )}
-                >
-                  {item.title}
-                </label>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <div
+                      className={cn(
+                        "text-sm cursor-pointer select-none",
+                        item.isCompleted
+                          ? "text-gray-400 line-through"
+                          : "text-gray-700"
+                      )}
+                    >
+                      {item.title}
+                    </div>
+                  </SheetTrigger>
+                  <ExpandedView item={item} />
+                </Sheet>
               </div>
             </div>
             <Separator className="last:hidden opacity-20 my-0" />
