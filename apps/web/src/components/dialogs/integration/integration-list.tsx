@@ -12,7 +12,7 @@ const IntegrationsList = () => {
   const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null);
   const { data: user, refreshUser } = useUser();
   const { handleCalendarLogin, handleRevokeAccess } =
-    useGoogleCalendarLogin("/today");
+    useGoogleCalendarLogin("/agenda");
 
   if (!user) {
     return null;
