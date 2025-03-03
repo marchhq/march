@@ -1,5 +1,7 @@
 import { Object } from "../../models/lib/object.model.js";
 import { Meeting } from "../../models/page/meetings.model.js";
+import { z } from "zod";
+import sanitize from "mongo-sanitize";
 
 const createMeeting = async (user, meetingData) => {
     const newMeeting = new Meeting({
@@ -36,13 +38,24 @@ const getMeetingById = async (user, id) => {
 
     return meeting;
 };
+// TODO: improve validation for updateMeetingSchema
+const updateMeetingSchema = z.object({
+    title: z.string().optional(),
+    date: z.string().optional(),
+    description: z.string().optional(),
+    participants: z.array(z.string()).optional(),
+    isArchived: z.boolean().optional()
+});
 
 const updateMeeting = async (id, updateData, user) => {
+    const safeUpdateData = sanitize(updateData);
+    const validatedData = updateMeetingSchema.parse(safeUpdateData);
+
     const updatedBlock = await Object.findOneAndUpdate({
         id,
         user
     },
-    { $set: updateData },
+    { $set: validatedData },
     { new: true }
     )
 

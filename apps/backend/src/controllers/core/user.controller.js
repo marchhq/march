@@ -1,6 +1,7 @@
 import Joi from "joi";
 import { getInboxObject, getObjectsWithDate, reorderObjects, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
 import { updateUser } from "../../services/core/user.service.js";
+import { UpdateUserPayload } from "../../payloads/core/user.payload.js";
 
 const { ValidationError } = Joi;
 
@@ -44,11 +45,10 @@ const userProfileController = async (req, res, next) => {
 const updateUserController = async (req, res, next) => {
     try {
         const user = req.user;
-        // const payload = await UpdateUserPayload.validateAsync(req.body)
-
         const data = req.body;
+        const payload = await UpdateUserPayload.validateAsync(data)
 
-        await updateUser(user, data);
+        await updateUser(user, payload);
 
         res.json({
             message: "Updated successfully"
