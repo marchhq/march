@@ -13,6 +13,12 @@ const OauthCalClient = new OAuth2Client(
     environment.GOOGLE_CALENDAR_REDIRECT_URL
 );
 
+const OauthEmailClient = new OAuth2Client(
+    environment.GOOGLE_CLIENT_ID,
+    environment.GOOGLE_CLIENT_SECRET,
+    environment.GOOGLE_EMAIL_REDIRECT_URL
+);
+
 const OauthClient = client;
 
-export { OauthClient, OauthCalClient };
+export { OauthClient, OauthCalClient, OauthEmailClient };
