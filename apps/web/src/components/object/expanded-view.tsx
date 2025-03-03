@@ -1,10 +1,6 @@
 import { Objects } from "@/types/objects";
-import {
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "../ui/sheet";
+import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import { Editor } from "../editor/editor";
 
 export default function ExpandedView({ item }: { item: Objects }) {
   return (
@@ -14,8 +10,13 @@ export default function ExpandedView({ item }: { item: Objects }) {
     >
       <SheetHeader>
         <SheetTitle>{item.title}</SheetTitle>
-        <SheetDescription>{item.description}</SheetDescription>
       </SheetHeader>
+      <Editor
+        initialValue={item.description}
+        onChange={(content) => {
+          console.log(content);
+        }}
+      />
     </SheetContent>
   );
 }
