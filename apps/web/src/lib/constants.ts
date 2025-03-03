@@ -16,6 +16,6 @@ export const PUBLIC_PATHS = Object.freeze({
 } as const);
 
 export const REDIRECT_PATHS = Object.freeze({
-  AUTHENTICATED_HOME: "/inbox",
+  AUTHENTICATED_HOME: "/agenda",
   UNAUTHENTICATED_HOME: "/signin",
 } as const);
