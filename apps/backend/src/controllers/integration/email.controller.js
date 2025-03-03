@@ -1,4 +1,4 @@
-import { OauthClient } from "../../loaders/google.loader.js";
+import { OauthEmailClient } from "../../loaders/google.loader.js";
 import { getGmailAccessToken, createLabel } from "../../services/integration/email.service.js"
 import { google } from "googleapis";
 import { environment } from "../../loaders/environment.loader.js";
@@ -122,8 +122,8 @@ const handlePushNotification = async (req, res) => {
     const historyId = user.integration.gmail.historyId;
 
     try {
-        OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-        const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+        OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+        const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
         // Retrieve the email history since the last history ID
         const historyResponse = await gmail.users.history.list({
@@ -295,8 +295,8 @@ const setupPushNotificationsController = async (req, res) => {
     const labelId = user.integration.gmail.labelId;
 
     try {
-        OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-        const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+        OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+        const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
         const watchResponse = await gmail.users.watch({
             userId: 'me',
@@ -318,7 +318,7 @@ const setupPushNotificationsController = async (req, res) => {
 };
 
 const redirectGmailOAuthLoginController = (req, res) => {
-    const authUrl = OauthClient.generateAuthUrl({
+    const authUrl = OauthEmailClient.generateAuthUrl({
         access_type: 'offline',
         scope: ['https://www.googleapis.com/auth/gmail.modify']
     });
@@ -326,28 +326,6 @@ const redirectGmailOAuthLoginController = (req, res) => {
     res.redirect(authUrl);
 };
 
-// const getGmailAccessTokenController = async (req, res, next) => {
-//     const { code } = req.query;
-//     const user = req.user;
-//     try {
-//         const tokenInfo = await getGmailAccessToken(code, user);
-
-//         OauthClient.setCredentials({ access_token: tokenInfo.access_token, refresh_token: tokenInfo.refresh_token });
-
-//         // creating label
-//         const labelId = await createLabel(OauthClient, 'march_inbox');
-
-//         user.integration.gmail.accessToken = tokenInfo.access_token;
-//         user.integration.gmail.refreshToken = tokenInfo.refresh_token;
-//         user.integration.gmail.labelId = labelId;
-//         await user.save();
-//         res.status(200).json({
-//             tokenInfo
-//         });
-//     } catch (err) {
-//         next(err);
-//     }
-// };
 const getGmailAccessTokenController = async (req, res, next) => {
     const { code } = req.query;
     const user = req.user;
@@ -355,13 +333,13 @@ const getGmailAccessTokenController = async (req, res, next) => {
     try {
         const tokenInfo = await getGmailAccessToken(code, user);
 
-        OauthClient.setCredentials({ access_token: tokenInfo.access_token, refresh_token: tokenInfo.refresh_token });
+        OauthEmailClient.setCredentials({ access_token: tokenInfo.access_token, refresh_token: tokenInfo.refresh_token });
 
-        const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+        const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
         const profileResponse = await gmail.users.getProfile({ userId: 'me' });
         const email = profileResponse.data.emailAddress;
         console.log("email: ", email);
-        const labelId = await createLabel(OauthClient, 'march_inbox');
+        const labelId = await createLabel(OauthEmailClient, 'march_inbox');
 
         user.integration.gmail.email = email;
         user.integration.gmail.accessToken = tokenInfo.access_token;
