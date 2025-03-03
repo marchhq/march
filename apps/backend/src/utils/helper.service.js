@@ -20,9 +20,11 @@ export const readTemplateFile = async (name, data) => {
     const content = fs
         .readFileSync(path.resolve("src", "templates", `${name}.hbs`))
         .toString("utf8");
-    const template = handlebars.compile(content, {
-        noEscape: true
-    });
+    // const template = handlebars.compile(content, {
+    //     // noEscape: true
+    // });
+    const template = handlebars.compile(content);
+
     return template(data);
 };
 

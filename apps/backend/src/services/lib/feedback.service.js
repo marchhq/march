@@ -1,13 +1,20 @@
 import nodemailer from "nodemailer";
 import { upload } from "../../loaders/s3.loader.js";
 import { environment } from "../../loaders/environment.loader.js";
+import { z } from "zod";
+
+const emailSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    feedback: z.string().min(1, "Feedback is required"),
+    email: z.string().email("Invalid email").optional()
+});
 
 const sendFeedbackEmail = async (req, res) => {
     try {
     // Handle file uploads using Multer
         await handleFileUpload(req, res);
 
-        const { title, feedback, email } = req.body;
+        const validatedData = emailSchema.parse(req.body);
         const attachments = req.files; // The uploaded files
 
         // Create Nodemailer transporter
@@ -24,10 +31,10 @@ const sendFeedbackEmail = async (req, res) => {
         // Define email options
         const mailOptions = {
             from: `"Feedback Form" <${environment.SMTP_USER}>`,
-            to: environment.FEEDBACK_RECEIVER_EMAIL, // Feedback receiver email
-            cc: email,
+            to: environment.FEEDBACK_RECEIVER_EMAIL,
+            cc: validatedData.email,
             subject: `Feedback sent to march`,
-            text: `Title: ${title}\n\nFeedback: ${feedback}`,
+            text: `Title: ${validatedData.title}\n\nFeedback: ${validatedData.feedback}`,
             attachments: attachments.map((file) => ({
                 filename: file.originalname,
                 path: file.location // File location from S3
