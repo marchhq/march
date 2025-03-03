@@ -16,7 +16,7 @@ const useGmail = (
     try {
       const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
       const GOOGLE_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
-      const GOOGLE_REDIRECT_URI = `${FRONTEND_URL}/api/auth/gmail`;
+      const GOOGLE_REDIRECT_URI = `${FRONTEND_URL}/api/auth/email`;
 
       if (!GOOGLE_CLIENT_ID || !GOOGLE_REDIRECT_URI) {
         throw new Error("Google Client ID or Redirect URI is not set");
