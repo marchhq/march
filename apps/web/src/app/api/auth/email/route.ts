@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get("error");
 
   // Default redirect
-  let redirectUrl = '/agenda';
+  let redirectUrl = "/agenda";
+  console.log("code: ", code);
 
   // Try to get redirect URL from state
   if (state) {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
         redirectUrl = stateData.redirect;
       }
     } catch (e) {
-      console.error('Failed to parse state:', e);
+      console.error("Failed to parse state:", e);
     }
   }
 
@@ -28,14 +29,14 @@ export async function GET(request: NextRequest) {
   if (error) {
     console.error("Google OAuth error:", error);
     return NextResponse.redirect(
-      new URL(`${redirectUrl}?error=${error}`, FRONTEND_URL)
+      new URL(`${redirectUrl}?error=${error}`, FRONTEND_URL),
     );
   }
 
   if (!code) {
     console.error("No code received from Gmail");
     return NextResponse.redirect(
-      new URL(`${redirectUrl}?error=no_code`, FRONTEND_URL)
+      new URL(`${redirectUrl}?error=no_code`, FRONTEND_URL),
     );
   }
 
@@ -43,30 +44,27 @@ export async function GET(request: NextRequest) {
 
   if (!session) {
     return NextResponse.redirect(
-      new URL(`${redirectUrl}?error=no_session`, FRONTEND_URL)
+      new URL(`${redirectUrl}?error=no_session`, FRONTEND_URL),
     );
   }
 
   try {
-    const response = await axios.post(
-      `${BACKEND_URL}/gmail/callback`,
-      { code },
-      {
-        headers: {
-          Authorization: `Bearer ${session}`,
-        },
-      }
-    );
+    const response = await axios.get(`${BACKEND_URL}/gmail/getAccessToken`, {
+      params: { code },
+      headers: {
+        Authorization: `Bearer ${session}`,
+      },
+    });
 
     if (!response.data?.success) {
-      throw new Error(response.data?.message || 'Failed to connect Gmail');
+      throw new Error(response.data?.message || "Failed to connect Gmail");
     }
 
     return NextResponse.redirect(new URL(redirectUrl, FRONTEND_URL));
   } catch (error) {
     console.error("Error connecting Gmail:", error);
     return NextResponse.redirect(
-      new URL(`${redirectUrl}?error=gmail_connection_failed`, FRONTEND_URL)
+      new URL(`${redirectUrl}?error=gmail_connection_failed`, FRONTEND_URL),
     );
   }
 }
