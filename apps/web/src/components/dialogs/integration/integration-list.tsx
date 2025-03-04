@@ -16,7 +16,7 @@ const IntegrationsList = () => {
   const { data: user, refreshUser } = useUser();
   const { handleCalendarLogin, handleRevokeAccess } =
     useGoogleCalendarLogin("/agenda");
-  const { handleGmailLogin } = useGmail("/agenda");
+  const { handleGmailLogin, handleGmailRevoke } = useGmail("/agenda");
   const { handleLinearLogin } = useLinearLogin("/agenda");
   const { handleGithubInstall } = useGithubInstall();
   if (!user) {
@@ -28,6 +28,7 @@ const IntegrationsList = () => {
       calendarConnectHandler: handleCalendarLogin,
       calendarDisconnectHandler: handleRevokeAccess,
       gmailConnectHandler: handleGmailLogin,
+      gmailDisconnectHandler: handleGmailRevoke,
       linearConnectHandler: handleLinearLogin,
       githubConnectHandler: handleGithubInstall,
     },

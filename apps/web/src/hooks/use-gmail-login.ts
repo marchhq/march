@@ -8,14 +8,14 @@ const useGmail = (
   redirectAfterRevoke: string = redirectAfterAuth,
 ): {
   handleGmailLogin: () => Promise<void>;
-  handleRevokeAccess: () => Promise<void>;
+  handleGmailRevoke: () => Promise<void>;
 } => {
   const router = useRouter();
 
   const handleGmailLogin = useCallback(async () => {
     try {
       const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-      const GOOGLE_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
+      const GOOGLE_SCOPE = "https://www.googleapis.com/auth/gmail.modify";
       const GOOGLE_REDIRECT_URI = `${FRONTEND_URL}/api/auth/gmail`;
 
       if (!GOOGLE_CLIENT_ID || !GOOGLE_REDIRECT_URI) {
@@ -35,7 +35,7 @@ const useGmail = (
     }
   }, [router, redirectAfterAuth]);
 
-  const handleRevokeAccess = useCallback(async () => {
+  const handleGmailRevoke = useCallback(async () => {
     try {
       const response = await apiClient.get("/gmail/revoke-access/");
 
@@ -49,7 +49,7 @@ const useGmail = (
     }
   }, [router, redirectAfterRevoke]);
 
-  return { handleGmailLogin, handleRevokeAccess };
+  return { handleGmailLogin, handleGmailRevoke};
 };
 
 export default useGmail;
