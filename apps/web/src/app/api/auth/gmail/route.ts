@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
 
   // Default redirect
   let redirectUrl = "/agenda";
-  console.log("code: ", code);
 
   // Try to get redirect URL from state
   if (state) {
@@ -49,16 +48,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await axios.get(`${BACKEND_URL}/gmail/getAccessToken`, {
+    await axios.get(`${BACKEND_URL}/gmail/getAccessToken`, {
       params: { code },
       headers: {
         Authorization: `Bearer ${session}`,
       },
     });
 
-    if (!response.data?.success) {
-      throw new Error(response.data?.message || "Failed to connect Gmail");
-    }
+    await axios.get(`${BACKEND_URL}/gmail/setup-notification`, {
+      headers: {
+        Authorization: `Bearer ${session}`,
+      },
+    });
 
     return NextResponse.redirect(new URL(redirectUrl, FRONTEND_URL));
   } catch (error) {
