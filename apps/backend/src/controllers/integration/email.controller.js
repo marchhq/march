@@ -1,5 +1,5 @@
 import { OauthEmailClient } from "../../loaders/google.loader.js";
-import { getGmailAccessToken, createLabel } from "../../services/integration/email.service.js"
+import { getGmailAccessToken, createLabel, revokeGmailAccess, getValidGmailAccessToken } from "../../services/integration/email.service.js"
 import { google } from "googleapis";
 import { environment } from "../../loaders/environment.loader.js";
 import { User } from "../../models/core/user.model.js";
@@ -7,129 +7,31 @@ import { Object } from "../../models/lib/object.model.js";
 import { saveContent } from "../../utils/helper.service.js";
 import { broadcastToUser } from "../../loaders/websocket.loader.js";
 
-// async function processGmailNotification (req, res) {
-//     const data = req.body
-//     const decodedData = JSON.parse(Buffer.from(data.message.data, 'base64').toString());
-//     // console.log("Decoded data:", decodedData);
-
-//     const { historyId } = decodedData;
-//     console.log("historyId: ", historyId);
-//     try {
-//         const user = await User.findOne({ 'integration.gmail.historyId': historyId });
-//         if (!user) {
-//             return res.status(404).json({ error: 'User not found' });
-//         }
-//         console.log("user: ", user);
-//         // OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-
-//         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
-
-//         const response = await gmail.users.history.list({
-//             userId: 'me',
-//             startHistoryId: historyId,
-//             historyTypes: ['labelAdded']
-//         });
-//         // console.log("response: ", response.data);
-
-//         const history = response.data.history || [];
-//         // console.log("history: ", history);
-//         for (const record of history) {
-//             if (record.labelsAdded) {
-//                 for (const labelAdded of record.labelsAdded) {
-//                     if (labelAdded.labelIds.includes('Label_10')) {
-//                         await createIssueFromEmail(labelAdded.message.id, OauthEmailClient);
-//                     }
-//                 }
-//             }
-//         }
-//     } catch (error) {
-//         console.error('Error processing Gmail notification:', error);
-//     }
-// }
-
-// const handleGmailWebhook = async (req, res) => {
-
-//     const data = req.body
-//     const decodedData = JSON.parse(Buffer.from(data.message.data, 'base64').toString());
-//     // console.log("Decoded data:", decodedData);
-
-//     const { historyId } = decodedData;
-//     console.log("historyId: ", historyId);
-//     const user = await User.findOne({ 'integration.gmail.historyId': { $lte: historyId } });
-
-//     if (!user) {
-//         return res.status(404).json({ message: 'User not found' });
-//     }
-//     console.log("user: ", user);
-//     const { accessToken, refreshToken, labelId } = user.integration.gmail;
-//     OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-
-//     const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
-
-//     try {
-//         // Fetch history from Gmail starting from the stored historyId
-//         const historyResponse = await gmail.users.history.list({
-//             userId: 'me',
-//             startHistoryId: user.integration.gmail.historyId,
-//             labelId,
-//         });
-
-//         const messages = historyResponse.data.history.reduce((acc, hist) => {
-//             if (hist.messagesAdded) {
-//                 return acc.concat(hist.messagesAdded);
-//             }
-//             return acc;
-//         }, []);
-
-//         for (const message of messages) {
-//             const emailData = await gmail.users.messages.get({
-//                 userId: 'me',
-//                 id: message.message.id,
-//             });
-
-//             // Process the email and create an issue
-//             await createIssueFromEmail(emailData.data, user);
-//         }
-
-//         // Update the stored historyId to the latest value returned by the API
-//         if (historyResponse.data.historyId) {
-//             user.integration.gmail.historyId = historyResponse.data.historyId;
-//             await user.save();
-//         }
-
-//         res.status(200).json({ message: 'Webhook processed successfully' });
-//     } catch (error) {
-//         console.error('Error processing Gmail webhook:', error);
-//         res.status(500).json({ error: 'Failed to process webhook', details: error.message });
-//     }
-// };
-
 // Webhook to handle incoming push notifications from Gmail
 const handlePushNotification = async (req, res) => {
-    const message = Buffer.from(req.body.message.data, "base64").toString(
-        "utf-8"
-    );
-    const parsedMessage = JSON.parse(message);
-    const userEmail = parsedMessage.emailAddress;
-    // console.log("userEmail: ", userEmail);
-
-    const user = await User.findOne({ "integration.gmail.email": userEmail });
-    if (!user) {
-        console.error("User not found for the incoming Gmail push notification.");
-        return res.status(404).send();
-    }
-    const accessToken = user.integration.gmail.accessToken;
-    const refreshToken = user.integration.gmail.refreshToken;
-    const historyId = user.integration.gmail.historyId;
-
     try {
-        OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+        const message = Buffer.from(req.body.message.data, "base64").toString("utf-8");
+        const parsedMessage = JSON.parse(message);
+        const userEmail = parsedMessage.emailAddress;
+
+        const user = await User.findOne({ "integration.gmail.email": userEmail });
+        if (!user) {
+            console.error("User not found for the incoming Gmail push notification.");
+            return res.status(404).send();
+        }
+
+        // Ensure we have a valid access token
+        const accessToken = await getValidGmailAccessToken(user);
+
+        const OauthEmailClient = new google.auth.OAuth2();
+        OauthEmailClient.setCredentials({ access_token: accessToken });
+
         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
         // Retrieve the email history since the last history ID
         const historyResponse = await gmail.users.history.list({
             userId: "me",
-            startHistoryId: historyId,
+            startHistoryId: user.integration.gmail.historyId,
             labelId: user.integration.gmail.labelId
         });
 
@@ -269,36 +171,6 @@ const createIssueFromEmail = async (email, user) => {
     }
 };
 
-// const setupPushNotificationsController = async (req, res) => {
-//     const user = req.user;
-//     const accessToken = user.integration.gmail.accessToken;
-//     const refreshToken = user.integration.gmail.refreshToken;
-//     const labelId = user.integration.gmail.labelId;
-
-//     try {
-//         OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
-
-//         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
-
-//         const watchResponse = await gmail.users.watch({
-//             userId: 'me',
-//             requestBody: {
-//                 topicName: environment.TOPIC_NAME,
-//                 labelIds: [labelId],
-//                 labelFilterBehavior: "INCLUDE"
-//             }
-//         });
-//         user.integration.gmail.historyId = watchResponse.data.historyId;
-//         await user.save();
-//         console.log('Watch response:', watchResponse.data);
-//         res.status(200).json({ message: 'Push notifications set up successfully', data: watchResponse.data });
-//     } catch (error) {
-//         console.error('Error setting up push notifications:', error);
-//         res.status(500).json({ error: 'Failed to set up push notifications', details: error.message });
-//     }
-// };
-
-// Controller to set up Gmail push notifications
 const setupPushNotificationsController = async (req, res) => {
     const user = req.user;
     const accessToken = user.integration.gmail.accessToken;
@@ -353,7 +225,7 @@ const getGmailAccessTokenController = async (req, res, next) => {
 
     try {
         const tokenInfo = await getGmailAccessToken(code, user);
-        console.log("tokenInfo: ", OauthEmailClient);
+
         OauthEmailClient.setCredentials({ access_token: tokenInfo.access_token, refresh_token: tokenInfo.refresh_token });
 
         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
@@ -376,10 +248,25 @@ const getGmailAccessTokenController = async (req, res, next) => {
     }
 };
 
+const revokeGmailAccessController = async (req, res, next) => {
+    const user = req.user;
+    try {
+        await revokeGmailAccess(user);
+
+        res.status(200).json({
+            message: 'Gmail access revoked successfully.'
+        });
+    } catch (err) {
+        console.error('Error revoking Gmail access:', err);
+        next(err);
+    }
+};
+
 export {
     redirectGmailOAuthLoginController,
     getGmailAccessTokenController,
     createLabel,
     setupPushNotificationsController,
-    handlePushNotification
+    handlePushNotification,
+    revokeGmailAccessController
 };
