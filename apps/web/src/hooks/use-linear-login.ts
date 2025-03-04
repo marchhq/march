@@ -31,6 +31,7 @@ export function useLinearLogin(
       }
 
       // Redirect to Linear's auth page
+      console.log(data)
       window.location.href = data.authUrl
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to initialize Linear login'))

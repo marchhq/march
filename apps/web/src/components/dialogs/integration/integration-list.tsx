@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import useGmail from "@/hooks/use-gmail-login";
 import { useLinearLogin } from "@/hooks/use-linear-login";
+import { useGithubInstall } from "@/hooks/use-github-install";
 
 const IntegrationsList = () => {
   const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null);
@@ -17,6 +18,7 @@ const IntegrationsList = () => {
     useGoogleCalendarLogin("/agenda");
   const { handleGmailLogin } = useGmail("/agenda");
   const { handleLinearLogin } = useLinearLogin("/agenda");
+  const { handleGithubInstall } = useGithubInstall();
   if (!user) {
     return null;
   }
@@ -27,6 +29,7 @@ const IntegrationsList = () => {
       calendarDisconnectHandler: handleRevokeAccess,
       gmailConnectHandler: handleGmailLogin,
       linearConnectHandler: handleLinearLogin,
+      githubConnectHandler: handleGithubInstall,
     },
     user
   );
