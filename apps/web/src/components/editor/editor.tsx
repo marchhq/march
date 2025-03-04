@@ -9,7 +9,6 @@ import { NodeSelector } from "./selectors/node-selector";
 import { Separator } from "../ui/separator";
 import { LinkSelector } from "./selectors/link-selector";
 import { TextButtons } from "./selectors/text-buttons";
-import { ColorSelector } from "./selectors/color-selector";
 
 const extensions = [...defaultExtensions];
 
@@ -25,7 +24,7 @@ export const defaultEditorContent = {
 
 interface EditorProps {
   initialValue?: JSONContent;
-  onChange?: (content: string) => void;
+  onChange: (content: string) => void;
   placeholder?: string;
 }
 
@@ -38,7 +37,6 @@ const Editor = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNodeSelectorOpen, setIsNodeSelectorOpen] = useState(false);
   const [isLinkSelectorOpen, setIsLinkSelectorOpen] = useState(false);
-  const [isColorSelectorOpen, setIsColorSelectorOpen] = useState(false);
 
   if (!initialValue) return null;
 
