@@ -6,12 +6,25 @@ import { getSession } from "@/actions/session";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type RequestData = Record<string, unknown>;
 
+// Create a separate client for internal Next.js API routes
+export const internalApiClient = axios.create({
+  baseURL: '', // Empty base URL for relative paths
+});
+
 export const api = axios.create({
   baseURL: BACKEND_URL,
 });
 
 export const apiClient = {
-  // GET request
+  // Internal Next.js API routes
+  internal: {
+    get: async <T>(url: string) => {
+      const response = await internalApiClient.get<T>(url);
+      return response.data;
+    },
+  },
+
+  // External backend API routes
   get: async <T>(url: string) => {
     const session = await getSession();
     const headers = session ? { Authorization: `Bearer ${session}` } : {};

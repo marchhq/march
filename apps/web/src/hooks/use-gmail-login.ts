@@ -37,7 +37,7 @@ const useGmail = (
 
   const handleGmailRevoke = useCallback(async () => {
     try {
-      const response = await apiClient.get("/gmail/revoke-access/");
+      const response = await apiClient.get("/gmail/remove-access/");
 
       if (!response) {
         throw new Error(`Failed to revoke access`);

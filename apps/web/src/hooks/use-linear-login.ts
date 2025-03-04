@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api'
+import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
@@ -6,39 +7,30 @@ import { toast } from 'sonner'
 interface UseLinearLoginReturn {
   handleLinearLogin: () => Promise<void>
   handleLinearRevoke: () => Promise<void>
-  isLoading: boolean
-  error: Error | null
 }
 
 export function useLinearLogin(
   redirectAfterAuth: string,
   redirectAfterRevoke: string = redirectAfterAuth
 ): UseLinearLoginReturn {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
   const router = useRouter()
 
   const handleLinearLogin = useCallback(async () => {
     try {
-      setIsLoading(true)
-      setError(null)
+      const { authUrl } = await apiClient.internal.get<{ authUrl: string }>('/api/auth/linear-url');
       
-      const response = await fetch('/api/auth/linear')
-      const data = await response.json()
-      
-      if (data.error) {
-        throw new Error(data.error)
+      if (!authUrl) {
+        throw new Error('No auth URL received');
       }
 
-      // Redirect to Linear's auth page
-      console.log(data)
-      window.location.href = data.authUrl
+      console.log("Redirecting to Linear OAuth URL:", authUrl);
+      window.location.href = authUrl;
+
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to initialize Linear login'))
-    } finally {
-      setIsLoading(false)
+      console.error('failed to login to linear', err);
+      toast.error('Failed to login to linear');
     }
-  }, [])
+  }, []);
 
   const handleLinearRevoke = useCallback(async () => {
 
@@ -56,5 +48,5 @@ export function useLinearLogin(
 
   }, [router, redirectAfterRevoke])
 
-  return { handleLinearLogin, handleLinearRevoke, isLoading, error }
+  return { handleLinearLogin, handleLinearRevoke }
 }
