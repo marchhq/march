@@ -1,6 +1,14 @@
 "use client";
 
-import { EditorContent, EditorRoot, type JSONContent } from "novel";
+import {
+  EditorCommand,
+  EditorCommandEmpty,
+  EditorCommandItem,
+  EditorCommandList,
+  EditorContent,
+  EditorRoot,
+  type JSONContent,
+} from "novel";
 import { useRef, useState } from "react";
 import { defaultExtensions } from "./extentions";
 import "./prosemirror.css";
@@ -9,8 +17,9 @@ import { NodeSelector } from "./selectors/node-selector";
 import { Separator } from "../ui/separator";
 import { LinkSelector } from "./selectors/link-selector";
 import { TextButtons } from "./selectors/text-buttons";
+import { slashCommand, suggestionItems } from "./slash-command";
 
-const extensions = [...defaultExtensions];
+const extensions = [...defaultExtensions, slashCommand];
 
 export const defaultEditorContent = {
   type: "doc",
@@ -61,6 +70,47 @@ const Editor = ({
         }}
         onUpdate={handleUpdate}
       >
+        {/**editor command */}
+        <EditorCommand
+          className="border-muted bg-background z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border px-1 py-2 shadow-md transition-all"
+          onKeyDown={(e) => {
+            // Prevent form submission on any key that might trigger it
+            if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
+        >
+          {/* Rest of the command palette */}
+          <EditorCommandEmpty className="text-muted-foreground px-2">
+            No results
+          </EditorCommandEmpty>
+          <EditorCommandList>
+            {suggestionItems.map((item) => (
+              <EditorCommandItem
+                value={item.title}
+                onCommand={(val) => {
+                  // Prevent default behavior that might cause refresh
+                  item.command?.(val);
+                  return false;
+                }}
+                className="hover:bg-accent aria-selected:bg-accent flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-[10px]"
+                key={item.title}
+              >
+                <div className="border-muted bg-background flex h-8 w-8 items-center justify-center rounded-md border">
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="text-xs font-medium">{item.title}</p>
+                  <p className="text-muted-foreground text-[8px]">
+                    {item.description}
+                  </p>
+                </div>
+              </EditorCommandItem>
+            ))}
+          </EditorCommandList>
+        </EditorCommand>
+
         <EditorMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <NodeSelector
             open={isNodeSelectorOpen}

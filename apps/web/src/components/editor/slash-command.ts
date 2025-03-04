@@ -1,16 +1,11 @@
+import React from 'react'
 import {
-  CheckSquare,
-  Code,
   Heading1,
   Heading2,
   Heading3,
-  ImageIcon,
   List,
   ListOrdered,
   Text,
-  TextQuote,
-  Twitter,
-  Youtube
 } from 'lucide-react'
 import { createSuggestionItems } from 'novel'
 import { Command, renderItems } from 'novel'
@@ -20,8 +15,8 @@ export const suggestionItems = createSuggestionItems([
     title: 'Text',
     description: 'Just start typing with plain text.',
     searchTerms: ['p', 'paragraph'],
-    icon: <Text size={18} />,
-    command: ({ editor, range }) => {
+    icon: React.createElement(Text, { size: 18 }),
+    command: ({ editor, range } ) => {
       editor
         .chain()
         .focus()
@@ -35,8 +30,8 @@ export const suggestionItems = createSuggestionItems([
     title: 'Heading 1',
     description: 'Big section heading.',
     searchTerms: ['title', 'big', 'large'],
-    icon: <Heading1 size={18} />,
-    command: ({ editor, range }) => {
+    icon: React.createElement(Heading1, { size: 18 }),
+    command: ({ editor, range } ) => {
       editor
         .chain()
         .focus()
@@ -49,8 +44,8 @@ export const suggestionItems = createSuggestionItems([
     title: 'Heading 2',
     description: 'Medium section heading.',
     searchTerms: ['subtitle', 'medium'],
-    icon: <Heading2 size={18} />,
-    command: ({ editor, range }) => {
+    icon: React.createElement(Heading2, { size: 18 }),
+    command: ({ editor, range } ) => {
       editor
         .chain()
         .focus()
@@ -63,8 +58,8 @@ export const suggestionItems = createSuggestionItems([
     title: 'Heading 3',
     description: 'Small section heading.',
     searchTerms: ['subtitle', 'small'],
-    icon: <Heading3 size={18} />,
-    command: ({ editor, range }) => {
+    icon: React.createElement(Heading3, { size: 18 }),
+    command: ({ editor, range } ) => {
       editor
         .chain()
         .focus()
@@ -77,8 +72,8 @@ export const suggestionItems = createSuggestionItems([
     title: 'Bullet List',
     description: 'Create a simple bullet list.',
     searchTerms: ['unordered', 'point'],
-    icon: <List size={18} />,
-    command: ({ editor, range }) => {
+    icon: React.createElement(List, { size: 18 }),
+    command: ({ editor, range } ) => {
       editor.chain().focus().deleteRange(range).toggleBulletList().run()
     }
   },
@@ -86,9 +81,16 @@ export const suggestionItems = createSuggestionItems([
     title: 'Numbered List',
     description: 'Create a list with numbering.',
     searchTerms: ['ordered'],
-    icon: <ListOrdered size={18} />,
-    command: ({ editor, range }) => {
+    icon: React.createElement(ListOrdered, { size: 18 }),
+    command: ({ editor, range } ) => {
       editor.chain().focus().deleteRange(range).toggleOrderedList().run()
     }
   }
 ])
+
+export const slashCommand = Command.configure({
+  suggestion: {
+    items: () => suggestionItems,
+    render: renderItems,
+  },
+});
