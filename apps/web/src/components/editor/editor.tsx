@@ -3,6 +3,13 @@
 import { EditorContent, EditorRoot, type JSONContent } from "novel";
 import { useRef, useState } from "react";
 import { defaultExtensions } from "./extentions";
+import "./prosemirror.css";
+import EditorMenu from "./editor-menu";
+import { NodeSelector } from "./selectors/node-selector";
+import { Separator } from "../ui/separator";
+import { LinkSelector } from "./selectors/link-selector";
+import { TextButtons } from "./selectors/text-buttons";
+import { ColorSelector } from "./selectors/color-selector";
 
 const extensions = [...defaultExtensions];
 
@@ -28,8 +35,18 @@ const Editor = ({
   placeholder = "write something...",
 }: EditorProps) => {
   const contentRef = useRef<string>("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNodeSelectorOpen, setIsNodeSelectorOpen] = useState(false);
+  const [isLinkSelectorOpen, setIsLinkSelectorOpen] = useState(false);
+  const [isColorSelectorOpen, setIsColorSelectorOpen] = useState(false);
 
   if (!initialValue) return null;
+
+  const handleUpdate = () => {
+    const content = contentRef.current;
+    onChange(content);
+  };
+
   return (
     <EditorRoot>
       <EditorContent
@@ -44,11 +61,22 @@ const Editor = ({
             "data-placeholder": placeholder,
           },
         }}
-        onUpdate={({ editor }) => {
-          contentRef.current = editor.getHTML();
-          onChange?.(contentRef.current);
-        }}
-      />
+        onUpdate={handleUpdate}
+      >
+        <EditorMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <NodeSelector
+            open={isNodeSelectorOpen}
+            onOpenChange={setIsNodeSelectorOpen}
+          />
+          <Separator orientation="vertical" />
+          <LinkSelector
+            open={isLinkSelectorOpen}
+            onOpenChange={setIsLinkSelectorOpen}
+          />
+          <Separator orientation="vertical" />
+          <TextButtons />
+        </EditorMenu>
+      </EditorContent>
     </EditorRoot>
   );
 };
