@@ -20,9 +20,9 @@ import { broadcastToUser } from "../../loaders/websocket.loader.js";
 //             return res.status(404).json({ error: 'User not found' });
 //         }
 //         console.log("user: ", user);
-//         // OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+//         // OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
 
-//         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+//         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
 //         const response = await gmail.users.history.list({
 //             userId: 'me',
@@ -37,7 +37,7 @@ import { broadcastToUser } from "../../loaders/websocket.loader.js";
 //             if (record.labelsAdded) {
 //                 for (const labelAdded of record.labelsAdded) {
 //                     if (labelAdded.labelIds.includes('Label_10')) {
-//                         await createIssueFromEmail(labelAdded.message.id, OauthClient);
+//                         await createIssueFromEmail(labelAdded.message.id, OauthEmailClient);
 //                     }
 //                 }
 //             }
@@ -62,9 +62,9 @@ import { broadcastToUser } from "../../loaders/websocket.loader.js";
 //     }
 //     console.log("user: ", user);
 //     const { accessToken, refreshToken, labelId } = user.integration.gmail;
-//     OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+//     OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
 
-//     const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+//     const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
 //     try {
 //         // Fetch history from Gmail starting from the stored historyId
@@ -106,7 +106,6 @@ import { broadcastToUser } from "../../loaders/websocket.loader.js";
 
 // Webhook to handle incoming push notifications from Gmail
 const handlePushNotification = async (req, res) => {
-    // console.log("req.body: ", req.body);
     const message = Buffer.from(req.body.message.data, "base64").toString(
         "utf-8"
     );
@@ -277,9 +276,9 @@ const createIssueFromEmail = async (email, user) => {
 //     const labelId = user.integration.gmail.labelId;
 
 //     try {
-//         OauthClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+//         OauthEmailClient.setCredentials({ access_token: accessToken, refresh_token: refreshToken });
 
-//         const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+//         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
 //         const watchResponse = await gmail.users.watch({
 //             userId: 'me',
@@ -354,7 +353,7 @@ const getGmailAccessTokenController = async (req, res, next) => {
 
     try {
         const tokenInfo = await getGmailAccessToken(code, user);
-
+        console.log("tokenInfo: ", OauthEmailClient);
         OauthEmailClient.setCredentials({ access_token: tokenInfo.access_token, refresh_token: tokenInfo.refresh_token });
 
         const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });

@@ -1,15 +1,15 @@
-import { OauthClient } from "../../loaders/google.loader.js";
+import { OauthEmailClient } from "../../loaders/google.loader.js";
 import { google } from "googleapis";
 
 const getGmailAccessToken = async (code, user) => {
-    const { tokens } = await OauthClient.getToken(code);
-    OauthClient.setCredentials(tokens);
+    const { tokens } = await OauthEmailClient.getToken(code);
+    OauthEmailClient.setCredentials(tokens);
     return tokens;
 };
 
-const createLabel = async (OauthClient, labelName) => {
+const createLabel = async (OauthEmailClient, labelName) => {
     try {
-        const gmail = google.gmail({ version: 'v1', auth: OauthClient });
+        const gmail = google.gmail({ version: 'v1', auth: OauthEmailClient });
 
         const existingLabels = await gmail.users.labels.list({ userId: 'me' });
         const label = existingLabels.data.labels.find(label => label.name === labelName);
