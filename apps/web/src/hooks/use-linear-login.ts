@@ -1,7 +1,6 @@
 import { apiClient } from '@/lib/api'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 
 interface UseLinearLoginReturn {
