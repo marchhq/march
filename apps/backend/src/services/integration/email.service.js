@@ -34,20 +34,25 @@ const createLabel = async (OauthEmailClient, labelName) => {
 };
 
 const refreshGmailAccessToken = async (user) => {
-    OauthEmailClient.setCredentials({
-        refresh_token: user.integration.gmail.refreshToken
-    });
+    try {
+        OauthEmailClient.setCredentials({
+            refresh_token: user.integration.gmail.refreshToken
+        });
 
-    const { credentials } = await OauthEmailClient.refreshAccessToken();
+        const { token } = await OauthEmailClient.getAccessToken();
 
-    user.integration.gmail.accessToken = credentials.access_token;
-    if (credentials.refresh_token) {
-        user.integration.gmail.refreshToken = credentials.refresh_token;
+        if (!token) {
+            throw new Error("Failed to refresh access token");
+        }
+
+        user.integration.gmail.accessToken = token;
+        await user.save();
+
+        return token;
+    } catch (error) {
+        console.error("Error refreshing Gmail access token:", error);
+        throw error;
     }
-
-    await user.save();
-
-    return credentials.access_token;
 };
 
 const checkGmailAccessTokenValidity = async (accessToken) => {
@@ -83,11 +88,29 @@ const getValidGmailAccessToken = async (user) => {
 };
 
 const revokeGmailAccess = async (user) => {
-    await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${user.integration.gmail.accessToken}`, {
-        method: "POST"
+    const revokeTokenUrl = 'https://oauth2.googleapis.com/revoke';
+    let accessToken = user.integration.gmail.accessToken
+    const isValid = await checkGmailAccessTokenValidity(accessToken);
+
+    if (!isValid) {
+        accessToken = await refreshGmailAccessToken(user);
+    }
+
+    await axios.post(revokeTokenUrl, null, {
+        params: {
+            token: accessToken
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
     });
 
-    user.integration.gmail = undefined;
+    user.integration.gmail.email = null
+    user.integration.gmail.accessToken = null
+    user.integration.gmail.refreshToken = null
+    user.integration.gmail.labelId = null
+    user.integration.gmail.historyId = null;
+    user.integration.gmail.connected = false;
     await user.save();
 };
 
