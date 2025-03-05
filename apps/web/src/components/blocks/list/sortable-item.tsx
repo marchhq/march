@@ -18,9 +18,27 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
     transition,
     isDragging,
   } = useSortable({
-    id,
-    data,
+    id: id,
+    data: data,
+    disabled: false,
   });
+
+  const isEditorFocused = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement;
+    return target.closest(".ProseMirror") !== null;
+  };
+
+  const modifiedListeners = {
+    ...listeners,
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (isEditorFocused(e.nativeEvent)) {
+        return;
+      }
+      if (listeners) {
+        listeners.onKeyDown?.(e);
+      }
+    },
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -32,7 +50,7 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
+      {...modifiedListeners}
       className={cn("touch-none cursor-move", isDragging && "opacity-50")}
     >
       {children}
