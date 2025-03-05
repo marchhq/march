@@ -23,9 +23,12 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
     disabled: false,
   });
 
-  const isEditorFocused = (event: KeyboardEvent) => {
+  const isEditorFocused = (event: KeyboardEvent | MouseEvent) => {
     const target = event.target as HTMLElement;
-    return target.closest(".ProseMirror") !== null;
+    return (
+      target.closest(".ProseMirror") !== null ||
+      target.closest(".novel-commands") !== null
+    );
   };
 
   const modifiedListeners = {
@@ -36,6 +39,14 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
       }
       if (listeners) {
         listeners.onKeyDown?.(e);
+      }
+    },
+    onMouseDown: (e: React.MouseEvent) => {
+      if (isEditorFocused(e)) {
+        return;
+      }
+      if (listeners) {
+        listeners.onMouseDown?.(e);
       }
     },
   };
