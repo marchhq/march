@@ -12,6 +12,7 @@ import { useBlock } from "@/contexts/block-context";
 import { useUpdateObject } from "@/hooks/use-objects";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import ExpandedView from "@/components/object/expanded-view";
+import { Icons } from "@/components/ui/icons";
 
 export function ListItems() {
   const { items } = useBlock();
@@ -29,6 +30,22 @@ export function ListItems() {
       </div>
     );
   }
+
+  const renderIcon = (source: string) => {
+    // Map source to icon name in Icons component
+    const iconMap: { [key: string]: keyof typeof Icons } = {
+      gmail: "gmail",
+      linear: "linear",
+      github: "gitHub",
+      calendar: "calendar",
+    };
+
+    const iconName = iconMap[source.toLowerCase()];
+    if (!iconName) return null;
+
+    const Icon = Icons[iconName];
+    return <Icon className="h-3 w-3 ml-2 inline-block text-gray-500" />;
+  };
 
   return (
     <SortableContext
@@ -83,6 +100,11 @@ export function ListItems() {
                       {item.title}
                     </div>
                   </SheetTrigger>
+                  <span onClick={(e) => e.stopPropagation()}>
+                    <a href={item.metadata.url} target="_blank">
+                      {renderIcon(item.source)}
+                    </a>
+                  </span>{" "}
                   <ExpandedView item={item} />
                 </Sheet>
               </div>
