@@ -15,6 +15,8 @@ import ExpandedView from "@/components/object/expanded-view";
 
 export function ListItems() {
   const { items } = useBlock();
+
+  console.log("item: ", items[0]);
   const { mutate: updateObject } = useUpdateObject();
 
   // Sort items by order property
@@ -48,14 +50,16 @@ export function ListItems() {
               <div className="flex items-center gap-2 w-full">
                 <div
                   className="flex items-center justify-center"
-                  style={{ width: '18px' }}
+                  style={{ width: "18px" }}
                 >
                   <Checkbox
                     id={`item-${item._id}`}
                     className={cn(
                       "h-[18px] w-[18px] border-gray-300",
                       "transition-all duration-200",
-                      item.isCompleted ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+                      item.isCompleted
+                        ? "opacity-100"
+                        : "opacity-70 group-hover:opacity-100"
                     )}
                     checked={item.isCompleted}
                     onCheckedChange={() => {
