@@ -25,6 +25,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@tiptap/react": "^2.11.5",
     "@types/event-source-polyfill": "^1.0.5",
     "bun": "^1.2.3",
     "dev": "^0.1.3",
