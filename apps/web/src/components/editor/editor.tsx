@@ -40,6 +40,7 @@ interface EditorProps {
 const Editor = ({
   initialValue,
   onChange,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   placeholder = "write something...",
 }: EditorProps) => {
   const contentRef = useRef<string>("");

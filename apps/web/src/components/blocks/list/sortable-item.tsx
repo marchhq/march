@@ -23,7 +23,7 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
     disabled: false,
   });
 
-  const isEditorFocused = (event: KeyboardEvent | MouseEvent) => {
+  const isEditorFocused = (event: KeyboardEvent | React.MouseEvent) => {
     const target = event.target as HTMLElement;
     return (
       target.closest(".ProseMirror") !== null ||

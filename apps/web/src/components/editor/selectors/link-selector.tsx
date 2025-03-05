@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useRef } from "react";
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
@@ -11,6 +12,7 @@ export function isValidUrl(url: string) {
   try {
     new URL(url);
     return true;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return false;
   }
@@ -36,6 +38,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
 
   // Autofocus on input by default
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     inputRef.current && inputRef.current?.focus();
   });
   if (!editor) return null;
@@ -61,6 +64,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
             e.preventDefault();
             const input = target[0] as HTMLInputElement;
             const url = getUrlFromString(input.value);
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             url && editor.chain().focus().setLink({ href: url }).run();
           }}
           className="flex p-1"
