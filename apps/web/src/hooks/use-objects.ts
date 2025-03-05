@@ -8,7 +8,7 @@ import { CreateObject, Objects, OrderObject } from "@/types/objects";
 import { toast } from "sonner";
 
 // Query keys as constants to avoid typos and make refactoring easier
-const QUERY_KEYS = {
+export const QUERY_KEYS = {
   INBOX: ["inbox-objects"],
   TODAY: ["today-objects"]
 };
