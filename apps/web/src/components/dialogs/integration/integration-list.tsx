@@ -7,13 +7,18 @@ import { getIntegrations, Integration } from "@/lib/integrations";
 import { useUser } from "@/hooks/use-user";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import useGmail from "@/hooks/use-gmail-login";
+import { useLinearLogin } from "@/hooks/use-linear-login";
+import { useGithubInstall } from "@/hooks/use-github-install";
 
 const IntegrationsList = () => {
   const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null);
   const { data: user, refreshUser } = useUser();
   const { handleCalendarLogin, handleRevokeAccess } =
-    useGoogleCalendarLogin("/today");
-
+    useGoogleCalendarLogin("/agenda");
+  const { handleGmailLogin, handleGmailRevoke } = useGmail("/agenda");
+  const { handleLinearLogin, handleLinearRevoke } = useLinearLogin("/agenda");
+  const { handleGithubInstall } = useGithubInstall();
   if (!user) {
     return null;
   }
@@ -22,6 +27,11 @@ const IntegrationsList = () => {
     {
       calendarConnectHandler: handleCalendarLogin,
       calendarDisconnectHandler: handleRevokeAccess,
+      gmailConnectHandler: handleGmailLogin,
+      gmailDisconnectHandler: handleGmailRevoke,
+      linearConnectHandler: handleLinearLogin,
+      linearDisconnectHandler: handleLinearRevoke,
+      githubConnectHandler: handleGithubInstall,
     },
     user
   );
