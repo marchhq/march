@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-// import { Github, Calendar } from "lucide-react";
-import Image from "next/image";
 import useGoogleCalendarLogin from "@/hooks/use-calendar-login";
 import { getIntegrations, Integration } from "@/lib/integrations";
 import { useUser } from "@/hooks/use-user";
@@ -10,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import useGmail from "@/hooks/use-gmail-login";
 import { useLinearLogin } from "@/hooks/use-linear-login";
 import { useGithubInstall } from "@/hooks/use-github-install";
+import { Icons } from "@/components/ui/icons";
 
 const IntegrationsList = () => {
   const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null);
@@ -58,26 +57,8 @@ const IntegrationsList = () => {
   };
 
   const renderIcon = (integration: Integration) => {
-    if (
-      integration.iconType === "component" &&
-      typeof integration.icon !== "string"
-    ) {
-      const IconComponent = integration.icon;
-      return <IconComponent className="h-5 w-5" />;
-    } else if (
-      integration.iconType === "image" &&
-      typeof integration.icon === "string"
-    ) {
-      return (
-        <Image
-          src={integration.icon}
-          alt={`${integration.title} icon`}
-          width={20}
-          height={20}
-        />
-      );
-    }
-    return null;
+    const Icon = Icons[integration.icon];
+    return <Icon className="h-5 w-5" />;
   };
 
   return (

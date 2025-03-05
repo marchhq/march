@@ -6,7 +6,9 @@ interface Cycle {
 interface Metadata {
   createdByAI: boolean;
   originalQuery: string;
+  url: string
   createdAt: string;
+  receivedAt: string
 }
 
 interface Objects {

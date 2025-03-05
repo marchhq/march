@@ -1,13 +1,12 @@
+import { Icons } from '@/components/ui/icons';
 import { User } from '@/types/user';
-import { Github } from 'lucide-react';
 
 export interface Integration {
   id: number;
   title: string;
-  icon: string | typeof Github;
-  iconType: 'image' | 'component';
+  icon: keyof typeof Icons;
   handler?: () => Promise<void>;
-  isConnected?: boolean
+  isConnected?: boolean;
 }
 
 interface IntegrationHandlers {
@@ -27,8 +26,7 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
     {
       id: 1,
       title: "Calendar",
-      icon: "/icons/calendar.svg",
-      iconType: "image",
+      icon: "calendar",
       handler: user.integrations.googleCalendar.connected 
         ? handlers.calendarDisconnectHandler 
         : handlers.calendarConnectHandler,
@@ -37,8 +35,7 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
     { 
       id: 2, 
       title: "GitHub", 
-      icon: Github, 
-      iconType: "component",
+      icon: "gitHub",
       handler: user.integrations.github.connected
         ? handlers.githubDisconnectHandler
         : handlers.githubConnectHandler,
@@ -47,8 +44,7 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
     {
       id: 3,
       title: "Gmail",
-      icon: '/icons/gmail.svg', 
-      iconType: "image",
+      icon: "gmail",
       handler: user.integrations.gmail.connected
         ? handlers.gmailDisconnectHandler
         : handlers.gmailConnectHandler,
@@ -57,8 +53,7 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
     {
       id: 4,
       title: "Linear",
-      icon: '/icons/linear.svg',
-      iconType: "image",
+      icon: "linear",
       handler: user.integrations.linear.connected
         ? handlers.linearDisconnectHandler
         : handlers.linearConnectHandler,
