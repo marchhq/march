@@ -87,10 +87,4 @@ interface OrderResponse {
     message: string;
 }
 
-interface WebSocketMessage {
-  type: "linear" | string
-  action: "create" | "update" | "delete" | "unassigned"
-  item: Objects 
-}
-
-export type { Objects, WebSocketMessage, OrderObject, OrderObjectRequest, OrderResponse, ObjectsResponse, TodayObjectResponse, CreateObject, SortableObject };
+export type { Objects, OrderObject, OrderObjectRequest, OrderResponse, ObjectsResponse, TodayObjectResponse, CreateObject, SortableObject };
