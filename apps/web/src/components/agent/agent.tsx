@@ -26,8 +26,28 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import React from "react";
 
 export const Agent: FC = () => {
+  const Composer = () => (
+    <ComposerPrimitive.Root className="mx-auto flex w-full max-w-screen-md items-end rounded-3xl bg-muted/50 pl-2">
+      <ComposerPrimitive.Input
+        placeholder="Message Agent"
+        className="h-12 max-h-40 flex-grow resize-none bg-transparent p-3.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+      />
+      <ThreadPrimitive.If running={false}>
+        <ComposerPrimitive.Send className="m-2 flex size-8 items-center justify-center rounded-full bg-primary transition-opacity disabled:opacity-10">
+          <ArrowUpIcon className="size-5 text-primary-foreground" />
+        </ComposerPrimitive.Send>
+      </ThreadPrimitive.If>
+      <ThreadPrimitive.If running>
+        <ComposerPrimitive.Cancel className="m-2 flex size-8 items-center justify-center rounded-full bg-white">
+          <div className="size-2.5 bg-black" />
+        </ComposerPrimitive.Cancel>
+      </ThreadPrimitive.If>
+    </ComposerPrimitive.Root>
+  );
+
   return (
     <TooltipProvider>
       <ThreadPrimitive.Root className="text-foreground flex h-full flex-col items-stretch bg-background px-4">
@@ -37,9 +57,10 @@ export const Agent: FC = () => {
               <Avatar.Root className="flex h-12 w-12 items-center justify-center rounded-[24px] border border-border shadow">
                 <Avatar.AvatarFallback>C</Avatar.AvatarFallback>
               </Avatar.Root>
-              <p className="mt-4 text-xl text-foreground">
+              <p className="mt-4 mb-6 text-xl text-foreground">
                 How can I help you today?
               </p>
+              <Composer />
             </div>
           </ThreadPrimitive.Empty>
 
@@ -52,25 +73,12 @@ export const Agent: FC = () => {
           />
         </ThreadPrimitive.Viewport>
 
-        <ComposerPrimitive.Root className="mx-auto flex w-full max-w-screen-md items-end rounded-3xl bg-muted/50 pl-2">
-          <ComposerPrimitive.Input
-            placeholder="Message Agent"
-            className="h-12 max-h-40 flex-grow resize-none bg-transparent p-3.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-          />
-          <ThreadPrimitive.If running={false}>
-            <ComposerPrimitive.Send className="m-2 flex size-8 items-center justify-center rounded-full bg-primary transition-opacity disabled:opacity-10">
-              <ArrowUpIcon className="size-5 text-primary-foreground" />
-            </ComposerPrimitive.Send>
-          </ThreadPrimitive.If>
-          <ThreadPrimitive.If running>
-            <ComposerPrimitive.Cancel className="m-2 flex size-8 items-center justify-center rounded-full bg-white">
-              <div className="size-2.5 bg-black" />
-            </ComposerPrimitive.Cancel>
-          </ThreadPrimitive.If>
-        </ComposerPrimitive.Root>
-        <p className="p-2 text-center text-xs text-muted-foreground">
-          Agent can make mistakes. Check important info.
-        </p>
+        <ThreadPrimitive.If empty={false}>
+          <Composer />
+          <p className="p-2 text-center text-xs text-muted-foreground">
+            Agent can make mistakes. Check important info.
+          </p>
+        </ThreadPrimitive.If>
       </ThreadPrimitive.Root>
     </TooltipProvider>
   );
