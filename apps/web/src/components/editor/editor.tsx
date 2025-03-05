@@ -65,36 +65,34 @@ const Editor = ({
           attributes: {
             class:
               "prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full",
-            "data-placeholder": placeholder,
           },
         }}
         onUpdate={handleUpdate}
       >
         {/**editor command */}
         <EditorCommand
-          className="border-muted bg-background z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border px-1 py-2 shadow-md transition-all"
+          className="border-muted bg-background fixed z-[9999] h-auto max-h-[330px] w-72 overflow-y-auto rounded-md border px-1 py-2 shadow-md transition-all"
           onKeyDown={(e) => {
-            // Prevent form submission on any key that might trigger it
-            if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+            if (e.key === "Enter") {
               e.preventDefault();
-              e.stopPropagation();
             }
           }}
         >
-          {/* Rest of the command palette */}
           <EditorCommandEmpty className="text-muted-foreground px-2">
             No results
           </EditorCommandEmpty>
-          <EditorCommandList>
+          <EditorCommandList className="pointer-events-auto">
             {suggestionItems.map((item) => (
               <EditorCommandItem
                 value={item.title}
                 onCommand={(val) => {
-                  // Prevent default behavior that might cause refresh
-                  item.command?.(val);
-                  return false;
+                  const commandProps = {
+                    editor: val.editor,
+                    range: val.range,
+                  };
+                  item.command?.(commandProps);
                 }}
-                className="hover:bg-accent aria-selected:bg-accent flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-[10px]"
+                className="hover:bg-accent aria-selected:bg-accent flex w-full cursor-pointer items-center space-x-2 rounded-md px-2 py-1 text-left text-[10px]"
                 key={item.title}
               >
                 <div className="border-muted bg-background flex h-8 w-8 items-center justify-center rounded-md border">
