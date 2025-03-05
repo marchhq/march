@@ -173,6 +173,7 @@ export const ColorSelector = ({ open, onOpenChange }: ColorSelectorProps) => {
               key={index}
               onSelect={() => {
                 editor.commands.unsetHighlight();
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 name !== "Default" && editor.commands.setHighlight({ color });
               }}
               className="flex cursor-pointer items-center justify-between px-2 py-1 text-sm hover:bg-accent"

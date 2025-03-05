@@ -15,6 +15,7 @@ import { cx } from "class-variance-authority";
 
 // You can overwrite the placeholder with your own configuration
 const placeholder = Placeholder;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const tiptapLink = TiptapLink.configure({
   HTMLAttributes: {
     class: cx(
