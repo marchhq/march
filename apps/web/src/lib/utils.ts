@@ -15,16 +15,88 @@ export const extractMessageData = (response: any) => {
   return null;
 };
 
+interface ColorScheme {
+  backgroundColor: string;
+  textColor: string;
+  borderColor: string;
+}
+
+const EVENT_COLORS: { [key: string]: ColorScheme } = {
+  "1": {
+    backgroundColor: "#F4C7C3",
+    textColor: "#B91B1B",
+    borderColor: "#E35D5B"
+  },
+  "2": {
+    backgroundColor: "#FCE8B2",
+    textColor: "#92400E",
+    borderColor: "#F0B429"
+  },
+  "3": {
+    backgroundColor: "#B3E1F7",
+    textColor: "#075985",
+    borderColor: "#0EA5E9"
+  },
+  "4": {
+    backgroundColor: "#C2E0C6",
+    textColor: "#166534",
+    borderColor: "#22C55E"
+  },
+  "5": {
+    backgroundColor: "#E4C6ED",
+    textColor: "#7E22CE",
+    borderColor: "#A855F7"
+  },
+  "6": {
+    backgroundColor: "#FFD6C3",
+    textColor: "#C2410C",
+    borderColor: "#FB923C"
+  },
+  "7": {
+    backgroundColor: "#C6D8FF",
+    textColor: "#1E40AF",
+    borderColor: "#3B82F6"
+  },
+  "8": {
+    backgroundColor: "#E3E3E3",
+    textColor: "#44403C",
+    borderColor: "#78716C"
+  },
+  "9": {
+    backgroundColor: "#F4BFDB",
+    textColor: "#BE185D",
+    borderColor: "#EC4899"
+  },
+  "10": {
+    backgroundColor: "#CCD0F1",
+    textColor: "#3730A3",
+    borderColor: "#6366F1"
+  },
+  "11": {
+    backgroundColor: "#BEE3E3",
+    textColor: "#0F766E",
+    borderColor: "#14B8A6"
+  },
+  // Default color if no colorId is provided
+  "default": {
+    backgroundColor: "#E3F2FD",
+    textColor: "#0D47A1",
+    borderColor: "#2196F3"
+  }
+};
+
 export function transformGoogleEventToCalendarEvent(event: Event): CalendarEvent {
+  const colorScheme = EVENT_COLORS[event.colorId || "default"];
+  
   return {
     id: event.id,
     title: event.summary,
     start: event.start.dateTime,
     end: event.end.dateTime,
-    backgroundColor: "#E3F2FD", // You can customize these colors
-    textColor: "#0D47A1",      // based on your needs
-    borderColor: "#E3F2FD",
-    allDay: !event.start.dateTime, // If dateTime is missing, it's an all-day event
+    backgroundColor: colorScheme.backgroundColor,
+    textColor: colorScheme.textColor,
+    borderColor: colorScheme.borderColor,
+    allDay: !event.start.dateTime,
   }
 }
 

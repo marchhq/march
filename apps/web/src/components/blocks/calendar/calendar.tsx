@@ -8,6 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { useDroppable } from "@dnd-kit/core";
 import { useCalendar } from "@/contexts/calendar-context";
 import moment from "moment";
+import { renderEventContent } from "./event-content";
 
 export function CalendarBlock() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,6 +45,7 @@ export function CalendarBlock() {
           slotMaxTime="24:00:00"
           expandRows={true}
           height="calc(100vh - 140px)"
+          eventContent={renderEventContent}
           events={events}
           datesSet={handleDatesSet}
           nowIndicator={true}

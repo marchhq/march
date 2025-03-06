@@ -167,22 +167,26 @@ body {
 
 .fc .fc-timegrid-event {
   border-radius: 4px !important;
-  padding: 2px 4px !important;
-  margin: 1px 0 !important;
+  padding: 4px 6px !important;
+  margin: 1px 2px !important;
+  border-left: 4px solid #0D47A1 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 .fc .fc-timegrid-event .fc-event-main {
-  padding: 2px 4px !important;
+  padding: 2px !important;
 }
 
 .fc .fc-timegrid-event .fc-event-time {
-  font-size: 12px !important;
-  font-weight: 500 !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  margin-bottom: 2px !important;
 }
 
 .fc .fc-timegrid-event .fc-event-title {
   font-size: 13px !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
 }
 
 .fc-theme-standard td, .fc-theme-standard th {
@@ -386,4 +390,25 @@ body {
 /* Remove any yellow highlight from today's cell */
 .fc .fc-day-today {
   background: #ffffff !important;
+}
+
+/* Custom event content styling */
+.fc .fc-timegrid-event .custom-event-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fc .fc-timegrid-event .fc-event-title {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+  order: 1;
+}
+
+.fc .fc-timegrid-event .fc-event-time {
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  opacity: 0.8;
+  order: 2;
 }
