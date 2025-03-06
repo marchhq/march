@@ -101,7 +101,7 @@ export function ListItems() {
                     </div>
                   </SheetTrigger>
                   <span onClick={(e) => e.stopPropagation()}>
-                    <a href={item.metadata.url} target="_blank">
+                    <a href={item.metadata?.url} target="_blank">
                       {renderIcon(item.source)}
                     </a>
                   </span>{" "}
