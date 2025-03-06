@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import React from "react";
+import { Bot } from "lucide-react";
 
 export const Agent: FC = () => {
   const Composer = () => (
@@ -54,8 +55,10 @@ export const Agent: FC = () => {
         <ThreadPrimitive.Viewport className="flex flex-grow flex-col gap-8 overflow-y-scroll pt-16">
           <ThreadPrimitive.Empty>
             <div className="flex flex-grow flex-col items-center justify-center">
-              <Avatar.Root className="flex h-12 w-12 items-center justify-center rounded-[24px] border border-border shadow">
-                <Avatar.AvatarFallback>C</Avatar.AvatarFallback>
+              <Avatar.Root className="flex h-12 w-12 items-center justify-center">
+                <Avatar.AvatarFallback>
+                  <Bot />
+                </Avatar.AvatarFallback>
               </Avatar.Root>
               <p className="mt-4 mb-6 text-xl text-foreground">
                 How can I help you today?
@@ -179,7 +182,7 @@ const BranchPicker: FC<{ className?: string }> = ({ className }) => {
       hideWhenSingleBranch
       className={cn(
         "inline-flex items-center text-sm font-semibold text-muted-foreground",
-        className
+        className,
       )}
     >
       <BranchPickerPrimitive.Previous asChild>
