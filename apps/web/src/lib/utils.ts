@@ -21,7 +21,7 @@ interface ColorScheme {
   borderColor: string;
 }
 
-const EVENT_COLORS: { [key: string]: ColorScheme } = {
+export const EVENT_COLORS: { [key: string]: ColorScheme } = {
   "1": {
     backgroundColor: "#F4C7C3",
     textColor: "#B91B1B",
