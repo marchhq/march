@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import useGoogleCalendarLogin from "@/hooks/use-calendar-login";
 import { getIntegrations, Integration } from "@/lib/integrations";
 import { useUser } from "@/hooks/use-user";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import useGmail from "@/hooks/use-gmail-login";
 import { useLinearLogin } from "@/hooks/use-linear-login";
