@@ -1,12 +1,14 @@
 import {
   TiptapImage,
   TiptapLink,
+  TiptapUnderline,
   UpdatedImage,
   TaskList,
   TaskItem,
   HorizontalRule,
   StarterKit,
   Placeholder,
+  UploadImagesPlugin,
 } from "novel";
 
 import { cx } from "class-variance-authority";
@@ -15,12 +17,33 @@ import { cx } from "class-variance-authority";
 
 // You can overwrite the placeholder with your own configuration
 const placeholder = Placeholder;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const tiptapLink = TiptapLink.configure({
   HTMLAttributes: {
     class: cx(
       "text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer",
     ),
+  },
+});
+
+const tiptapImage = TiptapImage.extend({
+  addProseMirrorPlugins() {
+    return [
+      UploadImagesPlugin({
+        imageClass: cx("opacity-40 rounded-lg border border-stone-200"),
+      }),
+    ];
+  },
+}).configure({
+  allowBase64: true,
+  HTMLAttributes: {
+    class: cx("rounded-lg border border-muted"),
+  },
+});
+
+const updatedImage = UpdatedImage.configure({
+  HTMLAttributes: {
+    class: cx("rounded-lg border border-muted"),
   },
 });
 
@@ -85,10 +108,11 @@ const starterKit = StarterKit.configure({
 export const defaultExtensions = [
   starterKit,
   placeholder,
-  TiptapLink,
-  TiptapImage,
-  UpdatedImage,
+  tiptapLink,
+  tiptapImage,
+  updatedImage,
   taskList,
   taskItem,
   horizontalRule,
+  TiptapUnderline
 ];

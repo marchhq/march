@@ -36,12 +36,12 @@ export default function ExpandedView({ item }: { item: Objects }) {
   return (
     <SheetContent
       side="right"
-      className="sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl w-full"
+      className="sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl w-full flex flex-col h-full"
     >
-      <SheetHeader>
+      <SheetHeader className="flex-shrink-0">
         <SheetTitle>{item.title}</SheetTitle>
       </SheetHeader>
-      <div className="w-full">
+      <div className="flex-1 overflow-y-auto">
         <Editor
           initialValue={initialContent}
           onChange={(content) => {
