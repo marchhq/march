@@ -32,7 +32,7 @@ const IntegrationsList = () => {
       linearDisconnectHandler: handleLinearRevoke,
       githubConnectHandler: handleGithubInstall,
     },
-    user
+    user,
   );
 
   const handleIntegrationAction = async (integration: Integration) => {
@@ -43,16 +43,14 @@ const IntegrationsList = () => {
       try {
         await integration.handler();
         await refreshUser();
-        toast.success(`${integration.title} removed successfully`);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+         
       } catch (error) {
-        toast.error("Failed to remove integration");
+        console.error(error);
       } finally {
         setIsDisconnecting(null);
       }
     } else {
       await integration.handler();
-      toast.success(`${integration.title} is connected to emptyarray!`);
     }
   };
 
