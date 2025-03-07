@@ -7,11 +7,12 @@ import {
   EditorCommandList,
   EditorContent,
   EditorRoot,
+  ImageResizer,
   type JSONContent,
 } from "novel";
 import { useRef, useState } from "react";
 import { defaultExtensions } from "./extentions";
-import "./prosemirror.css";
+import "./editor.css";
 import EditorMenu from "./editor-menu";
 import { NodeSelector } from "./selectors/node-selector";
 import { Separator } from "../ui/separator";
@@ -69,6 +70,7 @@ const Editor = ({
           },
         }}
         onUpdate={handleUpdate}
+        slotAfter={<ImageResizer />}
       >
         {/**editor command */}
         <EditorCommand
@@ -116,12 +118,12 @@ const Editor = ({
             onOpenChange={setIsNodeSelectorOpen}
           />
           <Separator orientation="vertical" />
+          <TextButtons />
+          <Separator orientation="vertical" />
           <LinkSelector
             open={isLinkSelectorOpen}
             onOpenChange={setIsLinkSelectorOpen}
           />
-          <Separator orientation="vertical" />
-          <TextButtons />
         </EditorMenu>
       </EditorContent>
     </EditorRoot>

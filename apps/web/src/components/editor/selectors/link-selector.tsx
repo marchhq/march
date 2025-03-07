@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
 import { PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Check, Trash } from "lucide-react";
+import { Check, Link, Trash } from "lucide-react";
 import { useEditor } from "novel";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,6 @@ export function isValidUrl(url: string) {
   try {
     new URL(url);
     return true;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return false;
   }
@@ -47,14 +46,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
     <Popover modal={true} open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <Button variant="ghost" className="gap-2 rounded-none border-none">
-          <p className="text-base">↗</p>
-          <p
-            className={cn("underline decoration-stone-400 underline-offset-4", {
-              "text-blue-500": editor.isActive("link"),
-            })}
-          >
-            Link
-          </p>
+          <Link />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-60 p-0" sideOffset={10}>
@@ -72,7 +64,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Paste a link"
+            placeholder="https://"
             className="flex-1 bg-background p-1 text-sm outline-none"
             defaultValue={editor.getAttributes("link").href || ""}
           />
