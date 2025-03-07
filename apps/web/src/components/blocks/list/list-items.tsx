@@ -76,7 +76,7 @@ export function ListItems() {
                       "transition-all duration-200",
                       item.isCompleted
                         ? "opacity-100"
-                        : "opacity-70 group-hover:opacity-100"
+                        : "opacity-70 group-hover:opacity-100",
                     )}
                     checked={item.isCompleted}
                     onCheckedChange={() => {
@@ -94,17 +94,21 @@ export function ListItems() {
                         "text-sm cursor-pointer select-none",
                         item.isCompleted
                           ? "text-gray-400 line-through"
-                          : "text-gray-700"
+                          : "text-gray-700",
                       )}
                     >
                       {item.title}
                     </div>
                   </SheetTrigger>
                   <span onClick={(e) => e.stopPropagation()}>
-                    <a href={item.metadata?.url} target="_blank">
-                      {renderIcon(item.source)}
-                    </a>
-                  </span>{" "}
+                    {item.source ? (
+                      <a href={item.metadata?.url} target="_blank">
+                        {item.source !== "march" && renderIcon(item.source)}
+                      </a>
+                    ) : (
+                      <div></div>
+                    )}
+                  </span>
                   <ExpandedView item={item} />
                 </Sheet>
               </div>
