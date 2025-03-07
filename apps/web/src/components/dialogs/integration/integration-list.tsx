@@ -32,25 +32,24 @@ const IntegrationsList = () => {
       linearDisconnectHandler: handleLinearRevoke,
       githubConnectHandler: handleGithubInstall,
     },
-    user,
+    user
   );
 
   const handleIntegrationAction = async (integration: Integration) => {
     if (!integration.handler) return;
 
-    if (integration.isConnected) {
-      setIsDisconnecting(integration.id);
-      try {
+    try {
+      if (integration.isConnected) {
+        setIsDisconnecting(integration.id);
         await integration.handler();
-        await refreshUser();
-         
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsDisconnecting(null);
+      } else {
+        await integration.handler();
       }
-    } else {
-      await integration.handler();
+      await refreshUser();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDisconnecting(null);
     }
   };
 
