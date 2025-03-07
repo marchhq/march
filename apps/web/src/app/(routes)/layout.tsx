@@ -9,23 +9,20 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { WebSocketProvider } from "@/contexts/websocket-context";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <WebSocketProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <main className="w-full bg-white">
-            <HeaderWithToggle />
-            <div className="container pl-0 pr-0">{children}</div>
-            <AssistantModal />
-            <Toaster />
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
-    </WebSocketProvider>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <main className="w-full bg-white">
+          <HeaderWithToggle />
+          <div className="container pl-0 pr-0">{children}</div>
+          <AssistantModal />
+          <Toaster />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 

@@ -19,33 +19,10 @@ import { useAuth } from "@/contexts/auth-context";
 
 export default function IntegrationMenu() {
   const { signOut } = useAuth();
-  const { data: user, isLoading } = useUser();
+  const { data: user } = useUser();
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-
-  if (isLoading) {
-    return (
-      <button
-        className={cn(
-          "flex items-center text-sm w-full rounded-md transition-colors",
-          isCollapsed
-            ? "justify-center py-3 px-0 mx-auto"
-            : "gap-3 px-4 py-2.5",
-        )}
-      >
-        <UserCircle
-          className={cn(
-            "text-[#6E6E6E] animate-pulse",
-            isCollapsed ? "h-7 w-7" : "h-5 w-5",
-          )}
-        />
-        {!isCollapsed && (
-          <div className="h-5 w-20 bg-gray-200 animate-pulse rounded-md"></div>
-        )}
-      </button>
-    );
-  }
 
   return (
     <>
@@ -56,7 +33,7 @@ export default function IntegrationMenu() {
               "flex items-center text-sm w-full hover:bg-accent hover:text-accent-foreground rounded-md transition-colors",
               isCollapsed
                 ? "justify-center py-3 px-0 mx-auto"
-                : "gap-3 px-4 py-2.5",
+                : "gap-3 px-4 py-2.5"
             )}
           >
             {user?.avatar ? (
@@ -71,7 +48,7 @@ export default function IntegrationMenu() {
               <UserCircle
                 className={cn(
                   "text-[#6E6E6E]",
-                  isCollapsed ? "h-7 w-7" : "h-5 w-5",
+                  isCollapsed ? "h-7 w-7" : "h-5 w-5"
                 )}
               />
             )}
