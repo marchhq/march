@@ -20,14 +20,15 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
   } = useSortable({
     id: id,
     data: data,
-    disabled: false,
+    disabled: document.querySelector('[role="dialog"]') !== null,
   });
 
   const isEditorFocused = (event: KeyboardEvent | React.MouseEvent) => {
     const target = event.target as HTMLElement;
     return (
       target.closest(".ProseMirror") !== null ||
-      target.closest(".novel-commands") !== null
+      target.closest(".novel-commands") !== null ||
+      target.closest('[role="dialog"]') !== null
     );
   };
 
