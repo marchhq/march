@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
 import axios from "axios"
 import { getSession } from "@/actions/session"
-import { BACKEND_URL } from "@/lib/constants"
+import { BACKEND_URL, FRONTEND_URL } from "@/lib/constants"
 
 export const dynamic = 'force-dynamic'
+const redirectDomain = FRONTEND_URL
 
 export async function GET(request: Request) {
   try {
@@ -33,10 +34,10 @@ export async function GET(request: Request) {
     const state = searchParams.get('state')
     const redirectUrl = state ? JSON.parse(decodeURIComponent(state)).redirect : '/'
 
-    return NextResponse.redirect(new URL(redirectUrl, request.url))
+    return NextResponse.redirect(new URL(redirectUrl, redirectDomain))
 
   } catch (error) {
     console.error("Linear OAuth error:", error)
-    return NextResponse.redirect(new URL(`/?error=linear_auth_failed`, request.url))
+    return NextResponse.redirect(new URL(`/?error=linear_auth_failed`, redirectDomain))
   }
 }

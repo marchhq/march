@@ -4,8 +4,6 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    console.log("Linear URL route hit")
-
     const scope = "read write"
     const LINEAR_CLIENT_ID = process.env.LINEAR_CLIENT_ID
     const LINEAR_REDIRECT_URL = process.env.LINEAR_REDIRECT_URL
