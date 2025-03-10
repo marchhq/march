@@ -37,6 +37,7 @@ interface QueryData {
   items?: Item[];
 }
 
+
 // Factory function for creating mutations with shared logic
 function CreateObjectMutation<T extends CreateObject | Partial<Objects>>(
   mutationKey: string[],
@@ -136,11 +137,16 @@ export function useUpdateObject() {
 export function useDeleteObject() {
   return CreateObjectMutation<Partial<Objects>>(
     ["delete-object"],
-    (object) => deleteObject(object),
+    async (object) => {
+      const response = await deleteObject(object);
+      if (!response) {
+        throw new Error("Failed to delete object");
+      }
+      return [];
+    },
     "Failed to delete object"
   );
 }
-
 
 export function useOrderObject() {
   const queryClient = useQueryClient();
