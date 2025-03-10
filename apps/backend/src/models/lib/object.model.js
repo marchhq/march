@@ -36,8 +36,8 @@ const ObjectSchema = new Schema(
             default: "march"
         },
         description: {
-            type: String,
-            default: ""
+            type: Schema.Types.Mixed,
+            default: []
         },
         dueDate: {
             type: Date,
