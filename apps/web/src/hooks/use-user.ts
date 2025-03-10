@@ -10,30 +10,27 @@ export const useUser = () => {
     queryKey: ["user"],
     queryFn: getUser,
     retry: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     initialData: () => {
       const cachedData = queryClient.getQueryData(["user"]);
       if (cachedData) return cachedData;
 
-      const savedData = localStorage.getItem("userData");
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
-        queryClient.setQueryData(["user"], parsed);
-        return parsed;
+      const savedName = localStorage.getItem("userName");
+      if (savedName) {
+        return undefined
       }
       return undefined;
     },
   });
 
-  if (query.data) {
-    localStorage.setItem("userData", JSON.stringify(query.data));
+  if (query.data && query?.data?.fullName && query?.data?.avatar) {
+    localStorage.setItem("userName", query.data.fullName);
+    localStorage.setItem("userAvatar", query.data.avatar);
   }
 
   const refreshUser = () => {
-    localStorage.removeItem("userData"); 
+    localStorage.removeItem("userName");
     return queryClient.invalidateQueries({ queryKey: ["user"] });
   };
 
