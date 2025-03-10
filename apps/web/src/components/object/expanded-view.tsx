@@ -4,6 +4,7 @@ import Editor from "../editor/editor";
 import React from "react";
 import { useUpdateObject } from "@/hooks/use-objects";
 import { debounce } from "lodash";
+import { TitleTextarea } from "./title-textarea";
 
 export default function ExpandedView({ item }: { item: Objects }) {
   const { mutate: updateObject } = useUpdateObject();
@@ -54,7 +55,12 @@ export default function ExpandedView({ item }: { item: Objects }) {
     >
       <SheetHeader className="flex-shrink-0">
         <SheetTitle className="flex items-center justify-between">
-          {item.title}
+          <TitleTextarea
+            title={item.title}
+            setTitle={(title) => {
+              updateObject({ _id: item._id, title });
+            }}
+          />
         </SheetTitle>
       </SheetHeader>
       <div className="flex-1 overflow-y-auto">
