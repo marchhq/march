@@ -5,6 +5,7 @@ import {  Event } from "@/types/calendar";
 import { toast } from "sonner";
 import { createEvent, getEventsByDate } from "@/actions/calendar";
 import { transformGoogleEventToCalendarEvent } from "@/lib/utils";
+import { useUser } from "./use-user";
 
 const QUERY_KEYS = {
   EVENTS: (date: string) => ["events", date],
@@ -12,10 +13,15 @@ const QUERY_KEYS = {
 
 export function useEvents(date: string) {
   const queryClient = useQueryClient();
+
+
+  const { data: userData } = useUser()
+  const isCalendarConnected = userData?.integrations?.googleCalendar?.connected
   
   const { data = [], isLoading, error } = useQuery({
     queryKey: QUERY_KEYS.EVENTS(date),
     queryFn: () => getEventsByDate(date),
+    enabled: isCalendarConnected,
     select: (data) => data.map(transformGoogleEventToCalendarEvent),
   });
   

@@ -1,12 +1,13 @@
 "use client";
 
 import { getUser } from "@/actions/user";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { User } from "@/types/user";
+import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 
 export const useUser = () => {
   const queryClient = useQueryClient();
 
-  const query = useQuery({
+  const query: UseQueryResult<User> = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
     retry: false,
