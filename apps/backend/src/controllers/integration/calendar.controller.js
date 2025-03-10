@@ -29,6 +29,11 @@ const getGoogleCalendarAccessTokenController = async (req, res, next) => {
 const getGoogleCalendarEventsByDateController = async (req, res, next) => {
     const user = req.user;
     const { date } = req.params;
+    if (user.integration.googleCalendar.connected === false) {
+        return res.status(400).json({
+            message: 'Google Calendar not connected'
+        });
+    }
     try {
         const events = await getGoogleCalendarEventsByDate(user, date);
         res.status(200).json({
@@ -54,6 +59,11 @@ const getGoogleCalendarMeetingsController = async (req, res, next) => {
 const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
     try {
         const user = req.user;
+        if (user.integration.googleCalendar.connected === false) {
+            return res.status(400).json({
+                message: 'Google Calendar not connected'
+            });
+        }
         let accessToken = user.integration.googleCalendar.accessToken;
         const refreshToken = user.integration.googleCalendar.refreshToken;
 
@@ -78,7 +88,11 @@ const getGoogleCalendarupComingMeetingsController = async (req, res, next) => {
 const addGoogleCalendarEventController = async (req, res, next) => {
     const user = req.user;
     const event = req.body;
-
+    if (user.integration.googleCalendar.connected === false) {
+        return res.status(400).json({
+            message: 'Google Calendar not connected'
+        });
+    }
     try {
         const newEvent = await addGoogleCalendarEvent(user, event);
         res.status(200).json({
@@ -119,6 +133,11 @@ const deleteGoogleCalendarEventController = async (req, res, next) => {
 const revokeGoogleCalendarAccessController = async (req, res, next) => {
     const user = req.user;
     try {
+        if (user.integration.googleCalendar.connected === false) {
+            return res.status(400).json({
+                message: 'Google Calendar not connected'
+            });
+        }
         await revokeGoogleCalendarAccess(user);
 
         res.status(200).json({
@@ -133,6 +152,11 @@ const revokeGoogleCalendarAccessController = async (req, res, next) => {
 const getGoogleCalendarMeetingsByDateController = async (req, res, next) => {
     const user = req.user;
     const date = req.params.date;
+    if (user.integration.googleCalendar.connected === false) {
+        return res.status(400).json({
+            message: 'Google Calendar not connected'
+        });
+    }
     try {
         const events = await getGoogleCalendarMeetingsByDate(user, date);
         res.status(200).json({
