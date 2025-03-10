@@ -13,81 +13,27 @@ export interface BubbleColorMenuItem {
 }
 
 const TEXT_COLORS: BubbleColorMenuItem[] = [
-  {
-    name: "Default",
-    color: "var(--novel-black)",
-  },
-  {
-    name: "Purple",
-    color: "#9333EA",
-  },
-  {
-    name: "Red",
-    color: "#E00000",
-  },
-  {
-    name: "Yellow",
-    color: "#EAB308",
-  },
-  {
-    name: "Blue",
-    color: "#2563EB",
-  },
-  {
-    name: "Green",
-    color: "#008A00",
-  },
-  {
-    name: "Orange",
-    color: "#FFA500",
-  },
-  {
-    name: "Pink",
-    color: "#BA4081",
-  },
-  {
-    name: "Gray",
-    color: "#A8A29E",
-  },
+  { name: "Default", color: "#000000" }, // Assuming black as default
+  { name: "Purple", color: "#9333EA" },
+  { name: "Red", color: "#E00000" },
+  { name: "Yellow", color: "#EAB308" },
+  { name: "Blue", color: "#2563EB" },
+  { name: "Green", color: "#008A00" },
+  { name: "Orange", color: "#FFA500" },
+  { name: "Pink", color: "#BA4081" },
+  { name: "Gray", color: "#A8A29E" },
 ];
 
 const HIGHLIGHT_COLORS: BubbleColorMenuItem[] = [
-  {
-    name: "Default",
-    color: "var(--novel-highlight-default)",
-  },
-  {
-    name: "Purple",
-    color: "var(--novel-highlight-purple)",
-  },
-  {
-    name: "Red",
-    color: "var(--novel-highlight-red)",
-  },
-  {
-    name: "Yellow",
-    color: "var(--novel-highlight-yellow)",
-  },
-  {
-    name: "Blue",
-    color: "var(--novel-highlight-blue)",
-  },
-  {
-    name: "Green",
-    color: "var(--novel-highlight-green)",
-  },
-  {
-    name: "Orange",
-    color: "var(--novel-highlight-orange)",
-  },
-  {
-    name: "Pink",
-    color: "var(--novel-highlight-pink)",
-  },
-  {
-    name: "Gray",
-    color: "var(--novel-highlight-gray)",
-  },
+  { name: "Default", color: "#FFFF99" }, // Light yellow as a default highlight
+  { name: "Purple", color: "#E9D5FF" },
+  { name: "Red", color: "#FCA5A5" },
+  { name: "Yellow", color: "#FEF08A" },
+  { name: "Blue", color: "#BFDBFE" },
+  { name: "Green", color: "#BBF7D0" },
+  { name: "Orange", color: "#FED7AA" },
+  { name: "Pink", color: "#FBCFE8" },
+  { name: "Gray", color: "#D6D3D1" },
 ];
 
 interface ColorSelectorProps {
@@ -172,9 +118,11 @@ export const ColorSelector = ({ open, onOpenChange }: ColorSelectorProps) => {
             <EditorBubbleItem
               key={index}
               onSelect={() => {
-                editor.commands.unsetHighlight();
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                name !== "Default" && editor.commands.setHighlight({ color });
+                if (name === "Default") {
+                  editor.chain().focus().unsetHighlight().run();
+                } else {
+                  editor.chain().focus().setHighlight({ color }).run();
+                }
               }}
               className="flex cursor-pointer items-center justify-between px-2 py-1 text-sm hover:bg-accent"
             >

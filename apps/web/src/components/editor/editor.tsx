@@ -19,6 +19,7 @@ import { Separator } from "../ui/separator";
 import { LinkSelector } from "./selectors/link-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { slashCommand, suggestionItems } from "./slash-command";
+import { ColorSelector } from "./selectors/color-selector";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -48,13 +49,9 @@ const Editor = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNodeSelectorOpen, setIsNodeSelectorOpen] = useState(false);
   const [isLinkSelectorOpen, setIsLinkSelectorOpen] = useState(false);
+  const [isColorSelectorOpen, setIsColorSelectorOpen] = useState(false);
 
   if (!initialValue) return null;
-
-  const handleUpdate = () => {
-    const content = contentRef.current;
-    onChange(content);
-  };
 
   return (
     <EditorRoot>
@@ -69,7 +66,10 @@ const Editor = ({
               "prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full",
           },
         }}
-        onUpdate={handleUpdate}
+        onUpdate={({ editor }) => {
+          contentRef.current = editor.getHTML();
+          onChange(editor.getHTML());
+        }}
         slotAfter={<ImageResizer />}
       >
         {/**editor command */}
@@ -123,6 +123,11 @@ const Editor = ({
           <LinkSelector
             open={isLinkSelectorOpen}
             onOpenChange={setIsLinkSelectorOpen}
+          />
+          <Separator orientation="vertical" />
+          <ColorSelector
+            open={isColorSelectorOpen}
+            onOpenChange={setIsColorSelectorOpen}
           />
         </EditorMenu>
       </EditorContent>
