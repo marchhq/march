@@ -3,9 +3,10 @@ export interface CalendarEvent {
   title: string;
   start: string; // ISO string format
   end: string; // ISO string format
-  backgroundColor: string;
-  textColor: string;
-  borderColor: string;
+  className?: string
+  backgroundColor?: string;
+  textColor?: string;
+  borderColor?: string;
   allDay?: boolean;
 }
 
@@ -27,6 +28,7 @@ export interface Event {
   created: string;
   updated: string;
   summary: string;
+  colorId: string
   creator: EventPerson;
   organizer: EventPerson;
   start: EventDateTime;
