@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createObject, getInboxObjects, getTodayObjects, orderObject, updateObject } from "@/actions/objects";
+import { createObject, deleteObject, getInboxObjects, getTodayObjects, orderObject, updateObject } from "@/actions/objects";
 import { CreateObject, Objects, OrderObject } from "@/types/objects";
 import { toast } from "sonner";
 
@@ -59,13 +59,18 @@ function CreateObjectMutation<T extends CreateObject | Partial<Objects>>(
       
       // Apply optimistic updates to the queries
       const isCreate = mutationKey[0] === "create-object";
-       [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach(queryKey => {
+      const isDelete = mutationKey[0] === "delete-object";
+      
+      [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach(queryKey => {
         queryClient.setQueryData(queryKey, (oldData: QueryData) => {
           if (!oldData) return oldData;
 
           // Handle array data structure
           if (Array.isArray(oldData)) {
-            if (isCreate) {
+            if (isDelete) {
+              // For deletion, filter out the item
+              return oldData.filter(item => item._id !== newData._id);
+            } else if (isCreate) {
               // For creation, add new item
               return [...oldData, { ...newData, _id: newData._id || `temp-${Date.now()}` }];
             } else {
@@ -79,11 +84,13 @@ function CreateObjectMutation<T extends CreateObject | Partial<Objects>>(
           else if (oldData.items && Array.isArray(oldData.items)) {
             return {
               ...oldData,
-              items: isCreate
-                ? [...oldData.items, { ...newData, _id: newData._id || `temp-${Date.now()}` }]
-                : oldData.items.map(item => 
-                    item._id === newData._id ? { ...item, ...newData } : item
-                  )
+              items: isDelete
+                ? oldData.items.filter(item => item._id !== newData._id)
+                : isCreate
+                  ? [...oldData.items, { ...newData, _id: newData._id || `temp-${Date.now()}` }]
+                  : oldData.items.map(item => 
+                      item._id === newData._id ? { ...item, ...newData } : item
+                    )
             };
           }
           return oldData;
@@ -123,6 +130,14 @@ export function useUpdateObject() {
     ["update-object"],
     (object) => updateObject(object),
     "Failed to update object"
+  );
+}
+
+export function useDeleteObject() {
+  return CreateObjectMutation<Partial<Objects>>(
+    ["delete-object"],
+    (object) => deleteObject(object),
+    "Failed to delete object"
   );
 }
 

@@ -2,12 +2,15 @@ import { Objects } from "@/types/objects";
 import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import Editor from "../editor/editor";
 import React from "react";
-import { useUpdateObject } from "@/hooks/use-objects";
+import { useDeleteObject, useUpdateObject } from "@/hooks/use-objects";
 import { debounce } from "lodash";
 import { TitleTextarea } from "./title-textarea";
+import { Button } from "../ui/button";
+import { Trash2 } from "lucide-react";
 
 export default function ExpandedView({ item }: { item: Objects }) {
   const { mutate: updateObject } = useUpdateObject();
+  const { mutate: deleteObject } = useDeleteObject();
 
   const debouncedSave = React.useCallback(
     debounce((content: string) => {
@@ -53,8 +56,8 @@ export default function ExpandedView({ item }: { item: Objects }) {
       side="right"
       className="sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl w-full flex flex-col h-full"
     >
-      <SheetHeader className="flex-shrink-0">
-        <SheetTitle className="flex items-center justify-between">
+      <SheetHeader className="flex flex-row items-center justify-between pb-2">
+        <SheetTitle className="flex-1">
           <TitleTextarea
             title={item.title}
             setTitle={(title) => {
@@ -62,6 +65,16 @@ export default function ExpandedView({ item }: { item: Objects }) {
             }}
           />
         </SheetTitle>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            deleteObject({ _id: item._id });
+          }}
+          className="h-5 w-5 shrink-0 hover:text-red-500 hover:bg-transparent"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
       </SheetHeader>
       <div className="flex-1 overflow-y-auto">
         <Editor

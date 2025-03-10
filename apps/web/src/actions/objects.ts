@@ -23,6 +23,11 @@ export const updateObject = async (object: Partial<Objects>) => {
   return data.response
 }
 
+export const deleteObject = async (object: Partial<Objects>) => {
+  const data = await apiClient.delete<ObjectsResponse>(`/api/inbox/${object._id}`)
+  return data.response
+}
+
 export const orderObject = async (object: OrderObject) => {
   const data = await apiClient.put<OrderResponse, OrderObject>('/api/reorder', object)
   return data.success
