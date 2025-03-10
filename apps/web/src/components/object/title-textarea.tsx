@@ -33,17 +33,27 @@ const TitleTextarea = ({ title, setTitle }: TitleTextareaProps) => {
     }
   };
 
+  const handleFocus = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Move cursor to the end of the text
+      const length = textarea.value.length;
+      textarea.setSelectionRange(length, length);
+    }
+  };
+
   return (
     <div className="w-full">
       <Textarea
         ref={textareaRef}
-        placeholder="Untitled"
+        placeholder="Title"
         value={title}
-        onBlur={handleBlur}
         onChange={(e) => {
           setTitle(e.target.value);
         }}
-        className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none overflow-hidden min-h-[40px] py-2 px-3 text-base leading-tight"
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none overflow-hidden min-h-[20px] py-2 px-3 text-base leading-tight"
         rows={1}
       />
     </div>
