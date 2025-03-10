@@ -150,6 +150,53 @@ export const saveContent = async (object) => {
     return object;
 }
 
+export const updateContent = async (object) => {
+    if (!object?._id) {
+        throw new Error("Invalid object: missing _id");
+    }
+
+    const context = {
+        type: object.type,
+        source: object.source,
+        status: object.status,
+        dueDate: object.dueDate,
+        priority: object.metadata?.priority || 'medium',
+        labels: object.labels?.map(label => label.toString()),
+        isCompleted: object.isCompleted,
+        completedAt: object.completedAt || 'null',
+        isArchived: object.isArchived,
+        relatedTasks: object.arrays?.map(id => id.toString())
+    };
+
+    const embedding = await generateEnhancedEmbedding(
+        `${object.title} ${object.description}`,
+        context
+    );
+    const enhancedMetadata = extractMetadata(object);
+
+    await withRetry(async () => {
+        await pineconeIndex.upsert([{
+            id: object._id.toString(),
+            values: embedding,
+            metadata: enhancedMetadata
+        }]);
+    });
+
+    return object;
+}
+
+export const deleteContent = async (objectId) => {
+    if (!objectId) {
+        throw new Error("Invalid objectId: missing objectId");
+    }
+
+    await withRetry(async () => {
+        await pineconeIndex.deleteOne(objectId.toString());
+    });
+
+    return { success: true, id: objectId };
+}
+
 const SEARCH_PARAMS = {
     SORT_OPTIONS: {
         PRIORITY: 'priority',

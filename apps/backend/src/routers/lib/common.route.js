@@ -15,6 +15,7 @@ import {
     reorderObjectsController,
     getInboxObjectController,
     updateInboxObjectController,
+    deleteInboxObjectController,
     getUserTodayObjectsController,
     getUserOverdueObjectsController,
     moveObjecttoDateController,
@@ -56,7 +57,8 @@ router.route("/objects/source/").get(getObjectsBySourceController);
 
 router.route("/inbox/:object/")
     .get(getInboxObjectController)
-    .put(updateInboxObjectController);
+    .put(updateInboxObjectController)
+    .delete(deleteInboxObjectController);
 
 router.route("/inbox/:item/sub-items/").get(getSubObjectsController);
 

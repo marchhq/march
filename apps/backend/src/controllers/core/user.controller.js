@@ -2,6 +2,7 @@ import Joi from "joi";
 import { getInboxObject, getObjectsWithDate, reorderObjects, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
 import { updateUser } from "../../services/core/user.service.js";
 import { UpdateUserPayload } from "../../payloads/core/user.payload.js";
+import { updateContent, deleteContent } from "../../utils/helper.service.js"
 
 const { ValidationError } = Joi;
 
@@ -129,9 +130,28 @@ const updateInboxObjectController = async (req, res, next) => {
         const { object: id } = req.params;
         const updateData = req.body;
         const objects = await updateInboxObject(id, me, updateData);
-
+        // update in vector db
+        await updateContent(objects);
         res.status(200).json({
             response: objects
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const deleteInboxObjectController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { object: id } = req.params;
+
+        await updateInboxObject(id, me, { isDeleted: true });
+
+        await deleteContent(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Object deleted successfully"
         });
     } catch (err) {
         next(err);
