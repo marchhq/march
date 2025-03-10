@@ -17,11 +17,10 @@ import { Icons } from "@/components/ui/icons";
 export function ListItems() {
   const { items } = useBlock();
 
-  console.log("item: ", items[0]);
   const { mutate: updateObject } = useUpdateObject();
 
   // Sort items by order property
-  const sortedItems = [...items].sort((a, b) => a.order - b.order);
+  const sortedItems = [...items].sort((a, b) => b.order - a.order);
 
   if (sortedItems.length === 0) {
     return (
@@ -76,7 +75,7 @@ export function ListItems() {
                       "transition-all duration-200",
                       item.isCompleted
                         ? "opacity-100"
-                        : "opacity-70 group-hover:opacity-100",
+                        : "opacity-70 group-hover:opacity-100"
                     )}
                     checked={item.isCompleted}
                     onCheckedChange={() => {
@@ -94,7 +93,7 @@ export function ListItems() {
                         "text-sm cursor-pointer select-none",
                         item.isCompleted
                           ? "text-gray-400 line-through"
-                          : "text-gray-700",
+                          : "text-gray-700"
                       )}
                     >
                       {item.title}

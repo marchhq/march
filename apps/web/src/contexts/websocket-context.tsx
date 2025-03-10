@@ -62,42 +62,30 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
               message = JSON.parse(event.data.toString());
             }
 
-            if (message?.type !== "linear" || !message?.item) return;
-
+            if (message?.type !== "linear") return;
             const { item, action } = message;
 
             // Handle different actions
             if (action === "delete" || action === "unassigned") {
-              // Remove item from both inbox and today queries
-              queryClient.setQueryData(QUERY_KEYS.INBOX, (old: any) => ({
-                ...old,
-                response: old.response.filter((i: any) => i._id !== item._id),
-              }));
+              // Immediately invalidate queries to force a refresh
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.INBOX,
+              });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.TODAY,
+              });
 
-              queryClient.setQueryData(QUERY_KEYS.TODAY, (old: any) => ({
-                ...old,
-                response: {
-                  todayObjects: old.response.todayObjects.filter(
-                    (i: any) => i._id !== item._id
-                  ),
-                  overdueObjects: old.response.overdueObjects?.filter(
-                    (i: any) => i._id !== item._id
-                  ),
-                },
-              }));
-            } else if (action === "create" || action === "update") {
-              // Update both inbox and today queries
+              // Also update the cache immediately
               [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach((queryKey) => {
                 queryClient.setQueryData(queryKey, (old: any) => {
-                  if (!old) return old;
+                  if (!old?.response) return old;
 
                   if (queryKey === QUERY_KEYS.INBOX) {
                     return {
                       ...old,
-                      response: [
-                        item,
-                        ...old.response.filter((i: any) => i._id !== item._id),
-                      ],
+                      response: old.response.filter(
+                        (i: any) => i._id !== item._id
+                      ),
                     };
                   }
 
@@ -105,12 +93,63 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
                   return {
                     ...old,
                     response: {
-                      todayObjects: [
-                        item,
-                        ...old.response.todayObjects.filter(
-                          (i: any) => i._id !== item._id
-                        ),
-                      ],
+                      todayObjects: (old.response.todayObjects || []).filter(
+                        (i: any) => i._id !== item._id
+                      ),
+                      overdueObjects: (
+                        old.response.overdueObjects || []
+                      ).filter((i: any) => i._id !== item._id),
+                    },
+                  };
+                });
+              });
+            } else if (action === "create" || action === "update") {
+              // Immediately invalidate queries to force a refresh
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.INBOX,
+              });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.TODAY,
+              });
+
+              // Also update the cache immediately
+              [QUERY_KEYS.INBOX, QUERY_KEYS.TODAY].forEach((queryKey) => {
+                queryClient.setQueryData(queryKey, (old: any) => {
+                  if (!old?.response) return old;
+
+                  if (queryKey === QUERY_KEYS.INBOX) {
+                    const existingItems = old.response.filter(
+                      (i: any) => i._id !== item._id
+                    );
+                    return {
+                      ...old,
+                      response:
+                        action === "create"
+                          ? [item, ...existingItems] // Add new items at the start
+                          : existingItems.map((i: any) =>
+                              i._id === item._id ? item : i
+                            ), // Update existing item
+                    };
+                  }
+
+                  // Handle today objects
+                  const existingTodayItems = (
+                    old.response.todayObjects || []
+                  ).filter((i: any) => i._id !== item._id);
+                  const existingOverdueItems = (
+                    old.response.overdueObjects || []
+                  ).filter((i: any) => i._id !== item._id);
+
+                  return {
+                    ...old,
+                    response: {
+                      todayObjects:
+                        action === "create"
+                          ? [item, ...existingTodayItems] // Add new items at the start
+                          : existingTodayItems.map((i: any) =>
+                              i._id === item._id ? item : i
+                            ), // Update existing item
+                      overdueObjects: existingOverdueItems,
                     },
                   };
                 });

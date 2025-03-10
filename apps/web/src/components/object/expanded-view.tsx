@@ -31,8 +31,6 @@ export default function ExpandedView({ item }: { item: Objects }) {
     ],
   };
 
-  console.log("initial content: ", initialContent);
-
   return (
     <SheetContent
       side="right"
