@@ -9,7 +9,11 @@ import {
   StarterKit,
   Placeholder,
   UploadImagesPlugin,
+  Color,
+  HighlightExtension,
+  TextStyle
 } from "novel";
+import { Markdown } from "tiptap-markdown";
 
 import { cx } from "class-variance-authority";
 
@@ -105,6 +109,17 @@ const starterKit = StarterKit.configure({
   gapcursor: false,
 });
 
+const markdownExtension = Markdown.configure({
+  html: true,
+  tightLists: true,
+  tightListClass: "tight",
+  bulletListMarker: "-",
+  linkify: false,
+  breaks: false,
+  transformPastedText: false,
+  transformCopiedText: false,
+});
+
 export const defaultExtensions = [
   starterKit,
   placeholder,
@@ -114,5 +129,9 @@ export const defaultExtensions = [
   taskList,
   taskItem,
   horizontalRule,
-  TiptapUnderline
+  TiptapUnderline,
+  TextStyle,
+  Color,
+  markdownExtension,
+  HighlightExtension
 ];
