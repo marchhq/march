@@ -7,6 +7,7 @@ import { debounce } from "lodash";
 import { TitleTextarea } from "./title-textarea";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
+import { JSONContent } from "novel";
 
 export default function ExpandedView({ item }: { item: Objects }) {
   const { mutate: updateObject } = useUpdateObject();
@@ -29,26 +30,26 @@ export default function ExpandedView({ item }: { item: Objects }) {
     };
   }, [debouncedSave]);
 
-  // Convert HTML content to plain text for initial value
   const getInitialContent = () => {
     if (!item.description) return defaultValue;
 
-    const plainText = item.description.replace(/<[^>]+>/g, "");
-
-    return {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            {
-              type: "text",
-              text: plainText,
-            },
-          ],
-        },
-      ],
-    };
+    try {
+      // Parse stored JSON string
+      return typeof item.description === "string"
+        ? JSON.parse(item.description)
+        : item.description;
+    } catch {
+      // Fallback for any non-JSON content
+      return {
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: String(item.description) }],
+          },
+        ],
+      };
+    }
   };
 
   return (
@@ -87,7 +88,7 @@ export default function ExpandedView({ item }: { item: Objects }) {
   );
 }
 
-export const defaultValue = {
+export const defaultValue: JSONContent = {
   type: "doc",
   content: [
     {

@@ -39,12 +39,7 @@ interface EditorProps {
   placeholder?: string;
 }
 
-const Editor = ({
-  initialValue,
-  onChange,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  placeholder = "write something...",
-}: EditorProps) => {
+const Editor = ({ initialValue, onChange }: EditorProps) => {
   const contentRef = useRef<string>("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNodeSelectorOpen, setIsNodeSelectorOpen] = useState(false);
@@ -67,8 +62,7 @@ const Editor = ({
           },
         }}
         onUpdate={({ editor }) => {
-          contentRef.current = editor.getHTML();
-          onChange(editor.getHTML());
+          onChange(JSON.stringify(editor.getJSON()));
         }}
         slotAfter={<ImageResizer />}
       >
