@@ -10,7 +10,7 @@ import {
   ImageResizer,
   type JSONContent,
 } from "novel";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { defaultExtensions } from "./extentions";
 import "./editor.css";
 import EditorMenu from "./editor-menu";
@@ -40,7 +40,6 @@ interface EditorProps {
 }
 
 const Editor = ({ initialValue, onChange }: EditorProps) => {
-  const contentRef = useRef<string>("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNodeSelectorOpen, setIsNodeSelectorOpen] = useState(false);
   const [isLinkSelectorOpen, setIsLinkSelectorOpen] = useState(false);
