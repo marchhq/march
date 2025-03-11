@@ -10,7 +10,7 @@ import {
   ImageResizer,
   type JSONContent,
 } from "novel";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { defaultExtensions } from "./extentions";
 import "./editor.css";
 import EditorMenu from "./editor-menu";
@@ -39,13 +39,7 @@ interface EditorProps {
   placeholder?: string;
 }
 
-const Editor = ({
-  initialValue,
-  onChange,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  placeholder = "write something...",
-}: EditorProps) => {
-  const contentRef = useRef<string>("");
+const Editor = ({ initialValue, onChange }: EditorProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNodeSelectorOpen, setIsNodeSelectorOpen] = useState(false);
   const [isLinkSelectorOpen, setIsLinkSelectorOpen] = useState(false);
@@ -67,8 +61,7 @@ const Editor = ({
           },
         }}
         onUpdate={({ editor }) => {
-          contentRef.current = editor.getHTML();
-          onChange(editor.getHTML());
+          onChange(JSON.stringify(editor.getJSON()));
         }}
         slotAfter={<ImageResizer />}
       >
