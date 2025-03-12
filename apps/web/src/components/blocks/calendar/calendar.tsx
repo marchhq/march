@@ -59,21 +59,24 @@ export function CalendarBlock() {
   const handleEventClick = (clickInfo: EventClickArg) => {
     setSelectedEvent(clickInfo);
 
-    const rect = clickInfo.el.getBoundingClientRect();
-
+    const eventEl = clickInfo.el;
+    const eventRect = eventEl.getBoundingClientRect();
+    const calendarRect = calendarWrapperRef.current?.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
 
-    let x = rect.right + 10;
-    let y = rect.top;
+    if (!calendarRect) return;
 
-    if (rect.right + 300 > viewportWidth) {
-      x = rect.left - 330;
-    }
+    // Check if there's enough space on the right side
+    const spaceOnRight = viewportWidth - eventRect.right;
+    const popoverWidth = 320; // w-80 = 20rem = 320px
 
-    if (rect.bottom + 200 > viewportHeight) {
-      y = Math.max(10, rect.top - 200);
-    }
+    // If there's not enough space on the right, position it on the left
+    const x =
+      spaceOnRight < popoverWidth + 20
+        ? eventRect.left - calendarRect.left - popoverWidth
+        : eventRect.right - calendarRect.left;
+
+    const y = eventRect.top - calendarRect.top;
 
     setPopoverAnchor({ x, y });
   };
@@ -81,17 +84,16 @@ export function CalendarBlock() {
   return (
     <div
       ref={setNodeRef}
-      className={`calendar-container h-full ${isOver ? "bg-gray-50" : ""}`}
+      className={`calendar-container h-full relative ${isOver ? "bg-gray-50" : ""}`}
     >
-      {selectedEvent && (
-        <EventDetails
-          selectedEvent={selectedEvent}
-          position={popoverAnchor}
-          onClose={() => setSelectedEvent(null)}
-        />
-      )}
-
-      <div ref={calendarWrapperRef} className="pt-2 px-4">
+      <div ref={calendarWrapperRef} className="pt-2 px-4 h-full">
+        {selectedEvent && (
+          <EventDetails
+            selectedEvent={selectedEvent}
+            position={popoverAnchor}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
