@@ -8,6 +8,13 @@ export interface CalendarEvent {
   textColor?: string;
   borderColor?: string;
   allDay?: boolean;
+  meetingUrl?: string;
+  meetingIconUrl?: string;
+  extendedProps?: {
+    colorId: string;
+    meetingUrl?: string;
+    meetingIconUrl?: string;
+  };
 }
 
 export interface EventResponse {

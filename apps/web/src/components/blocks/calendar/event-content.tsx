@@ -2,7 +2,7 @@ import { EVENT_COLORS } from "@/lib/utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function renderEventContent(eventInfo: any) {
-  const colorId = eventInfo.event.extendedProps.colorId || "default";
+  const colorId = eventInfo.event._def.extendedProps.colorId || "default";
   const style = {
     backgroundColor: EVENT_COLORS[colorId].backgroundColor,
     color: EVENT_COLORS[colorId].textColor,
