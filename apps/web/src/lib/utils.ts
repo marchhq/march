@@ -86,7 +86,8 @@ export const EVENT_COLORS: { [key: string]: ColorScheme } = {
 };
 
 export function transformGoogleEventToCalendarEvent(event: Event): CalendarEvent {
-  const colorScheme = EVENT_COLORS[event.colorId || "default"];
+  const colorId = event.colorId?.toString() || "default";
+  const colorScheme = EVENT_COLORS[colorId];
   
   return {
     id: event.id,
@@ -97,6 +98,13 @@ export function transformGoogleEventToCalendarEvent(event: Event): CalendarEvent
     textColor: colorScheme.textColor,
     borderColor: colorScheme.borderColor,
     allDay: !event.start.dateTime,
+    meetingUrl: event.hangoutLink || event.conferenceData?.entryPoints?.[0]?.uri || event.htmlLink,
+    meetingIconUrl: event.conferenceData?.conferenceSolution?.iconUri,
+    extendedProps: {
+      colorId: colorId,
+      meetingUrl: event.hangoutLink || event.conferenceData?.entryPoints?.[0]?.uri || event.htmlLink,
+      meetingIconUrl: event.conferenceData?.conferenceSolution?.iconUri,
+    }
   }
 }
 
