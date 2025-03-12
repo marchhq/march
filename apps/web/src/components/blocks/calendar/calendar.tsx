@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,11 +9,18 @@ import { useDroppable } from "@dnd-kit/core";
 import { useCalendar } from "@/contexts/calendar-context";
 import moment from "moment";
 import { renderEventContent } from "./event-content";
+import { EventClickArg } from "@fullcalendar/core";
+import { EventDetails } from "./event-details";
 
 export function CalendarBlock() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const calendarRef = useRef<any>(null);
   const { events, handleDatesSet, setCalendarApi } = useCalendar();
+  const [selectedEvent, setSelectedEvent] = useState<EventClickArg | null>(
+    null
+  );
+  const [popoverAnchor, setPopoverAnchor] = useState({ x: 0, y: 0 });
+  const calendarWrapperRef = useRef<HTMLDivElement>(null);
 
   const { setNodeRef, isOver } = useDroppable({
     id: "calendar-drop-area",
@@ -28,12 +35,63 @@ export function CalendarBlock() {
     }
   }, [setCalendarApi]);
 
+  // Prevent calendar scroll when popover is open
+  useEffect(() => {
+    if (!calendarWrapperRef.current) return;
+
+    const calendar = calendarWrapperRef.current;
+    const preventDefault = (e: Event) => {
+      if (selectedEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    calendar.addEventListener("wheel", preventDefault, { passive: false });
+    calendar.addEventListener("touchmove", preventDefault, { passive: false });
+
+    return () => {
+      calendar.removeEventListener("wheel", preventDefault);
+      calendar.removeEventListener("touchmove", preventDefault);
+    };
+  }, [selectedEvent]);
+
+  const handleEventClick = (clickInfo: EventClickArg) => {
+    setSelectedEvent(clickInfo);
+
+    const rect = clickInfo.el.getBoundingClientRect();
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let x = rect.right + 10;
+    let y = rect.top;
+
+    if (rect.right + 300 > viewportWidth) {
+      x = rect.left - 330;
+    }
+
+    if (rect.bottom + 200 > viewportHeight) {
+      y = Math.max(10, rect.top - 200);
+    }
+
+    setPopoverAnchor({ x, y });
+  };
+
   return (
     <div
       ref={setNodeRef}
       className={`calendar-container h-full ${isOver ? "bg-gray-50" : ""}`}
     >
-      <div className="pt-2 px-4">
+      {selectedEvent && (
+        <EventDetails
+          selectedEvent={selectedEvent}
+          position={popoverAnchor}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
+
+      <div ref={calendarWrapperRef} className="pt-2 px-4">
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -75,6 +133,7 @@ export function CalendarBlock() {
               </div>
             );
           }}
+          eventClick={handleEventClick}
         />
       </div>
     </div>
