@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import { EventClickArg } from "@fullcalendar/core";
 import { useLockScroll } from "@/hooks/use-lock-scroll";
-import { Dot, Link } from "lucide-react";
+import { Dot, Link, Trash2Icon } from "lucide-react";
 import Image from "next/image";
+import { useBlock } from "@/contexts/block-context";
+import { Button } from "@/components/ui/button";
 
 interface EventDetailsProps {
   selectedEvent: EventClickArg;
@@ -21,6 +23,7 @@ const EventDetails = ({
   position,
   onClose,
 }: EventDetailsProps) => {
+  const { handleDeleteEvent } = useBlock();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [popoverSide, setPopoverSide] = useState<"left" | "right">("right");
 
@@ -73,7 +76,20 @@ const EventDetails = ({
         >
           <div>
             <div>
-              <h3 className="font-medium">{selectedEvent.event.title}</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium">{selectedEvent.event.title}</h3>
+                <Button
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteEvent(selectedEvent.event._def.publicId);
+                    setIsPopoverOpen(false);
+                  }}
+                  className="hover:bg-transparent p-0 m-0 h-auto group"
+                >
+                  <Trash2Icon className="w-4 h-4 text-gray-500 group-hover:text-red-500 transition-colors" />
+                </Button>
+              </div>
               <p className="flex items-center text-xs text-gray-500">
                 {moment(selectedEvent.event.start).format("dddd, MMMM D ")}
                 <span>
