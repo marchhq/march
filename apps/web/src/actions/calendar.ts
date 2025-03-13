@@ -22,3 +22,7 @@ export async function createEvent(event: Partial<Event>) {
   );
   return response.newEvent;
 }
+
+export async function deleteEvent(eventId: string) {
+  await apiClient.delete(`/calendar/events/${eventId}/`);
+}

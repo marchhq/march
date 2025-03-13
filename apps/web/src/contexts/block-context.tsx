@@ -19,6 +19,7 @@ interface BlockContextType {
   handleDragEnd: (event: DragEndEvent) => void;
   handleInternalListSort: (event: DragEndEvent) => void;
   handleCalendarDrop: (draggedItem: SortableObject) => void;
+  handleDeleteEvent: (eventId: string) => void;
   isLoading: boolean;
   error: Error | null;
 }
@@ -38,7 +39,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   const { data: items = [], isLoading, error } = query;
 
   const today = moment().format("YYYY-MM-DD");
-  const { data: events = [], addEvent } = useEvents(today);
+  const { data: events = [], addEvent, delEvent } = useEvents(today);
 
   const handleInternalListSort = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -105,6 +106,10 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
     }
   };
 
+  const handleDeleteEvent = (eventId: string) => {
+    delEvent(eventId);
+  };
+
   const value = {
     items,
     events,
@@ -113,6 +118,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
     handleDragEnd,
     handleInternalListSort,
     handleCalendarDrop,
+    handleDeleteEvent,
   };
 
   return (
