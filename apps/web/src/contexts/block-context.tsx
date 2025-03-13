@@ -18,7 +18,7 @@ interface BlockContextType {
   events: CalendarEvent[];
   handleDragEnd: (event: DragEndEvent) => void;
   handleInternalListSort: (event: DragEndEvent) => void;
-  handleCalendarDrop: (draggedItem: SortableObject) => void;
+  handleCalendarDrop: (draggedItem: SortableObject, dropDate?: Date) => void;
   handleDeleteEvent: (eventId: string) => void;
   isLoading: boolean;
   error: Error | null;
@@ -45,9 +45,13 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
     const { active, over } = event;
     if (!over) return;
 
-    // Check if both items are list items
+    // Check if both items are list items and not dragging to calendar
     const isActiveListItem = active.data.current?.type === "list-item";
     const isOverListItem = over.data.current?.type === "list-item";
+    const isCalendarDrop = over.id === "calendar-drop-area";
+
+    // Skip if this is a calendar drop
+    if (isCalendarDrop) return;
 
     if (isActiveListItem && isOverListItem) {
       const activeId = active.id as string;
@@ -70,21 +74,34 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
         // Call the mutation to update the order in the backend
         updateOrder(orderObject);
       }
-    } else {
-      console.log("Items are not both list items, skipping sort");
     }
   };
 
-  const handleCalendarDrop = (draggedItem: SortableObject) => {
+  const handleCalendarDrop = (draggedItem: SortableObject, dropDate?: Date) => {
+    console.log("HandleCalendarDrop Called:", {
+      draggedItem,
+      dropDate,
+      dropDateISO: dropDate?.toISOString(),
+    });
+
     if (!draggedItem) return;
 
-    const dropDate = new Date();
-    const endDate = new Date(dropDate.getTime() + 60 * 60 * 1000);
+    // Use provided dropDate or current time as fallback
+    const startDate = dropDate || new Date();
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+    console.log("Creating New Event:", {
+      startDate,
+      startDateISO: startDate.toISOString(),
+      endDate,
+      endDateISO: endDate.toISOString(),
+      summary: draggedItem.text,
+    });
 
     const newEvent: Partial<Event> = {
       summary: draggedItem.text || "New Event",
       start: {
-        dateTime: dropDate.toISOString(),
+        dateTime: startDate.toISOString(),
       },
       end: {
         dateTime: endDate.toISOString(),
@@ -95,15 +112,11 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+    const { over } = event;
     if (!over) return;
-    // Skip calendar drop check for now and directly handle internal sorting
-    if (over.id === "calendar-drop-area") {
-      handleCalendarDrop(active.data.current as SortableObject);
-    } else {
-      // Otherwise, handle internal list sorting
-      handleInternalListSort(event);
-    }
+
+    // Only handle internal list sorting, ignore calendar drops completely
+    handleInternalListSort(event);
   };
 
   const handleDeleteEvent = (eventId: string) => {

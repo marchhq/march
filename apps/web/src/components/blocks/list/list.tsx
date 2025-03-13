@@ -29,7 +29,9 @@ export default function ListBlock({ arrayType }: Props) {
           />
         </section>
         <section className="pt-3 px-4">
-          <ListItems />
+          <div className="draggable-container">
+            <ListItems />
+          </div>
         </section>
       </BlockProvider>
     </div>

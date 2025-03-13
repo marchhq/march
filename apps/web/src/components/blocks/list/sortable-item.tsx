@@ -7,9 +7,23 @@ interface SortableItemProps {
   id: string | number;
   children: React.ReactNode;
   data: SortableObject;
+  item: {
+    _id: string;
+    text: string;
+    checked: boolean;
+  };
+  containerId: string;
+  index: number;
 }
 
-export function SortableItem({ id, children, data }: SortableItemProps) {
+export function SortableItem({
+  id,
+  children,
+  data,
+  item,
+  containerId,
+  index,
+}: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -63,7 +77,20 @@ export function SortableItem({ id, children, data }: SortableItemProps) {
       style={style}
       {...attributes}
       {...modifiedListeners}
-      className={cn("touch-none cursor-move", isDragging && "opacity-50")}
+      className={cn(
+        "touch-none cursor-move draggable-item",
+        isDragging && "opacity-50"
+      )}
+      data-object={JSON.stringify({
+        type: "list-item",
+        text: item.text,
+        checked: item.checked,
+        sortable: {
+          containerId,
+          index,
+          items: [item._id],
+        },
+      })}
     >
       {children}
     </div>

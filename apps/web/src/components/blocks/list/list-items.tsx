@@ -52,15 +52,22 @@ export function ListItems() {
       strategy={verticalListSortingStrategy}
     >
       <div className="space-y-0.5">
-        {sortedItems.map((item) => (
+        {sortedItems.map((item, index) => (
           <SortableItem
             key={item._id}
             id={item._id}
+            item={{
+              _id: item._id,
+              text: item.title,
+              checked: item.isCompleted,
+            }}
+            containerId="list-container"
             data={{
               type: "list-item",
               text: item.title,
               checked: item.isCompleted,
             }}
+            index={index}
           >
             <div className="flex items-center w-full py-2 px-1 rounded-md hover:bg-gray-50 transition-colors group">
               <div className="flex items-center gap-2 w-full">

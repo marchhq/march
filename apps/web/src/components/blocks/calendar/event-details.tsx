@@ -83,7 +83,7 @@ const EventDetails = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteEvent(selectedEvent.event._def.publicId);
-                    setIsPopoverOpen(false);
+                    onClose();
                   }}
                   className="hover:bg-transparent p-0 m-0 h-auto group"
                 >

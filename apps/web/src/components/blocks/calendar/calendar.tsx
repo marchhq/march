@@ -4,13 +4,13 @@ import { useRef, useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { useDroppable } from "@dnd-kit/core";
+import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import { useCalendar } from "@/contexts/calendar-context";
 import moment from "moment";
 import { renderEventContent } from "./event-content";
 import { EventClickArg } from "@fullcalendar/core";
 import { EventDetails } from "./event-details";
+import { useBlock } from "@/contexts/block-context";
 
 export function CalendarBlock() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,11 +21,7 @@ export function CalendarBlock() {
   );
   const [popoverAnchor, setPopoverAnchor] = useState({ x: 0, y: 0 });
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
-
-  const { setNodeRef, isOver } = useDroppable({
-    id: "calendar-drop-area",
-    data: { type: "calendar" },
-  });
+  const { handleCalendarDrop } = useBlock();
 
   // Set calendar API on mount
   useEffect(() => {
@@ -56,6 +52,33 @@ export function CalendarBlock() {
     };
   }, [selectedEvent]);
 
+  // Initialize Draggable for external elements
+  useEffect(() => {
+    const draggableEl = document.querySelector(".draggable-container");
+    if (draggableEl) {
+      new Draggable(draggableEl as HTMLElement, {
+        itemSelector: ".draggable-item",
+        eventData: function (eventEl) {
+          const itemData = eventEl.getAttribute("data-object");
+          console.log("Draggable eventData:", {
+            element: eventEl,
+            data: itemData,
+          });
+
+          const parsedData = JSON.parse(itemData || "{}");
+          return {
+            title: parsedData.text || "New Event",
+            duration: "01:00",
+            create: true,
+            extendedProps: {
+              itemData: parsedData,
+            },
+          };
+        },
+      });
+    }
+  }, []);
+
   const handleEventClick = (clickInfo: EventClickArg) => {
     setSelectedEvent(clickInfo);
 
@@ -82,10 +105,7 @@ export function CalendarBlock() {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      className={`calendar-container h-full relative ${isOver ? "bg-gray-50" : ""}`}
-    >
+    <div className="calendar-container h-full relative">
       <div ref={calendarWrapperRef} className="pt-2 px-4 h-full">
         {selectedEvent && (
           <EventDetails
@@ -136,6 +156,24 @@ export function CalendarBlock() {
             );
           }}
           eventClick={handleEventClick}
+          editable={true}
+          droppable={true}
+          drop={(info) => {
+            // Prevent default to avoid double event creation
+            info.draggedEl.parentNode?.removeChild(info.draggedEl);
+
+            console.log("Drop Event:", {
+              date: info.date,
+              dateStr: info.date?.toISOString(),
+              allDay: info.allDay,
+              draggedEl: info.draggedEl,
+            });
+
+            const draggedItem = JSON.parse(
+              info.draggedEl.getAttribute("data-object") || "{}"
+            );
+            handleCalendarDrop(draggedItem, info.date);
+          }}
         />
       </div>
     </div>
