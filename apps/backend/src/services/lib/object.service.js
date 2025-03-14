@@ -128,6 +128,8 @@ const getUserTodayObjects = async (me) => {
 
     const objects = await Object.find({
         user: me,
+        isArchived: false,
+        isDeleted: false,
         $or: [
             { dueDate: { $gte: startOfDay, $lt: endOfDay } },
             { completedAt: { $gte: startOfDay, $lt: endOfDay } }
@@ -225,6 +227,15 @@ const updateInboxObject = async (object, user, objectData) => {
     }
     return updatedObject;
 };
+
+export const deleteInboxObject = async (object, user) => {
+    const deletedObject = await Object.findOneAndUpdate({
+        _id: object,
+        user,
+        isDeleted: true
+    })
+    return deletedObject
+}
 
 const filterObjects = async (user, filters, sortOptions) => {
     const query = {
