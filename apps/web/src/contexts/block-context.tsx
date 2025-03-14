@@ -109,12 +109,8 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
       addEvent(newEvent);
 
       // Immediately update the cache to reflect the change
-      if (
-        draggedItem.sortable &&
-        draggedItem.sortable.items &&
-        draggedItem.sortable.items.length > 0
-      ) {
-        const itemId = draggedItem.sortable.items[0];
+      if (draggedItem.id && typeof draggedItem.id === "string") {
+        const itemId = draggedItem.id;
 
         // Update the cache directly
         const queryKey =
