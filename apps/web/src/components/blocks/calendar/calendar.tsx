@@ -22,6 +22,7 @@ export function CalendarBlock() {
   const [popoverAnchor, setPopoverAnchor] = useState({ x: 0, y: 0 });
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
   const { handleCalendarDrop } = useBlock();
+  const isProcessingDrop = useRef(false);
 
   // Set calendar API on mount
   useEffect(() => {
@@ -60,18 +61,15 @@ export function CalendarBlock() {
         itemSelector: ".draggable-item",
         eventData: function (eventEl) {
           const itemData = eventEl.getAttribute("data-object");
-          console.log("Draggable eventData:", {
-            element: eventEl,
-            data: itemData,
-          });
-
           const parsedData = JSON.parse(itemData || "{}");
+
           return {
             title: parsedData.text || "New Event",
             duration: "01:00",
-            create: true,
+            create: false,
             extendedProps: {
               itemData: parsedData,
+              sourceElement: eventEl,
             },
           };
         },
@@ -159,20 +157,29 @@ export function CalendarBlock() {
           editable={true}
           droppable={true}
           drop={(info) => {
-            // Prevent default to avoid double event creation
-            info.draggedEl.parentNode?.removeChild(info.draggedEl);
+            if (isProcessingDrop.current) return;
 
-            console.log("Drop Event:", {
-              date: info.date,
-              dateStr: info.date?.toISOString(),
-              allDay: info.allDay,
-              draggedEl: info.draggedEl,
-            });
+            try {
+              isProcessingDrop.current = true;
 
-            const draggedItem = JSON.parse(
-              info.draggedEl.getAttribute("data-object") || "{}"
-            );
-            handleCalendarDrop(draggedItem, info.date);
+              // Get the data before removing the element
+              const draggedEl = info.draggedEl;
+              const itemData = draggedEl.getAttribute("data-object");
+              const parsedData = JSON.parse(itemData || "{}");
+
+              // Process the drop with the captured data
+              handleCalendarDrop(parsedData, info.date);
+
+              // Now remove the element
+              if (draggedEl.parentNode) {
+                draggedEl.parentNode.removeChild(draggedEl);
+              }
+            } finally {
+              // Reset the processing flag after a short delay
+              setTimeout(() => {
+                isProcessingDrop.current = false;
+              }, 100);
+            }
           }}
         />
       </div>

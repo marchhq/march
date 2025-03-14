@@ -5,6 +5,7 @@ import { ListItems } from "./list-items";
 import { BlockProvider } from "@/contexts/block-context";
 import { useCreateObject } from "@/hooks/use-objects";
 import { CreateObject } from "@/types/objects";
+import { useState } from "react";
 
 interface Props {
   header?: string;
@@ -13,13 +14,14 @@ interface Props {
 
 export default function ListBlock({ arrayType }: Props) {
   const { mutate: createObject } = useCreateObject();
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleSubmit = (data: CreateObject) => {
     createObject(data);
   };
 
   return (
-    <div className="w-full mx-auto">
+    <div className={`w-full mx-auto ${isDragging ? "overflow-hidden" : ""}`}>
       <BlockProvider arrayType={arrayType}>
         <section className="space-y-3 px-4 pt-2">
           <InputBox
@@ -30,7 +32,7 @@ export default function ListBlock({ arrayType }: Props) {
         </section>
         <section className="pt-3 px-4">
           <div className="draggable-container">
-            <ListItems />
+            <ListItems onDragStateChange={setIsDragging} />
           </div>
         </section>
       </BlockProvider>

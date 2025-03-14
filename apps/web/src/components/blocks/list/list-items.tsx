@@ -14,7 +14,11 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import ExpandedView from "@/components/object/expanded-view";
 import { Icons } from "@/components/ui/icons";
 
-export function ListItems() {
+interface ListItemsProps {
+  onDragStateChange?: (isDragging: boolean) => void;
+}
+
+export function ListItems({ onDragStateChange }: ListItemsProps) {
   const { items } = useBlock();
 
   const { mutate: updateObject } = useUpdateObject();
@@ -68,6 +72,7 @@ export function ListItems() {
               checked: item.isCompleted,
             }}
             index={index}
+            onDragStateChange={onDragStateChange}
           >
             <div className="flex items-center w-full py-2 px-1 rounded-md hover:bg-gray-50 transition-colors group">
               <div className="flex items-center gap-2 w-full">
