@@ -33,6 +33,7 @@ const userProfileController = async (req, res, next) => {
                 googleCalendar: { connected: integration.googleCalendar.connected },
                 gmail: { connected: integration.gmail.connected },
                 github: { connected: integration.github.connected },
+                x: { connected: integration.github.connected },
                 notion: { connected: integration.notion.connected }
             }
         };
