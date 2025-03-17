@@ -4,13 +4,18 @@ import { useRef, useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
+import interactionPlugin, {
+  Draggable,
+  EventResizeDoneArg,
+} from "@fullcalendar/interaction";
 import { useCalendar } from "@/contexts/calendar-context";
 import moment from "moment";
 import { renderEventContent } from "./event-content";
-import { EventClickArg } from "@fullcalendar/core";
+import { EventClickArg, EventDropArg } from "@fullcalendar/core";
 import { EventDetails } from "./event-details";
 import { useBlock } from "@/contexts/block-context";
+import { useEvents } from "@/hooks/use-events";
+import { Event as CalendarEvent } from "@/types/calendar";
 
 export function CalendarBlock() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,6 +28,9 @@ export function CalendarBlock() {
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
   const { handleCalendarDrop } = useBlock();
   const isProcessingDrop = useRef(false);
+
+  const today = moment().format("YYYY-MM-DD");
+  const { mutateEvent } = useEvents(today);
 
   // Set calendar API on mount
   useEffect(() => {
@@ -102,6 +110,41 @@ export function CalendarBlock() {
     setPopoverAnchor({ x, y });
   };
 
+  const handleEventResize = (resizeInfo: EventResizeDoneArg) => {
+    const { event } = resizeInfo;
+
+    // Extract the updated event data
+    const updatedEvent: Partial<CalendarEvent> = {
+      id: event.id,
+      summary: event.title,
+      start: {
+        dateTime: event.start?.toISOString() || "",
+      },
+      end: {
+        dateTime: event.end?.toISOString() || "",
+      },
+    };
+
+    mutateEvent(updatedEvent);
+  };
+
+  const handleEventDrop = (dropInfo: EventDropArg) => {
+    const { event } = dropInfo;
+
+    const updatedEvent: Partial<CalendarEvent> = {
+      id: event.id,
+      summary: event.title,
+      start: {
+        dateTime: event.start?.toISOString() || "",
+      },
+      end: {
+        dateTime: event.end?.toISOString() || "",
+      },
+    };
+
+    mutateEvent(updatedEvent);
+  };
+
   return (
     <div className="calendar-container h-full relative">
       <div ref={calendarWrapperRef} className="pt-2 px-4 h-full">
@@ -156,6 +199,8 @@ export function CalendarBlock() {
           eventClick={handleEventClick}
           editable={true}
           droppable={true}
+          eventResize={handleEventResize}
+          eventDrop={handleEventDrop}
           drop={(info) => {
             if (isProcessingDrop.current) return;
 
@@ -169,11 +214,6 @@ export function CalendarBlock() {
 
               // Process the drop with the captured data
               handleCalendarDrop(parsedData, info.date);
-
-              // Now remove the element
-              if (draggedEl.parentNode) {
-                draggedEl.parentNode.removeChild(draggedEl);
-              }
             } finally {
               // Reset the processing flag after a short delay
               setTimeout(() => {

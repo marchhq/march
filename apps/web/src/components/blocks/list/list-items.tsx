@@ -70,6 +70,7 @@ export function ListItems({ onDragStateChange }: ListItemsProps) {
               type: "list-item",
               text: item.title,
               checked: item.isCompleted,
+              id: item._id,
             }}
             index={index}
             onDragStateChange={onDragStateChange}
