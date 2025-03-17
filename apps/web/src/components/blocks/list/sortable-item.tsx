@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import { SortableObject } from "@/types/objects";
+import { useEffect } from "react";
 
 interface SortableItemProps {
   id: string | number;
@@ -14,6 +15,7 @@ interface SortableItemProps {
   };
   containerId: string;
   index: number;
+  onDragStateChange?: (isDragging: boolean) => void;
 }
 
 export function SortableItem({
@@ -23,6 +25,7 @@ export function SortableItem({
   item,
   containerId,
   index,
+  onDragStateChange,
 }: SortableItemProps) {
   const {
     attributes,
@@ -36,6 +39,10 @@ export function SortableItem({
     data: data,
     disabled: document.querySelector('[role="dialog"]') !== null,
   });
+
+  useEffect(() => {
+    onDragStateChange?.(isDragging);
+  }, [isDragging, onDragStateChange]);
 
   const isEditorFocused = (event: KeyboardEvent | React.MouseEvent) => {
     const target = event.target as HTMLElement;

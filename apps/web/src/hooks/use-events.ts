@@ -1,9 +1,11 @@
 "use client";
 
+ 
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Event } from "@/types/calendar";
 import { toast } from "sonner";
-import { createEvent, deleteEvent, getEventsByDate } from "@/actions/calendar";
+import { createEvent, deleteEvent, getEventsByDate, updateEvent } from "@/actions/calendar";
 import { transformGoogleEventToCalendarEvent } from "@/lib/utils";
 import { useUser } from "./use-user";
 
@@ -97,12 +99,49 @@ export function useEvents(date: string) {
     },
   });
 
+  const { mutate: mutateEvent } = useMutation({
+    mutationKey: ["update-event"],
+    mutationFn: (event: Partial<Event>) => updateEvent(event.id || "", event),
+    onMutate: async (event) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.EVENTS(date) });
+
+      // Snapshot the previous value
+      const previousEvents = queryClient.getQueryData(QUERY_KEYS.EVENTS(date));
+
+      // Optimistically update the event
+      queryClient.setQueryData(QUERY_KEYS.EVENTS(date), (old: Event[] = []) => {
+        return old.map(e => e.id === event.id ? event : e);
+      });
+
+      return { previousEvents };
+    },
+    onError: (err, event, context) => {
+      // If the mutation fails, roll back to the previous state
+      if (context) {
+        queryClient.setQueryData(
+          QUERY_KEYS.EVENTS(date),
+          context.previousEvents
+        );
+      }
+      toast.error("Failed to update event");
+      console.error("Failed to update event:", err);
+    },
+    onSuccess: () => {
+      toast.success("Event updated");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.EVENTS(date) });
+    },
+  });
+
   return {
     data,
     isLoading,
     error,
     addEvent,
     delEvent,
+    mutateEvent
   };
 }
 

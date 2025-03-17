@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useRef } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { CalendarEvent, Event } from "@/types/calendar";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -12,6 +12,7 @@ import {
 } from "@/hooks/use-objects";
 import { useEvents } from "@/hooks/use-events";
 import moment from "moment";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface BlockContextType {
   items: Objects[];
@@ -35,11 +36,15 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const query = arrayType === "inbox" ? useInboxObjects() : useTodayObjects();
   const { mutate: updateOrder } = useOrderObject();
+  const queryClient = useQueryClient();
 
   const { data: items = [], isLoading, error } = query;
 
   const today = moment().format("YYYY-MM-DD");
   const { data: events = [], addEvent, delEvent } = useEvents(today);
+
+  // Add a ref to track if calendar drop is being handled
+  const isHandlingCalendarDrop = useRef(false);
 
   const handleInternalListSort = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -51,7 +56,7 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
     const isCalendarDrop = over.id === "calendar-drop-area";
 
     // Skip if this is a calendar drop
-    if (isCalendarDrop) return;
+    if (isCalendarDrop || isHandlingCalendarDrop.current) return;
 
     if (isActiveListItem && isOverListItem) {
       const activeId = active.id as string;
@@ -78,44 +83,64 @@ export function BlockProvider({ children, arrayType }: BlockProviderProps) {
   };
 
   const handleCalendarDrop = (draggedItem: SortableObject, dropDate?: Date) => {
-    console.log("HandleCalendarDrop Called:", {
-      draggedItem,
-      dropDate,
-      dropDateISO: dropDate?.toISOString(),
-    });
+    if (isHandlingCalendarDrop.current) return;
+    if (!draggedItem || !dropDate) {
+      console.error("Missing required data for calendar drop");
+      return;
+    }
 
-    if (!draggedItem) return;
+    try {
+      isHandlingCalendarDrop.current = true;
 
-    // Use provided dropDate or current time as fallback
-    const startDate = dropDate || new Date();
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour duration
+      const startDate = dropDate;
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
 
-    console.log("Creating New Event:", {
-      startDate,
-      startDateISO: startDate.toISOString(),
-      endDate,
-      endDateISO: endDate.toISOString(),
-      summary: draggedItem.text,
-    });
+      const newEvent: Partial<Event> = {
+        summary: draggedItem.text || "New Event",
+        start: {
+          dateTime: startDate.toISOString(),
+        },
+        end: {
+          dateTime: endDate.toISOString(),
+        },
+      };
 
-    const newEvent: Partial<Event> = {
-      summary: draggedItem.text || "New Event",
-      start: {
-        dateTime: startDate.toISOString(),
-      },
-      end: {
-        dateTime: endDate.toISOString(),
-      },
-    };
+      // Create the calendar event
+      addEvent(newEvent);
 
-    addEvent(newEvent);
+      // Immediately update the cache to reflect the change
+      if (draggedItem.id && typeof draggedItem.id === "string") {
+        const itemId = draggedItem.id;
+
+        // Update the cache directly
+        const queryKey =
+          arrayType === "inbox" ? ["inbox-objects"] : ["today-objects"];
+        queryClient.setQueryData(queryKey, (oldData: Objects[] = []) => {
+          return oldData.map((item) =>
+            item._id === itemId ? { ...item, isCompleted: true } : item
+          );
+        });
+
+        // Also invalidate to ensure we get fresh data
+        queryClient.invalidateQueries({ queryKey: ["inbox-objects"] });
+        queryClient.invalidateQueries({ queryKey: ["today-objects"] });
+      }
+    } finally {
+      // Reset the flag after a short delay to ensure all handlers have completed
+      setTimeout(() => {
+        isHandlingCalendarDrop.current = false;
+      }, 100);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { over } = event;
     if (!over) return;
 
-    // Only handle internal list sorting, ignore calendar drops completely
+    // Skip if we're handling a calendar drop
+    if (isHandlingCalendarDrop.current) return;
+
+    // Only handle internal list sorting
     handleInternalListSort(event);
   };
 

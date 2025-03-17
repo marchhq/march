@@ -23,6 +23,14 @@ export async function createEvent(event: Partial<Event>) {
   return response.newEvent;
 }
 
+export async function updateEvent(eventId: string, event: Partial<Event>) {
+  const response = await apiClient.patch<CreateEventResponse, Partial<Event>>(
+    `/calendar/events/${eventId}/`,
+    event
+  );
+  return response.newEvent;
+}
+
 export async function deleteEvent(eventId: string) {
   await apiClient.delete(`/calendar/events/${eventId}/`);
 }

@@ -48,6 +48,14 @@ export const apiClient = {
     return response.data;
   },
 
+  // PATCH request
+  patch: async <TResponse, TData = unknown>(url: string, data?: TData) => {
+    const session = await getSession();
+    const headers = session ? { Authorization: `Bearer ${session}` } : {};
+    const response = await api.patch<TResponse>(url, data, { headers });
+    return response.data;
+  },
+
   // DELETE request
   delete: async <T>(url: string) => {
     const session = await getSession();
