@@ -12,38 +12,42 @@ export async function GET(request: Request) {
     const code = searchParams.get('code')
     const state = searchParams.get('state')
     const error = searchParams.get('error')
-    
-    // Get redirect URL from query params if it exists
-    const redirectUrl = searchParams.get('redirect') || '/'
-    
+
     if (error) {
-      return NextResponse.redirect(new URL(`/?error=${error}`, redirectDomain))
+      return NextResponse.json({ error }, { status: 400 })
     }
 
-    if (!code || !state) {
-      console.error("Missing code or state parameters")
-      return NextResponse.redirect(new URL(`/?error=missing_parameters`, redirectDomain))
+    if (!code) {
+      return NextResponse.json({ error: "No code received" }, { status: 400 })
     }
 
-    // Get the session token for authorization
     const session = await getSession()
     if (!session) {
-      console.error("No session found")
-      return NextResponse.redirect(new URL(`/?error=unauthorized`, redirectDomain))
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Call the backend to get the access token
+    // Get the access token from backend
     await axios.get(`${BACKEND_URL}/x/getAccessToken`, {
-      params: {
-        code,
-        state
-      },
+      params: { code },
       headers: {
         'Authorization': `Bearer ${session}`,
       }
     })
 
+    // Get redirect URL from state if it exists
+    let redirectUrl = '/'
+    try {
+      const stateData = JSON.parse(decodeURIComponent(state || ''))
+      if (stateData.redirect) {
+        redirectUrl = stateData.redirect
+      }
+    } catch (e) {
+      // If state parsing fails, use default redirect
+      console.error("X OAuth error:", e)
+    }
+
     return NextResponse.redirect(new URL(redirectUrl, redirectDomain))
+
   } catch (error) {
     console.error("X OAuth error:", error)
     return NextResponse.redirect(new URL(`/?error=x_auth_failed`, redirectDomain))

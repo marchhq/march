@@ -2,7 +2,6 @@ import { apiClient } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { BACKEND_URL } from "@/lib/constants";
 
 interface UseXLoginReturn {
   handleXLogin: () => Promise<void>;
@@ -17,8 +16,16 @@ export function useXLogin(
 
   const handleXLogin = useCallback(async () => {
     try {
-      // Use the backend's OAuth flow directly
-      window.location.href = `${BACKEND_URL}/x/connect`;
+      const { authUrl } = await apiClient.internal.get<{ authUrl: string }>(
+        "/api/auth/x-url",
+      );
+
+      if (!authUrl) {
+        throw new Error("No auth URL received");
+      }
+
+      console.log("Redirecting to X OAuth URL:", authUrl);
+      window.location.href = authUrl;
     } catch (err) {
       console.error("failed to login to X", err);
       toast.error("Failed to login to X");
