@@ -79,6 +79,7 @@ interface OrderObjectRequest {
 }
 
 interface SortableObject {
+  id?: string;
   type: string;
   text: string;
   checked: boolean;
