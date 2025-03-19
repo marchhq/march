@@ -18,6 +18,8 @@ interface IntegrationHandlers {
   gmailDisconnectHandler?: () => Promise<void>;
   linearConnectHandler?: () => Promise<void>;
   linearDisconnectHandler?: () => Promise<void>;
+  xConnectHandler?: () => Promise<void>;
+  xDisconnectHandler?: () => Promise<void>;
   // Add other handlers as needed
 }
 
@@ -58,6 +60,15 @@ export function getIntegrations(handlers: IntegrationHandlers, user: User): Inte
         ? handlers.linearDisconnectHandler
         : handlers.linearConnectHandler,
       isConnected: user.integrations.linear.connected
+    },
+    {
+      id: 5,
+      title: "X",
+      icon: "twitter",
+      handler: user.integrations?.x?.connected
+        ? handlers.xDisconnectHandler
+        : handlers.xConnectHandler,
+      isConnected: user.integrations?.x?.connected
     }
     // Add more integrations here...
   ];

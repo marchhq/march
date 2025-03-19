@@ -41,6 +41,7 @@ interface Integrations {
   gmail: IntegrationStatus;
   github: IntegrationStatus;
   notion: IntegrationStatus;
+  x: IntegrationStatus
 }
 
 /**

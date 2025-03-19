@@ -9,6 +9,7 @@ import useGmail from "@/hooks/use-gmail-login";
 import { useLinearLogin } from "@/hooks/use-linear-login";
 import { useGithubInstall } from "@/hooks/use-github-install";
 import { Icons } from "@/components/ui/icons";
+import { useXLogin } from "@/hooks/use-x-login";
 
 const IntegrationsList = () => {
   const [isDisconnecting, setIsDisconnecting] = useState<number | null>(null);
@@ -18,6 +19,8 @@ const IntegrationsList = () => {
   const { handleGmailLogin, handleGmailRevoke } = useGmail("/agenda");
   const { handleLinearLogin, handleLinearRevoke } = useLinearLogin("/agenda");
   const { handleGithubInstall } = useGithubInstall();
+  const { handleXLogin } = useXLogin("/agenda");
+
   if (!user) {
     return null;
   }
@@ -31,6 +34,7 @@ const IntegrationsList = () => {
       linearConnectHandler: handleLinearLogin,
       linearDisconnectHandler: handleLinearRevoke,
       githubConnectHandler: handleGithubInstall,
+      xConnectHandler: handleXLogin,
     },
     user
   );
