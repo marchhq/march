@@ -102,34 +102,36 @@ const EventDetails = ({
               </p>
             </div>
             <div className="mt-2">
-              {selectedEvent.event.extendedProps?.meetingUrl && (
-                <a
-                  href={selectedEvent.event.extendedProps.meetingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-xs text-gray-400 hover:underline"
-                >
-                  {selectedEvent.event.extendedProps.meetingIconUrl ? (
-                    <Image
-                      src={selectedEvent.event.extendedProps.meetingIconUrl}
-                      alt="Meeting platform icon"
-                      width={16}
-                      height={16}
-                    />
-                  ) : (
-                    <Link className="size-4" />
-                  )}
-                  {selectedEvent.event.extendedProps.meetingUrl?.includes(
-                    "meet"
-                  )
-                    ? "Join with Meet"
-                    : selectedEvent.event.extendedProps.meetingUrl?.includes(
-                          "zoom"
-                        )
-                      ? "Join with Zoom"
-                      : "Join"}
-                </a>
-              )}
+              {selectedEvent.event.extendedProps?.meetingUrl &&
+                (selectedEvent.event.extendedProps.meetingUrl.includes(
+                  "meet"
+                ) ||
+                  selectedEvent.event.extendedProps.meetingUrl.includes(
+                    "zoom"
+                  )) && (
+                  <a
+                    href={selectedEvent.event.extendedProps.meetingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-gray-400 hover:underline"
+                  >
+                    {selectedEvent.event.extendedProps.meetingIconUrl ? (
+                      <Image
+                        src={selectedEvent.event.extendedProps.meetingIconUrl}
+                        alt="Meeting platform icon"
+                        width={16}
+                        height={16}
+                      />
+                    ) : (
+                      <Link className="size-4" />
+                    )}
+                    {selectedEvent.event.extendedProps.meetingUrl?.includes(
+                      "meet"
+                    )
+                      ? "Join with Meet"
+                      : "Join with Zoom"}
+                  </a>
+                )}
             </div>
           </div>
         </PopoverContent>
