@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         codeVerifier = stateData.codeVerifier;
       }
     } catch (e) {
+      console.error("Error parsing state:", e);
       return NextResponse.redirect(
         new URL(`/?error=invalid_state`, redirectDomain)
       );
