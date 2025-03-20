@@ -26,29 +26,49 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Parse state to get both redirect URL and codeVerifier
+    let redirectUrl = "/";
+    let codeVerifier = "";
+    try {
+      const stateData = JSON.parse(decodeURIComponent(state || ""));
+      
+      if (stateData.redirect) {
+        redirectUrl = stateData.redirect;
+      }
+      if (stateData.codeVerifier) {
+        codeVerifier = stateData.codeVerifier;
+      }
+    } catch (e) {
+      return NextResponse.redirect(
+        new URL(`/?error=invalid_state`, redirectDomain)
+      );
+    }
+
+    if (!codeVerifier) {
+      return NextResponse.redirect(
+        new URL(`/?error=missing_code_verifier`, redirectDomain)
+      );
+    }
+
     // Get the access token from backend
     await axios.get(`${BACKEND_URL}/x/getAccessToken`, {
-      params: { code },
+      params: { 
+        code,
+        codeVerifier
+      },
       headers: {
         Authorization: `Bearer ${session}`,
       },
     });
 
-    // Get redirect URL from state if it exists
-    let redirectUrl = "/";
-    try {
-      const stateData = JSON.parse(decodeURIComponent(state || ""));
-      if (stateData.redirect) {
-        redirectUrl = stateData.redirect;
-      }
-    } catch (e) {
-      // If state parsing fails, use default redirect
-      console.error("X OAuth error:", e);
-    }
-
     return NextResponse.redirect(new URL(redirectUrl, redirectDomain));
   } catch (error) {
-    console.error("X OAuth error:", error);
+    if (axios.isAxiosError(error)) {
+      console.error("X OAuth error:", {
+        response: error.response?.data,
+        status: error.response?.status
+      });
+    }
     return NextResponse.redirect(
       new URL(`/?error=x_auth_failed`, redirectDomain)
     );

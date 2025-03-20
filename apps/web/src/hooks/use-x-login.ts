@@ -1,5 +1,4 @@
 import { apiClient } from "@/lib/api";
-import { BACKEND_URL } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -23,19 +22,27 @@ export function useXLogin(
         throw new Error("No session found");
       }
 
-      const state = encodeURIComponent(
-        JSON.stringify({ redirect: redirectAfterAuth })
+      const response = await apiClient.get<{ url: string; state: string; codeVerifier: string }>(
+        `/x/connect`
       );
 
-      const response = await apiClient.get<{ url: string }>(
-        `/x/connect?state=${state}`
-      );
-
-      if (response?.url) {
-        window.location.href = response.url;
-      } else {
-        throw new Error("No redirect URL received");
+      if (!response?.url || !response?.codeVerifier) {
+        throw new Error("Invalid response from X connect endpoint");
       }
+
+      // Store both redirect URL and codeVerifier in state
+      const state = encodeURIComponent(
+        JSON.stringify({ 
+          redirect: redirectAfterAuth,
+          codeVerifier: response.codeVerifier,
+        })
+      );
+
+      // Use the URL from the response but replace the state parameter
+      const url = new URL(response.url);
+      url.searchParams.set("state", state);
+
+      window.location.href = url.toString();
     } catch (err) {
       console.error("failed to login to X", err);
       toast.error("Failed to login to X");
