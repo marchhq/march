@@ -1,7 +1,9 @@
 import { apiClient } from "@/lib/api";
+import { BACKEND_URL } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { getSession } from "@/actions/session";
 
 interface UseXLoginReturn {
   handleXLogin: () => Promise<void>;
@@ -10,27 +12,35 @@ interface UseXLoginReturn {
 
 export function useXLogin(
   redirectAfterAuth: string,
-  redirectAfterRevoke: string = redirectAfterAuth,
+  redirectAfterRevoke: string = redirectAfterAuth
 ): UseXLoginReturn {
   const router = useRouter();
 
   const handleXLogin = useCallback(async () => {
     try {
-      const { authUrl } = await apiClient.internal.get<{ authUrl: string }>(
-        "/api/auth/x-url",
-      );
-
-      if (!authUrl) {
-        throw new Error("No auth URL received");
+      const session = await getSession();
+      if (!session) {
+        throw new Error("No session found");
       }
 
-      console.log("Redirecting to X OAuth URL:", authUrl);
-      window.location.href = authUrl;
+      const state = encodeURIComponent(
+        JSON.stringify({ redirect: redirectAfterAuth })
+      );
+
+      const response = await apiClient.get<{ url: string }>(
+        `/x/connect?state=${state}`
+      );
+
+      if (response?.url) {
+        window.location.href = response.url;
+      } else {
+        throw new Error("No redirect URL received");
+      }
     } catch (err) {
       console.error("failed to login to X", err);
       toast.error("Failed to login to X");
     }
-  }, []);
+  }, [redirectAfterAuth]);
 
   const handleXRevoke = useCallback(async () => {
     try {
@@ -47,4 +57,4 @@ export function useXLogin(
   }, [router, redirectAfterRevoke]);
 
   return { handleXLogin, handleXRevoke };
-} 
+}
