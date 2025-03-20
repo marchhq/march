@@ -25,7 +25,10 @@ export const redirectXOAuthLoginController = async (req, res) => {
 
         // Clean up expired entries
         cleanupTempStore();
-        res.redirect(url);
+
+        res.json({
+            url
+        });
     } catch (error) {
         console.error("Twitter OAuth Error:", error);
         res.status(500).json({
