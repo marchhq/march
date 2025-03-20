@@ -41,6 +41,7 @@ export function ListItems({ onDragStateChange }: ListItemsProps) {
       linear: "linear",
       github: "gitHub",
       calendar: "calendar",
+      twitter: "twitter",
     };
 
     const iconName = iconMap[source.toLowerCase()];
@@ -88,7 +89,7 @@ export function ListItems({ onDragStateChange }: ListItemsProps) {
                       "transition-all duration-200",
                       item.isCompleted
                         ? "opacity-100"
-                        : "opacity-70 group-hover:opacity-100"
+                        : "opacity-70 group-hover:opacity-100",
                     )}
                     checked={item.isCompleted}
                     onCheckedChange={() => {
@@ -106,7 +107,7 @@ export function ListItems({ onDragStateChange }: ListItemsProps) {
                         "text-sm cursor-pointer select-none",
                         item.isCompleted
                           ? "text-gray-400 line-through"
-                          : "text-gray-700"
+                          : "text-gray-700",
                       )}
                     >
                       {item.title}

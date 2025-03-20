@@ -2,6 +2,7 @@ import { apiClient } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { getSession } from "@/actions/session";
 
 interface UseXLoginReturn {
   handleXLogin: () => Promise<void>;
@@ -10,27 +11,43 @@ interface UseXLoginReturn {
 
 export function useXLogin(
   redirectAfterAuth: string,
-  redirectAfterRevoke: string = redirectAfterAuth,
+  redirectAfterRevoke: string = redirectAfterAuth
 ): UseXLoginReturn {
   const router = useRouter();
 
   const handleXLogin = useCallback(async () => {
     try {
-      const { authUrl } = await apiClient.internal.get<{ authUrl: string }>(
-        "/api/auth/x-url",
-      );
-
-      if (!authUrl) {
-        throw new Error("No auth URL received");
+      const session = await getSession();
+      if (!session) {
+        throw new Error("No session found");
       }
 
-      console.log("Redirecting to X OAuth URL:", authUrl);
-      window.location.href = authUrl;
+      const response = await apiClient.get<{ url: string; state: string; codeVerifier: string }>(
+        `/x/connect`
+      );
+
+      if (!response?.url || !response?.codeVerifier) {
+        throw new Error("Invalid response from X connect endpoint");
+      }
+
+      // Store both redirect URL and codeVerifier in state
+      const state = encodeURIComponent(
+        JSON.stringify({ 
+          redirect: redirectAfterAuth,
+          codeVerifier: response.codeVerifier,
+        })
+      );
+
+      // Use the URL from the response but replace the state parameter
+      const url = new URL(response.url);
+      url.searchParams.set("state", state);
+
+      window.location.href = url.toString();
     } catch (err) {
       console.error("failed to login to X", err);
       toast.error("Failed to login to X");
     }
-  }, []);
+  }, [redirectAfterAuth]);
 
   const handleXRevoke = useCallback(async () => {
     try {
@@ -47,4 +64,4 @@ export function useXLogin(
   }, [router, redirectAfterRevoke]);
 
   return { handleXLogin, handleXRevoke };
-} 
+}

@@ -8,26 +8,19 @@ const twitterClient = new TwitterApi({
 
 const CALLBACK_URL = process.env.X_CALLBACK_URL;
 
-const tempOAuthStore = new Map();
-
 export const redirectXOAuthLoginController = async (req, res) => {
     try {
-        const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(CALLBACK_URL, {
-            scope: ["tweet.read", "users.read", "bookmark.read", "offline.access"]
-        });
-
-        tempOAuthStore.set(state, {
-            codeVerifier,
-            timestamp: Date.now()
-        });
-
-        console.log("Redirect URL:", url);
-
-        // Clean up expired entries
-        cleanupTempStore();
+        const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(
+            CALLBACK_URL,
+            {
+                scope: ["tweet.read", "users.read", "bookmark.read", "offline.access"]
+            }
+        );
 
         res.json({
-            url
+            url,
+            state,
+            codeVerifier
         });
     } catch (error) {
         console.error("Twitter OAuth Error:", error);
@@ -40,35 +33,33 @@ export const redirectXOAuthLoginController = async (req, res) => {
 
 export const getXAccessTokenController = async (req, res) => {
     try {
-        const { state, code } = req.query;
+        const { code, codeVerifier } = req.query;
         const user = req.user;
-        const storedData = tempOAuthStore.get(state);
 
-        if (!storedData) {
-            console.error("No stored data found for state:", state);
-            throw new Error("Invalid or expired state parameter");
+        if (!code || !codeVerifier) {
+            throw new Error(
+                `Missing required parameters: ${!code ? "code" : "codeVerifier"}`
+            );
         }
 
-        // Clean up stored data immediately after retrieving it
-        tempOAuthStore.delete(state);
-
-        const { client: loggedClient, accessToken, refreshToken } = await twitterClient.loginWithOAuth2({
+        const {
+            client: loggedClient,
+            accessToken,
+            refreshToken
+        } = await twitterClient.loginWithOAuth2({
             code,
-            codeVerifier: storedData.codeVerifier,
+            codeVerifier,
             redirectUri: CALLBACK_URL
         });
         user.integration.x.accessToken = accessToken;
         user.integration.x.refreshToken = refreshToken;
         user.integration.x.connected = true;
-        await user.save()
+        await user.save();
 
-        await XQueue.add(
-            "XQueue",
-            {
-                accessToken,
-                userId: user._id
-            }
-        );
+        await XQueue.add("XQueue", {
+            accessToken,
+            userId: user._id
+        });
 
         res.json({
             message: "Twitter authentication successful",
@@ -83,16 +74,3 @@ export const getXAccessTokenController = async (req, res) => {
         });
     }
 };
-
-// cleanup function to remove expired entries (older than 5 minutes)
-function cleanupTempStore () {
-    const fiveMinutes = 5 * 60 * 1000;
-    const now = Date.now();
-
-    for (const [state, data] of tempOAuthStore.entries()) {
-        if (now - data.timestamp > fiveMinutes) {
-            console.log("Removing expired state:", state);
-            tempOAuthStore.delete(state);
-        }
-    }
-}
