@@ -1,4 +1,7 @@
+import { Object } from "../../models/lib/object.model.js";
 import { Meeting } from "../../models/page/meetings.model.js";
+import { z } from "zod";
+import sanitize from "mongo-sanitize";
 
 const createMeeting = async (user, meetingData) => {
     const newMeeting = new Meeting({
@@ -17,16 +20,17 @@ const createMeeting = async (user, meetingData) => {
 };
 
 const getMeeting = async (user) => {
-    const meetings = await Meeting.find({
+    const meetings = await Object.find({
         user,
+        type: "meeting",
         isDeleted: false
     })
-        .sort({ created_at: -1 });
+        .sort({ updatedAt: -1 });
     return meetings;
 };
 
 const getMeetingById = async (user, id) => {
-    const meeting = await Meeting.find({
+    const meeting = await Object.find({
         user,
         id
     })
@@ -34,13 +38,24 @@ const getMeetingById = async (user, id) => {
 
     return meeting;
 };
+// TODO: improve validation for updateMeetingSchema
+const updateMeetingSchema = z.object({
+    title: z.string().optional(),
+    date: z.string().optional(),
+    description: z.string().optional(),
+    participants: z.array(z.string()).optional(),
+    isArchived: z.boolean().optional()
+});
 
 const updateMeeting = async (id, updateData, user) => {
-    const updatedBlock = await Meeting.findOneAndUpdate({
+    const safeUpdateData = sanitize(updateData);
+    const validatedData = updateMeetingSchema.parse(safeUpdateData);
+
+    const updatedBlock = await Object.findOneAndUpdate({
         id,
         user
     },
-    { $set: updateData },
+    { $set: validatedData },
     { new: true }
     )
 

@@ -1,24 +1,24 @@
 import Joi from "joi";
-import { getUserOverdueItems, getUserItemsByDate, getInboxItems, getInboxItem, moveItemtoDate, getUserTodayItems, getAllitems, getThisWeekItems, updateInboxItem } from "../../services/lib/item.service.js";
+import { getInboxObject, getObjectsWithDate, reorderObjects, getInboxObjects, getThisWeekObjects, updateInboxObject, getAllObjects, getUserOverdueObjects, getUserObjectsByDate, moveObjecttoDate, getUserTodayObjects } from "../../services/lib/object.service.js";
 import { updateUser } from "../../services/core/user.service.js";
+import { UpdateUserPayload } from "../../payloads/core/user.payload.js";
+import { updateContent, deleteContent } from "../../utils/helper.service.js"
 
 const { ValidationError } = Joi;
-
-// const userProfileController = async (req, res, next) => {
-//     try {
-//         const user = req.user;
-//         const { integration, ...userWithoutIntegration } = user.toObject ? user.toObject() : user;
-
-//         res.json(userWithoutIntegration);
-//     } catch (err) {
-//         next(err)
-//     }
-// };
 
 const userProfileController = async (req, res, next) => {
     try {
         const user = req.user;
-        const { integration, uuid, fullName, userName, avatar, roles, timezone, accounts } = user.toObject ? user.toObject() : user;
+        const {
+            integration,
+            uuid,
+            fullName,
+            userName,
+            avatar,
+            roles,
+            timezone,
+            accounts
+        } = user.toObject ? user.toObject() : user;
 
         const response = {
             uuid,
@@ -33,6 +33,7 @@ const userProfileController = async (req, res, next) => {
                 googleCalendar: { connected: integration.googleCalendar.connected },
                 gmail: { connected: integration.gmail.connected },
                 github: { connected: integration.github.connected },
+                x: { connected: integration.x.connected },
                 notion: { connected: integration.notion.connected }
             }
         };
@@ -46,99 +47,140 @@ const userProfileController = async (req, res, next) => {
 const updateUserController = async (req, res, next) => {
     try {
         const user = req.user;
-        // const payload = await UpdateUserPayload.validateAsync(req.body)
-
         const data = req.body;
+        const payload = await UpdateUserPayload.validateAsync(data)
 
-        await updateUser(user, data);
+        await updateUser(user, payload);
 
         res.json({
-            "message": "Updated successfully"
-        })
+            message: "Updated successfully"
+        });
     } catch (err) {
-        const error = new Error(err)
-        error.statusCode = err instanceof ValidationError ? 400 : (err.statusCode || 500)
+        const error = new Error(err);
+        error.statusCode =
+        err instanceof ValidationError ? 400 : err.statusCode || 500;
         next(error);
     }
 };
 
-const getInboxItemsController = async (req, res, next) => {
+const getInboxObjectsController = async (req, res, next) => {
     try {
         const me = req.user._id;
-        const items = await getInboxItems(me);
+
+        const objects = await getInboxObjects(me);
 
         res.status(200).json({
-            response: items
+            response: objects
         });
     } catch (err) {
         next(err);
     }
 };
 
-const getInboxItemController = async (req, res, next) => {
+export const getObjectsWithDateController = async (req, res, next) => {
     try {
         const me = req.user._id;
-        const { item: id } = req.params;
-        const items = await getInboxItem(me, id);
+
+        const objects = await getObjectsWithDate(me);
 
         res.status(200).json({
-            response: items
+            response: objects
         });
     } catch (err) {
         next(err);
     }
 };
 
-const getThisWeekItemsController = async (req, res, next) => {
+export const reorderObjectsController = async (req, res, next) => {
+    const { orderedItems } = req.body;
+    await reorderObjects(orderedItems)
+
+    res.json({ success: true, message: "Order updated" });
+}
+
+const getInboxObjectController = async (req, res, next) => {
     try {
         const me = req.user._id;
-        const items = await getThisWeekItems(me);
+        const { object: id } = req.params;
+        const objects = await getInboxObject(me, id);
 
         res.status(200).json({
-            response: items
+            response: objects
         });
     } catch (err) {
         next(err);
     }
 };
 
-const updateInboxItemController = async (req, res, next) => {
+const getThisWeekObjectsController = async (req, res, next) => {
     try {
         const me = req.user._id;
-        const { item: id } = req.params;
+        const objects = await getThisWeekObjects(me);
+
+        res.status(200).json({
+            response: objects
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const updateInboxObjectController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const { object: id } = req.params;
         const updateData = req.body;
-        const items = await updateInboxItem(id, me, updateData);
-
+        const objects = await updateInboxObject(id, me, updateData);
+        // update in vector db
+        await updateContent(objects);
         res.status(200).json({
-            response: items
+            response: objects
         });
     } catch (err) {
         next(err);
     }
 };
 
-const getAllitemsController = async (req, res, next) => {
+export const deleteInboxObjectController = async (req, res, next) => {
     try {
         const me = req.user._id;
-        const items = await getAllitems(me);
+        const { object: id } = req.params;
+
+        await updateInboxObject(id, me, { isDeleted: true });
+
+        await deleteContent(id);
 
         res.status(200).json({
-            response: items
+            success: true,
+            message: "Object deleted successfully"
         });
     } catch (err) {
         next(err);
     }
 };
 
-const getUserTodayItemsController = async (req, res, next) => {
+const getAllObjectsController = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const objects = await getAllObjects(me);
+
+        res.status(200).json({
+            response: objects
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getUserTodayObjectsController = async (req, res, next) => {
     try {
         const me = req.user.id;
-        const todayItems = await getUserTodayItems(me);
-        const overdueItems = await getUserOverdueItems(me);
+        const todayObjects = await getUserTodayObjects(me);
+        const overdueObjects = await getUserOverdueObjects(me);
         res.json({
             response: {
-                todayItems,
-                overdueItems
+                todayObjects,
+                overdueObjects
             }
         });
     } catch (err) {
@@ -146,24 +188,24 @@ const getUserTodayItemsController = async (req, res, next) => {
     }
 };
 
-const getUserOverdueItemsController = async (req, res, next) => {
+const getUserOverdueObjectsController = async (req, res, next) => {
     try {
         const me = req.user.id;
-        const items = await getUserOverdueItems(me);
+        const objects = await getUserOverdueObjects(me);
         res.json({
-            response: items
+            response: objects
         });
     } catch (err) {
         next(err);
     }
 };
 
-const getUserItemsByDateController = async (req, res, next) => {
+const getUserObjectsByDateController = async (req, res, next) => {
     try {
         const me = req.user.id;
         const { date } = req.params;
-        const today = await getUserItemsByDate(me, date);
-        const overdue = await getUserOverdueItems(me);
+        const today = await getUserObjectsByDate(me, date);
+        const overdue = await getUserOverdueObjects(me);
         res.json({
             response: {
                 today,
@@ -175,12 +217,12 @@ const getUserItemsByDateController = async (req, res, next) => {
     }
 };
 
-const moveItemtoDateController = async (req, res, next) => {
+const moveObjecttoDateController = async (req, res, next) => {
     try {
         const { id, dueDate } = req.body;
-        const items = await moveItemtoDate(dueDate, id);
+        const objects = await moveObjecttoDate(dueDate, id);
         res.json({
-            response: items
+            response: objects
         });
     } catch (err) {
         next(err);
@@ -190,13 +232,13 @@ const moveItemtoDateController = async (req, res, next) => {
 export {
     userProfileController,
     updateUserController,
-    updateInboxItemController,
-    getInboxItemController,
-    getInboxItemsController,
-    getUserTodayItemsController,
-    getUserOverdueItemsController,
-    getUserItemsByDateController,
-    moveItemtoDateController,
-    getAllitemsController,
-    getThisWeekItemsController
-}
+    updateInboxObjectController,
+    getInboxObjectController,
+    getInboxObjectsController,
+    getThisWeekObjectsController,
+    getAllObjectsController,
+    getUserOverdueObjectsController,
+    getUserObjectsByDateController,
+    moveObjecttoDateController,
+    getUserTodayObjectsController
+};

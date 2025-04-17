@@ -93,6 +93,7 @@ const UserSchema = new Schema({
         linear: {
             accessToken: String,
             userId: String,
+            linearTeam: { type: Schema.Types.Mixed },
             connected: { type: Boolean, default: false }
         },
         googleCalendar: {
@@ -111,6 +112,11 @@ const UserSchema = new Schema({
         github: {
             installationId: String,
             userName: String,
+            connected: { type: Boolean, default: false }
+        },
+        x: {
+            accessToken: String,
+            refreshToken: String,
             connected: { type: Boolean, default: false }
         },
         notion: {

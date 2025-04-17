@@ -29,3 +29,4 @@ jobs:
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"🏷️ Community label added to issue: ${{ github.event.issue.html_url }}\"}" \
                ${{ secrets.DISCORD_WEBHOOK }}
+                

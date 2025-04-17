@@ -9,11 +9,15 @@ const notionQueue = new Queue('notionQueue', {
     connection: redisConnection
 });
 
-const spaceQueue = new Queue('spaceQueue', {
+const cycleQueue = new Queue('cycleQueue', {
     connection: redisConnection
 });
 
-const cycleQueue = new Queue('cycleQueue', {
+const initQueue = new Queue('initQueue', {
+    connection: redisConnection
+});
+
+const XQueue = new Queue('XQueue', {
     connection: redisConnection
 });
 
@@ -22,6 +26,7 @@ console.log('Queues setup completed.');
 export {
     linearQueue,
     notionQueue,
-    spaceQueue,
-    cycleQueue
+    cycleQueue,
+    initQueue,
+    XQueue
 };

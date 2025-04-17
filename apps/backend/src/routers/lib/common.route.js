@@ -1,58 +1,110 @@
 import { Router } from "express";
-import { createUpdateJournalController, getUserTodayJournalController, getUserAllJournalsController, getUserJournalByDateController } from "../../controllers/lib/journal.controller.js";
+
+// Journal related imports
 import {
-    getInboxItemsController,
-    getInboxItemController,
-    updateInboxItemController,
-    getUserTodayItemsController,
-    getUserOverdueItemsController,
-    getUserItemsByDateController,
-    moveItemtoDateController,
-    getAllitemsController
+    createUpdateJournalController,
+    getUserTodayJournalController,
+    getUserAllJournalsController,
+    getUserJournalByDateController
+} from "../../controllers/lib/journal.controller.js";
+
+// User and item management imports
+import {
+    getInboxObjectsController,
+    getObjectsWithDateController,
+    reorderObjectsController,
+    getInboxObjectController,
+    updateInboxObjectController,
+    deleteInboxObjectController,
+    getUserTodayObjectsController,
+    getUserOverdueObjectsController,
+    moveObjecttoDateController,
+    getUserObjectsByDateController,
+    getAllObjectsController
 } from "../../controllers/core/user.controller.js";
-import { searchItemsByTitleController, createInboxItemController, filterItemsController, getThisWeekItemsByDateRangeController, getUserFavoriteItemsController, getSubItemsController } from "../../controllers/lib/item.controller.js"
+
+// Item functionality imports
+import {
+    createInboxObjectController,
+    getSubObjectsController,
+    getThisWeekObjectsByDateRangeController,
+    getUserFavoriteObjectsController,
+    getObjectsByTypeAndSourceController,
+    searchObjectsByTitleController,
+    filterObjectsController,
+    getObjectsBySourceController
+} from "../../controllers/lib/object.controller.js";
+// Utility imports
 import { uploadFileController } from "../../controllers/lib/fileAsset.controller.js";
 import { upload } from "../../loaders/s3.loader.js";
 import { feedbackController } from "../../controllers/lib/feedback.controller.js";
 import { linkPreviewGeneratorController } from "../../controllers/lib/linkPreview.controller.js";
+import { createTypeController, getAllTypesController, getTypesBySlugController } from "../../controllers/lib/type.controller.js";
 
 const router = Router();
 
-// inbox
-router.route("/inbox/").get(getInboxItemsController);
-router.route("/inbox/").post(createInboxItemController);
-router.route("/inbox/:item/").put(updateInboxItemController);
-router.route("/inbox/:item/").get(getInboxItemController);
-router.route("/inbox/:item/sub-items/").get(getSubItemsController);
-router.route("/this-week/").get(getThisWeekItemsByDateRangeController);
-router.route("/today/").get(getUserTodayItemsController);
-router.route("/overdue/").get(getUserOverdueItemsController);
-router.route("/favorite/").get(getUserFavoriteItemsController);
-router.route("/setDate/").post(moveItemtoDateController);
-router.route("/:date/").get(getUserItemsByDateController);
+/* Inbox Management Routes
+-------------------------------------------------- */
+router.route("/inbox/")
+    .get(getInboxObjectsController)
+    .post(createInboxObjectController);
 
-// journal controllers
+router.route("/reorder/").put(reorderObjectsController)
+
+router.route("/objects/without-date/").get(getInboxObjectsController);
+router.route("/objects/with-date/").get(getObjectsWithDateController);
+router.route("/objects/source/").get(getObjectsBySourceController);
+
+router.route("/inbox/:object/")
+    .get(getInboxObjectController)
+    .put(updateInboxObjectController)
+    .delete(deleteInboxObjectController);
+
+router.route("/inbox/:item/sub-items/").get(getSubObjectsController);
+
+/* Timeline Routes
+-------------------------------------------------- */
+router.route("/this-week/").get(getThisWeekObjectsByDateRangeController);
+router.route("/today/").get(getUserTodayObjectsController);
+router.route("/overdue/").get(getUserOverdueObjectsController);
+router.route("/favorite/").get(getUserFavoriteObjectsController);
+router.route("/setDate/").post(moveObjecttoDateController);
+router.route("/items/").get(getObjectsByTypeAndSourceController);
+
+/* Journal Routes
+-------------------------------------------------- */
 router.route("/journals/create-update/").post(createUpdateJournalController);
 router.route("/journals/today/").get(getUserTodayJournalController);
 router.route("/journals/overview/").get(getUserAllJournalsController);
 router.route("/journals/:date/").get(getUserJournalByDateController);
 
-// get all items
-router.route("/items/").get(getAllitemsController);
+/* Item Management Routes
+-------------------------------------------------- */
+router.route("/items/").get(getAllObjectsController);
+router.route("/items/search/").get(searchObjectsByTitleController);
+router.route("/items/filter/").get(filterObjectsController);
+// router.route("/items/source/").get(getObjectsBySourceController);
+router.route("/items/all/").get(getAllObjectsController);
 
-// search and filter items
-router.route("/items/search/").get(searchItemsByTitleController);
-router.route("/items/filter/").get(filterItemsController);
-
-// File Asset controllers
-router
-    .route("/file-assets/upload/")
+/* Asset Management Routes
+-------------------------------------------------- */
+router.route("/file-assets/upload/")
     .post(upload.single("file"), uploadFileController);
 
-// Feedback controller
+/* Utility Routes
+-------------------------------------------------- */
 router.route("/feedback/").post(feedbackController);
-
-// Link preview controller
 router.route("/get-link-preview/").post(linkPreviewGeneratorController);
+
+/* Types Routes
+-------------------------------------------------- */
+router.route("/types/")
+    .post(createTypeController)
+    .get(getAllTypesController);
+
+router.route("/types/:slug").get(getTypesBySlugController);
+
+/* Dynamic Date Route */
+router.route("/:date/").get(getUserObjectsByDateController);
 
 export default router;

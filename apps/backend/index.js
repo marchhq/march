@@ -1,32 +1,34 @@
 import { app } from "./src/index.js";
 import { environment } from "./src/loaders/environment.loader.js";
+import { createServer } from "http";
+import { initializeWebSocket } from "./src/loaders/websocket.loader.js";
 
 (async function init () {
-    app.listen(environment.PORT, () => {
-        console.log(`Server listening on port ${environment.PORT}`)
-    })
-})()
+    const server = createServer(app);
+    server.listen(environment.PORT, () => {
+        console.log(`Server listening on port ${environment.PORT}`);
+    });
 
-// for webhook testing in local
+    initializeWebSocket(server);
+})();
+
+// for webhook testing
 // import { app } from "./src/index.js";
 // import { environment } from "./src/loaders/environment.loader.js";
-// import ngrok from '@ngrok/ngrok'
+// import { createServer } from "http";
+// import { initializeWebSocket } from "./src/loaders/websocket.loader.js"; // Ensure the path is correct
+// import ngrok from '@ngrok/ngrok';
 
-// const PORT = 8080;
 // let listener;
+
 // (async function init () {
-//     app.listen(PORT, async () => {
-//         console.log(`Server is running on http://localhost:${PORT}`);
-
-//         try {
-//             listener = await ngrok.forward({ addr: `http://localhost:${PORT}`, authtoken: environment.NGROK_AUTH_TOKEN });
-//             console.log(`Ingress established at: ${listener.url()}`);
-//         } catch (error) {
-//             console.error('Error starting ngrok:', error);
-//         }
+//     const server = createServer(app);
+//     server.listen(environment.PORT, async () => {
+//         console.log(`Server listening on port ${environment.PORT}`);
+//         // Await ngrok forwarding outside the listen callback
+//         listener = await ngrok.forward({ addr: `http://localhost:${environment.PORT}`, authtoken: environment.NGROK_AUTH_TOKEN });
+//         console.log(`Ingress established at: ${listener.url()}`);
 //     });
-// })()
 
-// export {
-//     listener
-// }
+//     initializeWebSocket(server);
+// })();

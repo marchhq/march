@@ -20,18 +20,16 @@ const JournalSchema = new Schema({
         ref: 'User',
         required: true
     },
-    space: {
+    array: {
         type: Schema.Types.ObjectId,
-        ref: 'Space'
+        ref: 'Array'
     }
 }, {
     timestamps: true
 });
 
-// JournalSchema.index({ date: 1, user: 1 }, { unique: true });
 JournalSchema.index({ date: 1, user: 1 }, { unique: true })
 const Journal = db.model('Journal', JournalSchema, 'journals')
-// const Journal = db.model('Journal', JournalSchema, 'journals');
 
 export {
     Journal

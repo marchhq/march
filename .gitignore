@@ -14,6 +14,7 @@ node_modules
 
 # Testing
 coverage
+apps/march-tauri/src-tauri/target/
 
 # Turbo
 .turbo
