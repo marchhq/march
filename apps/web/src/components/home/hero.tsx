@@ -48,7 +48,7 @@ export default function Hero() {
           className="flex flex-row items-center gap-x-4"
           variants={itemVariants}
         >
-          <Button onClick={() => router.push("/signin")}>Join Beta</Button>
+          <Button onClick={() => router.push("/signin")}>join public beta</Button>
         </motion.div>
       </motion.div>
     </>
