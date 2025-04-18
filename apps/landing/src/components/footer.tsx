@@ -21,7 +21,7 @@ export default function Footer() {
 
   return (
     <motion.footer
-      className="w-full py-6 mt-12 border-t border-gray-200 dark:border-gray-800"
+      className="w-full py-6 mt-12"
       initial="hidden"
       variants={containerVariants}
       whileInView="visible"
@@ -45,7 +45,7 @@ export default function Footer() {
               aria-label="Follow on X" 
               className="underline hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >follow</a> on x
-        </motion.div>
+         </motion.div>
       </div>
     </motion.footer>
   );
