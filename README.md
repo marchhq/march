@@ -1,21 +1,21 @@
 # ![march](https://your-logo-url.com/logo.png)
 
 ```txt
-AI second brain, opinionatedly designed for makers.
+ai second brain, opinionatedly designed for makers.
 ```
 
 ## About
-March is a Notion alternative for getting things done—the tool we wished existed, so we're building it ourselves. We've tried Notion, Obsidian, Anytype, Todoist, etc., but none of them felt quite right. Those are great apps, and if they work for you, we're not saying March will be better. But here’s what makes March different:
+march is a notion alternative for getting things done—the tool we wished existed, so we're building it ourselves. We've tried Notion, Obsidian, Anytype, Todoist, etc., but none of them felt quite right. Those are great apps, and if they work for you, we're not saying March will be better. But here’s what makes March different:
 
 - **Connected Workflow:** March integrates with all your favorite tools and automatically collects action items into a universal inbox.
-- **Object-Based System:** Everything—meetings, bookmarks, Linear issues—is treated as an object with a type. You can customize views based on object types.
-- **Dynamic Interface:** Build your own productivity space with blocks, allowing for flexible workflows.
+- **Simple Object-Based System:** Everything—meetings, bookmarks, Linear issues—is treated as an object with a type. You can customize views based on object types.
+- **Dynamic Interface:** Build your own productivity page/ space with blocks, you decide how your action items should look like.
 - **Smart Organization:** No tedious templates—March organizes your data dynamically based on behavior and object types.
-- **AI-Powered Productivity:** Plan your day, perform actions in connected apps, and stay accountable. March pushes you to get things done—or take breaks when needed.
+- **AI-Powered Productivity:** Plan your day, perform actions in connected apps, and stay accountable. march pushes you to get things done—or take breaks when needed.
 
-March is currently **free and open source**, maintained by **[@oliursahin](https://github.com/oliursahin)** and **[@sajdakabir](https://github.com/sajdakabir)**. If you love using it, consider [buying us a coffee](https://your-donation-link.com)—it helps us keep the servers running.
+March is currently **free and open source**, maintained by **[@oliursahin](https://github.com/oliursahin)** and **[@sajdakabir](https://github.com/sajdakabir)**. If you love using it, consider [buying us a coffee](https://buymeacoffe/oliursahin)—it helps us keep the servers running.
 
-> **Alpha Notice:** March is still in an alpha stage and is only suitable for enthusiastic testers willing to endure bugs and an incomplete app. However, it's our daily driver, and we are actively developing it.
+> **Alpha Notice:** march is still in an alpha stage and is only suitable for enthusiastic testers willing to endure bugs and an incomplete app. However, it's our daily driver, and we are actively developing it.
 
 ## 🚀 Try the Alpha
 - **[app.march.cat](https://app.march.cat)**
@@ -33,19 +33,19 @@ March is currently **free and open source**, maintained by **[@oliursahin](https
 
 ## 🛠️ Getting Started
 ### Prerequisites
-To run March locally, you need:
+To run march locally, you need:
 - Node.js (version: **>=18.x**)
 - Bun (**recommended**)
 
 ### Development Setup
 1. **Clone the repository:**
    ```sh
-   git clone --depth=1 https://github.com/emptyarrayhq/emptyarray.git
+   git clone --depth=1 https://github.com/marchhq/march.git
    ```
 
 2. **Navigate to the project folder:**
    ```sh
-   cd emptyarray
+   cd march
    ```
 
 3. **Create your feature or fix branch:**
@@ -59,7 +59,7 @@ To run March locally, you need:
    ```
 
 5. **Set up your environment variables:**
-   - Go to `app/backend` and `app/frontend` directories.
+   - Go to `apps/backend` and `apps/web` directories.
    - Duplicate `.env.example` and rename it to `.env`.
 
 6. **Run the development server:**
