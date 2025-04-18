@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import { twMerge } from "tailwind-merge";
 
 export type SectionProps = PropsWithChildren<{

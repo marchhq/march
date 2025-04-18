@@ -1,11 +1,11 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
-import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 export default function Hero() {
-  const router = useRouter();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -31,10 +31,10 @@ export default function Hero() {
         viewport={{ once: true }}
       >
         <motion.h1
-          className="max-w-2xl text-pretty text-4xl !leading-tight text-gray-950 md:text-6xl dark:text-white"
+          className="max-w-2xl text-pretty text-4xl !leading-tight md:text-6xl dark:text-white"
           variants={itemVariants}
         >
-          second brain for people living{" "}
+          <span className="text-black dark:text-black">second brain for people living</span>{" "}
           <span className="dark:text-polar-500 text-gray-400">on mars</span>
         </motion.h1>
         <motion.p
@@ -48,7 +48,9 @@ export default function Hero() {
           className="flex flex-row items-center gap-x-4"
           variants={itemVariants}
         >
-          <Button onClick={() => router.push("/signin")}>join public beta</Button>
+          <Button className="bg-black text-white">
+            <Link href="https://app.march.cat/signin">join public beta</Link>
+          </Button>
         </motion.div>
       </motion.div>
     </>
