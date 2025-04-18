@@ -1,7 +1,7 @@
-
-import Hero from "@/components/home/hero";
-import { Section } from "@/components/home/section";
-import Footer from "@/components/home/footer";
+import React from "react";
+import Hero from "./hero";
+import { Section } from "./section";
+import Footer from "./footer";
 
 const PageContent = () => {
   return (
