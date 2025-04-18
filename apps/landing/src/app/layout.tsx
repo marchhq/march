@@ -6,8 +6,11 @@ import '../styles/globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Landing Page',
-  description: 'Landing page for the application',
+  title: 'march',
+  description: 'ai second brain, opinionatedly designed for makers',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
