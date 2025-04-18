@@ -39,7 +39,7 @@ export default function Footer() {
               aria-label="Fork code on GitHub" 
               className="underline hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >fork</a> code or <a 
-              href="https://x.com/marchhq" 
+              href="https://x.com/_marchhq" 
               target="_blank" 
               rel="noopener noreferrer" 
               aria-label="Follow on X" 
