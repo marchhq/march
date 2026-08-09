@@ -13,7 +13,7 @@ march is a notion alternative for getting things done—the tool we wished exist
 - **Smart Organization:** No tedious templates—March organizes your data dynamically based on behavior and object types.
 - **AI-Powered only where it needed:** march can perform actions in connected apps and reminds you what you should consume ( i.e the twitter bookmark you saved but never opened) 
 
-March is currently **free and open source**, maintained by **[@oliursahin](https://github.com/oliursahin)** and **[@sajdakabir](https://github.com/sajdakabir)**. If you love using it, consider [buying us a coffee](https://buymeacoffee.com/oliursahin)—it helps us keep the servers running.
+March is currently **free and open source**, maintained by **[@immadsahin](https://github.com/immadsahin)** and **[@sajdakabir](https://github.com/sajdakabir)**. If you love using it, consider [buying us a coffee](https://buymeacoffee.com/sajdakabir)—it helps us keep the servers running.
 
 > **Alpha Notice:** march is still in an alpha stage and is only suitable for enthusiastic testers willing to endure bugs and an incomplete app. However, it's our daily driver, and we are actively developing it.
 
